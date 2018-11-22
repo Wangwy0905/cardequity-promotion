@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.youyu.cardequity</groupId>
+	<artifactId>cardequity-promotion</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>cardequity-promotion</name>
+	<description>cardequity-promotion</description>
+
+	<parent>
+		<groupId>com.youyu.platform</groupId>
+		<artifactId>common-parent</artifactId>
+		<version>2.0.0.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<modules>
+		<module>cardequity-promotion-api</module>
+		<module>cardequity-promotion-biz</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<common-parent.version>2.0.0.RELEASE</common-parent.version>
+		<java.version>1.8</java.version>
+		<spring-boot.version>2.0.1.RELEASE</spring-boot.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.youyu.middleground</groupId>
+			<artifactId>middleground-communication-api</artifactId>
+			<version>1.0.1-RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.middleground</groupId>
+			<artifactId>middleground-storage-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.platform</groupId>
+			<artifactId>common-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.platform</groupId>
+			<artifactId>common-cache-cachecloud</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.platform</groupId>
+			<artifactId>common-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.platform</groupId>
+			<artifactId>common-dao</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.platform</groupId>
+			<artifactId>common-dts</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.platform</groupId>
+			<artifactId>common-feign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.platform</groupId>
+			<artifactId>common-handler</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.platform</groupId>
+			<artifactId>common-monitor</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.youyu.platform</groupId>
+			<artifactId>common-mq</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring-boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.youyu.platform</groupId>
+				<artifactId>common-parent</artifactId>
+				<version>${common-parent.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>
