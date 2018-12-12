@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.ActivityStageCouponMapper">
+    <select id="findActivityProfitDetail" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityStageCouponEntity">
+        SELECT * FROM
+        TB_ACTIVITY_STAGE_COUPON a
+        WHERE ifnull(a.Is_enable,'1')='1'
+          and a.Activity_Id=#{activityId,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

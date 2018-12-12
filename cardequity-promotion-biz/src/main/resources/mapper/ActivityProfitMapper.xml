@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.ActivityProfitMapper">
+
+    <select id="findEnableGetCommonActivity" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+        select *
+        from TB_ACTIVITY_PROFIT a
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and IFNULL(b.IS_ENABLE, '1') = '1'
+        where IFNULL(a.IS_ENABLE, '1') = '1'
+        <if test="productId != null and productId=''">
+            and (ifnull(a.PRODUCT_SET, '*') = '*' or instr(PRODUCT_SET,  #{productId,jdbcType=VARCHAR}) &gt; 0)
+        </if>
+        <if test="groupId != null and groupId=''">
+            and (ifnull(a.PRODUCT_GROUP_SET, '*') = '*' or  instr(PRODUCT_GROUP_SET,  #{groupId,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="entrustWay != null and entrustWay=''">
+            and (ifnull(a.ENTRUST_WAY_SET, '*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+        </if>
+        and ifnull(a.CLIENT_TYPE_SET, '*') = '*'
+        and ifnull(a.BANK_CODE_SET, '*') = '*'
+        and ifnull(a.PAY_TYPE_SET, '*') = '*'
+        and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
+        and a.ALLOW_USE_END_DATE &gt;= sysdate()
+        and (b.PER_DATE_MAX_AMOUNT is null or b.PER_DATE_MAX_AMOUNT &gt;
+          (select sum(ifnull(c.Profit_Value, 0))
+             from TB_CLIENT_TAKE_IN_ACTIVITY c
+             where BUSIN_CODE = '1006'
+               and c.ACTIVITY_ID = a.UUID
+               and c.create_time &gt;= curdate()))
+        and (b.Max_Amount is null or b.Max_Amount &gt;
+          (select sum(ifnull(c.Profit_Value, 0))
+             from TB_CLIENT_TAKE_IN_ACTIVITY c
+             where BUSIN_CODE = '1006'
+               and c.ACTIVITY_ID = a.UUID))
+        and (b.Per_Date_Max_Count is null or b.Per_Date_Max_Count &gt;
+          (select sum(ifnull(c.Product_Count, 0))
+            from TB_CLIENT_TAKE_IN_ACTIVITY c
+            where BUSIN_CODE = '1006'
+              and c.ACTIVITY_ID = a.UUID
+              and c.create_time &gt;= curdate()))
+        and (b.Max_Count is null or b.Max_Count &gt;
+          (select sum(ifnull(c.Product_Count, 0))
+            from TB_CLIENT_TAKE_IN_ACTIVITY c
+            where BUSIN_CODE = '1006'
+              and c.ACTIVITY_ID = a.UUID));
+    </select>
+
+    <select id="findEnableGetMemberActivity" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+        select *
+        from TB_ACTIVITY_PROFIT a
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and IFNULL(b.IS_ENABLE, '1') = '1'
+        where IFNULL(a.IS_ENABLE, '1') = '1'
+        <if test="productId != null and productId=''">
+            and (ifnull(a.PRODUCT_SET, '*') = '*' or instr(PRODUCT_SET,  #{productId,jdbcType=VARCHAR}) &gt; 0)
+        </if>
+        <if test="groupId != null and groupId=''">
+            and (ifnull(a.PRODUCT_GROUP_SET, '*') = '*' or  instr(PRODUCT_GROUP_SET,  #{groupId,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="entrustWay != null and entrustWay=''">
+            and (ifnull(a.ENTRUST_WAY_SET, '*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+        </if>
+        and ifnull(a.CLIENT_TYPE_SET, '*') != '*'
+        and ifnull(a.BANK_CODE_SET, '*') = '*'
+        and ifnull(a.PAY_TYPE_SET, '*') = '*'
+        and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
+        and a.ALLOW_USE_END_DATE &gt;= sysdate()
+        and (b.PER_DATE_MAX_AMOUNT is null or b.PER_DATE_MAX_AMOUNT &gt;
+        (select sum(ifnull(c.Profit_Value, 0))
+        from TB_CLIENT_TAKE_IN_ACTIVITY c
+        where BUSIN_CODE = '1006'
+        and c.ACTIVITY_ID = a.UUID
+        and c.create_time &gt;= curdate()))
+        and (b.Max_Amount is null or b.Max_Amount &gt;
+        (select sum(ifnull(c.Profit_Value, 0))
+        from TB_CLIENT_TAKE_IN_ACTIVITY c
+        where BUSIN_CODE = '1006'
+        and c.ACTIVITY_ID = a.UUID))
+        and (b.Per_Date_Max_Count is null or b.Per_Date_Max_Count &gt;
+        (select sum(ifnull(c.Product_Count, 0))
+        from TB_CLIENT_TAKE_IN_ACTIVITY c
+        where BUSIN_CODE = '1006'
+        and c.ACTIVITY_ID = a.UUID
+        and c.create_time &gt;= curdate()))
+        and (b.Max_Count is null or b.Max_Count &gt;
+        (select sum(ifnull(c.Product_Count, 0))
+        from TB_CLIENT_TAKE_IN_ACTIVITY c
+        where BUSIN_CODE = '1006'
+        and c.ACTIVITY_ID = a.UUID));
+    </select>
+</mapper>
