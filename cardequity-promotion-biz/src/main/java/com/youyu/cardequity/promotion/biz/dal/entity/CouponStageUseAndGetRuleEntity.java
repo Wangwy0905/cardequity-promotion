@@ -58,11 +58,6 @@ public class CouponStageUseAndGetRuleEntity extends com.youyu.common.entity.Base
     @Column(name = "COUPON_VALUE")
     private BigDecimal couponValue;
 
-    /**
-     * 折扣值:默认值等于ProductGroupCoupon中值，使用时覆盖ProductGroupCoupon中值起效，取值范围为ProductGroupCoupon中值，为1标识不打折；非折扣券填1，与优惠值应不能同时生效
-     */
-    @Column(name = "DISCOUNT_VALUE")
-    private BigDecimal discountValue;
 
     /**
      * 是否有效:

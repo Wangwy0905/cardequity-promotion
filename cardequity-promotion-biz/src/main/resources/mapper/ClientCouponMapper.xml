@@ -7,60 +7,70 @@
     <select id="findClientCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
         TB_CLIENT_COUPON a
-        WHERE ifnull(a.Is_enable,'1')='1'
-        and a.client_Id=#{clientId,jdbcType=VARCHAR}
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
     </select>
     <select id="findClientCouponByCouponId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
         TB_CLIENT_COUPON a
-        WHERE ifnull(a.Is_enable,'1')='1'
-        and a.client_Id=#{clientId,jdbcType=VARCHAR}
-        and a.Coupon_Id=#{couponId,jdbcType=VARCHAR}
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        and a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
     </select>
     <select id="findClientCouponByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
         TB_CLIENT_COUPON a
-        WHERE ifnull(a.Is_enable,'1')='1'
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
         <if test="id != null and id !=''">
-        and a.uuid=#{id,jdbcType=VARCHAR}
+        and a.UUID=#{id,jdbcType=VARCHAR}
         </if>
         <if test="clientId != null and clientId !=''">
-        and a.client_Id=#{clientId,jdbcType=VARCHAR}
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
         </if>
         <if test="couponId != null and couponId!=''">
-        and a.Coupon_Id=#{couponId,jdbcType=VARCHAR}
+        and a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
         </if>
         <if test="stageId != null and stageId!=''">
-        and a.Stage_Id=#{stageId,jdbcType=VARCHAR}
+        and a.STAGE_ID=#{stageId,jdbcType=VARCHAR}
         </if>
     </select>
 
     <resultMap id="ClientCoupStatisticsQuotaDto" type="com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto">
         <result column="COUPON_ID" property="couponId" jdbcType="VARCHAR" />
         <result column="CLIENT_ID" property="clientId" jdbcType="VARCHAR" />
-        <result column="CLIENT_AMOUNT" property="clientAmount" jdbcType="VARCHAR" />
-        <result column="CLIENT_COUNT" property="clientCount" jdbcType="VARCHAR" />
-        <result column="CLIENT_PERDATE_AMOUNT" property="clientPerDateAmount" jdbcType="VARCHAR" />
-        <result column="CLIENT_PERDATE_COUNT" property="clientPerDateCount" jdbcType="VARCHAR" />
+        <result column="CLIENT_AMOUNT" property="clientAmount" jdbcType="DECIMAL" />
+        <result column="CLIENT_COUNT" property="clientCount" jdbcType="DECIMAL" />
+        <result column="CLIENT_PERDATE_AMOUNT" property="clientPerDateAmount" jdbcType="DECIMAL" />
+        <result column="CLIENT_PERDATE_COUNT" property="clientPerDateCount" jdbcType="DECIMAL" />
     </resultMap>
     <select id="statisticsCouponByCommon" resultMap="ClientCoupStatisticsQuotaDto">
-        SELECT ifnull(sum(ifnull(a.COUPON_AMOUT, 0)), 0) as CLIENT_AMOUNT,count(a.UUID) as CLIENT_COUNT,
+        SELECT ifnull(sum(ifnull(a.COUPON_AMOUT, 0)), 0) as CLIENT_AMOUNT,
+        count(a.UUID) as CLIENT_COUNT,
         ifnull(sum(case when a.CREATE_TIME>CURDATE() then ifnull(a.COUPON_AMOUT, 0) else 0 end ),0) as CLIENT_PERDATE_AMOUNT,
         ifnull(sum(case when a.CREATE_TIME>CURDATE() then 1 else 0 end ),0) as CLIENT_PERDATE_COUNT
         FROM TB_CLIENT_COUPON a
-        WHERE ifnull(a.Is_enable, '1') = '1'
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
         <if test="id != null and id !=''">
-            and a.uuid=#{id,jdbcType=VARCHAR}
+            and a.UUID=#{id,jdbcType=VARCHAR}
         </if>
         <if test="clientId != null and clientId !=''">
-            and a.client_Id=#{clientId,jdbcType=VARCHAR}
+            and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
         </if>
         <if test="couponId != null and couponId !=''">
-            and a.Coupon_Id=#{couponId,jdbcType=VARCHAR}
+            and a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
         </if>
         <if test="stageId != null and stageId !=''">
-            and a.Stage_Id=#{stageId,jdbcType=VARCHAR}
+            and a.STAGE_ID=#{stageId,jdbcType=VARCHAR}
         </if>
+    </select>
+    <select id="findClientValidCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
     </select>
 
 

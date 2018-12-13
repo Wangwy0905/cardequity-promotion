@@ -52,6 +52,9 @@ public class ClientCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "备注:")
     private String remark;
 
+    @ApiModelProperty(value = "使用日")
+    private LocalDate BusinDate;
+
     @Override
     public String getId() {
         return uuid;

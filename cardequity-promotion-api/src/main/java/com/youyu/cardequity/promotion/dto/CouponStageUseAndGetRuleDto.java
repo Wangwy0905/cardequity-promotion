@@ -44,9 +44,6 @@ public class CouponStageUseAndGetRuleDto implements IBaseDto<String>{
     @ApiModelProperty(value = "优惠值:默认值等于ProductGroupCoupon中值，使用时覆盖ProductGroupCoupon中值起效，取值范围为ProductGroupCoupon中值")
     private BigDecimal couponValue;
 
-    @ApiModelProperty(value = "折扣值:默认值等于ProductGroupCoupon中值，使用时覆盖ProductGroupCoupon中值起效，取值范围为ProductGroupCoupon中值，为1标识不打折；非折扣券填1，与优惠值应不能同时生效")
-    private BigDecimal discountValue;
-
     @ApiModelProperty(value = "产生者:")
     private String createAuthor;
 

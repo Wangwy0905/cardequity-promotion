@@ -50,7 +50,7 @@ public class ApiTest {
         req.setClinetId("xuch");
         req.setCouponId("2");
         req.setStageId("24");
-        Result<ObtainRspDto> obtainRspDtoResult = clientCouponController.ObtainCoupon(req);
+        Result<ObtainRspDto> obtainRspDtoResult = clientCouponController.obtainCoupon(req);
         System.out.println(obtainRspDtoResult.data.getSuccess());
 
     }

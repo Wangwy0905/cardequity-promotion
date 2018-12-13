@@ -24,6 +24,8 @@ import java.util.List;
  *
  * @author 技术平台
  * @date 2018-12-07
+ * 开发日志
+ * V1.0-V1 1004244-徐长焕-20181207 新建代码，findEnableGetCoupon：获取客户可领取的券
  */
 @Service
 public class ProductCouponServiceImpl extends AbstractService<String, ProductCouponDto, ProductCouponEntity, ProductCouponMapper> implements ProductCouponService {
@@ -37,6 +39,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      * 1004259-徐长焕-20181210 新增
      * 功能：查询指定商品可领取的优惠券
      * @return
+     * 开发日志
+     * 1004244-徐长焕-20181207 新建
      */
     public List<CouponDefineRsp> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq) {
 
@@ -54,7 +58,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 stageList=new ArrayList<>(0);
             }
 
-            List<ShortCouponDetailDto> shortStageList= productCouponMapper.findClinetFreqForbidCouponDetailListByIds(qryProfitCommonReq.getClinetId(),item.getId());
+            List<ShortCouponDetailDto> shortStageList= productCouponMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClinetId(),item.getId(),"");
             //做保护，后面直接通过素组长度判断
             if (shortStageList==null){
                 shortStageList=new ArrayList<>(0);

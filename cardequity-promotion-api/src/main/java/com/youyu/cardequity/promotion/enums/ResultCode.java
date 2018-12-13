@@ -31,7 +31,7 @@ public enum ResultCode implements CardequityIBaseResultCode {
     COUPON_NOT_ALLOW_CLIENTTYPE("0002", "该客户类型不能使用此券"),
     COUPON_NOT_ALLOW_PRODUCT("0003", "该商品不能使用此券"),
     COUPON_NOT_ALLOW_ENTRUSTWAY("0004", "该渠道不能使用此券"),
-    COUPON_NOT_ALLOW_DATE("0005", "该期间不能领取该优惠券"),
+    COUPON_NOT_ALLOW_DATE("0005", "该期间不能领取或使用该优惠券"),
     COUPON_FAIL_PERACCANDDATEQUOTA("0006", "超过该优惠券每人每日可领取优惠金额"),
     COUPON_FAIL_PERACCQUOTA("0007", "超过该优惠券每人可领取优惠金额"),
     COUPON_FAIL_PERDATEQUOTA("0008", "超过该优惠券每日可领取优惠金额"),

@@ -25,7 +25,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 返回已领取的券
      * @Param clientId:指定客户号，必填
      */
-    List<ClientCouponDto>  FindClientCoupon(String clientId);
+    List<ClientCouponDto>  findClientCoupon(String clientId);
 
     /**
      * 领取优惠券
@@ -33,7 +33,9 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 是否领取成功
      * @Param req:有参数clientId-客户号（必填），couponId-领取的券Id（必填）
      */
-    ObtainRspDto ObtainCoupon(ClientObtainCouponReq req);
+    ObtainRspDto obtainCoupon(ClientObtainCouponReq req);
+
+    List<ClientCouponDto> findEnableUseCoupon(ClientObtainCouponReq req);
 }
 
 

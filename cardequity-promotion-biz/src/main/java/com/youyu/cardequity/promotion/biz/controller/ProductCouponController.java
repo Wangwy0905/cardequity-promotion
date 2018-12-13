@@ -29,51 +29,6 @@ public class ProductCouponController implements ProductCouponApi {
     @Autowired
     private ProductCouponService productCouponService;
 
-    @Override
-    public Result<ProductCouponDto> get(@PathVariable(name = "id") String id) {
-        ProductCouponDto dto = productCouponService.selectByPrimaryKey(id);
-        if (dto == null) {
-            return Result.fail(NO_DATA_FOUND);
-        }
-        return Result.ok(dto);
-    }
-
-    @Override
-    public Result delete(@PathVariable(name = "id") String id) {
-        int count = productCouponService.deleteByPrimaryKey(id);
-        if (count <= 0) {
-            return Result.fail(NO_DATA_FOUND);
-
-        }
-        return Result.ok();
-    }
-
-    @Override
-    public Result<ProductCouponDto> save(@RequestBody ProductCouponDto dto) {
-        int count = productCouponService.insertSelective(dto);
-        if (count <= 0) {
-            return Result.fail(NO_DATA_FOUND);
-
-        }
-        return Result.ok(dto);
-    }
-
-    @Override
-    public Result<ProductCouponDto> update(@RequestBody ProductCouponDto dto) {
-        int count = productCouponService.updateByPrimaryKeySelective(dto);
-        if (count <= 0) {
-            return Result.fail(NO_DATA_FOUND);
-
-        }
-        return Result.ok(dto);
-    }
-
-    @Override
-    public Result<List<ProductCouponDto>> findAll() {
-        //默认不实现 findAll
-        //Result.ok(productCouponService.selectAll());
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * 获取可以领取的优惠券

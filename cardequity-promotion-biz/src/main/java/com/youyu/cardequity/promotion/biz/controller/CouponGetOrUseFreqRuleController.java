@@ -21,7 +21,7 @@ import static com.youyu.common.enums.BaseResultCode.NO_DATA_FOUND;
  * @date 2018-12-07
  */
 @RestController
-public class CouponGetOrUseFreqRuleApi implements CouponGetOrUseFreqRuleApi {
+public class CouponGetOrUseFreqRuleController implements CouponGetOrUseFreqRuleApi {
 
     @Autowired
     private com.youyu.cardequity.promotion.biz.service.CouponGetOrUseFreqRuleService CouponGetOrUseFreqRuleService;

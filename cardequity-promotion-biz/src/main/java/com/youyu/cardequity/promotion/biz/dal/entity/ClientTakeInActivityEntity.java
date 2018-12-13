@@ -80,7 +80,7 @@ public class ClientTakeInActivityEntity extends com.youyu.common.entity.BaseEnti
      * 参与状态:0-参与中 1-使用中 2-已使用
      */
     @Column(name = "STATUS")
-    private BigDecimal status;
+    private String status;
 
     /**
      * 备注:

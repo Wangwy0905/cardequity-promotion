@@ -30,51 +30,6 @@ public class ActivityProfitController implements ActivityProfitApi {
     @Autowired
     private ActivityProfitService activityProfitService;
 
-    @Override
-    public Result<ActivityProfitDto> get(@PathVariable(name = "id") String id) {
-        ActivityProfitDto dto = activityProfitService.selectByPrimaryKey(id);
-        if (dto == null) {
-            return Result.fail(NO_DATA_FOUND);
-        }
-        return Result.ok(dto);
-    }
-
-    @Override
-    public Result delete(@PathVariable(name = "id") String id) {
-        int count = activityProfitService.deleteByPrimaryKey(id);
-        if (count <= 0) {
-            return Result.fail(NO_DATA_FOUND);
-
-        }
-        return Result.ok();
-    }
-
-    @Override
-    public Result<ActivityProfitDto> save(@RequestBody ActivityProfitDto dto) {
-        int count = activityProfitService.insertSelective(dto);
-        if (count <= 0) {
-            return Result.fail(NO_DATA_FOUND);
-
-        }
-        return Result.ok(dto);
-    }
-
-    @Override
-    public Result<ActivityProfitDto> update(@RequestBody ActivityProfitDto dto) {
-        int count = activityProfitService.updateByPrimaryKeySelective(dto);
-        if (count <= 0) {
-            return Result.fail(NO_DATA_FOUND);
-
-        }
-        return Result.ok(dto);
-    }
-
-    @Override
-    public Result<List<ActivityProfitDto>> findAll() {
-        //默认不实现 findAll
-        //Result.ok(tbActivityProfitService.selectAll());
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public Result<List<ActivityDefineRsp>> findEnableGetActivity(QryProfitCommonReq req) {

@@ -25,6 +25,8 @@ import java.util.List;
  *
  * @author 技术平台
  * @date 2018-12-07
+ * 开发日志
+ * V1.0-V1 1004244-徐长焕-20181207 新建，实现可参与活动列表
  */
 @Service
 public class ActivityProfitServiceImpl extends AbstractService<String, ActivityProfitDto, ActivityProfitEntity, ActivityProfitMapper> implements ActivityProfitService {
@@ -35,25 +37,41 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Autowired
     private ActivityStageCouponMapper activityStageCouponMapper;
 
+    /**
+     * 获取可参与的活动列表
+     * @param req
+     * @return
+     * 开发日志
+     * 1004244-徐长焕-20181207 新建
+     */
     @Override
     public List<ActivityDefineRsp> findEnableGetActivity(QryProfitCommonReq req) {
-        String isMemberFlag="0";
+
+        List<ActivityDefineRsp> rspList=new ArrayList<ActivityDefineRsp>();
+
         //获取普通活动列表
         List<ActivityProfitEntity> activityList=activityProfitMapper.findEnableGetCommonActivity(req.getProductId(),req.getGroupId(),req.getEntrustWay());
 
-        List<ActivityDefineRsp> rspList=new ArrayList<ActivityDefineRsp>();
         //将其使用门槛阶梯与活动主信息组装后返回
-        rspList.addAll(combinationActivity(activityList,isMemberFlag));
+        rspList.addAll(combinationActivity(activityList,false));
+
         //获取会员活动列表
         List<ActivityProfitEntity> activityForMemberList=activityProfitMapper.findEnableGetMemberActivity(req.getProductId(),req.getGroupId(),req.getEntrustWay(),req.getClinetType());
-        isMemberFlag="1";
         //将会员活动使用门槛阶梯与活动主信息组装后返回
-        rspList.addAll(combinationActivity(activityForMemberList,isMemberFlag));
+        rspList.addAll(combinationActivity(activityForMemberList,true));
 
         return rspList;
     }
 
-    public List<ActivityDefineRsp> combinationActivity(List<ActivityProfitEntity> activityList,String isMemberFlag) {
+    /**
+     * 组装活动信息（活动主信息+阶梯信息)
+     * @param activityList
+     * @param isMember
+     * @return
+     * 开发日志
+     * 1004244-徐长焕-20181207 新建
+     */
+    public List<ActivityDefineRsp> combinationActivity(List<ActivityProfitEntity> activityList,boolean isMember) {
 
         List<ActivityDefineRsp> rspList=new ArrayList<ActivityDefineRsp>();
         //循环获取其阶梯信息
@@ -62,7 +80,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             ActivityDefineRsp rsp=new ActivityDefineRsp();
             BeanUtils.copyProperties(item, rsp);
 
-            rsp.setIsAboutMember(isMemberFlag);
+            rsp.setIsAboutMember(isMember?"1":"0");
 
             //获取指定活动的使用门槛阶梯
             List<ActivityStageCouponEntity> stageList=activityStageCouponMapper.findActivityProfitDetail(item.getId());

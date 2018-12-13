@@ -78,6 +78,13 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
     private String remark;
 
     /**
+     * 使用日期
+     */
+    @Column(name = "BUSIN_DATE")
+    private LocalDate BusinDate;
+
+
+    /**
      * 是否有效:
      */
     @Column(name = "IS_ENABLE")

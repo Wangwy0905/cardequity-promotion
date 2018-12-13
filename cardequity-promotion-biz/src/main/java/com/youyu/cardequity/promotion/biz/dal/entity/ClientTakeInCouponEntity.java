@@ -74,7 +74,7 @@ public class ClientTakeInCouponEntity extends com.youyu.common.entity.BaseEntity
      * 券状态:0-正常 1-使用中 2-已使用
      */
     @Column(name = "STATUS")
-    private BigDecimal status;
+    private String status;
 
     /**
      * 备注:

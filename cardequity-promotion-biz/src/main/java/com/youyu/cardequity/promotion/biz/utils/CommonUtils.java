@@ -60,7 +60,7 @@ public class CommonUtils {
     public static int isQuotaValueNeedValidFlag(BigDecimal value) {
         int validflag = 2;//0-验证不通过，1-验证通过，2-需要继续验证
 
-        //额度有效数值为[0,999999999)
+        //额度有效数值为[0,999999999),1.达到或超过上界标识不控制；2.没设置值保护为不控制
         if (value == null ||
                 value.compareTo(CommonConstant.IGNOREVALUE) >= 0) {
 

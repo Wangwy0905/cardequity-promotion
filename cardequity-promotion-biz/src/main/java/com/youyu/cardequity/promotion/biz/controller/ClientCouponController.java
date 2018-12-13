@@ -31,14 +31,19 @@ public class ClientCouponController implements ClientCouponApi {
 
 
     @Override
-    public Result<List<ClientCouponDto>> FindClientCoupon(String clientId) {
-        return  Result.ok(clientCouponService.FindClientCoupon(clientId));
+    public Result<List<ClientCouponDto>> findClientCoupon(String clientId) {
+        return  Result.ok(clientCouponService.findClientCoupon(clientId));
     }
 
     @Override
-    public Result<ObtainRspDto> ObtainCoupon(ClientObtainCouponReq req) {
+    public Result<ObtainRspDto> obtainCoupon(ClientObtainCouponReq req) {
 
-        return Result.ok(clientCouponService.ObtainCoupon(req));
+        return Result.ok(clientCouponService.obtainCoupon(req));
+    }
+
+    @Override
+    public Result<List<ClientCouponDto>> findEnableUseCoupon(ClientObtainCouponReq req) {
+        return Result.ok(clientCouponService.findEnableUseCoupon(req));
     }
 
 

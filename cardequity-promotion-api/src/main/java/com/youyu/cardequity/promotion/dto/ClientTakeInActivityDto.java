@@ -52,7 +52,7 @@ public class ClientTakeInActivityDto implements IBaseDto<String>{
     private String businCode;
 
     @ApiModelProperty(value = "参与状态:0-参与中 1-使用中 2-已使用")
-    private BigDecimal status;
+    private String status;
 
     @ApiModelProperty(value = "备注:")
     private String remark;

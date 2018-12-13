@@ -12,6 +12,8 @@ import java.util.List;
  *
  * @author 技术平台
  * @date 2018-12-07
+ * 开发日志
+ * V1.0-V1 1004244-徐长焕-20181207 新建代码，获取客户可领取的券
  */
 public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
 
@@ -22,6 +24,8 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      * @param clientType 客户类型
      * @param entrustWay 委托方式
      * @return
+     * 开发日志
+     * 1004244-徐长焕-20181207 新建
      */
     List<ProductCouponEntity> findEnableGetCouponListByCommon(@Param("productId") String productId,
                                                               @Param("groupId") String groupId,
@@ -33,16 +37,35 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      * @param couponId 优惠券id
      * @param clientId 客户编号
      * @return
+     * 开发日志
+     * 1004244-徐长焕-20181207 新建
      */
-    List<ShortCouponDetailDto> findClinetFreqForbidCouponDetailListByIds(@Param("clientId") String clientId,
-                                                                         @Param("couponId") String couponId);
+    List<ShortCouponDetailDto> findClinetFreqForbidCouponDetailListById(@Param("clientId") String clientId,
+                                                                         @Param("couponId") String couponId,
+                                                                        @Param("stageId") String stageId);
 
     /**
      * 根据指定券，获取到券的基本信息
      * @param couponId 优惠券id
      * @return
+     * 开发日志
+     * 1004244-徐长焕-20181207 新建
      */
     ProductCouponEntity findProductCouponById(@Param("couponId") String couponId);
+
+
+    /**
+     * 根据指定券，获取到不满足使用频率规则的券及其阶梯
+     * @param couponId 优惠券id
+     * @param clientId 客户编号
+     * @return
+     * 开发日志
+     * 1004244-徐长焕-20181207 新建
+     */
+    List<ShortCouponDetailDto> findClinetFreqForbidUseCouponDetailListById(@Param("clientId") String clientId,
+                                                                         @Param("couponId") String couponId,
+                                                                           @Param("stageId") String stageId);
+
 
 
 }
