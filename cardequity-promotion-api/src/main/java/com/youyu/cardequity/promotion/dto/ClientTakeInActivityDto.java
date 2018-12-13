@@ -31,7 +31,7 @@ public class ClientTakeInActivityDto implements IBaseDto<String>{
     private String orderId;
 
     @ApiModelProperty(value = "客户号:")
-    private String clintId;
+    private String clientId;
 
     @ApiModelProperty(value = "商品编号:")
     private String productId;

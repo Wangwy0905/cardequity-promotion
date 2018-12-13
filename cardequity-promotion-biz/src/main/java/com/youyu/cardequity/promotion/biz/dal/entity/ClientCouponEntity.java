@@ -32,8 +32,8 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
     /**
      * 客户号:
      */
-    @Column(name = "CLINT_ID")
-    private String clintId;
+    @Column(name = "CLIENT_ID")
+    private String clientId;
 
     /**
      * 委托方式:通过什么方式获取

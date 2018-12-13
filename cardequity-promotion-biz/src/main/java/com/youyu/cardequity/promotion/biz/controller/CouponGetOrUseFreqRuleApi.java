@@ -1,10 +1,9 @@
 package com.youyu.cardequity.promotion.biz.controller;
 
 
-import com.youyu.cardequity.promotion.api.CouponGetorUseFreqRuleApi;
+import com.youyu.cardequity.promotion.api.CouponGetOrUseFreqRuleApi;
 import com.youyu.common.api.Result;
-import com.youyu.cardequity.promotion.dto.CouponGetorUseFreqRuleDto;
-import com.youyu.cardequity.promotion.biz.service.CouponGetorUseFreqRuleService;
+import com.youyu.cardequity.promotion.dto.CouponGetoOrUseFreqRuleDto;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +21,14 @@ import static com.youyu.common.enums.BaseResultCode.NO_DATA_FOUND;
  * @date 2018-12-07
  */
 @RestController
-public class CouponGetorUseFreqRuleController implements CouponGetorUseFreqRuleApi {
+public class CouponGetOrUseFreqRuleApi implements CouponGetOrUseFreqRuleApi {
 
     @Autowired
-    private CouponGetorUseFreqRuleService tbCouponGetorUseFreqRuleService;
+    private com.youyu.cardequity.promotion.biz.service.CouponGetOrUseFreqRuleService CouponGetOrUseFreqRuleService;
 
     @Override
-    public Result<CouponGetorUseFreqRuleDto> get(@PathVariable(name = "id") String id) {
-        CouponGetorUseFreqRuleDto dto = tbCouponGetorUseFreqRuleService.selectByPrimaryKey(id);
+    public Result<CouponGetoOrUseFreqRuleDto> get(@PathVariable(name = "id") String id) {
+        CouponGetoOrUseFreqRuleDto dto = CouponGetOrUseFreqRuleService.selectByPrimaryKey(id);
         if (dto == null) {
             return Result.fail(NO_DATA_FOUND);
         }
@@ -38,7 +37,7 @@ public class CouponGetorUseFreqRuleController implements CouponGetorUseFreqRuleA
 
     @Override
     public Result delete(@PathVariable(name = "id") String id) {
-        int count = tbCouponGetorUseFreqRuleService.deleteByPrimaryKey(id);
+        int count = CouponGetOrUseFreqRuleService.deleteByPrimaryKey(id);
         if (count <= 0) {
             return Result.fail(NO_DATA_FOUND);
 
@@ -47,8 +46,8 @@ public class CouponGetorUseFreqRuleController implements CouponGetorUseFreqRuleA
     }
 
     @Override
-    public Result<CouponGetorUseFreqRuleDto> save(@RequestBody CouponGetorUseFreqRuleDto dto) {
-        int count = tbCouponGetorUseFreqRuleService.insertSelective(dto);
+    public Result<CouponGetoOrUseFreqRuleDto> save(@RequestBody CouponGetoOrUseFreqRuleDto dto) {
+        int count = CouponGetOrUseFreqRuleService.insertSelective(dto);
         if (count <= 0) {
             return Result.fail(NO_DATA_FOUND);
 
@@ -57,8 +56,8 @@ public class CouponGetorUseFreqRuleController implements CouponGetorUseFreqRuleA
     }
 
     @Override
-    public Result<CouponGetorUseFreqRuleDto> update(@RequestBody CouponGetorUseFreqRuleDto dto) {
-        int count = tbCouponGetorUseFreqRuleService.updateByPrimaryKeySelective(dto);
+    public Result<CouponGetoOrUseFreqRuleDto> update(@RequestBody CouponGetoOrUseFreqRuleDto dto) {
+        int count = CouponGetOrUseFreqRuleService.updateByPrimaryKeySelective(dto);
         if (count <= 0) {
             return Result.fail(NO_DATA_FOUND);
 
@@ -67,9 +66,9 @@ public class CouponGetorUseFreqRuleController implements CouponGetorUseFreqRuleA
     }
 
     @Override
-    public Result<List<CouponGetorUseFreqRuleDto>> findAll() {
+    public Result<List<CouponGetoOrUseFreqRuleDto>> findAll() {
         //默认不实现 findAll
-        //Result.ok(tbCouponGetorUseFreqRuleService.selectAll());
+        //Result.ok(CouponGetOrUseFreqRuleService.selectAll());
         throw new UnsupportedOperationException();
     }
 }

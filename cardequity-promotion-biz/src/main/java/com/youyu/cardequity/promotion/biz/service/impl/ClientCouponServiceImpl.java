@@ -16,6 +16,7 @@ import com.youyu.cardequity.promotion.dto.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.cardequity.promotion.enums.dict.OpCouponType;
+import com.youyu.cardequity.promotion.enums.dict.UseGeEndDateFlag;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
@@ -125,9 +126,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CouponStageUseAndGetRuleEntity couponStage = null;
         //获取领取的阶梯
         if (!CommonUtils.isEmptyorNull(req.getStageId())) {
-            couponStage = couponStageUseAndGetRuleMapper.findCouponStageById(req.getCouponId(),
-                    req.getStageId(),
-                    OpCouponType.USERULE.getDictValue());
+            couponStage = couponStageUseAndGetRuleMapper.findCouponStageById(req.getCouponId(), req.getStageId(), OpCouponType.USERULE.getDictValue());
             //如果找不到阶梯则传入参数有误
             if (couponStage == null) {
                 throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
@@ -153,9 +152,28 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         //5.增加客户已领优惠券
         ClientCouponEntity entity = new ClientCouponEntity();
-        entity.setClintId(req.getClinetId());
+        entity.setId(CommonUtils.getUUID());
+        entity.setClientId(req.getClinetId());
         entity.setCouponId(req.getCouponId());
         entity.setStageId(req.getStageId());
+
+        entity.setValidStartDate(LocalDate.now());
+
+        //默认有效时间1个月
+        LocalDate validEndDate=LocalDate.now().plusMonths(1);
+        //如果定义了持有时间，则需要从当前领取日期上加持有时间作为最后有效日
+        if (coupon.getValIdTerm()!=null && coupon.getValIdTerm().intValue()>0){
+            validEndDate=LocalDate.now().plusDays(coupon.getValIdTerm());
+        }
+
+        //如果算法是：有效结束日=min(优惠结束日,(实际领取日+期限))
+        if (coupon.getUseGeEndDateFlag().equals(UseGeEndDateFlag.YES)){
+            if (coupon.getAllowUseEndDate()!=null && validEndDate.isAfter(coupon.getAllowUseEndDate())){
+                validEndDate=coupon.getAllowUseEndDate();
+            }
+        }
+        entity.setValidEndDate(validEndDate);
+
         //优惠金额以阶段设置为准
         if (couponStage != null)
             entity.setCouponAmout(couponStage.getCouponValue());

@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModel;
  */
 @Data
 @ApiModel
-public class CouponGetorUseFreqRuleDto implements IBaseDto<String>{
+public class CouponGetoOrUseFreqRuleDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "编号:")
     private String uuid;

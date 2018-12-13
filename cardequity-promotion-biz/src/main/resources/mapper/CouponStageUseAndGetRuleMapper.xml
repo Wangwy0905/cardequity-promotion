@@ -14,13 +14,14 @@ where ifnull(a.OP_COUPON_TYPE,'1') = '1'
     select *
 from TB_COUPON_STAGE_USE_AND_GET_RULE a
 where IFNULL(a.IS_ENABLE, '1') ='1'
-    <if test="useFlag != null and useFlag=''">
+    <if test="useFlag != null and useFlag!=''">
     AND IFNULL(a.OP_COUPON_TYPE, '1') =#{useFlag,jdbcType=VARCHAR}
     </if>
-    <if test="couponId != null and couponId=''">
+    <if test="couponId != null and couponId!=''">
   and a.COUPON_ID =#{couponId,jdbcType=VARCHAR}
     </if>
   and a.UUID =#{stageId,jdbcType=VARCHAR}
+
 </select>
 
 

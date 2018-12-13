@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "TB_COUPON_GETOR_USE_FREQ_RULE")
-public class CouponGetorUseFreqRuleEntity extends com.youyu.common.entity.BaseEntity<String> {
+public class CouponGetOrUseFreqRuleEntity extends com.youyu.common.entity.BaseEntity<String> {
     /**
      * 编号:
      */

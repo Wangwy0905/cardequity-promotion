@@ -29,7 +29,7 @@ public class ClientCouponDto implements IBaseDto<String>{
     private String stageId;
 
     @ApiModelProperty(value = "客户号:")
-    private String clintId;
+    private String clientId;
 
     @ApiModelProperty(value = "委托方式:通过什么方式获取")
     private String entrustWay;

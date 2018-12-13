@@ -3,11 +3,23 @@ package com.youyu.cardequity.promotion.biz.utils;
 import com.youyu.cardequity.promotion.biz.constant.CommonConstant;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  * Created by caiyi on 2018/12/12.
  */
 public class CommonUtils {
+
+    /**
+     * 获取uuid
+     * @return
+     */
+    public static String getUUID() {
+        String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        return uuid;
+    }
+
+
     /**
      * 判断字符串是否为空或null
      *
@@ -50,7 +62,7 @@ public class CommonUtils {
 
         //额度有效数值为[0,999999999)
         if (value == null ||
-            value.compareTo(CommonConstant.IGNOREVALUE) >= 0) {
+                value.compareTo(CommonConstant.IGNOREVALUE) >= 0) {
 
             validflag = 1;
         } else if (value.compareTo(BigDecimal.ZERO) <= 0) {

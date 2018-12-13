@@ -2,7 +2,7 @@ package com.youyu.cardequity.promotion.api;
 
 
 import com.youyu.common.api.Result;
-import com.youyu.cardequity.promotion.dto.CouponGetorUseFreqRuleDto;
+import com.youyu.cardequity.promotion.dto.CouponGetoOrUseFreqRuleDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.ApiOperation;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 @FeignClient(name = "cardequity-promotion")
 @RequestMapping(path = "/tbCouponGetorUseFreqRule")
-public interface CouponGetorUseFreqRuleApi {
+public interface CouponGetOrUseFreqRuleApi {
 
     /**
      * select one
@@ -27,7 +27,7 @@ public interface CouponGetorUseFreqRuleApi {
      */
     @ApiOperation(value = "select one")
     @GetMapping("/{id}")
-    Result<CouponGetorUseFreqRuleDto> get(@PathVariable(name = "id") String id);
+    Result<CouponGetoOrUseFreqRuleDto> get(@PathVariable(name = "id") String id);
 
     /**
      * delete one
@@ -47,7 +47,7 @@ public interface CouponGetorUseFreqRuleApi {
      */
     @ApiOperation(value = "save one")
     @PostMapping("/")
-    Result<CouponGetorUseFreqRuleDto> save(@RequestBody CouponGetorUseFreqRuleDto dto);
+    Result<CouponGetoOrUseFreqRuleDto> save(@RequestBody CouponGetoOrUseFreqRuleDto dto);
 
 
     /**
@@ -58,7 +58,7 @@ public interface CouponGetorUseFreqRuleApi {
      */
     @ApiOperation(value = "update one")
     @PutMapping("/")
-    Result<CouponGetorUseFreqRuleDto> update(@RequestBody CouponGetorUseFreqRuleDto dto);
+    Result<CouponGetoOrUseFreqRuleDto> update(@RequestBody CouponGetoOrUseFreqRuleDto dto);
 
 
     /**
@@ -68,5 +68,5 @@ public interface CouponGetorUseFreqRuleApi {
      */
     @ApiOperation(value = "find all")
     @GetMapping(path = "/findAll")
-    Result<List<CouponGetorUseFreqRuleDto>> findAll();
+    Result<List<CouponGetoOrUseFreqRuleDto>> findAll();
 }

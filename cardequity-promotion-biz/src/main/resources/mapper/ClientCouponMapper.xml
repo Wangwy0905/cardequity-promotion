@@ -21,16 +21,16 @@
         SELECT * FROM
         TB_CLIENT_COUPON a
         WHERE ifnull(a.Is_enable,'1')='1'
-        <if test="id != null and id=''">
+        <if test="id != null and id !=''">
         and a.uuid=#{id,jdbcType=VARCHAR}
         </if>
-        <if test="clientId != null and clientId=''">
+        <if test="clientId != null and clientId !=''">
         and a.client_Id=#{clientId,jdbcType=VARCHAR}
         </if>
-        <if test="couponId != null and couponId=''">
+        <if test="couponId != null and couponId!=''">
         and a.Coupon_Id=#{couponId,jdbcType=VARCHAR}
         </if>
-        <if test="stageId != null and stageId=''">
+        <if test="stageId != null and stageId!=''">
         and a.Stage_Id=#{stageId,jdbcType=VARCHAR}
         </if>
     </select>
@@ -49,16 +49,16 @@
         ifnull(sum(case when a.CREATE_TIME>CURDATE() then 1 else 0 end ),0) as CLIENT_PERDATE_COUNT
         FROM TB_CLIENT_COUPON a
         WHERE ifnull(a.Is_enable, '1') = '1'
-        <if test="id != null and id=''">
+        <if test="id != null and id !=''">
             and a.uuid=#{id,jdbcType=VARCHAR}
         </if>
-        <if test="clientId != null and clientId=''">
+        <if test="clientId != null and clientId !=''">
             and a.client_Id=#{clientId,jdbcType=VARCHAR}
         </if>
-        <if test="couponId != null and couponId=''">
+        <if test="couponId != null and couponId !=''">
             and a.Coupon_Id=#{couponId,jdbcType=VARCHAR}
         </if>
-        <if test="stageId != null and stageId=''">
+        <if test="stageId != null and stageId !=''">
             and a.Stage_Id=#{stageId,jdbcType=VARCHAR}
         </if>
     </select>
