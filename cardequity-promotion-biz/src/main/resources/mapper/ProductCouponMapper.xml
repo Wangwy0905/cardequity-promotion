@@ -130,7 +130,6 @@ where ifnull(a.IS_ENABLE, '1') = '1'
     <if test="stageId!=null or stageId!=''">
     and a.STAGE_ID =  #{stageId,jdbcType=VARCHAR}
     </if>
-
     and (a.Person_Total_Num &lt;=
     (select count(d.UUID)
     from TB_CLIENT_COUPON d
@@ -138,40 +137,40 @@ where ifnull(a.IS_ENABLE, '1') = '1'
     and d.COUPON_ID = a.COUPON_ID
     and ifnull(d.STAGE_ID, '0') = ifnull(a.STAGE_ID, '0')
     and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}))
-    and (a.UNIT = '0' or a.ALLOW_COUNT &lt;= (select ifnull(count(d.UUID),0) #每天使用一次
+    and (a.UNIT = '0' or a.ALLOW_COUNT &lt;= (select ifnull(count(d.UUID),0)
     from TB_CLIENT_COUPON d
     where ifnull(d.IS_ENABLE, '1') = '1'
     and d.COUPON_ID = a.UUID
     and ifnull(d.STAGE_ID, '0') = ifnull(a.STAGE_ID, '0')
-    and d.CLINT_ID = '客户编号'
+    and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
     and d.STATUS in ('1', '2')
     and d.BUSIN_DATE &gt;= curdate()))
-    and (a.UNIT = '1' or a.ALLOW_COUNT &lt;= (select ifnull(count(d.UUID),0) #每周用一次
+    and (a.UNIT = '1' or a.ALLOW_COUNT &lt;= (select ifnull(count(d.UUID),0)
     from TB_CLIENT_COUPON d
     where ifnull(d.IS_ENABLE, '1') = '1'
     and d.COUPON_ID = a.UUID
     and ifnull(d.STAGE_ID, '0') = ifnull(a.STAGE_ID, '0')
-    and d.CLINT_ID = '客户编号'
+    and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
     and d.STATUS in ('1', '2')
     and d.BUSIN_DATE &gt;= date_sub(curdate(), INTERVAL WEEKDAY(curdate()) + 1 DAY)
     and d.BUSIN_DATE &lt;=
     date_sub(curdate(), INTERVAL WEEKDAY(curdate()) - 5 DAY)))
-    and (a.UNIT = '2' or a.ALLOW_COUNT &lt;= (select ifnull(count(d.UUID),0) #每月用一次
+    and (a.UNIT = '2' or a.ALLOW_COUNT &lt;= (select ifnull(count(d.UUID),0)
     from TB_CLIENT_COUPON d
     where ifnull(d.IS_ENABLE, '1') = '1'
     and d.COUPON_ID = a.UUID
     and ifnull(d.STAGE_ID, '0') = ifnull(a.STAGE_ID, '0')
-    and d.CLINT_ID = '客户编号'
+    and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
     and d.STATUS in ('1', '2')
     and d.BUSIN_DATE &gt;= concat(date_format(LAST_DAY(now()), '%Y-%m-'), '01')
     and d.BUSIN_DATE &lt;= LAST_DAY(now())
     ))
-    and (a.UNIT = '3' or a.ALLOW_COUNT &lt;= (select ifnull(count(d.UUID),0) #每年用一次
+    and (a.UNIT = '3' or a.ALLOW_COUNT &lt;= (select ifnull(count(d.UUID),0)
     from TB_CLIENT_COUPON d
     where ifnull(d.IS_ENABLE, '1') = '1'
     and d.COUPON_ID = a.UUID
     and ifnull(d.STAGE_ID, '0') = ifnull(a.STAGE_ID, '0')
-    and d.CLINT_ID = '客户编号'
+    and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
     and d.STATUS in ('1', '2')
     and d.BUSIN_DATE &gt;= DATE_SUB(CURDATE(), INTERVAL dayofyear(now()) - 1 DAY)
     and d.BUSIN_DATE &lt;= concat(YEAR(now()), '-12-31')
