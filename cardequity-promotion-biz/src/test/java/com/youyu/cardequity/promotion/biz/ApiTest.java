@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz;
 import com.youyu.cardequity.promotion.biz.controller.ActivityProfitController;
 import com.youyu.cardequity.promotion.biz.controller.ClientCouponController;
 import com.youyu.cardequity.promotion.biz.controller.ProductCouponController;
+import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.ObtainRspDto;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
@@ -48,10 +49,13 @@ public class ApiTest {
 
         ClientObtainCouponReq req=new ClientObtainCouponReq();
         req.setClinetId("xuch");
-        req.setCouponId("2");
-        req.setStageId("24");
-        Result<ObtainRspDto> obtainRspDtoResult = clientCouponController.obtainCoupon(req);
-        System.out.println(obtainRspDtoResult.data.getSuccess());
+        //req.setCouponId("2");
+        //req.setStageId("24");
+        //Result<ObtainRspDto> obtainRspDtoResult = clientCouponController.obtainCoupon(req);
+        //System.out.println(obtainRspDtoResult.data.getSuccess());
+
+        Result<List<ClientCouponDto>> rsp=clientCouponController.findEnableUseCoupon(req);
+        System.out.println(rsp.data.size());
 
     }
 }

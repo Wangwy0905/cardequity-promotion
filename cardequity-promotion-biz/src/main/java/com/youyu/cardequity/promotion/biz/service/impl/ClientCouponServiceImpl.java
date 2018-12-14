@@ -1,9 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
-import com.youyu.cardequity.promotion.biz.dal.dao.CouponQuotaRuleMapper;
-import com.youyu.cardequity.promotion.biz.dal.dao.CouponStageUseAndGetRuleMapper;
-import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
+import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageUseAndGetRuleEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
@@ -27,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
-import com.youyu.cardequity.promotion.biz.dal.dao.ClientCouponMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -65,6 +62,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
     @Autowired
     private CouponQuotaRuleMapper couponQuotaRuleMapper;
+
+    private ProfitConflictOrReUseRefMapper profitConflictOrReUseRefMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientCouponServiceImpl.class);
 
@@ -250,7 +249,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             //和指定活動是否存在冲突
             if (!CommonUtils.isEmptyorNull(req.getActivityId())){
                 //获取冲突关联表
-
+                profitConflictOrReUseRefMapper.findById();
             }
 
             rspdto = new ClientCouponDto();
