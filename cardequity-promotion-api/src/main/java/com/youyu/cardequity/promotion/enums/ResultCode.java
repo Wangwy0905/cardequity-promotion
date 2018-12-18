@@ -27,7 +27,7 @@ public enum ResultCode implements CardequityIBaseResultCode {
     },
 
     NET_ERROR("0000", "网络超时请稍后重试"),
-    COUPON_NOT_EXISTS("0001", "该优惠券信息不存在"),
+    PARAM_ERROR("0001", "参数校验错误"),
     COUPON_NOT_ALLOW_CLIENTTYPE("0002", "该客户类型不能使用此券"),
     COUPON_NOT_ALLOW_PRODUCT("0003", "该商品不能使用此券"),
     COUPON_NOT_ALLOW_ENTRUSTWAY("0004", "该渠道不能使用此券"),
@@ -37,8 +37,10 @@ public enum ResultCode implements CardequityIBaseResultCode {
     COUPON_FAIL_PERDATEQUOTA("0008", "超过该优惠券每日可领取优惠金额"),
     COUPON_FAIL_QUOTA("0009", "超过该优惠券所有客户可领取优惠总金额"),
     COUPON_FAIL_COUNT_QUOTA("0010", "超过该优惠券所有客户可领取优惠总数量"),
-    COUPON_FAIL_GET_FREQ("0011", "超过该优惠券领取频率"),
+    COUPON_FAIL_OP_FREQ("0011", "超过该优惠券领取或使用频率"),
     COUPON_FAIL_OBTAIN("0012", "优惠券领取失败"),
+    ACTIVE_NOT_EXIST("0013", "活动不存在"),
+    COUPON_NOT_EXISTS("0014", "该优惠券信息不存在"),
     ;
 
     /**

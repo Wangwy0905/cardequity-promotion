@@ -89,4 +89,10 @@
         where BUSIN_CODE = '1006'
         and c.ACTIVITY_ID = a.UUID));
     </select>
+    <select id="findById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+         select *
+        from TB_ACTIVITY_PROFIT a
+        WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+        AND a.Uuid= #{id,jdbcType=VARCHAR}
+    </select>
 </mapper>

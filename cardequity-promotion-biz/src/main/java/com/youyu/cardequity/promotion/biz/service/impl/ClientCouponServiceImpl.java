@@ -2,38 +2,32 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
-import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
-import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageUseAndGetRuleEntity;
-import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
+import com.youyu.cardequity.promotion.biz.dal.entity.*;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
-import com.youyu.cardequity.promotion.dto.ObtainRspDto;
-import com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto;
-import com.youyu.cardequity.promotion.dto.ShortCouponDetailDto;
+import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.enums.CommonDict;
-import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
-import com.youyu.cardequity.promotion.enums.dict.OpCouponType;
-import com.youyu.cardequity.promotion.enums.dict.UseGeEndDateFlag;
+import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
+import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
-import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 
@@ -44,9 +38,10 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.*;
  * @author 技术平台
  * @date 2018-12-07
  * 开发日志
- * V1.2-V1 1004246-徐长焕-20181213 修改代码，获取可使用优惠券功能开发
- * V1.1-V1 1004258-徐长焕-20181213 修改代码，获取已领取优惠券功能开发
- * V1.0-V1 1004247-徐长焕-20181207 新增代码，领取优惠券功能开发
+ * V1.3-V1 1004259-徐长焕-20181217 修改，实现按策略获取可用券的组合
+ * V1.2-V1 1004246-徐长焕-20181213 修改，获取可使用优惠券功能开发
+ * V1.1-V1 1004258-徐长焕-20181213 修改，获取已领取优惠券功能开发
+ * V1.0-V1 1004247-徐长焕-20181207 新增，领取优惠券功能开发
  */
 @Service
 public class ClientCouponServiceImpl extends AbstractService<String, ClientCouponDto, ClientCouponEntity, ClientCouponMapper> implements ClientCouponService {
@@ -63,6 +58,10 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     @Autowired
     private CouponQuotaRuleMapper couponQuotaRuleMapper;
 
+    @Autowired
+    private ActivityProfitMapper activityProfitMapper;
+
+    @Autowired
     private ProfitConflictOrReUseRefMapper profitConflictOrReUseRefMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientCouponServiceImpl.class);
@@ -92,32 +91,36 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ObtainRspDto obtainCoupon(ClientObtainCouponReq req) {
-        ObtainRspDto dto = new ObtainRspDto();
+    public CommonBoolDto<ClientCouponDto> obtainCoupon(ClientObtainCouponReq req) {
+        CommonBoolDto<ClientCouponDto> dto = new CommonBoolDto<ClientCouponDto>();
         dto.setSuccess(true);
-        //1.根据券id获取优惠券信息
-        ProductCouponEntity coupon = productCouponMapper.findProductCouponById(req.getCouponId());
-        if (coupon == null) {
-            throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+
+        ClientCouponEntity entity = new ClientCouponEntity();
+        BeanUtils.copyProperties(req, entity);
+
+        GetUseEnableCouponReq checkreq = new GetUseEnableCouponReq();
+        BeanUtils.copyProperties(req, checkreq);
+        if (!CommonUtils.isEmptyorNull(req.getProductId())) {
+            OrderProductDetailDto orderProductDetailDto = new OrderProductDetailDto();
+            orderProductDetailDto.setProductId(req.getProductId());
+            orderProductDetailDto.setGroupId(req.getGroupId());
+            List<OrderProductDetailDto> productLsit = new ArrayList<OrderProductDetailDto>(1);
+            productLsit.add(orderProductDetailDto);
+            checkreq.setProductList(productLsit);
         }
 
-        //2.校验券基本信息是否允许领取：
-        dto = checkCouponGetValidDate(coupon);
-        //校验不通过直接返回
-        if (!dto.getSuccess()) {
+        //1.校验券基本信息是否允许领取：
+        CommonBoolDto<ProductCouponEntity> fristdto = checkCouponFrist(entity, checkreq, false);
+        if (!fristdto.getSuccess()) {
+            BeanUtils.copyProperties(fristdto, dto);
             return dto;
         }
+        ProductCouponEntity coupon = fristdto.getData();
 
-        dto = checkCouponBase(coupon, req);
-        //校验不通过直接返回
-        if (!dto.getSuccess()) {
-            return dto;
-        }
-
-        //3.校验券的额度限制是否满足
+        //2.校验券的额度限制是否满足
         //检查指定客户的额度信息
         CouponQuotaRuleEntity quota = couponQuotaRuleMapper.findCouponQuotaRuleById(req.getCouponId());
-        dto = checkCouponPersonQuota(quota, req.getClinetId());
+        dto = checkCouponPersonQuota(quota, req.getClientId());
         //校验不通过直接返回
         if (!dto.getSuccess()) {
             return dto;
@@ -130,7 +133,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             return dto;
         }
 
-        //4.校验券的领取频率是否满足
         //获取领取的阶梯
         CouponStageUseAndGetRuleEntity couponStage = null;
         if (!CommonUtils.isEmptyorNull(req.getStageId())) {
@@ -141,22 +143,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             }
         }
 
-        dto = checkCouponGetFreqLimit(req.getClinetId(), req.getCouponId(), req.getStageId());
-        //校验不通过直接返回
-        if (!dto.getSuccess()) {
-            return dto;
-        }
-
-
-        //5.增加客户已领优惠券
-        ClientCouponEntity entity = new ClientCouponEntity();
+        //3.增加客户已领优惠券
         entity.setId(CommonUtils.getUUID());
-        entity.setClientId(req.getClinetId());
-        entity.setCouponId(req.getCouponId());
-        entity.setStageId(req.getStageId());
-
         entity.setValidStartDate(LocalDate.now());
-
         //默认有效时间1个月
         LocalDate validEndDate = LocalDate.now().plusMonths(1);
         //如果定义了持有时间，则需要从当前领取日期上加持有时间作为最后有效日
@@ -173,11 +162,16 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         entity.setValidEndDate(validEndDate);
 
         //优惠金额以阶段设置为准
-        if (couponStage != null)
+        if (couponStage != null) {
             entity.setCouponAmout(couponStage.getCouponValue());
-        else
+            entity.setCouponShortDesc(couponStage.getCouponShortDesc());
+        } else {
             entity.setCouponAmout(coupon.getProfitValue());
-        entity.setEntrustWay(req.getEntrustWay());
+            entity.setCouponShortDesc(coupon.getCouponShortDesc());
+        }
+        entity.setCouponStrategyType(coupon.getCouponStrategyType());
+        entity.setCouponType(coupon.getCouponType());
+        entity.setCouponLable(coupon.getCouponLable());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
         entity.setStatus(CouponStatus.NORMAL.getDictValue());
         entity.setJoinOrderId(req.getActivityId());
@@ -194,73 +188,445 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
 
     /**
-     * 获取可领取的优惠券
+     * 获取可用的优惠券:
+     * 1.获取满足基本条件、使用频率、等条件
+     * 2.没有校验使用门槛，使用门槛是需要和购物车选择商品列表进行计算
      *
      * @param req
      * @return 开发日志
      * 1004246-徐长焕-20181213 新增
      */
     @Override
-    public List<ClientCouponDto> findEnableUseCoupon(ClientObtainCouponReq req) {
+    public List<ClientCouponDto> findEnableUseCoupon(GetUseEnableCouponReq req) {
         Map<String, ProductCouponEntity> couponMap = new HashedMap();
 
         if (CommonUtils.isEmptyorNull(req.getClinetId())) {
             throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
         }
-        //获取已领取的有效优惠券
+        //获取已领取的有效优惠券：排除过期，已使用、使用中的券
         List<ClientCouponEntity> clientCouponList = clientCouponMapper.findClientValidCoupon(req.getClinetId());
         //返回的结果，数组长度最大不超过有效的优惠券数量
         List<ClientCouponDto> rsp = new ArrayList<>(clientCouponList.size());
         ClientCouponDto rspdto = null;
 
         for (ClientCouponEntity item : clientCouponList) {
-
-            //从缓存中读取优惠券基本信息
-            ProductCouponEntity coupon = couponMap.get(item.getCouponId());
-            if (coupon == null) {
-                //根据券id获取优惠券信息
-                coupon = productCouponMapper.findProductCouponById(item.getCouponId());
-                if (coupon == null) {
-                    throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
-                }
-                couponMap.put(coupon.getUuid(), coupon);
-            }
-
-            //校验使用时间窗口
-            ObtainRspDto dto = checkCouponUseValidDate(coupon);
-            //校验不通过继续
+            CommonBoolDto dto = checkCouponFrist(item, req, true);
             if (!dto.getSuccess()) {
                 continue;
             }
 
-            //校验基本信息是否符合使用条件
-            dto = checkCouponBase(coupon, req);
-            //校验不通过继续
-            if (!dto.getSuccess()) {
-                continue;
-            }
-
-            //校验使用频率是否符合
-            dto = checkCouponUseFreqLimit(req.getClinetId(), req.getCouponId(), req.getStageId());
-            if (!dto.getSuccess()) {
-                continue;
-            }
-
-            //和指定活動是否存在冲突
-            if (!CommonUtils.isEmptyorNull(req.getActivityId())){
-                //获取冲突关联表
-                profitConflictOrReUseRefMapper.findById();
-            }
+            //校验阶梯使用门槛：根据买入金额和数量，是在使用时进行计算
 
             rspdto = new ClientCouponDto();
             BeanUtils.copyProperties(item, rspdto);
             rsp.add(rspdto);
         }
+        //获取最优方案算法
 
         //清除缓存
         couponMap.clear();
+        couponMap = null;
 
         return rsp;
+    }
+
+
+    /**
+     * 按策略获取可用券的组合:不含运费券
+     * 1.根据订单或待下单商品列表校验了使用门槛
+     * 2.根据冲突关系按策略计算能使用的券
+     * 3.计算出每张券的适配使用的商品列表
+     *
+     * @param req 本次订单详情
+     * @return 推荐使用券组合及应用对应商品详情
+     */
+    @Override
+    public List<UseCouponRsp> combCouponRefProductDeal(GetUseEnableCouponReq req) {
+        //定义返回结果
+        List<UseCouponRsp> rsp = new ArrayList<>();
+
+        CommonBoolDto dto = new CommonBoolDto();
+        dto.setSuccess(true);
+
+        //获取已领取的有效优惠券：排除过期，已使用、使用中的券
+        List<ClientCouponEntity> enableCouponList = clientCouponMapper.findClientValidCoupon(req.getClinetId());
+        List<OrderProductDetailDto> productList = req.getProductList();
+
+        //空订单或者没有可用优惠券直接返回
+        if (productList == null ||
+                enableCouponList == null ||
+                productList.size() <= 0 ||
+                enableCouponList.size() <= 0) {
+            return rsp;
+        }
+
+        //券数据缓存
+        Map<String, ProductCouponEntity> couponMap = new HashedMap();
+
+        //从缓存中读取优惠券基本信息
+        ProductCouponEntity coupon = null;
+
+        //先按优惠金额排序，因为不优惠券中不会出现折扣性质，所以ProfitValue不会是折扣值
+        Collections.sort(enableCouponList, new Comparator<ClientCouponEntity>() {
+            @Override
+            public int compare(ClientCouponEntity entity1, ClientCouponEntity entity2) {
+                int result = entity1.getCouponAmout().compareTo(entity2.getCouponAmout());
+                if (result == 0)//如果优惠金额相等则优先用最近结束有效日
+                    return entity1.getValidEndDate().isBefore(entity2.getValidEndDate()) ? 1 : -1;
+                return result;
+            }
+        });
+
+        //先按单价排序，价格约高的优先参与优惠券活动（如任选等，满N减M）
+        Collections.sort(productList, new Comparator<OrderProductDetailDto>() {
+            @Override
+            public int compare(OrderProductDetailDto entity1, OrderProductDetailDto entity2) {
+                int result = entity1.getPrice().compareTo(entity2.getPrice());
+                if (result == 0)//如果价格相等按数量排序
+                    return entity1.getAppCount().compareTo(entity2.getAppCount());
+                return result;
+            }
+        });
+
+        /**
+         * 速算策略:按优惠金额从大到小保证如按金额排序有券1,2,3,4；
+         * 场景1-1：如果券1和券2、券3、券4互斥，保证券1的使用，哪怕券2、券3、券4总优惠金额>券1的总优惠金额；
+         * 场景1-2：在券1已经明确可以使用情况下，如果券2和券3、券4互斥，保证券2的使用，哪怕券3、券4总优惠金额>券2的总优惠金额
+         * 最优策略：暂不实现
+         * 多张有门槛同种券使用规则-保守规则：每种券每次只能使用一张；
+         * 多张有门槛同种券使用规则-最优规则：每种券每次可以使用多张，但是不能同时适用于同一商品
+         */
+        String stageCouponUseRuleConfig = "";//todo应获取于配置300002参数表，获取于redis
+        Map<String, OrderProductDetailDto> orderProductDetailDtoMap = new HashedMap();
+        for (ClientCouponEntity clientCoupon : enableCouponList) {
+
+            dto = checkCouponFrist(clientCoupon, req, true);
+            if (!dto.getSuccess()) {
+                continue;
+            }
+            coupon = (ProductCouponEntity) dto.getData();
+            //运费券不需要关注
+            if (CouponType.TRANSFERFARE.getDictValue().equals(coupon.getCouponType())){
+                continue;
+            }
+
+            //查询冲突的券已适用的商品列表，在本券映射适用商品列表时需要排除掉
+            orderProductDetailDtoMap = checkAndMutexProducts(rsp,
+                    coupon);
+
+            //装箱返回数据
+            UseCouponRsp useCouponRsp = new UseCouponRsp();
+            useCouponRsp.setClientId(clientCoupon.getClientId());
+            useCouponRsp.setCouponId(clientCoupon.getCouponId());
+            useCouponRsp.setProfitAmount(coupon.getProfitValue());
+            useCouponRsp.setReCouponFlag(coupon.getReCouponFlag());
+
+            //多张有门槛同种券使用规则-保守规则
+            if (stageCouponUseRuleConfig.equals(StageCouponUseRule.SIMPLE.getDictValue())) {
+                //有门槛同种券使用规则-保守规则：有门槛券每次只能使用一张
+                boolean isExist = CollectionUtils.exists(rsp, new Predicate() {
+                    public boolean evaluate(Object object) {
+                        UseCouponRsp item = (UseCouponRsp) object;
+                        if (item.getCouponId().equals(clientCoupon.getCouponId()) &&
+                                !CommonUtils.isEmptyorNull(clientCoupon.getStageId()))
+                            return true;
+                        return false;
+                    }
+                });
+                //因为已经按优惠金额进行了排序，所以有同一个券的不同阶梯的已经适用的就是优惠最大的，则本券直接算作不适用
+                if (isExist) {
+                    break;
+                }
+            }
+
+            /**
+             * 有门槛券适配使用的商品统计:
+             * 1.计算本券的适配商品时，排除已使用的冲突券适配的商品
+             * 2.必须达到使用条件
+             */
+            if (!CommonUtils.isEmptyorNull(clientCoupon.getCouponId())) {
+                CouponStageUseAndGetRuleEntity stage = couponStageUseAndGetRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
+                        clientCoupon.getStageId(),
+                        UseGeEndDateFlag.YES.getDictValue());
+                if (stage == null) {
+                    throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+                }
+
+                useCouponRsp.setStageId(clientCoupon.getStageId());
+                //优惠金额为指定阶梯的优惠金额
+                useCouponRsp.setProfitAmount(stage.getCouponValue());
+                //优惠券适配商品统计，该productList按单价进行排序后的
+                for (OrderProductDetailDto product : productList) {
+
+                    //将冲突券适配商品排除
+                    if (orderProductDetailDtoMap.containsKey(product.getProductId()))
+                        continue;
+
+                    BigDecimal condition = BigDecimal.ZERO;
+                    //校验符合商品基本属性
+                    dto = checkCouponForProduct(coupon, product.getProductId(), product.getGroupId());
+                    if (dto.getSuccess()) {
+
+                        useCouponRsp.getProductLsit().add(product);
+
+                        //按数量统计
+                        if (stage.getTriggerByType().equals(TriggerByType.NUMBER.getDictValue())) {
+                            condition = condition.add(product.getAppCount());
+                            //达到门槛才放入数组
+                            if (condition.compareTo(stage.getBeginValue()) >= 0) {
+                                rsp.add(useCouponRsp);
+                                break;
+                            }
+                        } else {
+                            condition = condition.add(product.getAppCount().multiply(product.getPrice()));
+                            //达到门槛才放入数组
+                            if (condition.compareTo(stage.getBeginValue()) >= 0) {
+                                rsp.add(useCouponRsp);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            } else {
+                /**
+                 * 无门槛券适配使用的商品统计
+                 * 无门槛的券如红包券是可以叠加使用的，但是该种券应不设置使用频率限制
+                 */
+                //按单价进行排序后的list
+                for (OrderProductDetailDto product : productList) {
+
+                    //排除冲突券适配的商品
+                    if (orderProductDetailDtoMap.containsKey(product.getProductId()))
+                        continue;
+                    //校验符合的的商品属性第一个即为适用上的商品
+                    dto = checkCouponForProduct(coupon, product.getProductId(), product.getGroupId());
+                    if (dto.getSuccess()) {
+                        useCouponRsp.getProductLsit().add(product);
+                        rsp.add(useCouponRsp);
+                        break;
+                    }
+                }
+            }
+            //循环内清除缓存
+            orderProductDetailDtoMap.clear();
+        }
+
+        //释放缓存
+        couponMap.clear();
+        couponMap = null;
+        return rsp;
+    }
+
+
+    /**
+     * 初步校验：
+     * 1.校验内容和商品无关
+     * 2.校验内容和订单金额无关
+     * 3.校验的只是单一券，不存在券与券之间冲突关系校验
+     * 4.会校验指定活动的冲突关系
+     * 传参：
+     * 1.如果要指定相关某个商品的可用优惠券，需要填充GetUseEnableCouponReq.productLsit
+     *
+     * @param item
+     * @param req
+     * @return
+     */
+    private CommonBoolDto<ProductCouponEntity> checkCouponFrist(ClientCouponEntity item, GetUseEnableCouponReq req, boolean useFlag) {
+
+        //根据券ID获取优惠券信息
+        ProductCouponEntity coupon = productCouponMapper.findProductCouponById(item.getCouponId());
+        if (coupon == null) {
+            throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+        }
+
+
+        //校验基本信息是否符合使用条件
+        CommonBoolDto dto = checkCouponBase(coupon, req);
+        dto.setSuccess(true);
+        dto.setData(coupon);
+        //校验不通过继续
+        if (!dto.getSuccess()) {
+            return dto;
+        }
+
+        //校验使用时间窗口
+        if (useFlag) {
+            dto = checkCouponUseValidDate(coupon);
+            //校验不通过继续
+            if (!dto.getSuccess()) {
+                return dto;
+            }
+            //校验使用频率是否符合
+            dto = checkCouponUseFreqLimit(item.getClientId(), item.getCouponId(), item.getStageId());
+            if (!dto.getSuccess()) {
+                return dto;
+            }
+        } else {
+            dto = checkCouponGetValidDate(coupon);
+            //校验不通过继续
+            if (!dto.getSuccess()) {
+                return dto;
+            }
+            dto = checkCouponGetFreqLimit(item.getClientId(), item.getCouponId(), item.getStageId());
+            if (!dto.getSuccess()) {
+                return dto;
+            }
+        }
+
+        //和指定活動是否存在冲突
+        if (!CommonUtils.isEmptyorNull(req.getActivityId())) {
+            ActivityProfitEntity activeEntity = activityProfitMapper.findById(req.getActivityId());
+            if (activeEntity == null) {
+                throw new BizException(ACTIVE_NOT_EXIST.getCode(), ACTIVE_NOT_EXIST.getDesc());
+            }
+
+            dto = checkReUseLimit(coupon, activeEntity);
+            if (!dto.getSuccess()) {
+                return dto;
+            }
+        }
+
+
+        return dto;
+    }
+
+    /**
+     * 获取优惠券基本信息
+     *
+     * @param couponId
+     * @param cache
+     * @return
+     */
+    private ProductCouponEntity findCouponInCacheAndDb(String couponId, Map<String, ProductCouponEntity> cache) {
+        ProductCouponEntity coupon = cache.get(couponId);
+        if (coupon == null) {
+            //根据券ID获取优惠券信息
+            coupon = productCouponMapper.findProductCouponById(couponId);
+            if (coupon == null) {
+                throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+            }
+            cache.put(coupon.getUuid(), coupon);
+        }
+        return coupon;
+    }
+
+
+    /**
+     * 获取已适配冲突关系券适用的商品列表
+     *
+     * @param rsp    已计算适用的券及其对应商品列表
+     * @param coupon 优惠券信息
+     * @return
+     */
+    private Map<String, OrderProductDetailDto> checkAndMutexProducts(List<UseCouponRsp> rsp,
+                                                                     ProductCouponEntity coupon) {
+
+        Map<String, OrderProductDetailDto> mutexMap = new HashMap<String, OrderProductDetailDto>();
+
+        if (rsp != null) {
+            return mutexMap;
+        }
+
+        /**
+         * 无需根据冲突对应关系表进行的处理
+         * 1.已适用的券存在“不允许叠加”设置时，无论是否配置了两者之间的冲突关系都做为冲突处理
+         * 2.有门槛同一券设置视为冲突，在同一商品上不能叠加；无论是否配置了两者之间的冲突关系
+         * 3.如果该券时不可叠加的，代表和任何券都是冲突的
+         */
+        for (UseCouponRsp useCouponRsp : rsp) {
+            if (ReCouponFlag.CONFLICT.equals(useCouponRsp.getReCouponFlag()) ||
+                    (useCouponRsp.getCouponId().equals(coupon.getId()) &&
+                            !CommonUtils.isEmptyorNull(useCouponRsp.getStageId())) ||
+                    ReCouponFlag.CONFLICT.equals(coupon.getReCouponFlag())) { //
+                List<OrderProductDetailDto> entities = useCouponRsp.getProductLsit();
+                if (entities != null)
+                    //将冲突商品集合去重合并
+                    for (OrderProductDetailDto en : entities) {
+                        if (!mutexMap.containsKey(en.getProductId()))
+                            mutexMap.put(en.getProductId(), en);
+                    }
+            }
+        }
+        //如果该券时不可叠加的无需查询冲突关系
+        if (ReCouponFlag.CONFLICT.equals(coupon.getReCouponFlag())) {//ReCouponFlag字段为空保护为可叠加
+            return mutexMap;
+        }
+
+        //查询该券是否和指定的券冲突，如果冲突则不能应用于同一商品上
+        List<ProfitConflictOrReUseRefEntity> ConflictList = profitConflictOrReUseRefMapper.findBySpecifyId(ActiveOrCouponType.COUPON.getDictValue(),
+                coupon.getId(),
+                ConflictFlag.CONFLICT.getDictValue());
+
+        for (ProfitConflictOrReUseRefEntity item : ConflictList) {
+            //做参数保护
+            if (item.getObjType().equals(ActiveOrCouponType.ACTIVITY) ||
+                    item.getTargetObjType().equals(ActiveOrCouponType.ACTIVITY) ||
+                    item.getRefType().equals(ConflictFlag.SUPERPOSE))
+                continue;
+
+            //查找冲突的券id
+            String key = item.getTargetObjType();
+            if (item.getTargetObjId().equals(coupon.getId())) {
+                key = item.getObjId();
+            }
+
+            //查找和该券冲突券已适配的商品集合
+            for (UseCouponRsp useCouponRsp : rsp) {
+                if (useCouponRsp.getCouponId().equals(key)) {
+                    List<OrderProductDetailDto> entities = useCouponRsp.getProductLsit();
+                    if (entities != null)
+                        //将冲突商品集合去重合并
+                        for (OrderProductDetailDto en : entities) {
+                            if (!mutexMap.containsKey(en.getProductId()))
+                                mutexMap.put(en.getProductId(), en);
+                        }
+                }
+            }
+
+        }
+        return mutexMap;
+    }
+
+
+    /**
+     * 校验优惠券与活动是否可叠加
+     *
+     * @param coupon
+     * @param activeEntity
+     * @return
+     */
+    private CommonBoolDto checkReUseLimit(ProductCouponEntity coupon, ActivityProfitEntity activeEntity) {
+        CommonBoolDto dto = new CommonBoolDto();
+        dto.setSuccess(true);
+        if (coupon == null || activeEntity == null) {
+            return dto;
+        }
+
+        //券设置是不可叠加的，直接返回
+        if (coupon.getReCouponFlag().equals(ReCouponFlag.CONFLICT.getDictValue())) {
+            dto.setSuccess(false);
+            dto.setDesc("该优惠券设置了不可叠加");
+        }
+
+        //只要活动设置是不可叠加的，直接返回
+        if (activeEntity.getReCouponFlag().equals(ReCouponFlag.CONFLICT.getDictValue())) {
+            dto.setSuccess(false);
+            dto.setDesc("该活动设置了不可叠加");
+        }
+
+        //只有两者都可叠加(设置不可叠加的有效性优先级大于可叠加)，或没有设置冲突关系，该优惠券才可以使用
+        //获取冲突关联表
+        ProfitConflictOrReUseRefEntity refEntity = profitConflictOrReUseRefMapper.findByBothId(ActiveOrCouponType.COUPON.getDictValue(),
+                coupon.getId(),
+                ActiveOrCouponType.ACTIVITY.getDictValue(),
+                activeEntity.getId(),
+                ConflictFlag.CONFLICT.getDictValue());
+        if (refEntity != null) {
+            dto.setSuccess(false);
+            dto.setDesc("该优惠券与指定活动设置了不可叠加关系");
+        }
+        return dto;
     }
 
 
@@ -273,36 +639,49 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
-    private ObtainRspDto checkCouponUseFreqLimit(String clientId, String couponId, String stageId) {
-        ObtainRspDto dto = new ObtainRspDto();
-        dto.setSuccess(true);
+    private CommonBoolDto checkCouponUseFreqLimit(String clientId, String couponId, String stageId) {
 
         //获取因为频率限制无法获取的券
         List<ShortCouponDetailDto> couponDetailListByIds =
                 productCouponMapper.findClinetFreqForbidUseCouponDetailListById(clientId, couponId, stageId);
 
-        //传入的参数是空时，给一个统一值存到临时变量中方便进行比较
-        String t_stageId = stageId;
+        //逐一进行排除
+        return excludeFreqLimit(couponDetailListByIds, couponId, stageId);
 
-        //获取领取的阶梯
-        if (CommonUtils.isEmptyorNull(stageId)) {
-            //传入的参数是空时，给一个统一值存到临时变量中方便进行比较
-            t_stageId = CommonDict.NULLREPLACE.getCode();
-        }
+    }
+
+
+    /**
+     * 指定券是否受频率限制
+     *
+     * @param couponDetailListByIds
+     * @param couponId
+     * @param stageId
+     * @return
+     */
+    private CommonBoolDto excludeFreqLimit(List<ShortCouponDetailDto> couponDetailListByIds, String couponId, String stageId) {
+        CommonBoolDto dto = new CommonBoolDto();
+        dto.setSuccess(true);
+        if (couponDetailListByIds == null || CommonUtils.isEmptyorNull(couponId))
+            return dto;
 
         //逐一进行排除
-        for (ShortCouponDetailDto item : couponDetailListByIds) {
-            //获取的阶梯id是空时，给一个统一值与临时变量方便进行比较
-            if (CommonUtils.isEmptyorNull(item.getStageId()))
-                item.setStageId(CommonDict.NULLREPLACE.getCode());
-            //该阶梯或券是需要排除的直接返回
-            if (item.getCouponId().equals(couponId) &&
-                    item.getStageId().equals(t_stageId)) {
-                dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_GET_FREQ.getDesc());
-                return dto;
+        boolean isExist = CollectionUtils.exists(couponDetailListByIds, new Predicate() {
+            public boolean evaluate(Object object) {
+                ShortCouponDetailDto item = (ShortCouponDetailDto) object;
+                if (item.getCouponId().equals(couponId) &&
+                        ((!CommonUtils.isEmptyorNull(item.getStageId()) && item.getStageId().equals(stageId)) ||
+                                CommonUtils.isEmptyorNull(item.getStageId()) && CommonUtils.isEmptyorNull(stageId))
+                        )
+                    return true;
+                return false;
             }
+        });
+        if (isExist) {
+            dto.setSuccess(false);
+            dto.setDesc(COUPON_FAIL_OP_FREQ.getDesc());
         }
+
         return dto;
     }
 
@@ -316,38 +695,16 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
-    private ObtainRspDto checkCouponGetFreqLimit(String clientId, String couponId, String stageId) {
-        ObtainRspDto dto = new ObtainRspDto();
-        dto.setSuccess(true);
+    private CommonBoolDto checkCouponGetFreqLimit(String clientId, String couponId, String stageId) {
 
         //获取因为频率限制无法获取的券
         List<ShortCouponDetailDto> couponDetailListByIds =
                 productCouponMapper.findClinetFreqForbidCouponDetailListById(clientId,
                         couponId, stageId);
 
-        //传入的参数是空时，给一个统一值存到临时变量中方便进行比较
-        String t_stageId = stageId;
-
-        //获取领取的阶梯
-        if (CommonUtils.isEmptyorNull(stageId)) {
-            //传入的参数是空时，给一个统一值存到临时变量中方便进行比较
-            t_stageId = CommonDict.NULLREPLACE.getCode();
-        }
-
         //逐一进行排除
-        for(ShortCouponDetailDto item : couponDetailListByIds) {
-            //获取的阶梯id是空时，给一个统一值与临时变量方便进行比较
-            if (CommonUtils.isEmptyorNull(item.getStageId()))
-                item.setStageId(CommonDict.NULLREPLACE.getCode());
-            //该阶梯或券是需要排除的直接返回
-            if (item.getCouponId().equals(couponId) &&
-                    item.getStageId().equals(t_stageId)) {
-                dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_GET_FREQ.getDesc());
-                return dto;
-            }
-        }
-        return dto;
+        return excludeFreqLimit(couponDetailListByIds, couponId, stageId);
+
     }
 
 
@@ -358,8 +715,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 开发日志
      * 1004246-徐长焕-20181213 新增
      */
-    private ObtainRspDto checkCouponUseValidDate(ProductCouponEntity coupon) {
-        ObtainRspDto dto = new ObtainRspDto();
+    private CommonBoolDto checkCouponUseValidDate(ProductCouponEntity coupon) {
+        CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
         //是否在允許使用期間
         if ((coupon.getAllowUseBeginDate() != null && coupon.getAllowUseBeginDate().compareTo(LocalDate.now()) > 0) ||
@@ -380,8 +737,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
-    private ObtainRspDto checkCouponGetValidDate(ProductCouponEntity coupon) {
-        ObtainRspDto dto = new ObtainRspDto();
+    private CommonBoolDto checkCouponGetValidDate(ProductCouponEntity coupon) {
+        CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
         //是否在允許領取期間
         if ((coupon.getAllowGetBeginDate() != null && coupon.getAllowGetBeginDate().compareTo(LocalDate.now()) > 0) ||
@@ -394,18 +751,49 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         return dto;
     }
 
+    /**
+     * 校验优惠对应商品属性是否匹配
+     *
+     * @param coupon
+     * @param productId
+     * @param groupId
+     * @return
+     */
+    private CommonBoolDto checkCouponForProduct(ProductCouponEntity coupon, String productId, String groupId) {
+        CommonBoolDto dto = new CommonBoolDto();
+        dto.setSuccess(true);
+        //b.商品属性校验
+        //该商品属性是否允许领取该券
+        if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getProductSet(),
+                productId)) {
+
+            dto.setSuccess(false);
+            dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getDesc());
+            return dto;
+        }
+
+        //该商品组是否允许领取该券
+        if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getProductGroupSet(),
+                groupId)) {
+            dto.setSuccess(false);
+            dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getDesc());
+            return dto;
+        }
+        return dto;
+    }
+
 
     /**
-     * 根据优惠券基本信息校验是否可领取
+     * 根据优惠券基本信息校验是否可领取，涉及多个商品的
      *
      * @param coupon 优惠券基本信息
      * @param req    用于校验的商品相关属性、客户相关属性、订单相关属性、支付相关属性值
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
-    private ObtainRspDto checkCouponBase(ProductCouponEntity coupon,
-                                         ClientObtainCouponReq req) {
-        ObtainRspDto dto = new ObtainRspDto();
+    private CommonBoolDto checkCouponBase(ProductCouponEntity coupon,
+                                          GetUseEnableCouponReq req) {
+        CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
 
         //a.客户属性校验
@@ -418,22 +806,19 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             return dto;
         }
 
-        //b.商品属性校验
-        //该商品属性是否允许领取该券
-        if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getProductSet(),
-                req.getProductId())) {
-
+        //b.商品属性校验，不校验其买入卖出门槛
+        if (req.getProductList() != null && req.getProductList().size() > 0) {
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getDesc());
-            return dto;
-        }
-
-        //该商品组是否允许领取该券
-        if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getProductGroupSet(),
-                req.getGroupId())) {
-            dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getDesc());
-            return dto;
+            for (OrderProductDetailDto item : req.getProductList()) {
+                dto = checkCouponForProduct(coupon, item.getProductId(), item.getGroupId());
+                //该券不适用任何商品，则该券不能用
+                if (dto.getSuccess())
+                    dto.setSuccess(true);
+            }
+            if (!dto.getSuccess()) {
+                dto.setDesc("该券不适用本次选择的任何商品");
+                return dto;
+            }
         }
 
         //c.订单属性校验
@@ -465,6 +850,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         return dto;
     }
 
+
     /**
      * 校验个人的优惠限额
      *
@@ -473,9 +859,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
-    private ObtainRspDto checkCouponPersonQuota(CouponQuotaRuleEntity quota,
-                                                String clientId) {
-        ObtainRspDto dto = new ObtainRspDto();
+    private CommonBoolDto checkCouponPersonQuota(CouponQuotaRuleEntity quota,
+                                                 String clientId) {
+        CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
 
         //存在规则才进行校验
@@ -573,8 +959,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
-    private ObtainRspDto checkCouponAllQuota(CouponQuotaRuleEntity quota) {
-        ObtainRspDto dto = new ObtainRspDto();
+    private CommonBoolDto checkCouponAllQuota(CouponQuotaRuleEntity quota) {
+        CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
 
         if (quota != null) {

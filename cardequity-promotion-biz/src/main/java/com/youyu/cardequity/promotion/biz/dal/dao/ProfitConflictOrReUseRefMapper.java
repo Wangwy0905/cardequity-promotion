@@ -16,8 +16,31 @@ public interface ProfitConflictOrReUseRefMapper extends YyMapper<ProfitConflictO
 
     //ProfitConflictOrReUseRefEntity findById(@Param("id") String id);
 
-    List<ProfitConflictOrReUseRefEntity> findByMainId(@Param("activOrCouponFlag") String activOrCouponFlag,
-                                                     @Param("activOrCouponId") String activOrCouponId);
+    /**
+     * 根据主的优惠券或活动id查找冲突或可叠加的优惠券或活动
+     * @param activeOrCouponType
+     * @param activeOrCouponId
+     * @param conflictFlag
+     * @return
+     */
+    List<ProfitConflictOrReUseRefEntity> findBySpecifyId(@Param("activeOrCouponType") String activeOrCouponType,
+                                                         @Param("activeOrCouponId") String activeOrCouponId,
+                                                         @Param("conflictFlag") String conflictFlag);
+
+    /**
+     * 通过对应关系验证冲突或叠加配置
+     * @param activeOrCouponType
+     * @param activOrCouponId
+     * @param targetActiveOrCouponType
+     * @param targetActivOrCouponId
+     * @param conflictFlag
+     * @return
+     */
+    ProfitConflictOrReUseRefEntity findByBothId(@Param("activeOrCouponType") String activeOrCouponType,
+                                                @Param("activOrCouponId") String activOrCouponId,
+                                                @Param("targetActiveOrCouponType") String targetActiveOrCouponType,
+                                                @Param("targetActivOrCouponId") String targetActivOrCouponId,
+                                                @Param("conflictFlag") String conflictFlag);
 
 }
 

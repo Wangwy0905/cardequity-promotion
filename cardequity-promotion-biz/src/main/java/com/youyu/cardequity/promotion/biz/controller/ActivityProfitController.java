@@ -32,7 +32,7 @@ public class ActivityProfitController implements ActivityProfitApi {
 
 
     @Override
-    public Result<List<ActivityDefineRsp>> findEnableGetActivity(QryProfitCommonReq req) {
+    public Result<List<ActivityDefineRsp>> findEnableGetActivity(@RequestBody QryProfitCommonReq req) {
         List<ActivityDefineRsp> rspList = activityProfitService.findEnableGetActivity(req);
         return Result.ok(rspList);
     }

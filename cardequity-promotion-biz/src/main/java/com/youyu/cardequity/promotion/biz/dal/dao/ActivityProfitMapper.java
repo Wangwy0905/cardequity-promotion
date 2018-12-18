@@ -38,6 +38,8 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
                                                            @Param("groupId") String groupId,
                                                            @Param("entrustWay") String entrustWay,
                                                            @Param("clientType") String clientType);
+
+    ActivityProfitEntity findById(@Param("id") String id);
 }
 
 

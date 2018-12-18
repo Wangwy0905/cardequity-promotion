@@ -16,6 +16,7 @@
         WHERE ifnull(a.IS_ENABLE,'1')='1'
         and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
         and a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
+        order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
     <select id="findClientCouponByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
@@ -33,6 +34,7 @@
         <if test="stageId != null and stageId!=''">
         and a.STAGE_ID=#{stageId,jdbcType=VARCHAR}
         </if>
+        order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
 
     <resultMap id="ClientCoupStatisticsQuotaDto" type="com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto">
@@ -62,6 +64,7 @@
         <if test="stageId != null and stageId !=''">
             and a.STAGE_ID=#{stageId,jdbcType=VARCHAR}
         </if>
+        order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
     <select id="findClientValidCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
@@ -71,6 +74,7 @@
         and a.status='0'
         and a.VALID_START_DATE &lt;=curdate()
         and a.VALID_END_DATE &gt;= curdate()
+        order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
 
 

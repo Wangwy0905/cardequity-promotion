@@ -10,18 +10,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ObtainRspDto {
-
-    @ApiModelProperty(value = "是否成功:true-成功")
-    private boolean success;
-
-    @ApiModelProperty(value = "描述信息")
-    private String desc;
+public class ObtainRspDto extends  CommonBoolDto{
 
     @ApiModelProperty(value = "添加成功后的数据")
     private ClientCouponDto data;
 
-    public boolean getSuccess() {
-        return success;
-    }
 }

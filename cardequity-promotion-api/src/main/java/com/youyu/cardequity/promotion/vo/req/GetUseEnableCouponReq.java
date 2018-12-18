@@ -1,29 +1,20 @@
 package com.youyu.cardequity.promotion.vo.req;
 
+import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
- *  2018/12/12. 徐长焕  1004258 新增传入获取优惠券的request
+ * Created by caiyi on 2018/12/14.
  */
 @Getter
 @Setter
-public class ClientObtainCouponReq {
+public class GetUseEnableCouponReq {
     @ApiModelProperty(value = "客户编号:必填")
-    private String clientId;
-
-    @ApiModelProperty(value = "优惠券id：必填")
-    private String couponId;
-
-    @ApiModelProperty(value = "所属阶梯id：对阶梯的优惠券必填")
-    private String stageId;
-
-    @ApiModelProperty(value = "商品id：指定相关商品，为空不校验该券是否对应该商品可使用")
-    private String productId;
-
-    @ApiModelProperty(value = "商品组id：为空但是productId不为空需要服务层调商品中心获取")
-    private String groupId;
+    private String clinetId;
 
     @ApiModelProperty(value = "客户类型:冗余，服务层调用时传入空，需要调用用户中心进行查询该字段")
     private String clinetType;
@@ -39,4 +30,7 @@ public class ClientObtainCouponReq {
 
     @ApiModelProperty(value = "活动编号:关联的活动编号")
     private String activityId;
+
+    @ApiModelProperty(value = "相关商品明细，用于判断是否满足使用阶梯门槛")
+    private List<OrderProductDetailDto> productList;
 }

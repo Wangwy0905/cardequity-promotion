@@ -2,8 +2,11 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 
 import com.youyu.cardequity.promotion.api.ClientCouponApi;
+import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.ObtainRspDto;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
+import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
@@ -36,15 +39,19 @@ public class ClientCouponController implements ClientCouponApi {
     }
 
     @Override
-    public Result<ObtainRspDto> obtainCoupon(ClientObtainCouponReq req) {
+    public Result<CommonBoolDto> obtainCoupon(@RequestBody ClientObtainCouponReq req) {
 
         return Result.ok(clientCouponService.obtainCoupon(req));
     }
 
     @Override
-    public Result<List<ClientCouponDto>> findEnableUseCoupon(ClientObtainCouponReq req) {
+    public Result<List<ClientCouponDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req) {
         return Result.ok(clientCouponService.findEnableUseCoupon(req));
     }
 
+    @Override
+    public Result<List<UseCouponRsp>> combCouponRefProductDeal(@RequestBody GetUseEnableCouponReq req){
+        return Result.ok(clientCouponService.combCouponRefProductDeal(req));
+    }
 
 }

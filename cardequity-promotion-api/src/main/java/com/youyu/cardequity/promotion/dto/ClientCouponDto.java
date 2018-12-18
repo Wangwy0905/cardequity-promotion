@@ -28,6 +28,18 @@ public class ClientCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "阶梯编号:")
     private String stageId;
 
+    @ApiModelProperty(value = "优惠策略类型:0-折扣券(该表不会出现) 1-阶梯优惠券(满多少减多少)  2-定额优惠券（该券无阶梯优惠固定金额）")
+    private String couponStrategyType;
+
+    @ApiModelProperty(value = "类型:0-红包 1-优惠券 2-运费券")
+    private String couponType;
+
+    @ApiModelProperty(value = "优惠标签:标签：满返券、促销等")
+    private String couponLable;
+
+    @ApiModelProperty(value = "优惠短描:如满3件减20")
+    private String couponShortDesc;
+
     @ApiModelProperty(value = "客户号:")
     private String clientId;
 

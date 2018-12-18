@@ -30,6 +30,31 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
     private String stageId;
 
     /**
+     * 优惠策略类型:0-折扣券(该表不会出现) 1-阶梯优惠券(满多少减多少)  2-定额优惠券（该券无阶梯优惠固定金额）
+     */
+    @Column(name = "COUPON_STRATEGY_TYPE")
+    private String couponStrategyType;
+
+    /**
+     * 类型:0-红包 1-优惠券 2-运费券
+     */
+    @Column(name = "COUPON_TYPE")
+    private String couponType;
+
+
+    /**
+     * 优惠标签:标签：满返券、促销等
+     */
+    @Column(name = "COUPON_LABLE")
+    private String couponLable;
+
+    /**
+     * 优惠短描:如满3件减20
+     */
+    @Column(name = "COUPON_SHORT_DESC")
+    private String couponShortDesc;
+
+    /**
      * 客户号:
      */
     @Column(name = "CLIENT_ID")

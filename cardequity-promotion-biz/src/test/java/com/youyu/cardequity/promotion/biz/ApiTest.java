@@ -48,14 +48,17 @@ public class ApiTest {
         //System.out.println(actResult.data.size());
 
         ClientObtainCouponReq req=new ClientObtainCouponReq();
-        req.setClinetId("xuch");
+        req.setClientId("xuch");
         //req.setCouponId("2");
         //req.setStageId("24");
         //Result<ObtainRspDto> obtainRspDtoResult = clientCouponController.obtainCoupon(req);
         //System.out.println(obtainRspDtoResult.data.getSuccess());
 
-        Result<List<ClientCouponDto>> rsp=clientCouponController.findEnableUseCoupon(req);
-        System.out.println(rsp.data.size());
+        Result t=new Result();
+        Result<ClientObtainCouponReq> t1=new Result<ClientObtainCouponReq>();
+        //t1=t;
+        //Result<List<ClientCouponDto>> rsp=clientCouponController.findEnableUseCoupon(req);
+        //System.out.println(rsp.data.size());
 
     }
 }
