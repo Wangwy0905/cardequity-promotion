@@ -48,16 +48,17 @@ public class ProductCouponEntity extends com.youyu.common.entity.BaseEntity<Stri
     private String couponShortDesc;
 
     /**
-     * 专属商品集合:订单涉及门槛属性：只有这些买入商品才提供优惠，但是具体优惠需要通过阶梯表获取，为*标识所有
+     * 级别：0-自定义 1-全局
      */
-    @Column(name = "PRODUCT_SET")
-    private String productSet;
+    @Column(name = "COUPON_LEVEL")
+    private String couponLevel;
 
     /**
-     * 专属商品组集合:订单涉及门槛属性：只有这些买入商品组的商品才提供优惠，为*标识所有
+     * 优惠说明
      */
-    @Column(name = "PRODUCT_GROUP_SET")
-    private String productGroupSet;
+    @Column(name = "COUPON_SHORT_DESC")
+    private String couponDesc;
+
 
     /**
      * 专属客户类型集合:订单涉及门槛属性：只有这些这些客户类型才提供优惠。多种客户类型用逗号相隔，为*标识所有
@@ -162,16 +163,23 @@ public class ProductCouponEntity extends com.youyu.common.entity.BaseEntity<Stri
     private String getType;
 
     /**
-     * 叠加码:定义为8位码。相同标识码可叠加，多个以逗号相隔(设置该券时，应向操作员自动展示可叠加券列表)，为空代表所有
+     * 备注
      */
-    @Column(name = "RE_COUPON_CODE")
-    private String reCouponCode;
+    @Column(name = "REMARK")
+    private String remark;
 
     /**
      * 叠加标志:0-不可叠加 1-可叠加 2-自定义（建议规则简单点，不采用该值）
      */
     @Column(name = "RE_COUPON_FLAG")
     private String reCouponFlag;
+
+
+    /**
+     * 适用商品类型:0-自动义商品范围 1-全部
+     */
+    @Column(name = "APPLY_PRODUCT_FLAG")
+    private String applyProductFlag;
 
     /**
      * 是否有效:

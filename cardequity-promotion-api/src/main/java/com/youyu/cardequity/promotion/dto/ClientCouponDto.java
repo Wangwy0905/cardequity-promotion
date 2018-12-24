@@ -2,7 +2,7 @@ package com.youyu.cardequity.promotion.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -66,6 +66,18 @@ public class ClientCouponDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "使用日")
     private LocalDate BusinDate;
+
+    @ApiModelProperty(value = "级别：0-自定义 1-全局")
+    private String couponLevel;
+
+    @ApiModelProperty(value = "门槛触发类型:0-按买入金额 1-按买入数量")
+    private String triggerByType;
+
+    @ApiModelProperty(value = "值起始（含）")
+    private BigDecimal beginValue;
+
+    @ApiModelProperty(value = "结束值")
+    private BigDecimal endValue;
 
     @Override
     public String getId() {

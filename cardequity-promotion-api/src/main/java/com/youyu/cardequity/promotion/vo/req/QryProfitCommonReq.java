@@ -21,9 +21,6 @@ public class QryProfitCommonReq {
     @ApiModelProperty(value = "商品id")
     private String productId;
 
-    @ApiModelProperty(value = "商品组id:如果传入只有productid需要在服务层补全")
-    private String groupId;
-
     @ApiModelProperty(value = "委托方式:见数据字典100002：0-web 1-ios 2-安卓 3-后台 4-对外接口处理")
     private String entrustWay;
 }

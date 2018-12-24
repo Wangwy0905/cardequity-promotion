@@ -2,7 +2,7 @@ package com.youyu.cardequity.promotion.api;
 
 
 import com.youyu.common.api.Result;
-import com.youyu.cardequity.promotion.dto.CouponStageUseAndGetRuleDto;
+import com.youyu.cardequity.promotion.dto.CouponStageRuleDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.ApiOperation;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 @FeignClient(name = "cardequity-promotion")
 @RequestMapping(path = "/tbCouponStageUseAndGetRule")
-public interface CouponStageUseAndGetRuleApi {
+public interface CouponStageRuleApi {
 
     /**
      * select one
@@ -27,7 +27,7 @@ public interface CouponStageUseAndGetRuleApi {
      */
     @ApiOperation(value = "select one")
     @GetMapping("/{id}")
-    Result<CouponStageUseAndGetRuleDto> get(@PathVariable(name = "id") String id);
+    Result<CouponStageRuleDto> get(@PathVariable(name = "id") String id);
 
     /**
      * delete one
@@ -47,7 +47,7 @@ public interface CouponStageUseAndGetRuleApi {
      */
     @ApiOperation(value = "save one")
     @PostMapping("/")
-    Result<CouponStageUseAndGetRuleDto> save(@RequestBody CouponStageUseAndGetRuleDto dto);
+    Result<CouponStageRuleDto> save(@RequestBody CouponStageRuleDto dto);
 
 
     /**
@@ -58,7 +58,7 @@ public interface CouponStageUseAndGetRuleApi {
      */
     @ApiOperation(value = "update one")
     @PutMapping("/")
-    Result<CouponStageUseAndGetRuleDto> update(@RequestBody CouponStageUseAndGetRuleDto dto);
+    Result<CouponStageRuleDto> update(@RequestBody CouponStageRuleDto dto);
 
 
     /**
@@ -68,5 +68,5 @@ public interface CouponStageUseAndGetRuleApi {
      */
     @ApiOperation(value = "find all")
     @GetMapping(path = "/findAll")
-    Result<List<CouponStageUseAndGetRuleDto>> findAll();
+    Result<List<CouponStageRuleDto>> findAll();
 }

@@ -1,7 +1,5 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
-import com.youyu.cardequity.promotion.biz.dal.dao.CouponStageUseAndGetRuleMapper;
-import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageUseAndGetRuleEntity;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

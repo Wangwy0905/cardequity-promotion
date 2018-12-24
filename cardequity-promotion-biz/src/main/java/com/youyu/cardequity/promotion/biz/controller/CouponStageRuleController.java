@@ -1,10 +1,10 @@
 package com.youyu.cardequity.promotion.biz.controller;
 
 
-import com.youyu.cardequity.promotion.api.CouponStageUseAndGetRuleApi;
+import com.youyu.cardequity.promotion.api.CouponStageRuleApi;
 import com.youyu.common.api.Result;
-import com.youyu.cardequity.promotion.dto.CouponStageUseAndGetRuleDto;
-import com.youyu.cardequity.promotion.biz.service.CouponStageUseAndGetRuleService;
+import com.youyu.cardequity.promotion.dto.CouponStageRuleDto;
+import com.youyu.cardequity.promotion.biz.service.CouponStageRuleService;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +22,14 @@ import static com.youyu.common.enums.BaseResultCode.NO_DATA_FOUND;
  * @date 2018-12-07
  */
 @RestController
-public class CouponStageUseAndGetRuleController implements CouponStageUseAndGetRuleApi {
+public class CouponStageRuleController implements CouponStageRuleApi {
 
     @Autowired
-    private CouponStageUseAndGetRuleService tbCouponStageUseAndGetRuleService;
+    private CouponStageRuleService tbCouponStageUseAndGetRuleService;
 
     @Override
-    public Result<CouponStageUseAndGetRuleDto> get(@PathVariable(name = "id") String id) {
-        CouponStageUseAndGetRuleDto dto = tbCouponStageUseAndGetRuleService.selectByPrimaryKey(id);
+    public Result<CouponStageRuleDto> get(@PathVariable(name = "id") String id) {
+        CouponStageRuleDto dto = tbCouponStageUseAndGetRuleService.selectByPrimaryKey(id);
         if (dto == null) {
             return Result.fail(NO_DATA_FOUND);
         }
@@ -47,7 +47,7 @@ public class CouponStageUseAndGetRuleController implements CouponStageUseAndGetR
     }
 
     @Override
-    public Result<CouponStageUseAndGetRuleDto> save(@RequestBody CouponStageUseAndGetRuleDto dto) {
+    public Result<CouponStageRuleDto> save(@RequestBody CouponStageRuleDto dto) {
         int count = tbCouponStageUseAndGetRuleService.insertSelective(dto);
         if (count <= 0) {
             return Result.fail(NO_DATA_FOUND);
@@ -57,7 +57,7 @@ public class CouponStageUseAndGetRuleController implements CouponStageUseAndGetR
     }
 
     @Override
-    public Result<CouponStageUseAndGetRuleDto> update(@RequestBody CouponStageUseAndGetRuleDto dto) {
+    public Result<CouponStageRuleDto> update(@RequestBody CouponStageRuleDto dto) {
         int count = tbCouponStageUseAndGetRuleService.updateByPrimaryKeySelective(dto);
         if (count <= 0) {
             return Result.fail(NO_DATA_FOUND);
@@ -67,7 +67,7 @@ public class CouponStageUseAndGetRuleController implements CouponStageUseAndGetR
     }
 
     @Override
-    public Result<List<CouponStageUseAndGetRuleDto>> findAll() {
+    public Result<List<CouponStageRuleDto>> findAll() {
         //默认不实现 findAll
         //Result.ok(tbCouponStageUseAndGetRuleService.selectAll());
         throw new UnsupportedOperationException();

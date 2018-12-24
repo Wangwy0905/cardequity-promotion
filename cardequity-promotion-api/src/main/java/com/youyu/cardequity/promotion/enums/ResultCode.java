@@ -41,6 +41,7 @@ public enum ResultCode implements CardequityIBaseResultCode {
     COUPON_FAIL_OBTAIN("0012", "优惠券领取失败"),
     ACTIVE_NOT_EXIST("0013", "活动不存在"),
     COUPON_NOT_EXISTS("0014", "该优惠券信息不存在"),
+    COUPON_USE_CONFLICT("0015", "优惠券使用冲突"),
     ;
 
     /**

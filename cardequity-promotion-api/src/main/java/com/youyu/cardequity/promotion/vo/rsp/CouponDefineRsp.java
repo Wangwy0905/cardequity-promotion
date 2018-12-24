@@ -1,6 +1,6 @@
 package com.youyu.cardequity.promotion.vo.rsp;
 
-import com.youyu.cardequity.promotion.dto.CouponStageUseAndGetRuleDto;
+import com.youyu.cardequity.promotion.dto.CouponStageRuleDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,7 +51,7 @@ public class CouponDefineRsp {
     private String reCouponFlag;
 
     @ApiModelProperty(value = "优惠的阶梯")
-    private List<CouponStageUseAndGetRuleDto> CouponStageDtoList;
+    private List<CouponStageRuleDto> CouponStageDtoList;
 
 
 }

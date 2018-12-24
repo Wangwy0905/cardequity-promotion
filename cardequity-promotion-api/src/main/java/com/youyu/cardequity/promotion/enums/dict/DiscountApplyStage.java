@@ -1,24 +1,22 @@
 package com.youyu.cardequity.promotion.enums.dict;
 
 /**
- * Created by caiyi on 2018/12/18.
+ * Created by caiyi on 2018/12/20.
  */
-public enum CouponType {
-    MONEYBAG("0", "红包"),
-    COUPON("1", "优惠券"),
-    TRANSFERFARE("2", "运费券"),
-    FREETRANSFERFARE("3", "免邮券"),
+public enum DiscountApplyStage {
+    CONDITION("0", "适用算入门槛内商品"),
+    ALL("1", "适用券范围内商品"),
     ;
 
     public static final String DICTID = "100179";
-    public static final String DICTNAME = "CouponType";
+    public static final String DICTNAME = "DiscountApplyStage";
     public static final String DICTKIND = "2";
-    public static final String DICTCOMMENT = "优惠券类型";
+    public static final String DICTCOMMENT = "折扣使用策略";
 
     private final String dictValue;
     private final String dictComment;
 
-    CouponType(String dictValue, String dictComment) {
+    DiscountApplyStage(String dictValue, String dictComment) {
         this.dictValue = dictValue;
         this.dictComment = dictComment;
     }

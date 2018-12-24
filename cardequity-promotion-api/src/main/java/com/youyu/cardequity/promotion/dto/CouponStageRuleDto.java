@@ -1,8 +1,6 @@
 package com.youyu.cardequity.promotion.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
@@ -18,7 +16,7 @@ import io.swagger.annotations.ApiModel;
  */
 @Data
 @ApiModel
-public class CouponStageUseAndGetRuleDto implements IBaseDto<String>{
+public class CouponStageRuleDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "阶段编号:")
     private String uuid;
@@ -28,9 +26,6 @@ public class CouponStageUseAndGetRuleDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "优惠短描:如满3件减20，会覆盖ProductCoupon.CouponShortDesc")
     private String couponShortDesc;
-
-    @ApiModelProperty(value = "操作方式:0-获取(满返券时设置，其实用不上应该是通过推广发放) 1-使用")
-    private String opCouponType;
 
     @ApiModelProperty(value = "门槛触发类型:0-按买入金额 1-按买入数量（应设置其中之一，如果第二件5折可在此设置）")
     private String triggerByType;

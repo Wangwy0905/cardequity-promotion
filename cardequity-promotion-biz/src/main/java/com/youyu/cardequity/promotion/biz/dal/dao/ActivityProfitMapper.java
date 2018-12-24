@@ -24,7 +24,6 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * 1004244-徐长焕-20181207 新建
      */
     List<ActivityProfitEntity> findEnableGetCommonActivity(@Param("productId") String productId,
-                                                           @Param("groupId") String groupId,
                                                            @Param("entrustWay") String entrustWay);
 
     /**
@@ -35,7 +34,6 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * 1004244-徐长焕-20181207 新建
      */
     List<ActivityProfitEntity> findEnableGetMemberActivity(@Param("productId") String productId,
-                                                           @Param("groupId") String groupId,
                                                            @Param("entrustWay") String entrustWay,
                                                            @Param("clientType") String clientType);
 

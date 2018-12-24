@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponStageRuleMapper">
+<select id="findStageByCouponId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity"  >
+    select *
+from TB_COUPON_STAGE_RULE a
+where IFNULL(a.IS_ENABLE, '1') = '1'
+  and a.COUPON_ID =#{couponId,jdbcType=VARCHAR}
+</select>
+<select id="findCouponStageById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity">
+    select *
+from TB_COUPON_STAGE_RULE a
+where IFNULL(a.IS_ENABLE, '1') ='1'
+    <if test="couponId != null and couponId!=''">
+  and a.COUPON_ID =#{couponId,jdbcType=VARCHAR}
+    </if>
+  and a.UUID =#{stageId,jdbcType=VARCHAR}
+
+</select>
+
+
+
+</mapper>

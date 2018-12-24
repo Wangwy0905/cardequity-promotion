@@ -39,7 +39,7 @@ public class ConfigurationBuilderMySqlTest {
         config.setJdbcConnectionConfiguration(connectionConfiguration);
 
         YyTableConfig t1 = new YyTableConfig();
-        t1.setTableName("TB_PROFIT_CONFLICT_OR_RE_USE_REF");
+        t1.setTableName("TB_COUPON_REF_PRODUCT");
 //        t1.setPkColumn("id");
         t1.setSqlStatement("JDBC");
 //        t1.setSqlStatement("select SEQ_{1}.nextval from dual");

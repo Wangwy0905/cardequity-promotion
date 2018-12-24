@@ -10,10 +10,8 @@
         left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and IFNULL(b.IS_ENABLE, '1') = '1'
         where IFNULL(a.IS_ENABLE, '1') = '1'
         <if test="productId != null and productId!=''">
-            and (ifnull(a.PRODUCT_SET, '*') = '*' or instr(PRODUCT_SET,  #{productId,jdbcType=VARCHAR}) &gt; 0)
-        </if>
-        <if test="groupId != null and groupId!=''">
-            and (ifnull(a.PRODUCT_GROUP_SET, '*') = '*' or  instr(PRODUCT_GROUP_SET,  #{groupId,jdbcType=VARCHAR})&gt;0)
+            and (ifnull(a.APPLY_PRODUCT_FLAG, '0') = '1' or
+            EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCTID=#{productId,jdbcType=VARCHAR}))
         </if>
         <if test="entrustWay != null and entrustWay!=''">
             and (ifnull(a.ENTRUST_WAY_SET, '*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
@@ -53,10 +51,8 @@
         left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and IFNULL(b.IS_ENABLE, '1') = '1'
         where IFNULL(a.IS_ENABLE, '1') = '1'
         <if test="productId != null and productId!=''">
-            and (ifnull(a.PRODUCT_SET, '*') = '*' or instr(PRODUCT_SET,  #{productId,jdbcType=VARCHAR}) &gt; 0)
-        </if>
-        <if test="groupId != null and groupId!=''">
-            and (ifnull(a.PRODUCT_GROUP_SET, '*') = '*' or  instr(PRODUCT_GROUP_SET,  #{groupId,jdbcType=VARCHAR})&gt;0)
+            and (ifnull(a.APPLY_PRODUCT_FLAG, '0') = '1' or
+            EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCTID=#{productId,jdbcType=VARCHAR}))
         </if>
         <if test="entrustWay != null and entrustWay!=''">
             and (ifnull(a.ENTRUST_WAY_SET, '*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)

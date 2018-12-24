@@ -77,5 +77,79 @@
         order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
 
+    <select id="findClientValidDiscountCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        AND a.COUPON_STRATEGY_TYPE='0'
+        AND a.COUPON_TYPE='1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test="couponLevel!=null and couponLevel!=''">
+            and a.COUPON_LEVEL=#{couponLevel,jdbcType=VARCHAR}
+        </if>
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        order by COUPON_AMOUT ,VALID_END_DATE
+    </select>
+
+    <select id="findClientValidCommonCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        AND a.COUPON_STRATEGY_TYPE !='0'
+        AND a.COUPON_TYPE='1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test="couponLevel!=null and couponLevel!=''">
+            and a.COUPON_LEVEL=#{couponLevel,jdbcType=VARCHAR}
+        </if>
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        order by COUPON_AMOUT desc,VALID_END_DATE
+    </select>
+
+    <select id="findClientValidFreePostageCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        AND a.COUPON_STRATEGY_TYPE ='3'
+        AND a.COUPON_TYPE ='3'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test="couponLevel!=null and couponLevel!=''">
+            and a.COUPON_LEVEL=#{couponLevel,jdbcType=VARCHAR}
+        </if>
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        order by VALID_END_DATE
+    </select>
+
+    <select id="findClientValidMimusPostageCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        AND a.COUPON_STRATEGY_TYPE in ('1','2')
+        AND a.COUPON_TYPE ='2'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test="couponLevel!=null and couponLevel!=''">
+            and a.COUPON_LEVEL=#{couponLevel,jdbcType=VARCHAR}
+        </if>
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        order by COUPON_AMOUT desc,VALID_END_DATE
+    </select>
+
+    <select id="findClientCouponByIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity" >
+         SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        AND a.uuid IN
+        <foreach collection="shortClientCouponList" open="(" close=")" separator="," item="item">
+           #{item.uuid}
+        </foreach>
+        and a.CLIENT_ID= #{clientId,jdbcType=VARCHAR}
+    </select>
 
 </mapper>

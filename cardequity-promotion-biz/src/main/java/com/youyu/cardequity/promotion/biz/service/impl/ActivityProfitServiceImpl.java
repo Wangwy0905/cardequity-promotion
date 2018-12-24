@@ -1,13 +1,13 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
-import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.promotion.biz.dal.dao.ActivityStageCouponMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityStageCouponEntity;
 import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
 import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
-import com.youyu.cardequity.promotion.dto.CouponStageUseAndGetRuleDto;
+import com.youyu.cardequity.promotion.vo.req.GetUseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
 import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
+import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,18 +50,47 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<ActivityDefineRsp> rspList=new ArrayList<ActivityDefineRsp>();
 
         //获取普通活动列表
-        List<ActivityProfitEntity> activityList=activityProfitMapper.findEnableGetCommonActivity(req.getProductId(),req.getGroupId(),req.getEntrustWay());
+        List<ActivityProfitEntity> activityList=activityProfitMapper.findEnableGetCommonActivity(req.getProductId(),req.getEntrustWay());
 
         //将其使用门槛阶梯与活动主信息组装后返回
         rspList.addAll(combinationActivity(activityList,false));
 
         //获取会员活动列表
-        List<ActivityProfitEntity> activityForMemberList=activityProfitMapper.findEnableGetMemberActivity(req.getProductId(),req.getGroupId(),req.getEntrustWay(),req.getClinetType());
+        List<ActivityProfitEntity> activityForMemberList=activityProfitMapper.findEnableGetMemberActivity(req.getProductId(),req.getEntrustWay(),req.getClinetType());
         //将会员活动使用门槛阶梯与活动主信息组装后返回
         rspList.addAll(combinationActivity(activityForMemberList,true));
 
         return rspList;
     }
+
+
+    public List<UseActivityRsp> combActivityRefProductDeal(GetUseActivityReq req) {
+        //定义返回结果
+        List<UseActivityRsp> rsp = new ArrayList<>();
+        //获取所有可以参与的活动：按初始条件，有效日期内
+        //获取普通活动列表
+        List<ActivityProfitEntity> activityList=null;//activityProfitMapper.findEnableGetCommonActivity()
+
+        //空订单或者没有可参与活动直接返回
+
+        //订单中商品先按单价排序，价格约高的优先参与优惠券活动（如任选3件99元等）
+
+        //团购活动优先处理
+
+        //循环活动进行计算优惠金额
+        for (ActivityProfitEntity item:activityList){
+            //校验基本信息：有效期的、商品属性、订单属性、支付属性
+
+            //递归得到所有组合规则1：任选和打折活动选择最优惠金额；规则2：任选有效
+
+            //所有任选都是互斥的
+
+
+        }
+        return rsp;
+    }
+
+
 
     /**
      * 组装活动信息（活动主信息+阶梯信息)
@@ -76,6 +105,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<ActivityDefineRsp> rspList=new ArrayList<ActivityDefineRsp>();
         //循环获取其阶梯信息
         for (ActivityProfitEntity item:activityList){
+
             //转换为传出参数
             ActivityDefineRsp rsp=new ActivityDefineRsp();
             BeanUtils.copyProperties(item, rsp);

@@ -20,7 +20,6 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
     /**
      * 通过常用参数查询可领取优惠券列表
      * @param productId 产品ID
-     * @param groupId 产品分组ID
      * @param clientType 客户类型
      * @param entrustWay 委托方式
      * @return
@@ -28,7 +27,6 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      * 1004244-徐长焕-20181207 新建
      */
     List<ProductCouponEntity> findEnableGetCouponListByCommon(@Param("productId") String productId,
-                                                              @Param("groupId") String groupId,
                                                               @Param("entrustWay") String entrustWay,
                                                               @Param("clientType") String clientType);
 

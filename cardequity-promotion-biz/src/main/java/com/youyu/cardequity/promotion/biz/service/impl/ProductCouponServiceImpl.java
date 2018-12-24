@@ -1,10 +1,10 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
-import com.youyu.cardequity.promotion.biz.dal.dao.CouponStageUseAndGetRuleMapper;
-import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageUseAndGetRuleEntity;
+import com.youyu.cardequity.promotion.biz.dal.dao.CouponStageRuleMapper;
+import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
-import com.youyu.cardequity.promotion.dto.CouponStageUseAndGetRuleDto;
+import com.youyu.cardequity.promotion.dto.CouponStageRuleDto;
 import com.youyu.cardequity.promotion.dto.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
 import com.youyu.cardequity.promotion.vo.rsp.CouponDefineRsp;
@@ -34,7 +34,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     private ProductCouponMapper productCouponMapper;
 
     @Autowired
-    private CouponStageUseAndGetRuleMapper couponStageUseAndGetRuleMapper;
+    private CouponStageRuleMapper couponStageRuleMapper;
     /**
      * 1004259-徐长焕-20181210 新增
      * 功能：查询指定商品可领取的优惠券
@@ -46,13 +46,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
 
         //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
-        List<ProductCouponEntity> productCouponlist= productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getGroupId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClinetType());
+        List<ProductCouponEntity> productCouponlist= productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClinetType());
 
         List<CouponDefineRsp> CouponDefinelist=new ArrayList<CouponDefineRsp>();
 
         //根据客户对上述券领取情况，以及该券领取频率限制进行排除
         for (ProductCouponEntity item : productCouponlist){
-            List<CouponStageUseAndGetRuleEntity> stageList=couponStageUseAndGetRuleMapper.findStageByCouponId(item.getId());
+            List<CouponStageRuleEntity> stageList= couponStageRuleMapper.findStageByCouponId(item.getId());
             //做保护，后面直接通过素组长度判断
             if (stageList==null){
                 stageList=new ArrayList<>(0);
@@ -67,9 +67,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             //有阶梯的券进行排除
             if (stageList.size()>0  && shortStageList.size()>0){
 
-                List<CouponStageUseAndGetRuleDto> couponStageList=new ArrayList<CouponStageUseAndGetRuleDto>();
+                List<CouponStageRuleDto> couponStageList=new ArrayList<CouponStageRuleDto>();
 
-                for (CouponStageUseAndGetRuleEntity stageItem:stageList) {
+                for (CouponStageRuleEntity stageItem:stageList) {
                     //排除用户领取频率限制的
                     boolean isExsit=false;
                     for (ShortCouponDetailDto shortItem:shortStageList) {
@@ -81,7 +81,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     }
                     //该阶梯没有领取频率限制则可领取
                     if (!isExsit)
-                        couponStageList.add(BeanPropertiesConverter.copyProperties(stageItem, CouponStageUseAndGetRuleDto.class));
+                        couponStageList.add(BeanPropertiesConverter.copyProperties(stageItem, CouponStageRuleDto.class));
                 }
                 //有阶梯的优惠券，如果有0个阶梯能领取该券可领取，否则该券不能领取
                 if (couponStageList.size()>0) {
@@ -92,7 +92,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
             //没有阶梯但是也没有任何领取限制的全部可领取
             else if (stageList.size()>0 && shortStageList.size()<=0){
-                List<CouponStageUseAndGetRuleDto> couponStageList=BeanPropertiesConverter.copyPropertiesOfList(stageList, CouponStageUseAndGetRuleDto.class);
+                List<CouponStageRuleDto> couponStageList=BeanPropertiesConverter.copyPropertiesOfList(stageList, CouponStageRuleDto.class);
                 CouponDefineRsp rsp=BeanPropertiesConverter.copyProperties(item, CouponDefineRsp.class);
                 rsp.setCouponStageDtoList(couponStageList);
                 CouponDefinelist.add(rsp);

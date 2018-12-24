@@ -55,6 +55,24 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
     private String couponShortDesc;
 
     /**
+     * 门槛触发类型:0-按买入金额 1-按买入数量（应设置其中之一，如果第二件5折可在此设置）
+     */
+    @Column(name = "TRIGGER_BY_TYPE")
+    private String triggerByType;
+
+    /**
+     * 值起始（不含）:没有阶梯填(0,999999999]
+     */
+    @Column(name = "BEGIN_VALUE")
+    private BigDecimal beginValue;
+
+    /**
+     * 结束值（含）:最大值为999999999；
+     */
+    @Column(name = "END_VALUE")
+    private BigDecimal endValue;
+
+    /**
      * 客户号:
      */
     @Column(name = "CLIENT_ID")
@@ -107,6 +125,12 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
      */
     @Column(name = "BUSIN_DATE")
     private LocalDate BusinDate;
+
+    /**
+     * 级别：0-自定义 1-全局
+     */
+    @Column(name = "COUPON_LEVEL")
+    private String couponLevel;
 
 
     /**

@@ -2,9 +2,7 @@ package com.youyu.cardequity.promotion.dto;
 
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import com.youyu.common.dto.IBaseDto;
+
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiModel;

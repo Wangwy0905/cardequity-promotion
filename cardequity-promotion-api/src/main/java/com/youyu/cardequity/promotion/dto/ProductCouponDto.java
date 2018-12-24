@@ -37,11 +37,11 @@ public class ProductCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "优惠短描:如满3件减20")
     private String couponShortDesc;
 
-    @ApiModelProperty(value = "专属商品集合:订单涉及门槛属性：只有这些买入商品才提供优惠，但是具体优惠需要通过阶梯表获取，为*标识所有")
-    private String productSet;
+    @ApiModelProperty(value = "说明")
+    private String couponDesc;
 
-    @ApiModelProperty(value = "专属商品组集合:订单涉及门槛属性：只有这些买入商品组的商品才提供优惠，为*标识所有")
-    private String productGroupSet;
+    @ApiModelProperty(value = "级别：0-自动义 1-全局")
+    private String couponLevel;
 
     @ApiModelProperty(value = "专属客户类型集合:订单涉及门槛属性：只有这些这些客户类型才提供优惠。多种客户类型用逗号相隔，为*标识所有")
     private String clientTypeSet;
@@ -94,11 +94,14 @@ public class ProductCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "领取方式:0-自动 1-手动 ")
     private String getType;
 
-    @ApiModelProperty(value = "叠加码:定义为8位码。相同标识码可叠加，多个以逗号相隔(设置该券时，应向操作员自动展示可叠加券列表)，为空代表所有")
-    private String reCouponCode;
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
     @ApiModelProperty(value = "叠加标志:0-不可叠加 1-可叠加 2-自定义（建议规则简单点，不采用该值）")
     private String reCouponFlag;
+
+    @ApiModelProperty(value = "适用商品类型:0-自动义商品范围 1-全部")
+    private String applyProductFlag;
 
     @ApiModelProperty(value = "产生者:")
     private String createAuthor;

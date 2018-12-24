@@ -16,14 +16,11 @@ public class ClientObtainCouponReq {
     @ApiModelProperty(value = "优惠券id：必填")
     private String couponId;
 
-    @ApiModelProperty(value = "所属阶梯id：对阶梯的优惠券必填")
+    @ApiModelProperty(value = "所属阶梯id：对有门槛的优惠券必填")
     private String stageId;
 
     @ApiModelProperty(value = "商品id：指定相关商品，为空不校验该券是否对应该商品可使用")
     private String productId;
-
-    @ApiModelProperty(value = "商品组id：为空但是productId不为空需要服务层调商品中心获取")
-    private String groupId;
 
     @ApiModelProperty(value = "客户类型:冗余，服务层调用时传入空，需要调用用户中心进行查询该字段")
     private String clinetType;

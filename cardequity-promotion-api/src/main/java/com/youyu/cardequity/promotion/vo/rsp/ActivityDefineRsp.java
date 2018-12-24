@@ -1,7 +1,6 @@
 package com.youyu.cardequity.promotion.vo.rsp;
 
 import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
-import com.youyu.cardequity.promotion.dto.CouponStageUseAndGetRuleDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;

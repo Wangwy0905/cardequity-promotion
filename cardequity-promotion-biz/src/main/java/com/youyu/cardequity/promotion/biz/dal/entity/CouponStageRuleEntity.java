@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "TB_COUPON_STAGE_USE_AND_GET_RULE")
-public class CouponStageUseAndGetRuleEntity extends com.youyu.common.entity.BaseEntity<String> {
+public class CouponStageRuleEntity extends com.youyu.common.entity.BaseEntity<String> {
     /**
      * 阶段编号:
      */
@@ -27,12 +27,6 @@ public class CouponStageUseAndGetRuleEntity extends com.youyu.common.entity.Base
      */
     @Column(name = "COUPON_SHORT_DESC")
     private String couponShortDesc;
-
-    /**
-     * 操作方式:0-获取(满返券时设置，其实用不上应该是通过推广发放) 1-使用
-     */
-    @Column(name = "OP_COUPON_TYPE")
-    private String opCouponType;
 
     /**
      * 门槛触发类型:0-按买入金额 1-按买入数量（应设置其中之一，如果第二件5折可在此设置）

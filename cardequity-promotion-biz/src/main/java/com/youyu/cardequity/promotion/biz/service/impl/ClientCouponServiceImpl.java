@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.promotion.biz.constant.CommonConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
@@ -14,6 +15,7 @@ import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.KeyValue;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
@@ -28,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 
@@ -53,7 +56,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     private ProductCouponMapper productCouponMapper;
 
     @Autowired
-    private CouponStageUseAndGetRuleMapper couponStageUseAndGetRuleMapper;
+    private CouponStageRuleMapper couponStageRuleMapper;
 
     @Autowired
     private CouponQuotaRuleMapper couponQuotaRuleMapper;
@@ -63,6 +66,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
     @Autowired
     private ProfitConflictOrReUseRefMapper profitConflictOrReUseRefMapper;
+
+    @Autowired
+    private CouponRefProductMapper couponRefProductMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientCouponServiceImpl.class);
 
@@ -75,6 +81,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * 开发日志
      * 1004247-徐长焕-20181213 新增
      */
+    @Override
     public List<ClientCouponDto> findClientCoupon(String clientId) {
         List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientCoupon(clientId);
         return BeanPropertiesConverter.copyPropertiesOfList(clientCouponEnts, ClientCouponDto.class);
@@ -95,16 +102,17 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CommonBoolDto<ClientCouponDto> dto = new CommonBoolDto<ClientCouponDto>();
         dto.setSuccess(true);
 
+        //领取后存储的信息
         ClientCouponEntity entity = new ClientCouponEntity();
         BeanUtils.copyProperties(req, entity);
 
         GetUseEnableCouponReq checkreq = new GetUseEnableCouponReq();
         BeanUtils.copyProperties(req, checkreq);
+        //如果需要校验相关联产品
         if (!CommonUtils.isEmptyorNull(req.getProductId())) {
             OrderProductDetailDto orderProductDetailDto = new OrderProductDetailDto();
             orderProductDetailDto.setProductId(req.getProductId());
-            orderProductDetailDto.setGroupId(req.getGroupId());
-            List<OrderProductDetailDto> productLsit = new ArrayList<OrderProductDetailDto>(1);
+            List<OrderProductDetailDto> productLsit = new ArrayList<>(1);
             productLsit.add(orderProductDetailDto);
             checkreq.setProductList(productLsit);
         }
@@ -134,12 +142,20 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         }
 
         //获取领取的阶梯
-        CouponStageUseAndGetRuleEntity couponStage = null;
+        CouponStageRuleEntity couponStage = null;
         if (!CommonUtils.isEmptyorNull(req.getStageId())) {
-            couponStage = couponStageUseAndGetRuleMapper.findCouponStageById(coupon.getId(), req.getStageId(), OpCouponType.USERULE.getDictValue());
+            couponStage = couponStageRuleMapper.findCouponStageById(coupon.getId(), req.getStageId());
             //如果找不到阶梯则传入参数有误
             if (couponStage == null) {
                 throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+            }
+
+        }else{//保护一下如果没有传入StageId，且该券下只有一个id则自动补全
+            List<CouponStageRuleEntity> stageByCouponId = couponStageRuleMapper.findStageByCouponId(coupon.getId());
+            if (stageByCouponId.size()==1)
+                couponStage =stageByCouponId.get(0);
+            if (stageByCouponId.size()>1){
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getDesc());
             }
         }
 
@@ -165,13 +181,22 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         if (couponStage != null) {
             entity.setCouponAmout(couponStage.getCouponValue());
             entity.setCouponShortDesc(couponStage.getCouponShortDesc());
+            entity.setTriggerByType(couponStage.getTriggerByType());
+            entity.setBeginValue(couponStage.getBeginValue());
+            entity.setEndValue(couponStage.getEndValue());
         } else {
             entity.setCouponAmout(coupon.getProfitValue());
             entity.setCouponShortDesc(coupon.getCouponShortDesc());
+            entity.setTriggerByType(TriggerByType.NUMBER.getDictValue());
+            entity.setBeginValue(BigDecimal.ZERO);
+            entity.setEndValue(CommonConstant.IGNOREVALUE);
         }
+
         entity.setCouponStrategyType(coupon.getCouponStrategyType());
+        entity.setCouponShortDesc(coupon.getCouponShortDesc());
         entity.setCouponType(coupon.getCouponType());
         entity.setCouponLable(coupon.getCouponLable());
+        entity.setCouponLevel(coupon.getCouponLevel());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
         entity.setStatus(CouponStatus.NORMAL.getDictValue());
         entity.setJoinOrderId(req.getActivityId());
@@ -198,7 +223,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      */
     @Override
     public List<ClientCouponDto> findEnableUseCoupon(GetUseEnableCouponReq req) {
-        Map<String, ProductCouponEntity> couponMap = new HashedMap();
 
         if (CommonUtils.isEmptyorNull(req.getClinetId())) {
             throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
@@ -210,22 +234,16 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         ClientCouponDto rspdto = null;
 
         for (ClientCouponEntity item : clientCouponList) {
+            //校验基本信息，校验阶梯使用门槛是根据买入金额和数量在下订单时进行计算
             CommonBoolDto dto = checkCouponFrist(item, req, true);
             if (!dto.getSuccess()) {
                 continue;
             }
 
-            //校验阶梯使用门槛：根据买入金额和数量，是在使用时进行计算
-
             rspdto = new ClientCouponDto();
             BeanUtils.copyProperties(item, rspdto);
             rsp.add(rspdto);
         }
-        //获取最优方案算法
-
-        //清除缓存
-        couponMap.clear();
-        couponMap = null;
 
         return rsp;
     }
@@ -236,12 +254,269 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * 1.根据订单或待下单商品列表校验了使用门槛
      * 2.根据冲突关系按策略计算能使用的券
      * 3.计算出每张券的适配使用的商品列表
+     * 4.前提不存在折扣券，折扣形式设置为活动
      *
      * @param req 本次订单详情
      * @return 推荐使用券组合及应用对应商品详情
      */
     @Override
     public List<UseCouponRsp> combCouponRefProductDeal(GetUseEnableCouponReq req) {
+
+        List<UseCouponRsp> rsps=new ArrayList<>(2);
+        //返回值
+        Map<String, UseCouponRsp> optimalUseCouponRsp = new HashedMap(2);
+        optimalUseCouponRsp.put(CouponActivityLevel.GLOBAL.getDictValue(), null);
+        optimalUseCouponRsp.put(CouponActivityLevel.PART.getDictValue(), null);
+
+
+        //临时值
+        UseCouponRsp useCouponRsp = null;
+        //临时变量
+        CommonBoolDto dto = new CommonBoolDto();
+        dto.setSuccess(true);
+
+        //优惠券基本信息
+        ProductCouponEntity coupon = null;
+
+        List<ClientCouponEntity> enableCouponList = null;
+        //如果是指定了使用的券，检验后用使用的券
+        if (req.getObtainCouponList() != null && req.getObtainCouponList().size() > 0) {
+            enableCouponList = clientCouponMapper.findClientCouponByIds(req.getClinetId(), req.getObtainCouponList());
+        } else {
+            //获取已领取的有效优惠券：排除过期，已使用、使用中的券，按优惠金额已排序后的
+            //等阶券无法参与排序
+            enableCouponList = clientCouponMapper.findClientCoupon(req.getClinetId());
+        }
+
+        //空订单或者没有可用优惠券直接返回
+        if (req.getProductList() == null ||
+                enableCouponList == null ||
+                req.getProductList().size() <= 0 ||
+                enableCouponList.size() <= 0) {
+            return rsps;
+        }
+        //输入参数不要变动，需要copy副本
+        List<OrderProductDetailDto> productList = BeanPropertiesConverter.copyPropertiesOfList(req.getProductList(), OrderProductDetailDto.class);
+
+        for (ClientCouponEntity clientCoupon : enableCouponList) {
+            //校验基本信息
+            dto = checkCouponFrist(clientCoupon, req, true);
+            if (!dto.getSuccess() ||
+                    clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue()) ||
+                    clientCoupon.getCouponType().equals(CouponType.FREETRANSFERFARE.getDictValue())) {
+                continue;
+            }
+            coupon = (ProductCouponEntity) dto.getData();
+
+            //装箱返回数据
+            useCouponRsp = new UseCouponRsp();
+            useCouponRsp.setClientId(clientCoupon.getClientId());
+            useCouponRsp.setCouponId(clientCoupon.getCouponId());
+            useCouponRsp.setProfitAmount(clientCoupon.getCouponAmout());
+            useCouponRsp.setReCouponFlag(coupon.getReCouponFlag());
+            useCouponRsp.setStageId(clientCoupon.getStageId());
+
+            //保护一下如果券下面只有一个阶梯，算作使用该券
+            CouponStageRuleEntity stage = protectCompletion(clientCoupon);
+
+
+            if (!CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
+                useCouponRsp.setStageId(stage.getId());
+                clientCoupon.setStageId(stage.getId());
+
+            }
+            /**
+             * 1.计算本券的适配商品时
+             * 2.必须达到使用条件
+             */
+            if (VaildCouponForUse(productList, useCouponRsp, clientCoupon, coupon)) {
+
+                //比较两者得到最优惠
+                if (optimalUseCouponRsp.get(clientCoupon.getCouponLevel()) == null ||
+                        useCouponRsp.getProfitAmount().compareTo(optimalUseCouponRsp.get(clientCoupon.getCouponLevel()).getProfitAmount()) < 0) {
+                    optimalUseCouponRsp.put(clientCoupon.getCouponLevel(), useCouponRsp);
+                }
+
+            }
+        }
+
+        if (optimalUseCouponRsp.get(CouponActivityLevel.GLOBAL.getDictValue())!=null) {
+            rsps.add(optimalUseCouponRsp.get(CouponActivityLevel.GLOBAL.getDictValue()));
+        }
+        if (optimalUseCouponRsp.get(CouponActivityLevel.PART.getDictValue())!=null) {
+            rsps.add(optimalUseCouponRsp.get(CouponActivityLevel.PART.getDictValue()));
+        }
+        optimalUseCouponRsp.clear();
+
+        return rsps;
+    }
+
+
+    /**
+     * 保护并补全阶梯信息
+     *
+     * @param clientCoupon
+     * @return
+     */
+    private CouponStageRuleEntity protectCompletion(ClientCouponEntity clientCoupon) {
+        CouponStageRuleEntity stage = null;
+        //保护一下如果券下面只有一个阶梯，算作使用该券
+        if (CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
+            List<CouponStageRuleEntity> stageByCouponId = couponStageRuleMapper.findStageByCouponId(clientCoupon.getCouponId());
+            //领券只能指定某个阶梯
+            if (stageByCouponId.size() > 1)
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getDesc());
+            if (stageByCouponId.size() == 1) {
+                stage = stageByCouponId.get(0);
+            }
+        } else {
+            //先取得对应阶梯的信息
+            stage = couponStageRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
+                    clientCoupon.getStageId());
+            if (stage == null) {
+                throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+            }
+        }
+        return stage;
+    }
+
+    /**
+     * 计算优惠金额
+     *
+     * @param useCouponRsp
+     * @param productItem  适用上的商品信息：含价格、数量
+     * @param clientCoupon 领取券信息：领取人、编号
+     * @param applyNum     适用的数量，对于等阶满减券而言表示等阶满减券的步长倍数
+     * @return
+     */
+    private BigDecimal calculationProfitAmount(UseCouponRsp useCouponRsp, OrderProductDetailDto productItem, ClientCouponEntity clientCoupon, BigDecimal applyNum) {
+        //因为后面券也会改变product对象信息，所以每个券能适用的商品都需要拷贝一个副本
+        OrderProductDetailDto product = new OrderProductDetailDto();
+        BeanUtils.copyProperties(productItem, product);
+        useCouponRsp.getProductLsit().add(product);
+        //优惠金额
+        BigDecimal profitAmount = BigDecimal.ZERO;
+        //买入总额
+        BigDecimal buyAmount = BigDecimal.ZERO;
+        //折扣券
+        if (CouponStrategyType.discount.getDictValue().equals(clientCoupon.getCouponStrategyType())) {
+            //无指定适用范围则按所有数量都打折
+            if (applyNum.compareTo(BigDecimal.ZERO) <= 0) {
+                applyNum = product.getAppCount();
+            }
+            //优惠金额=总额*(1-折扣)
+            buyAmount = product.getPrice().multiply(applyNum);
+            profitAmount = buyAmount.multiply(BigDecimal.ONE.subtract(clientCoupon.getCouponAmout()));
+            product.setProfitAmount(profitAmount);
+            useCouponRsp.setProfitAmount(useCouponRsp.getProfitAmount().add(profitAmount));//加总优惠金额
+            //满减券只需记录总的优惠金额，记到每个商品即单位上是无意义的（比如5个都满足，哪几个算有优惠？）
+        } else if (CouponStrategyType.equalstage.getDictValue().equals(clientCoupon.getCouponStrategyType())) {
+            //每满200减20，discountApplyNum表示等阶满减券的步长倍数
+            profitAmount = clientCoupon.getCouponAmout().multiply(applyNum);
+            useCouponRsp.setProfitAmount(useCouponRsp.getProfitAmount().add(profitAmount));//加总优惠金额
+        } else {//普通满减券，每次适配到商品都不会改变其优惠值
+            profitAmount = clientCoupon.getCouponAmout();
+            useCouponRsp.setProfitAmount(useCouponRsp.getProfitAmount().add(profitAmount));//加总优惠金额
+        }
+        return profitAmount;
+    }
+
+
+
+    /**
+     * 校验优惠券使用门槛
+     *
+     * @param productList
+     * @param useCouponRsp
+     * @param clientCoupon
+     * @param coupon
+     * @return
+     */
+    private boolean VaildCouponForUse(List<OrderProductDetailDto> productList, UseCouponRsp useCouponRsp, ClientCouponEntity clientCoupon, ProductCouponEntity coupon) {
+        //满足使用条件
+        boolean flag = false;
+        //临时变量
+        CommonBoolDto dto = new CommonBoolDto();
+        dto.setSuccess(true);
+        BigDecimal condition = BigDecimal.ZERO;
+        String discountApplyStage=DiscountApplyStage.ALL.getDictValue();
+
+        if (CommonUtils.isEmptyorNull(clientCoupon.getStageId()))
+            clientCoupon.setBeginValue(BigDecimal.ZERO);
+        //优惠券适配商品统计，该productList按单价进行排序后的
+        for (OrderProductDetailDto productItem : productList) {
+
+            //校验符合商品基本属性
+            dto = checkCouponForProduct(coupon, productItem.getProductId());
+            if (dto.getSuccess()) {
+
+                //按数量统计
+                if (clientCoupon.getTriggerByType().equals(TriggerByType.NUMBER.getDictValue())) {
+                    condition = condition.add(productItem.getAppCount());
+                    if (condition.compareTo(clientCoupon.getBeginValue()) >= 0) {
+                        flag = true;
+                        BigDecimal applyNum = productItem.getAppCount();
+                        //折扣券：虽然按折扣只从小到打排序，但是并不表示排最前的是订单最优惠的，因为其在订单中应用商品范围是不同的，所以需要对所有券循环
+                        if (CouponStrategyType.discount.getDictValue().equals(clientCoupon.getCouponStrategyType())) {
+                            //算入门槛内的才进行打折，否则全部都要打折
+                            if (DiscountApplyStage.CONDITION.getDictValue().equals(discountApplyStage)) {
+                                applyNum = productItem.getAppCount().subtract(condition.subtract(clientCoupon.getBeginValue()));
+                                //优惠金额=达到优惠条件总额*(1-折扣),达到优惠条件总额=(买入数量-(总数量-达标门槛))*价格
+                                calculationProfitAmount(useCouponRsp, productItem, clientCoupon, applyNum);
+                                break;
+                            }
+
+                        } else if (CouponStrategyType.equalstage.getDictValue().equals(clientCoupon.getCouponStrategyType())) {
+                            if (clientCoupon.getBeginValue().compareTo(BigDecimal.ZERO) > 0)
+                                applyNum = condition.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                        } else {
+                            calculationProfitAmount(useCouponRsp, productItem, clientCoupon, applyNum);
+                            break;//普通满减券满足条件后计算下一个券
+                        }
+                        calculationProfitAmount(useCouponRsp, productItem, clientCoupon, applyNum);
+
+                    }
+                } else {
+                    condition = condition.add(productItem.getAppCount().multiply(productItem.getPrice()));
+                    if (condition.compareTo(clientCoupon.getBeginValue()) >= 0) {
+                        flag = true;
+                        BigDecimal applyNum = productItem.getAppCount();
+                        //折扣券：虽然按折扣只从小到打排序，但是并不表示排最前的是订单最优惠的，因为其在订单中应用商品范围是不同的，所以需要对所有券循环
+                        if (CouponStrategyType.discount.getDictValue().equals(clientCoupon.getCouponStrategyType())) {
+                            //算入门槛内的才进行打折，否则全部都要打折
+                            if (DiscountApplyStage.CONDITION.getDictValue().equals(discountApplyStage)) {
+
+                                BigDecimal t_count = condition.subtract(clientCoupon.getBeginValue()).divide(productItem.getPrice()).setScale(0, BigDecimal.ROUND_DOWN);
+                                applyNum = productItem.getAppCount().subtract(t_count);
+                                //优惠金额=达到优惠条件总额*(1-折扣),达到优惠条件总额=(买入数量-(总数量-达标门槛))*价格
+                                calculationProfitAmount(useCouponRsp, productItem, clientCoupon, applyNum);
+                                break;
+                            }
+
+                        } else if (CouponStrategyType.equalstage.getDictValue().equals(clientCoupon.getCouponStrategyType())) {
+                            if (clientCoupon.getBeginValue().compareTo(BigDecimal.ZERO) > 0)
+                                applyNum = condition.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                        } else {//普通满减券，达到门槛后优惠金额固定
+                            calculationProfitAmount(useCouponRsp, productItem, clientCoupon, applyNum);
+                            break;
+                        }
+                        calculationProfitAmount(useCouponRsp, productItem, clientCoupon, applyNum);
+
+                    }
+                }
+
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * 保守策略下计算[普通券]最优券组合及其使用情况
+     *
+     * @param req
+     * @return
+     */
+    public List<UseCouponRsp> stageFastCompByCommon(GetUseEnableCouponReq req, String couponLevel) {
         //定义返回结果
         List<UseCouponRsp> rsp = new ArrayList<>();
 
@@ -249,7 +524,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         dto.setSuccess(true);
 
         //获取已领取的有效优惠券：排除过期，已使用、使用中的券
-        List<ClientCouponEntity> enableCouponList = clientCouponMapper.findClientValidCoupon(req.getClinetId());
+        List<ClientCouponEntity> enableCouponList = clientCouponMapper.findClientValidCommonCoupon(req.getClinetId(),
+                couponLevel);
         List<OrderProductDetailDto> productList = req.getProductList();
 
         //空订单或者没有可用优惠券直接返回
@@ -289,14 +565,21 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         });
 
         /**
-         * 速算策略:按优惠金额从大到小保证如按金额排序有券1,2,3,4；
+         * 速算策略:
+         * 假设如按优惠金额排序有券1,2,3,4；
          * 场景1-1：如果券1和券2、券3、券4互斥，保证券1的使用，哪怕券2、券3、券4总优惠金额>券1的总优惠金额；
          * 场景1-2：在券1已经明确可以使用情况下，如果券2和券3、券4互斥，保证券2的使用，哪怕券3、券4总优惠金额>券2的总优惠金额
+         * 场景2：如果优惠券1优惠200元，但是涉及到商品A和B，而如果优惠券2只优惠150,优惠券3只优惠100，但是他们可以分别应用于商品A和商品B，两者之和会大于优惠券1的，根据此策略也只使用优惠券1
+         * 场景3：如果券1和券2互斥，订单中涉及商品A、B、C、D、E；应用券1对应商品A和B，但是当券2可以应用于C和D时，券2也是可以用的
+         * 场景4：如果券1和券2是同一种券的不同使用门槛（如券1是满500减50元，券2是满400减40），分两种规则：规则1同上述场景3互斥但是同一订单可使用，规则2只会用金额最大的券1
+         * 场景5：如果券1和券2是同一种券的无使用门槛（如券1券2是减50元，根据合法规则领了两次），则券1和券2在无设置冲突关系时都可叠加使用
+         * 场景6：如果券1和券2是同一种券的相同使用门槛（如券1和2都是满500减50元）只会使用券1
+         * 订单互斥最优策略：同一个订单对于非全局类的券只能应用一张
          * 最优策略：暂不实现
-         * 多张有门槛同种券使用规则-保守规则：每种券每次只能使用一张；
+         * 多张有门槛同种券使用规则-保守规则：每种券每次只能使用一张；默认
          * 多张有门槛同种券使用规则-最优规则：每种券每次可以使用多张，但是不能同时适用于同一商品
          */
-        String stageCouponUseRuleConfig = "";//todo应获取于配置300002参数表，获取于redis
+        String stageCouponUseRuleConfig = StageCouponUseRule.SIMPLE.getDictValue();//todo应获取于配置300002参数表，获取于redis
         Map<String, OrderProductDetailDto> orderProductDetailDtoMap = new HashedMap();
         for (ClientCouponEntity clientCoupon : enableCouponList) {
 
@@ -305,10 +588,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 continue;
             }
             coupon = (ProductCouponEntity) dto.getData();
-            //运费券不需要关注
-            if (CouponType.TRANSFERFARE.getDictValue().equals(coupon.getCouponType())){
-                continue;
-            }
+
+            //硬性规定全部设置为冲突，现在profitConflictOrReUseRef表暂时不再使用
+            coupon.setReCouponFlag(ReCouponFlag.DICTCOMMENT);
 
             //查询冲突的券已适用的商品列表，在本券映射适用商品列表时需要排除掉
             orderProductDetailDtoMap = checkAndMutexProducts(rsp,
@@ -335,7 +617,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 });
                 //因为已经按优惠金额进行了排序，所以有同一个券的不同阶梯的已经适用的就是优惠最大的，则本券直接算作不适用
                 if (isExist) {
-                    break;
+                    continue;
                 }
             }
 
@@ -344,10 +626,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
              * 1.计算本券的适配商品时，排除已使用的冲突券适配的商品
              * 2.必须达到使用条件
              */
-            if (!CommonUtils.isEmptyorNull(clientCoupon.getCouponId())) {
-                CouponStageUseAndGetRuleEntity stage = couponStageUseAndGetRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
-                        clientCoupon.getStageId(),
-                        UseGeEndDateFlag.YES.getDictValue());
+            if (!CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
+                CouponStageRuleEntity stage = couponStageRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
+                        clientCoupon.getStageId());
                 if (stage == null) {
                     throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
                 }
@@ -355,6 +636,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 useCouponRsp.setStageId(clientCoupon.getStageId());
                 //优惠金额为指定阶梯的优惠金额
                 useCouponRsp.setProfitAmount(stage.getCouponValue());
+                BigDecimal condition = BigDecimal.ZERO;
                 //优惠券适配商品统计，该productList按单价进行排序后的
                 for (OrderProductDetailDto product : productList) {
 
@@ -362,9 +644,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     if (orderProductDetailDtoMap.containsKey(product.getProductId()))
                         continue;
 
-                    BigDecimal condition = BigDecimal.ZERO;
+
                     //校验符合商品基本属性
-                    dto = checkCouponForProduct(coupon, product.getProductId(), product.getGroupId());
+                    dto = checkCouponForProduct(coupon, product.getProductId());
                     if (dto.getSuccess()) {
 
                         useCouponRsp.getProductLsit().add(product);
@@ -400,7 +682,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     if (orderProductDetailDtoMap.containsKey(product.getProductId()))
                         continue;
                     //校验符合的的商品属性第一个即为适用上的商品
-                    dto = checkCouponForProduct(coupon, product.getProductId(), product.getGroupId());
+                    dto = checkCouponForProduct(coupon, product.getProductId());
                     if (dto.getSuccess()) {
                         useCouponRsp.getProductLsit().add(product);
                         rsp.add(useCouponRsp);
@@ -417,7 +699,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         couponMap = null;
         return rsp;
     }
-
 
     /**
      * 初步校验：
@@ -756,29 +1037,23 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      *
      * @param coupon
      * @param productId
-     * @param groupId
      * @return
      */
-    private CommonBoolDto checkCouponForProduct(ProductCouponEntity coupon, String productId, String groupId) {
+    private CommonBoolDto checkCouponForProduct(ProductCouponEntity coupon, String productId) {
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
-        //b.商品属性校验
-        //该商品属性是否允许领取该券
-        if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getProductSet(),
-                productId)) {
 
-            dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getDesc());
-            return dto;
+        // ApplyProductFlag空值做保护
+        if (!ApplyProductFlag.ALL.equals(coupon.getApplyProductFlag())) {
+            //该商品属性是否允许领取该券
+            CouponRefProductEntity entity = couponRefProductMapper.findByBothId(coupon.getId(), productId);
+            if (entity == null) {
+                dto.setSuccess(false);
+                dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getDesc());
+                return dto;
+            }
         }
 
-        //该商品组是否允许领取该券
-        if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getProductGroupSet(),
-                groupId)) {
-            dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getDesc());
-            return dto;
-        }
         return dto;
     }
 
@@ -810,7 +1085,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         if (req.getProductList() != null && req.getProductList().size() > 0) {
             dto.setSuccess(false);
             for (OrderProductDetailDto item : req.getProductList()) {
-                dto = checkCouponForProduct(coupon, item.getProductId(), item.getGroupId());
+                dto = checkCouponForProduct(coupon, item.getProductId());
                 //该券不适用任何商品，则该券不能用
                 if (dto.getSuccess())
                     dto.setSuccess(true);

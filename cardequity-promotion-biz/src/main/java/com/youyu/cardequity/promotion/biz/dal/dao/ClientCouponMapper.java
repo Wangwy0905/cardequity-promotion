@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto;
+import com.youyu.cardequity.promotion.dto.ShortClientCouponDto;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -72,6 +73,42 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      * 1004246-徐长焕-20181213 新增
      */
     List<ClientCouponEntity> findClientValidCoupon(@Param("clientId") String clientId);
+
+    /**
+     * 获取客户已领的折扣券
+     * @param clientId
+     * @return
+     */
+    List<ClientCouponEntity> findClientValidDiscountCoupon(@Param("clientId") String clientId,@Param("couponLevel") String couponLevel);
+
+    /**
+     * 获取客户已领的普通券：红包、一般优惠券
+     * @param clientId
+     * @return
+     */
+    List<ClientCouponEntity> findClientValidCommonCoupon(@Param("clientId") String clientId,@Param("couponLevel") String couponLevel);
+
+    /**
+     * 获取客户已领的免邮券
+     * @param clientId
+     * @return
+     */
+    List<ClientCouponEntity> findClientValidFreePostageCoupon(@Param("clientId") String clientId,@Param("couponLevel") String couponLevel);
+
+    /**
+     * 获取客户已领的运费券
+     * @param clientId
+     * @return
+     */
+    List<ClientCouponEntity> findClientValidMimusPostageCoupon(@Param("clientId") String clientId,@Param("couponLevel") String couponLevel);
+
+    /**
+     * 获取客户已领的折扣券
+     * @param clientId
+     * @return
+     */
+    List<ClientCouponEntity> findClientCouponByIds(@Param("clientId") String clientId,@Param("shortClientCouponList") List<ShortClientCouponDto> shortClientCouponList);
+
 }
 
 

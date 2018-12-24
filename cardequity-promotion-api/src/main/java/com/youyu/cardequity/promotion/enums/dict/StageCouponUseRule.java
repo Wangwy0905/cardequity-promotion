@@ -4,9 +4,8 @@ package com.youyu.cardequity.promotion.enums.dict;
  * Created by caiyi on 2018/12/17.
  */
 public enum StageCouponUseRule {
-    SIMPLE("0", "保守规则"),
-    OPTIMAL("1", "最优规则"),
-
+    SIMPLE("0", "保守策略"),
+    OPTIMAL("1", "最优策略"),
     ;
 
     public static final String DICTID = "100179";
