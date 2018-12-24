@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponRefProductMapper">
+    <select id="findByBothId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity">
+    SELECT * FROM tb_Coupon_Ref_Product a
+    WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+    AND a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
+    and a.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findListByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity">
+        SELECT * FROM tb_Coupon_Ref_Product a
+        WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+        <if test="couponId != null and couponId!=''">
+        AND a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
+        </if>
+        <if test="productId != null and productId!=''">
+        and a.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+        </if>
+    </select>
+</mapper>
