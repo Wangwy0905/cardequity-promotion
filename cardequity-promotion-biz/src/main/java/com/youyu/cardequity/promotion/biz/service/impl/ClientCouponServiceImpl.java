@@ -150,11 +150,11 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
             }
 
-        }else{//保护一下如果没有传入StageId，且该券下只有一个id则自动补全
+        } else {//保护一下如果没有传入StageId，且该券下只有一个id则自动补全
             List<CouponStageRuleEntity> stageByCouponId = couponStageRuleMapper.findStageByCouponId(coupon.getId());
-            if (stageByCouponId.size()==1)
-                couponStage =stageByCouponId.get(0);
-            if (stageByCouponId.size()>1){
+            if (stageByCouponId.size() == 1)
+                couponStage = stageByCouponId.get(0);
+            if (stageByCouponId.size() > 1) {
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getDesc());
             }
         }
@@ -250,27 +250,28 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
 
     /**
-     * 按策略获取可用券的组合:不含运费券
+     * 按策略获取可用券的组合:含运费券
      * 1.根据订单或待下单商品列表校验了使用门槛
      * 2.根据冲突关系按策略计算能使用的券
      * 3.计算出每张券的适配使用的商品列表
-     * 4.前提不存在折扣券，折扣形式设置为活动
+     * 4.折扣形式设置为活动
      *
      * @param req 本次订单详情
      * @return 推荐使用券组合及应用对应商品详情
      */
     @Override
     public List<UseCouponRsp> combCouponRefProductDeal(GetUseEnableCouponReq req) {
-
-        List<UseCouponRsp> rsps=new ArrayList<>(2);
         //返回值
+        List<UseCouponRsp> rsps = new ArrayList<>(3);
+
+        //普通券的使用情况
         Map<String, UseCouponRsp> optimalUseCouponRsp = new HashedMap(2);
         optimalUseCouponRsp.put(CouponActivityLevel.GLOBAL.getDictValue(), null);
         optimalUseCouponRsp.put(CouponActivityLevel.PART.getDictValue(), null);
-
-
-        //临时值
+        //临时的券使用情况
         UseCouponRsp useCouponRsp = null;
+        //运费券使用情况
+        UseCouponRsp useTransferCouponRsp = null;
         //临时变量
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
@@ -301,27 +302,41 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         for (ClientCouponEntity clientCoupon : enableCouponList) {
             //校验基本信息
             dto = checkCouponFrist(clientCoupon, req, true);
-            if (!dto.getSuccess() ||
-                    clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue()) ||
-                    clientCoupon.getCouponType().equals(CouponType.FREETRANSFERFARE.getDictValue())) {
+            if (!dto.getSuccess()) {
                 continue;
             }
+
             coupon = (ProductCouponEntity) dto.getData();
 
             //装箱返回数据
             useCouponRsp = new UseCouponRsp();
-            useCouponRsp.setClientId(clientCoupon.getClientId());
-            useCouponRsp.setCouponId(clientCoupon.getCouponId());
+            ClientCouponDto clientCouponDto = new ClientCouponDto();
+            BeanUtils.copyProperties(clientCoupon,clientCouponDto);
+            useCouponRsp.setClientCoupon(clientCouponDto);
             useCouponRsp.setProfitAmount(clientCoupon.getCouponAmout());
-            useCouponRsp.setReCouponFlag(coupon.getReCouponFlag());
-            useCouponRsp.setStageId(clientCoupon.getStageId());
+
+            //存在运费时才处理运费相关券，运费券也只能使用一张
+            if (req.getTransferFare() == null ||
+                    req.getTransferFare().compareTo(BigDecimal.ZERO) <= 0) {
+                //运费券，条件1：选择免邮券，条件2：选择>运费的最接近，如果条件2不满足选择<运费的最接近的券
+                if (clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue()) ||
+                        clientCoupon.getCouponType().equals(CouponType.FREETRANSFERFARE.getDictValue())) {
+                    continue;
+                }
+            } else {
+                if (clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue()) ||
+                        clientCoupon.getCouponType().equals(CouponType.FREETRANSFERFARE.getDictValue())) {
+                    //优惠金额刚好等于运费券则不需要再处理：1.运费券金额刚刚好等于运费，2.免邮券
+                    if (useTransferCouponRsp != null && useTransferCouponRsp.getProfitAmount().compareTo(req.getTransferFare()) == 0)
+                        continue;
+                }
+            }
 
             //保护一下如果券下面只有一个阶梯，算作使用该券
             CouponStageRuleEntity stage = protectCompletion(clientCoupon);
 
-
             if (!CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
-                useCouponRsp.setStageId(stage.getId());
+                clientCouponDto.setStageId(stage.getId());
                 clientCoupon.setStageId(stage.getId());
 
             }
@@ -331,21 +346,41 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
              */
             if (VaildCouponForUse(productList, useCouponRsp, clientCoupon, coupon)) {
 
-                //比较两者得到最优惠
-                if (optimalUseCouponRsp.get(clientCoupon.getCouponLevel()) == null ||
-                        useCouponRsp.getProfitAmount().compareTo(optimalUseCouponRsp.get(clientCoupon.getCouponLevel()).getProfitAmount()) < 0) {
-                    optimalUseCouponRsp.put(clientCoupon.getCouponLevel(), useCouponRsp);
+                //运费券，条件1：选择免邮券，条件2：选择>运费的最接近，如果条件2不满足选择<运费的最接近的券
+                if (clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue())) {
+                    if (useTransferCouponRsp == null)
+                        useTransferCouponRsp = useCouponRsp;
+                    else {
+                        BigDecimal diff = useTransferCouponRsp.getProfitAmount().subtract(req.getTransferFare());
+                        BigDecimal diff2 = useCouponRsp.getProfitAmount().subtract(req.getTransferFare());
+                        //1.都高于原运费，取最小的;2.都低于运费取最大值，本券金额大于运费使用本券
+                        if ((diff.compareTo(BigDecimal.ZERO) > 0 && diff2.compareTo(BigDecimal.ZERO) > 0 && diff.compareTo(diff2) > 0) ||
+                                (diff.compareTo(BigDecimal.ZERO) < 0 && diff.compareTo(diff2) < 0)) {
+                            useTransferCouponRsp = useCouponRsp;
+                        }
+                    }
                 }
-
+                //免邮券：优惠金额不确定
+                else if (clientCoupon.getCouponType().equals(CouponType.FREETRANSFERFARE.getDictValue())) {
+                    useCouponRsp.setProfitAmount(req.getTransferFare());//重置免邮券优惠金额=运费
+                    useTransferCouponRsp = useCouponRsp;
+                } else {
+                    //普通的券比较两者得到最优惠
+                    if (optimalUseCouponRsp.get(clientCoupon.getCouponLevel()) == null ||
+                            useCouponRsp.getProfitAmount().compareTo(optimalUseCouponRsp.get(clientCoupon.getCouponLevel()).getProfitAmount()) < 0) {
+                        optimalUseCouponRsp.put(clientCoupon.getCouponLevel(), useCouponRsp);
+                    }
+                }
             }
         }
 
-        if (optimalUseCouponRsp.get(CouponActivityLevel.GLOBAL.getDictValue())!=null) {
+        //装箱返回
+        if (optimalUseCouponRsp.get(CouponActivityLevel.GLOBAL.getDictValue()) != null)
             rsps.add(optimalUseCouponRsp.get(CouponActivityLevel.GLOBAL.getDictValue()));
-        }
-        if (optimalUseCouponRsp.get(CouponActivityLevel.PART.getDictValue())!=null) {
+        if (optimalUseCouponRsp.get(CouponActivityLevel.PART.getDictValue()) != null)
             rsps.add(optimalUseCouponRsp.get(CouponActivityLevel.PART.getDictValue()));
-        }
+        if (useTransferCouponRsp != null)
+            rsps.add(useTransferCouponRsp);
         optimalUseCouponRsp.clear();
 
         return rsps;
@@ -422,7 +457,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     }
 
 
-
     /**
      * 校验优惠券使用门槛
      *
@@ -439,7 +473,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
         BigDecimal condition = BigDecimal.ZERO;
-        String discountApplyStage=DiscountApplyStage.ALL.getDictValue();
+        String discountApplyStage = DiscountApplyStage.ALL.getDictValue();
 
         if (CommonUtils.isEmptyorNull(clientCoupon.getStageId()))
             clientCoupon.setBeginValue(BigDecimal.ZERO);
@@ -496,7 +530,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                         } else if (CouponStrategyType.equalstage.getDictValue().equals(clientCoupon.getCouponStrategyType())) {
                             if (clientCoupon.getBeginValue().compareTo(BigDecimal.ZERO) > 0)
                                 applyNum = condition.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
-                        } else {//普通满减券，达到门槛后优惠金额固定
+                        } else {//普通满减券、运费券等，达到门槛后优惠金额固定
                             calculationProfitAmount(useCouponRsp, productItem, clientCoupon, applyNum);
                             break;
                         }
@@ -598,10 +632,10 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
             //装箱返回数据
             UseCouponRsp useCouponRsp = new UseCouponRsp();
-            useCouponRsp.setClientId(clientCoupon.getClientId());
-            useCouponRsp.setCouponId(clientCoupon.getCouponId());
-            useCouponRsp.setProfitAmount(coupon.getProfitValue());
-            useCouponRsp.setReCouponFlag(coupon.getReCouponFlag());
+            ClientCouponDto clientCouponDto = new ClientCouponDto();
+            BeanUtils.copyProperties(clientCoupon,clientCouponDto);
+            useCouponRsp.setClientCoupon(clientCouponDto);
+            useCouponRsp.setProfitAmount(clientCoupon.getCouponAmout());
 
             //多张有门槛同种券使用规则-保守规则
             if (stageCouponUseRuleConfig.equals(StageCouponUseRule.SIMPLE.getDictValue())) {
@@ -609,7 +643,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 boolean isExist = CollectionUtils.exists(rsp, new Predicate() {
                     public boolean evaluate(Object object) {
                         UseCouponRsp item = (UseCouponRsp) object;
-                        if (item.getCouponId().equals(clientCoupon.getCouponId()) &&
+                        if (item.getClientCoupon().getCouponId().equals(clientCoupon.getCouponId()) &&
                                 !CommonUtils.isEmptyorNull(clientCoupon.getStageId()))
                             return true;
                         return false;
@@ -633,7 +667,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
                 }
 
-                useCouponRsp.setStageId(clientCoupon.getStageId());
                 //优惠金额为指定阶梯的优惠金额
                 useCouponRsp.setProfitAmount(stage.getCouponValue());
                 BigDecimal condition = BigDecimal.ZERO;
@@ -817,8 +850,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
          */
         for (UseCouponRsp useCouponRsp : rsp) {
             if (ReCouponFlag.CONFLICT.equals(useCouponRsp.getReCouponFlag()) ||
-                    (useCouponRsp.getCouponId().equals(coupon.getId()) &&
-                            !CommonUtils.isEmptyorNull(useCouponRsp.getStageId())) ||
+                    (useCouponRsp.getClientCoupon().getCouponId().equals(coupon.getId()) &&
+                            !CommonUtils.isEmptyorNull(useCouponRsp.getClientCoupon().getStageId())) ||
                     ReCouponFlag.CONFLICT.equals(coupon.getReCouponFlag())) { //
                 List<OrderProductDetailDto> entities = useCouponRsp.getProductLsit();
                 if (entities != null)
@@ -854,7 +887,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
             //查找和该券冲突券已适配的商品集合
             for (UseCouponRsp useCouponRsp : rsp) {
-                if (useCouponRsp.getCouponId().equals(key)) {
+                if (useCouponRsp.getClientCoupon().getCouponId().equals(key)) {
                     List<OrderProductDetailDto> entities = useCouponRsp.getProductLsit();
                     if (entities != null)
                         //将冲突商品集合去重合并

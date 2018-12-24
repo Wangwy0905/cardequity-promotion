@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.vo.rsp;
 
+import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -19,22 +20,13 @@ public class UseCouponRsp {
         productLsit=new ArrayList<>();
     }
 
-    @ApiModelProperty(value = "编号:")
-    private String uuid;
+    @ApiModelProperty(value = "领取的优惠券")
+    private ClientCouponDto clientCoupon;
 
-    @ApiModelProperty(value = "优惠券编号:")
-    private String couponId;
-
-    @ApiModelProperty(value = "阶梯编号:")
-    private String stageId;
-
-    @ApiModelProperty(value = "客户号:")
-    private String clientId;
-
-    @ApiModelProperty(value = "总优惠金额")
+    @ApiModelProperty(value = "实际优惠金额")
     private BigDecimal profitAmount;
 
-    @ApiModelProperty(value = "叠加标志:0-不可叠加 1-可叠加 2-自定义（建议规则简单点）")
+    @ApiModelProperty(value = "叠加标识")
     private String reCouponFlag;
 
     @ApiModelProperty(value = "相关商品明细，关联该券使用的商品及数量")

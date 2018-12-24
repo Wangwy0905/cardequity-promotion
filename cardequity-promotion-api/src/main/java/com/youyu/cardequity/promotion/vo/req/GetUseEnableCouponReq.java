@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class GetUseEnableCouponReq {
     private String activityId;
 
     @ApiModelProperty(value = "本次订单未优惠前运费")
-    private String transferFare;
+    private BigDecimal transferFare;
 
     @ApiModelProperty(value = "指定使用的优惠券，必须是已领用的：每个级别（全局券和非全局）只能指定一个")
     private List<ShortClientCouponDto> obtainCouponList;
