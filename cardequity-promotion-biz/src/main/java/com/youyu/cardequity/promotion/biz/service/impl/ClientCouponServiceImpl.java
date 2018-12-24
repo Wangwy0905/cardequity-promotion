@@ -334,11 +334,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
             //保护一下如果券下面只有一个阶梯，算作使用该券
             CouponStageRuleEntity stage = protectCompletion(clientCoupon);
-
             if (!CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
                 clientCouponDto.setStageId(stage.getId());
                 clientCoupon.setStageId(stage.getId());
-
             }
             /**
              * 1.计算本券的适配商品时
