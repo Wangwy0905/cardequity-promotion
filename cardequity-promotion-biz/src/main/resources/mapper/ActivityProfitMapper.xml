@@ -65,24 +65,24 @@
         and (b.PER_DATE_MAX_AMOUNT is null or b.PER_DATE_MAX_AMOUNT &gt;
         (select sum(ifnull(c.Profit_Value, 0))
         from TB_CLIENT_TAKE_IN_ACTIVITY c
-        where BUSIN_CODE = '1006'
+        where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (b.Max_Amount is null or b.Max_Amount &gt;
         (select sum(ifnull(c.Profit_Value, 0))
         from TB_CLIENT_TAKE_IN_ACTIVITY c
-        where BUSIN_CODE = '1006'
+        where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
         and (b.Per_Date_Max_Count is null or b.Per_Date_Max_Count &gt;
         (select sum(ifnull(c.Product_Count, 0))
         from TB_CLIENT_TAKE_IN_ACTIVITY c
-        where BUSIN_CODE = '1006'
+        where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (b.Max_Count is null or b.Max_Count &gt;
         (select sum(ifnull(c.Product_Count, 0))
         from TB_CLIENT_TAKE_IN_ACTIVITY c
-        where BUSIN_CODE = '1006'
+        where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID));
     </select>
     <select id="findById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">

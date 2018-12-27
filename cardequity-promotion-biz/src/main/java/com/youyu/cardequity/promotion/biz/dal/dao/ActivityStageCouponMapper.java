@@ -20,7 +20,7 @@ public interface ActivityStageCouponMapper extends YyMapper<ActivityStageCouponE
      * @param activityId 活动id
      * @return
      */
-    public List<ActivityStageCouponEntity> findActivityProfitDetail(@Param("activityId") String activityId);
+    List<ActivityStageCouponEntity> findActivityProfitDetail(@Param("activityId") String activityId);
 }
 
 

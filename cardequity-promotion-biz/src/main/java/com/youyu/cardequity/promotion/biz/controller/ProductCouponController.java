@@ -6,6 +6,8 @@ import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
 import com.youyu.cardequity.promotion.vo.rsp.CouponDefineRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import java.util.List;
  * @date 2018-12-07
  */
 @RestController
+@RequestMapping(path = "/productCoupon")
 public class ProductCouponController implements ProductCouponApi {
 
     @Autowired
@@ -31,6 +34,8 @@ public class ProductCouponController implements ProductCouponApi {
      * @param req
      * @return
      */
+    @Override
+    @PostMapping(path = "/findEnableGetCoupon")
     public Result<List<CouponDefineRsp>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req) {
         List<CouponDefineRsp> rspList = productCouponService.findEnableGetCoupon(req);
         return Result.ok(rspList);

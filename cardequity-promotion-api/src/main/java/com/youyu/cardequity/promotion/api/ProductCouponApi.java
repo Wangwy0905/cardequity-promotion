@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Api(tags = "优惠券信息管理：券的定义信息、使用规则、领取规则、额度设置等")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/tbProductCoupon")
+@RequestMapping(path = "/productCoupon")
 public interface ProductCouponApi {
 
     /**
@@ -32,6 +32,6 @@ public interface ProductCouponApi {
      * 1004244-徐长焕-20181207 新建
      */
     @ApiOperation(value = "获取可以领取的优惠券")
-    @GetMapping(path = "/findEnableGetCoupon")
+    @PostMapping(path = "/findEnableGetCoupon")
     Result<List<CouponDefineRsp>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req);
 }

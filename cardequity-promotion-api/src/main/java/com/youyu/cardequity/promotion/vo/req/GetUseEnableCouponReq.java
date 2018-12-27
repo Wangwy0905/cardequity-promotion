@@ -34,6 +34,9 @@ public class GetUseEnableCouponReq {
     @ApiModelProperty(value = "活动编号:关联的活动编号")
     private String activityId;
 
+    @ApiModelProperty(value = "订单编号:关联的订单编号")
+    private String orderId;
+
     @ApiModelProperty(value = "本次订单未优惠前运费")
     private BigDecimal transferFare;
 

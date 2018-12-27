@@ -10,6 +10,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CommonBoolDto<T> {
+    public CommonBoolDto(){}
+
+    public CommonBoolDto(boolean success){this.setSuccess(success);}
     @ApiModelProperty(value = "是否成功:true-成功")
     private boolean success;
 

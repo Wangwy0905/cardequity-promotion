@@ -30,17 +30,6 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
                                                               @Param("entrustWay") String entrustWay,
                                                               @Param("clientType") String clientType);
 
-    /**
-     * 根据指定券，获取到不满足领取频率规则的券及其阶梯
-     * @param couponId 优惠券id
-     * @param clientId 客户编号
-     * @return
-     * 开发日志
-     * 1004244-徐长焕-20181207 新建
-     */
-    List<ShortCouponDetailDto> findClinetFreqForbidCouponDetailListById(@Param("clientId") String clientId,
-                                                                         @Param("couponId") String couponId,
-                                                                        @Param("stageId") String stageId);
 
     /**
      * 根据指定券，获取到券的基本信息
@@ -50,19 +39,6 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      * 1004244-徐长焕-20181207 新建
      */
     ProductCouponEntity findProductCouponById(@Param("couponId") String couponId);
-
-
-    /**
-     * 根据指定券，获取到不满足使用频率规则的券及其阶梯
-     * @param couponId 优惠券id
-     * @param clientId 客户编号
-     * @return
-     * 开发日志
-     * 1004244-徐长焕-20181207 新建
-     */
-    List<ShortCouponDetailDto> findClinetFreqForbidUseCouponDetailListById(@Param("clientId") String clientId,
-                                                                         @Param("couponId") String couponId,
-                                                                           @Param("stageId") String stageId);
 
 
 

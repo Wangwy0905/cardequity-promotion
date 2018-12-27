@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz.service;
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
+import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
@@ -25,9 +26,9 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * 已过期（status=0且未在有效期内）
      *
      * @return 返回已领取的券
-     * @Param clientId:指定客户号，必填
+     * @Param req 指定客户号，必填
      */
-    List<ClientCouponDto>  findClientCoupon(String clientId);
+    List<ClientCouponDto>  findClientCoupon(BaseClientReq req);
 
     /**
      * 领取优惠券
@@ -49,7 +50,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
     List<ClientCouponDto> findEnableUseCoupon(GetUseEnableCouponReq req);
 
     /**
-     * 按策略获取可用券的组合:不含运费券
+     * 按策略获取可用券的组合:含运费券
      * 1.根据订单或待下单商品列表校验了使用门槛
      * 2.根据冲突关系按策略计算能使用的券
      * 3.计算出每张券的适配使用的商品列表
@@ -58,6 +59,13 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 推荐使用券组合及应用对应商品详情
      */
     List<UseCouponRsp> combCouponRefProductDeal(GetUseEnableCouponReq req);
+
+    /**
+     * 根据指定的优惠券进行校验其适用情况，并变动其状态和使用记录
+     * @param req
+     * @return
+     */
+    public List<UseCouponRsp> combCouponRefProductAndUse(GetUseEnableCouponReq req);
 }
 
 

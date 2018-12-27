@@ -1,4 +1,4 @@
-package com.youyu.cardequity.promotion.biz.service.impl;
+package com.youyu.cardequity.promotion.enums.dict;
 
 /**
  * Created by caiyi on 2018/12/21.

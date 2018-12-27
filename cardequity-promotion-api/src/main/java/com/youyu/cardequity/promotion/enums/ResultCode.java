@@ -42,6 +42,12 @@ public enum ResultCode implements CardequityIBaseResultCode {
     ACTIVE_NOT_EXIST("0013", "活动不存在"),
     COUPON_NOT_EXISTS("0014", "该优惠券信息不存在"),
     COUPON_USE_CONFLICT("0015", "优惠券使用冲突"),
+    COUPON_FAIL_USE("0016", "优惠券领取失败"),
+    ACTIVITY_NOT_ALLOW_CLIENTTYPE("0017", "该客户类型不能参加此活动"),
+    ACTIVITY_NOT_ALLOW_ENTRUSTWAY("0018", "该渠道不能参加此活动"),
+    ACTIVITY_NOT_ALLOW_PAYTYPE("0019", "该支付类型不能参加此活动"),
+    ACTIVITY_NOT_ALLOW_BANKCODE("0020", "该银行卡不能参加此活动"),
+    ACTIVITY_NOT_ALLOW_DATE("0021", "该期间不能不能参加此活动"),
     ;
 
     /**

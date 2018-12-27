@@ -17,11 +17,16 @@ import java.util.List;
 @Setter
 public class UseCouponRsp {
     public UseCouponRsp(){
+        totalAmount=BigDecimal.ZERO;
+        profitAmount=BigDecimal.ZERO;
         productLsit=new ArrayList<>();
     }
 
     @ApiModelProperty(value = "领取的优惠券")
     private ClientCouponDto clientCoupon;
+
+    @ApiModelProperty(value = "实际涉及总额")
+    private BigDecimal totalAmount;
 
     @ApiModelProperty(value = "实际优惠金额")
     private BigDecimal profitAmount;

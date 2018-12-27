@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.api;
 
 
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 @Api(tags = "客户优惠券管理：客户对优惠券的操作")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/ClientCoupon")
+@RequestMapping(path = "/clientCoupon")
 public interface ClientCouponApi {
 
     /**
@@ -42,8 +43,8 @@ public interface ClientCouponApi {
      * 1004258-徐长焕-20181207 实现
      */
     @ApiOperation(value = "获取客户已领取的券")
-    @GetMapping(path = "/findClientCoupon")
-     Result<List<ClientCouponDto>> findClientCoupon(@PathVariable(name = "clientId") String clientId);
+    @PostMapping(path = "/findClientCoupon")
+     Result<List<ClientCouponDto>> findClientCoupon(@RequestBody BaseClientReq req);
 
     /**
      * 领取优惠券
@@ -54,7 +55,7 @@ public interface ClientCouponApi {
      * 1004247-徐长焕-20181213 实现
      */
     @ApiOperation(value = "客户领取优惠券：唯一确定领取优惠券是'券id+阶梯id'，其中阶梯id可为空")
-    @GetMapping(path = "/obtainCoupon")
+    @PostMapping(path = "/obtainCoupon")
     Result<CommonBoolDto> obtainCoupon(@RequestBody ClientObtainCouponReq req);
 
 
@@ -66,7 +67,7 @@ public interface ClientCouponApi {
      * 1004246-徐长焕-20181213 实现
      */
     @ApiOperation(value = "根据客户指定商品获取可用的优惠券:1.指定商品填充与参数List中；2.获取的券中没有计算冲突关系；3.列表中含运费券")
-    @GetMapping(path = "/findEnableUseCoupon")
+    @PostMapping(path = "/findEnableUseCoupon")
     Result<List<ClientCouponDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req);
 
     /**
@@ -81,6 +82,15 @@ public interface ClientCouponApi {
      * 1004246-徐长焕-20181213 实现
      */
     @ApiOperation(value = "按策略得到优惠券使用组合:1.根据订单或待下单商品列表校验了使用门槛;2.根据冲突关系按策略计算能使用的券;3.计算出每张券的适配使用的商品列表")
-    @GetMapping(path = "/combCouponRefProductDeal")
+    @PostMapping(path = "/combCouponRefProductDeal")
     Result<List<UseCouponRsp>> combCouponRefProductDeal(@RequestBody GetUseEnableCouponReq req);
+
+    /**
+     * 根据指定的优惠券进行校验其适用情况，并变动其状态和增加使用记录
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "根据指定的优惠券进行校验其适用情况，并变动其状态和增加使用记录")
+    @PostMapping(path = "/combCouponRefProductDeal")
+    public Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req);
 }

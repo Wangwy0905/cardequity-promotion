@@ -15,7 +15,6 @@
 		<groupId>com.youyu.cardequity</groupId>
 		<artifactId>cardequity-promotion</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>

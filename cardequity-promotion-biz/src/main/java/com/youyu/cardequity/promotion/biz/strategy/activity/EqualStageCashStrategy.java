@@ -1,0 +1,119 @@
+package com.youyu.cardequity.promotion.biz.strategy.activity;
+
+import com.youyu.cardequity.common.base.annotation.StatusAndStrategyNum;
+import com.youyu.cardequity.promotion.biz.dal.dao.ActivityRefProductMapper;
+import com.youyu.cardequity.promotion.biz.dal.dao.ActivityStageCouponMapper;
+import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
+import com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity;
+import com.youyu.cardequity.promotion.biz.dal.entity.ActivityStageCouponEntity;
+import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
+import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
+import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
+import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
+import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
+import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * Created by caiyi on 2018/12/26.
+ */
+@Slf4j
+@StatusAndStrategyNum(superClass = ActivityStrategy.class, number = "5", describe = "每满N减M元")
+@Component
+public class EqualStageCashStrategy  extends ActivityStrategy {
+
+    @Autowired
+    private ActivityRefProductMapper activityRefProductMapper;
+
+    @Autowired
+    private ActivityStageCouponMapper activityStageCouponMapper;
+
+    @Override
+    public UseActivityRsp applyActivity(ActivityProfitEntity item, List<OrderProductDetailDto> productList) {
+
+        //装箱返回数据
+        UseActivityRsp rsp = new UseActivityRsp();
+        ActivityProfitDto dto = new ActivityProfitDto();
+        BeanUtils.copyProperties(item, dto);
+        rsp.setActivity(dto);
+        rsp.setProfitAmount(item.getProfitValue());
+
+        //获取活动阶梯
+        List<ActivityStageCouponEntity> activityProfitDetail = activityStageCouponMapper.findActivityProfitDetail(item.getId());
+
+        //每满N减M一定要设置门槛，有且只有一个
+        if (activityProfitDetail.size() <= 0) {
+            return null;
+        }
+        ActivityStageCouponEntity stage = activityProfitDetail.get(0);
+        //活动阶梯步长不能小于等于0
+        if (!CommonUtils.isGtZeroDecimal(stage.getBeginValue()))
+            return null;
+
+        BigDecimal countCondition = BigDecimal.ZERO;
+        BigDecimal amountCondition = BigDecimal.ZERO;
+        //所有活动在定义适用商品时都不会重叠
+        for (OrderProductDetailDto productItem : productList) {
+            //1.该商品是否适用于此活动
+            if (!ApplyProductFlag.ALL.getDictValue().equals(item.getApplyProductFlag())) {
+                //该商品属性是否允许参与活动
+                ActivityRefProductEntity entity = activityRefProductMapper.findByBothId(item.getId(), productItem.getProductId());
+                if (entity == null) {
+                    continue;
+                }
+            }
+            //2.后续会多次设置product对象相关值，需要拷贝出来避免污染
+            OrderProductDetailDto product = new OrderProductDetailDto();
+            BeanUtils.copyProperties(productItem, product);
+            //总额做保护
+            product.setTotalAmount(product.getAppCount().multiply(product.getPrice()));
+
+            //记录活动适用的商品，但是没有计算对应优惠值，对应优惠值是在满足门槛后再calculationProfitAmount中计算
+            rsp.getProductLsit().add(product);
+            countCondition = countCondition.add(product.getAppCount());
+            amountCondition = amountCondition.add(product.getAppCount().multiply(product.getPrice()));
+        }
+
+        BigDecimal applyNum =BigDecimal.ZERO;
+        //计算参与活动总金额
+        BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        //计算参与活动总数量
+        BigDecimal totalRealCount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getAppCount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (TriggerByType.NUMBER.getDictValue().equals(stage.getTriggerByType())) {
+            if (countCondition.compareTo(stage.getBeginValue())<0)
+                return null;
+            applyNum= totalRealAmount.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+        }else {
+            if (amountCondition.compareTo(stage.getBeginValue())<0)
+                return null;
+            applyNum= totalRealCount.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+        }
+
+        //达到门槛才返回
+        if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
+            //设置满足条件的门槛信息
+            ActivityStageCouponDto stageDto = new ActivityStageCouponDto();
+            BeanUtils.copyProperties(stage, stageDto);
+            rsp.setStage(stageDto);
+            //计算活动总优惠金额=步长倍数*每个步长优惠值
+            BigDecimal totalProfitAmount = applyNum.multiply(stage.getProfitValue());
+            rsp.setProfitAmount(totalProfitAmount);
+
+            //每种商品优惠的金额是按适用金额比例来的
+            if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
+                for (OrderProductDetailDto product : rsp.getProductLsit()) {
+                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
+                }
+            }
+            return rsp;
+        }
+        return null;
+    }
+}

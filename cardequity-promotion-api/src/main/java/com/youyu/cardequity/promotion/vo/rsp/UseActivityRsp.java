@@ -1,5 +1,7 @@
 package com.youyu.cardequity.promotion.vo.rsp;
 
+import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
+import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
 import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -16,14 +18,15 @@ import java.util.List;
 @Setter
 public class UseActivityRsp {
     public UseActivityRsp(){
+        profitAmount=BigDecimal.ZERO;
         productLsit=new ArrayList<>();
     }
 
-    @ApiModelProperty(value = "活动编号:")
-    private String activityId;
+    @ApiModelProperty(value = "活动")
+    private ActivityProfitDto activity;
 
     @ApiModelProperty(value = "阶梯编号:")
-    private String stageId;
+    private ActivityStageCouponDto stage;
 
     @ApiModelProperty(value = "客户号:")
     private String clientId;

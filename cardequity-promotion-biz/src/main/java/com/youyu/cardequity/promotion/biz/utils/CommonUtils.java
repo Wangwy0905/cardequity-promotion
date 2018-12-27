@@ -35,6 +35,20 @@ public class CommonUtils {
     }
 
     /**
+     * 判断字符串是否为空或null
+     *
+     * @param target
+     * @return
+     */
+    public static boolean isGtZeroDecimal(BigDecimal target) {
+        if (target == null)
+            return false;
+        if (target.compareTo(BigDecimal.ZERO)<=0)
+            return false;
+        return true;
+    }
+
+    /**
      * 为空忽略或匹配成功返回true
      *
      * @param source

@@ -109,6 +109,12 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      */
     List<ClientCouponEntity> findClientCouponByIds(@Param("clientId") String clientId,@Param("shortClientCouponList") List<ShortClientCouponDto> shortClientCouponList);
 
+    /**
+     * 获取客户已领的折扣券
+     * @param uuid
+     * @return
+     */
+    ClientCouponEntity findClientCouponById(@Param("uuid") String uuid);
 }
 
 

@@ -152,4 +152,11 @@
         and a.CLIENT_ID= #{clientId,jdbcType=VARCHAR}
     </select>
 
+    <select id="findClientCouponById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity" >
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        AND a.uuid =#{uuid,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

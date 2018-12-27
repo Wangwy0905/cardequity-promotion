@@ -1,8 +1,10 @@
 package com.youyu.cardequity.promotion.api;
 
 
+import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
 import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
+import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -21,7 +23,7 @@ import java.util.List;
  */
 @Api(tags = "活动信息管理：活动的的定义信息、使用规则、额度设置等")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/tbActivityProfit")
+@RequestMapping(path = "/activityProfit")
 public interface ActivityProfitApi {
 
     /**
@@ -32,6 +34,16 @@ public interface ActivityProfitApi {
      * 1004244-徐长焕-20181207 新建
      */
     @ApiOperation(value = "根据客户指定商品获取可参加的活动")
-    @GetMapping(path = "/findEnableGetActivity")
+    @PostMapping(path = "/findEnableGetActivity")
     Result<List<ActivityDefineRsp>> findEnableGetActivity(@RequestBody QryProfitCommonReq req);
+
+    /**
+     * 订单信息能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额
+     * @param req
+     * @return
+     * 1004258-徐长焕-20181226 新建
+     */
+    @ApiOperation(value = "订单能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额")
+    @PostMapping(path = "/combActivityRefProductDeal")
+    Result<List<UseActivityRsp>> combActivityRefProductDeal(@RequestBody GetUseEnableCouponReq req);
 }

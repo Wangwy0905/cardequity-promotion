@@ -3,12 +3,15 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 import com.youyu.cardequity.promotion.api.ClientCouponApi;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ import java.util.List;
  * @date 2018-12-07
  */
 @RestController
+@RequestMapping(path = "/clientCoupon")
 public class ClientCouponController implements ClientCouponApi {
 
     @Autowired
@@ -30,24 +34,39 @@ public class ClientCouponController implements ClientCouponApi {
 
 
     @Override
-    public Result<List<ClientCouponDto>> findClientCoupon(String clientId) {
-        return  Result.ok(clientCouponService.findClientCoupon(clientId));
+    @PostMapping(path = "/findClientCoupon")
+    public Result<List<ClientCouponDto>> findClientCoupon(@RequestBody BaseClientReq req) {
+        return  Result.ok(clientCouponService.findClientCoupon(req));
     }
 
     @Override
+    @PostMapping(path = "/obtainCoupon")
     public Result<CommonBoolDto> obtainCoupon(@RequestBody ClientObtainCouponReq req) {
 
         return Result.ok(clientCouponService.obtainCoupon(req));
     }
 
     @Override
+    @PostMapping(path = "/findEnableUseCoupon")
     public Result<List<ClientCouponDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req) {
         return Result.ok(clientCouponService.findEnableUseCoupon(req));
     }
 
     @Override
+    @PostMapping(path = "/combCouponRefProductDeal")
     public Result<List<UseCouponRsp>> combCouponRefProductDeal(@RequestBody GetUseEnableCouponReq req){
         return Result.ok(clientCouponService.combCouponRefProductDeal(req));
+    }
+
+    /**
+     * 根据指定的优惠券进行校验其适用情况，并变动其状态和使用记录
+     * @param req
+     * @return
+     */
+    @Override
+    @PostMapping(path = "/combCouponRefProductAndUse")
+    public Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req){
+        return Result.ok(clientCouponService.combCouponRefProductAndUse(req));
     }
 
 }

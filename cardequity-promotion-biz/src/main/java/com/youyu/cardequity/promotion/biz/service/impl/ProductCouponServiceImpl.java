@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.promotion.biz.dal.dao.CouponGetOrUseFreqRuleMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponStageRuleMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
@@ -35,6 +36,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
     @Autowired
     private CouponStageRuleMapper couponStageRuleMapper;
+
+    @Autowired
+    private CouponGetOrUseFreqRuleMapper couponGetOrUseFreqRuleMapper;
     /**
      * 1004259-徐长焕-20181210 新增
      * 功能：查询指定商品可领取的优惠券
@@ -48,7 +52,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
         List<ProductCouponEntity> productCouponlist= productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClinetType());
 
-        List<CouponDefineRsp> CouponDefinelist=new ArrayList<CouponDefineRsp>();
+        List<CouponDefineRsp> CouponDefinelist=new ArrayList<>();
 
         //根据客户对上述券领取情况，以及该券领取频率限制进行排除
         for (ProductCouponEntity item : productCouponlist){
@@ -58,7 +62,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 stageList=new ArrayList<>(0);
             }
 
-            List<ShortCouponDetailDto> shortStageList= productCouponMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClinetId(),item.getId(),"");
+            List<ShortCouponDetailDto> shortStageList= couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClinetId(),item.getId(),"");
             //做保护，后面直接通过素组长度判断
             if (shortStageList==null){
                 shortStageList=new ArrayList<>(0);
@@ -67,7 +71,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             //有阶梯的券进行排除
             if (stageList.size()>0  && shortStageList.size()>0){
 
-                List<CouponStageRuleDto> couponStageList=new ArrayList<CouponStageRuleDto>();
+                List<CouponStageRuleDto> couponStageList=new ArrayList<>();
 
                 for (CouponStageRuleEntity stageItem:stageList) {
                     //排除用户领取频率限制的
