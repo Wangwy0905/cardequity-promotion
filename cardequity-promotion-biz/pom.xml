@@ -30,6 +30,14 @@
 			<groupId>com.youyu.platform</groupId>
 			<artifactId>common-log</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-sleuth</artifactId>
+		</dependency>
 
 			<dependency>
 				<groupId>com.youyu.platform</groupId>
