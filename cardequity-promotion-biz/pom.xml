@@ -27,14 +27,53 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.youyu.platform</groupId>
 			<artifactId>common-log</artifactId>
 		</dependency>
+
+			<dependency>
+				<groupId>com.youyu.platform</groupId>
+				<artifactId>common-api</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>com.youyu.platform</groupId>
+				<artifactId>common-config</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>com.youyu.platform</groupId>
+				<artifactId>common-dao</artifactId>
+			</dependency>
+
+			<dependency>
+				<groupId>com.youyu.platform</groupId>
+				<artifactId>common-feign</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>com.youyu.platform</groupId>
+				<artifactId>common-handler</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>com.youyu.platform</groupId>
+				<artifactId>common-monitor</artifactId>
+			</dependency>
+
+			<dependency>
+				<groupId>com.youyu.platform</groupId>
+				<artifactId>common-generator</artifactId>
+				<version>2.0.2.RELEASE</version>
+			</dependency>
+			<!--公用的项目 -->
+			<dependency>
+				<groupId>com.youyu.cardequity</groupId>
+				<artifactId>cardequity-common-spring</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<scope>test</scope>
+			</dependency>
 	</dependencies>
 
 

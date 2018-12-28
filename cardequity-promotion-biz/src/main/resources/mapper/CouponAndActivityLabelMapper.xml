@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponAndActivityLabelMapper">
+<select id="findLabelById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity">
+     SELECT * FROM TB_COUPON_AND_ACTIVITY_LABEL a
+     WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+     AND a.UUID=#{id,jdbcType=VARCHAR}
+</select>
+</mapper>

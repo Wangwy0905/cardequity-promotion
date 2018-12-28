@@ -1,10 +1,13 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.promotion.biz.dal.dao.CouponAndActivityLabelMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponGetOrUseFreqRuleMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponStageRuleMapper;
+import com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
+import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.CouponStageRuleDto;
 import com.youyu.cardequity.promotion.dto.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
@@ -39,6 +42,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
     @Autowired
     private CouponGetOrUseFreqRuleMapper couponGetOrUseFreqRuleMapper;
+
+    @Autowired
+    private CouponAndActivityLabelMapper couponAndActivityLabelMapper;
     /**
      * 1004259-徐长焕-20181210 新增
      * 功能：查询指定商品可领取的优惠券
@@ -66,6 +72,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             //做保护，后面直接通过素组长度判断
             if (shortStageList==null){
                 shortStageList=new ArrayList<>(0);
+            }
+
+            //查找标签信息
+            if (!CommonUtils.isEmptyorNull(item.getCouponLable())){
+                CouponAndActivityLabelEntity labelEntity= couponAndActivityLabelMapper.findLabelById(item.getCouponLable());
+                if (labelEntity!=null){
+
+                }
             }
 
             //有阶梯的券进行排除

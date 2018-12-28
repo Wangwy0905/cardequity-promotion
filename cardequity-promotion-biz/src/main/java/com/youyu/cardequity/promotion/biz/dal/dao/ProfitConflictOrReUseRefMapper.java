@@ -30,14 +30,14 @@ public interface ProfitConflictOrReUseRefMapper extends YyMapper<ProfitConflictO
     /**
      * 通过对应关系验证冲突或叠加配置
      * @param activeOrCouponType
-     * @param activOrCouponId
+     * @param activeOrCouponId
      * @param targetActiveOrCouponType
      * @param targetActivOrCouponId
      * @param conflictFlag
      * @return
      */
     ProfitConflictOrReUseRefEntity findByBothId(@Param("activeOrCouponType") String activeOrCouponType,
-                                                @Param("activOrCouponId") String activOrCouponId,
+                                                @Param("activeOrCouponId") String activeOrCouponId,
                                                 @Param("targetActiveOrCouponType") String targetActiveOrCouponType,
                                                 @Param("targetActivOrCouponId") String targetActivOrCouponId,
                                                 @Param("conflictFlag") String conflictFlag);

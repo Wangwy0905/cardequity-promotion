@@ -827,15 +827,15 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         //只有两者都可叠加(设置不可叠加的有效性优先级大于可叠加)，或没有设置冲突关系，该优惠券才可以使用
         //获取冲突关联表
-        ProfitConflictOrReUseRefEntity refEntity = profitConflictOrReUseRefMapper.findByBothId(ActiveOrCouponType.COUPON.getDictValue(),
-                coupon.getId(),
-                ActiveOrCouponType.ACTIVITY.getDictValue(),
-                activeEntity.getId(),
-                ConflictFlag.CONFLICT.getDictValue());
-        if (refEntity != null) {
-            dto.setSuccess(false);
-            dto.setDesc("该优惠券与指定活动设置了不可叠加关系");
-        }
+//        ProfitConflictOrReUseRefEntity refEntity = profitConflictOrReUseRefMapper.findByBothId(ActiveOrCouponType.COUPON.getDictValue(),
+//                coupon.getId(),
+//                ActiveOrCouponType.ACTIVITY.getDictValue(),
+//                activeEntity.getId(),
+//                ConflictFlag.CONFLICT.getDictValue());
+//        if (refEntity != null) {
+//            dto.setSuccess(false);
+//            dto.setDesc("该优惠券与指定活动设置了不可叠加关系");
+//        }
         return dto;
     }
 
