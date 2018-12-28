@@ -28,6 +28,12 @@ public class CouponRefProductEntity extends com.youyu.common.entity.BaseEntity<S
     private String productId;
 
     /**
+     * 子商品id:
+     */
+    @Column(name = "SKU_ID")
+    private String skuId;
+
+    /**
      * 备注:
      */
     @Column(name = "REMARK")

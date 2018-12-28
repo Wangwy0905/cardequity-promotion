@@ -21,6 +21,17 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
      */
     ActivityRefProductEntity findByBothId(@Param("couponId") String couponId,
                                         @Param("productId") String productId );
+
+    /**
+     * 查询指定券和产品是否适用
+     * @param couponId 必填
+     * @param productId 必填
+     * @return
+     */
+    ActivityRefProductEntity findByActivityAndSkuId(@Param("couponId") String couponId,
+                                          @Param("productId") String productId ,
+                                      @Param("skuId") String skuId);
+
 }
 
 

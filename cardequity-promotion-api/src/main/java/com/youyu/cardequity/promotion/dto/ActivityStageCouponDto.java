@@ -27,9 +27,6 @@ public class ActivityStageCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "活动编号:")
     private String activityId;
 
-    @ApiModelProperty(value = "活动处理类型:对ActivityCouponType=1有效；0-所有都优惠 1-前N(起始值)件优惠 2-每N(起始值)件优惠")
-    private String ActivityProfitType;
-
     @ApiModelProperty(value = "门槛触发类型:0-按买入金额 1-按买入数量（应设置其中之一，如果第二件5折可在此设置）")
     private String triggerByType;
 

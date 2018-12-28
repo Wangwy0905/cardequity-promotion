@@ -2,9 +2,10 @@ package com.youyu.cardequity.promotion.api;
 
 
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
-import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
-import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
-import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.dto.CouponRefProductDto;
+import com.youyu.cardequity.promotion.dto.ProductCouponDto;
+import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.CouponDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
@@ -44,7 +45,7 @@ public interface ClientCouponApi {
      */
     @ApiOperation(value = "获取客户已领取的券")
     @PostMapping(path = "/findClientCoupon")
-     Result<List<ClientCouponDto>> findClientCoupon(@RequestBody BaseClientReq req);
+    Result<List<ClientCouponDto>> findClientCoupon(@RequestBody BaseClientReq req);
 
     /**
      * 领取优惠券
@@ -61,6 +62,7 @@ public interface ClientCouponApi {
 
     /**
      * 根据客户指定商品获取可用的优惠券
+     *
      * @return 可以使用的优惠券
      * @Param req:有参数clientId-客户号（必填），couponId-领取的券Id（必填）
      * 开发日志：
@@ -87,10 +89,54 @@ public interface ClientCouponApi {
 
     /**
      * 根据指定的优惠券进行校验其适用情况，并变动其状态和增加使用记录
+     *
      * @param req
      * @return
      */
     @ApiOperation(value = "根据指定的优惠券进行校验其适用情况，并变动其状态和增加使用记录")
     @PostMapping(path = "/combCouponRefProductDeal")
-    public Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req);
+    Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req);
+
+
+    /**
+     * 添加优惠券
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "添加优惠券：添加基本信息、领取频率、使用门槛、关联商品等")
+    @PostMapping(path = "/addCoupon")
+    Result<List<ProductCouponDto>> addCoupon(@RequestBody CouponDetailReq req);
+
+    /**
+     * 编辑优惠券
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "编辑优惠券：编辑基本信息、领取频率、使用门槛、关联商品等")
+    @PostMapping(path = "/editCoupon")
+    Result<List<ProductCouponDto>> editCoupon(@RequestBody CouponDetailReq req);
+
+    /**
+     * 查看商品对应优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "查看商品对应优惠券列表")
+    @PostMapping(path = "/findCouponListByProduct")
+    Result<List<CouponDefineRsp>> findCouponListByProduct(@RequestBody BaseProductReq req);
+
+    /**
+     * 查询所有优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "查询所有优惠券列表")
+    @PostMapping(path = "/findCouponListByCommon")
+    Result<List<CouponDefineRsp>> findCouponListByCommon(@RequestBody BaseCouponReq req);
+
+
 }

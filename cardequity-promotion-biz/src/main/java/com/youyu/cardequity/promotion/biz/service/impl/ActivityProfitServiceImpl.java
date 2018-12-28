@@ -122,7 +122,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 req.getClinetType())) {
 
             dto.setSuccess(false);
-            dto.setDesc(ACTIVITY_NOT_ALLOW_CLIENTTYPE.getDesc());
+            dto.setDesc(ACTIVITY_NOT_ALLOW_CLIENTTYPE.getFormatDesc(req.getClinetType()));
             return dto;
         }
 
@@ -146,7 +146,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(activity.getEntrustWaySet(),
                 req.getEntrustWay())) {
             dto.setSuccess(false);
-            dto.setDesc(ACTIVITY_NOT_ALLOW_ENTRUSTWAY.getDesc());
+            dto.setDesc(ACTIVITY_NOT_ALLOW_ENTRUSTWAY.getFormatDesc(req.getEntrustWay()));
             return dto;
         }
 
@@ -156,7 +156,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 req.getBankCode())) {
 
             dto.setSuccess(false);
-            dto.setDesc(ACTIVITY_NOT_ALLOW_BANKCODE.getDesc());
+            dto.setDesc(ACTIVITY_NOT_ALLOW_BANKCODE.getFormatDesc(req.getBankCode()));
             return dto;
         }
 
@@ -164,7 +164,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(activity.getPayTypeSet(),
                 req.getPayType())) {
             dto.setSuccess(false);
-            dto.setDesc(ACTIVITY_NOT_ALLOW_PAYTYPE.getDesc());
+            dto.setDesc(ACTIVITY_NOT_ALLOW_PAYTYPE.getFormatDesc(req.getPayType()));
             return dto;
         }
 
@@ -173,7 +173,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 (activity.getAllowUseEndDate() != null && activity.getAllowUseEndDate().compareTo(LocalDate.now()) < 0)) {
 
             dto.setSuccess(false);
-            dto.setDesc(ACTIVITY_NOT_ALLOW_DATE.getDesc());
+            dto.setDesc(ACTIVITY_NOT_ALLOW_DATE.getFormatDesc(activity.getAllowUseBeginDate(),activity.getAllowUseEndDate()));
             return dto;
         }
         return dto;

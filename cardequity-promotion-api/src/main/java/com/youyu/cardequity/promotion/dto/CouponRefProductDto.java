@@ -26,6 +26,9 @@ public class CouponRefProductDto implements IBaseDto<String>{
     @ApiModelProperty(value = "商品id:")
     private String productId;
 
+    @ApiModelProperty(value = "子商品id:")
+    private String skuId;
+
     @ApiModelProperty(value = "备注:")
     private String remark;
 

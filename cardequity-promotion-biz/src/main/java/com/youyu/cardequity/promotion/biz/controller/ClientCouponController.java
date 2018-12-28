@@ -3,13 +3,14 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 import com.youyu.cardequity.promotion.api.ClientCouponApi;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
-import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
-import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
-import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.dto.ProductCouponDto;
+import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.CouponDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,4 +70,55 @@ public class ClientCouponController implements ClientCouponApi {
         return Result.ok(clientCouponService.combCouponRefProductAndUse(req));
     }
 
+    /**
+     * 添加优惠券
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "添加优惠券(暂未实现)：添加基本信息、领取频率、使用门槛、关联商品等")
+    @PostMapping(path = "/addCoupon")
+    public Result<List<ProductCouponDto>> addCoupon(@RequestBody CouponDetailReq req){
+        return null;
+    }
+
+
+    /**
+     * 编辑优惠券
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "编辑优惠券(暂未实现)：编辑基本信息、领取频率、使用门槛、关联商品等")
+    @PostMapping(path = "/editCoupon")
+    public Result<List<ProductCouponDto>> editCoupon(@RequestBody CouponDetailReq req){
+        return null;
+    }
+
+    /**
+     * 查看商品对应优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "查看商品对应优惠券列表(暂未实现)")
+    @PostMapping(path = "/findCouponListByProduct")
+    public Result<List<CouponDefineRsp>> findCouponListByProduct(@RequestBody BaseProductReq req){
+        return null;
+    }
+
+    /**
+     * 查询所有优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "查询所有优惠券列表")
+    @PostMapping(path = "/findCouponListByCommon")
+    public Result<List<CouponDefineRsp>> findCouponListByCommon(@RequestBody BaseCouponReq req){
+        return null;
+    }
 }

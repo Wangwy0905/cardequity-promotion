@@ -6,8 +6,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.*;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
-import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
-import com.youyu.cardequity.promotion.enums.dict.DiscountApplyStage;
+import com.youyu.cardequity.promotion.enums.dict.CouponApplyProductStage;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +37,8 @@ public class DiscountCouponStrategy extends CouponStrategy {
         rsp.setClientCoupon(clientCouponDto);
         rsp.setProfitAmount(BigDecimal.ZERO);
 
+        if (!CommonUtils.isGtZeroDecimal(clientCoupon.getCouponAmout()) || clientCoupon.getCouponAmout().compareTo(BigDecimal.ONE) >= 0)
+            return null;
 
         //保护一下如果券下面只有一个阶梯，算作使用该券
         CouponStageRuleEntity stage = protectCompletion(clientCoupon);
@@ -46,9 +47,10 @@ public class DiscountCouponStrategy extends CouponStrategy {
             clientCoupon.setStageId(stage.getId());
         }
 
+
         //临时变量
         boolean successFlg = false;
-        String discountApplyStage = DiscountApplyStage.ALL.getDictValue();
+        String discountApplyStage = CouponApplyProductStage.ALL.getDictValue();
         // TODO: 2018/12/26 应取自开关值
 
         BigDecimal countCondition = BigDecimal.ZERO;
@@ -80,7 +82,7 @@ public class DiscountCouponStrategy extends CouponStrategy {
                         successFlg = true;
                         //折扣券：虽然按折扣只从小到打排序，但是并不表示排最前的是订单最优惠的，因为其在订单中应用商品范围是不同的，所以需要对所有券循环
                         //算入门槛内的才进行打折，否则全部都要打折
-                        if (DiscountApplyStage.CONDITION.getDictValue().equals(discountApplyStage)) {
+                        if (CouponApplyProductStage.CONDITION.getDictValue().equals(discountApplyStage)) {
                             applyNum = diff;
                             //优惠金额=达到优惠条件总额*(1-折扣),达到优惠条件总额=(买入数量-(总数量-达标门槛))*价格
                             calculationProfitAmount(rsp, product, clientCoupon, applyNum);
@@ -95,7 +97,7 @@ public class DiscountCouponStrategy extends CouponStrategy {
                         //折扣券：虽然按折扣只从小到打排序，但是并不表示排最前的是订单最优惠的，因为其在订单中应用商品范围是不同的，所以需要对所有券循环
                         successFlg = true;
                         //算入门槛内的才进行打折，否则全部都要打折
-                        if (DiscountApplyStage.CONDITION.getDictValue().equals(discountApplyStage)) {
+                        if (CouponApplyProductStage.CONDITION.getDictValue().equals(discountApplyStage)) {
                             //适用范围=向上取整(门槛差额/价格)
                             applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
                             //优惠金额=达到优惠条件总额*(1-折扣),达到优惠条件总额=(买入数量-(总数量-达标门槛))*价格
@@ -104,8 +106,7 @@ public class DiscountCouponStrategy extends CouponStrategy {
                         }
                     }
                 }
-            }
-            else{
+            } else {
                 successFlg = true;
             }
             //没有达到门槛

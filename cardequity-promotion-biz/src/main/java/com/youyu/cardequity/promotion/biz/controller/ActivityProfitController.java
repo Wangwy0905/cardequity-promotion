@@ -2,12 +2,15 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 
 import com.youyu.cardequity.promotion.api.ActivityProfitApi;
+import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
+import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
 import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,6 +48,19 @@ public class ActivityProfitController implements ActivityProfitApi {
         List<UseActivityRsp> result = activityProfitService.combActivityRefProductDeal(req);
 
         return Result.ok(result);
+    }
+
+    /**
+     * 获取商品活动优惠价
+     * @param req
+     * @return
+     * 1004258-徐长焕-20181226 新建
+     */
+    @Override
+    @ApiOperation(value = "获取商品活动优惠价（暂未实现）")
+    @PostMapping(path = "/findActivityPrice")
+    public Result<ActivityProfitDto> findActivityPrice(@RequestBody BaseProductReq req){
+        return null;
     }
 
 }

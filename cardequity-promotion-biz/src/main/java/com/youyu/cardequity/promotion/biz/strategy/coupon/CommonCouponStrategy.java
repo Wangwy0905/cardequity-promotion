@@ -8,6 +8,7 @@ import com.youyu.cardequity.promotion.biz.strategy.activity.ActivityStrategy;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.enums.dict.CouponApplyProductStage;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,8 @@ public class CommonCouponStrategy extends CouponStrategy {
 
         //临时变量
         boolean successFlg = false;
+        String applyStage=CouponApplyProductStage.ALL.getDictValue();
+        // TODO: 2018/12/27 应取自配置项
 
         BigDecimal countCondition = BigDecimal.ZERO;
         BigDecimal amountCondition = BigDecimal.ZERO;
@@ -74,16 +77,20 @@ public class CommonCouponStrategy extends CouponStrategy {
                     diff = stage.getBeginValue().subtract(countCondition);
                     if (applyNum.compareTo(diff) >= 0) {
                         successFlg = true;
-                        applyNum = diff;
+                        //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品,不许要下面if处理
+                        if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
+                            applyNum = diff;
+                        }
                     }
                 } else {
                     diff = stage.getBeginValue().subtract(amountCondition);
                     //满足门槛条件情况下
                     if (product.getTotalAmount().compareTo(diff) >= 0) {
-                        //折扣券：虽然按折扣只从小到打排序，但是并不表示排最前的是订单最优惠的，因为其在订单中应用商品范围是不同的，所以需要对所有券循环
                         successFlg = true;
-                        //适用范围=向上取整(门槛差额/价格)
-                        applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
+                        //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品,不许要下面if处理；适用范围=向上取整(门槛差额/价格)
+                        if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
+                            applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
+                        }
                     }
                 }
                 //无门槛的,如运费券、免邮券
@@ -93,9 +100,11 @@ public class CommonCouponStrategy extends CouponStrategy {
 
             product.setAppCount(applyNum);
             product.setTotalAmount(applyNum.multiply(product.getPrice()));
-            //循环完后没有达到门槛的返回空
-            if (successFlg)
-                break;
+            //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品
+            if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
+                if (successFlg)
+                    break;
+            }
             countCondition = countCondition.add(product.getAppCount());
             amountCondition = amountCondition.add(product.getTotalAmount());
         }

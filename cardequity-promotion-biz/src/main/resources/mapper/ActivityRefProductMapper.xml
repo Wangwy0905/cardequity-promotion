@@ -8,5 +8,16 @@
         WHERE IFNULL(a.IS_ENABLE, '1') = '1'
         AND a.ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
         and a.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+        and a.SKU_ID is null
+    </select>
+
+    <select id="findByActivityAndSkuId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity">
+        SELECT * FROM TB_ACTIVITY_REF_PRODUCT a
+        WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+        AND a.ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
+        <if test="productId!=null and productId!=''">
+            and a.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+        </if>
+        and a.SKU_ID=#{productId,jdbcType=VARCHAR}
     </select>
 </mapper>

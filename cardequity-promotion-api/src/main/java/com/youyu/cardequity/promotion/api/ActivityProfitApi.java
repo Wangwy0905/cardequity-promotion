@@ -1,6 +1,8 @@
 package com.youyu.cardequity.promotion.api;
 
 
+import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
+import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
 import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
@@ -46,4 +48,14 @@ public interface ActivityProfitApi {
     @ApiOperation(value = "订单能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额")
     @PostMapping(path = "/combActivityRefProductDeal")
     Result<List<UseActivityRsp>> combActivityRefProductDeal(@RequestBody GetUseEnableCouponReq req);
+
+    /**
+     * 获取商品活动优惠价
+     * @param req
+     * @return
+     * 1004258-徐长焕-20181226 新建
+     */
+    @ApiOperation(value = "获取商品活动优惠价")
+    @PostMapping(path = "/findActivityPrice")
+    Result<ActivityProfitDto> findActivityPrice(@RequestBody BaseProductReq req);
 }

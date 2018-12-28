@@ -50,6 +50,11 @@ public class EqualStageCouponStrategy extends CouponStrategy {
             return null;
         }
 
+        //封顶值比门槛还低是废数据
+        if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(clientCoupon.getBeginValue())<0){
+            return null;
+        }
+
         BigDecimal countCondition = BigDecimal.ZERO;
         BigDecimal amountCondition = BigDecimal.ZERO;
 
@@ -80,13 +85,24 @@ public class EqualStageCouponStrategy extends CouponStrategy {
         //计算参与活动总数量
         BigDecimal totalRealCount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getAppCount).reduce(BigDecimal.ZERO, BigDecimal::add);
         if (TriggerByType.NUMBER.getDictValue().equals(clientCoupon.getTriggerByType())) {
-            if (countCondition.compareTo(clientCoupon.getBeginValue())<0)
+            if (countCondition.compareTo(clientCoupon.getBeginValue()) < 0)
                 return null;
-            applyNum= totalRealAmount.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
-        }else {
-            if (amountCondition.compareTo(clientCoupon.getBeginValue())<0)
+            //不能超过封顶值
+            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(totalRealAmount) < 0) {
+                applyNum = clientCoupon.getEndValue().divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            } else {
+                applyNum = totalRealAmount.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            }
+        } else {
+
+            if (amountCondition.compareTo(clientCoupon.getBeginValue()) < 0)
                 return null;
-            applyNum= totalRealCount.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            //不能超过封顶值
+            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(totalRealCount) < 0) {
+                applyNum = clientCoupon.getEndValue().divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            } else {
+                applyNum = totalRealCount.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            }
         }
 
         //达到门槛才返回

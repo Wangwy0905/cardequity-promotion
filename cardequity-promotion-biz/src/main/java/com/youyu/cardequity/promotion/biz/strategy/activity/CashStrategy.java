@@ -10,6 +10,7 @@ import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
 import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
+import com.youyu.cardequity.promotion.enums.dict.CouponApplyProductStage;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,8 @@ public class CashStrategy extends ActivityStrategy {
         BeanUtils.copyProperties(item, dto);
         rsp.setActivity(dto);
         rsp.setProfitAmount(item.getProfitValue());
+        String applyStage= CouponApplyProductStage.ALL.getDictValue();
+        // TODO: 2018/12/27 应取自配置项
 
         //获取活动阶梯
         List<ActivityStageCouponEntity> activityProfitDetail = activityStageCouponMapper.findActivityProfitDetail(item.getId());
@@ -86,9 +89,12 @@ public class CashStrategy extends ActivityStrategy {
                     continue;
 
                 //3-2.满减活动只适用于满足条件的个数和商品，则后面商品都不算入该阶梯适用商品
-                if (rsp.getStage() != null &&
-                        rsp.getStage().getId().equals(stage.getId())) {
-                    continue;
+                //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品
+                if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
+                    if (rsp.getStage() != null &&
+                            rsp.getStage().getId().equals(stage.getId())) {
+                        continue;
+                    }
                 }
 
                 //3-3.按金额统计门槛
@@ -98,8 +104,11 @@ public class CashStrategy extends ActivityStrategy {
                     //满足门槛条件情况下：将原适用详情temproductLsit替换为最新满足的活动的
                     if (product.getTotalAmount().compareTo(diff) >= 0) {
 
-                        //适用范围=向上取整(门槛差额/价格)，后续循环会被3-2限制住
-                        applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
+                        //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品,不许要下面if处理
+                        if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
+                            //适用范围=向上取整(门槛差额/价格)，后续循环会被3-2限制住
+                            applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
+                        }
 
                         //计算：该商品适用优惠金额、该活动总优惠金额、及适用商品和数量
                         temproductLsit = calculationProfitAmount(product, applyNum, stage, rsp);
@@ -110,7 +119,10 @@ public class CashStrategy extends ActivityStrategy {
 
                     //满足门槛条件情况下：将原适用详情temproductLsit替换为最新满足的活动的
                     if (product.getAppCount().subtract(diff).compareTo(BigDecimal.ZERO) >= 0) {
-                        applyNum = diff;
+                        //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品,不许要下面if处理
+                        if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
+                            applyNum = diff;
+                        }
                         temproductLsit = calculationProfitAmount(product, applyNum, stage, rsp);
                     }
 

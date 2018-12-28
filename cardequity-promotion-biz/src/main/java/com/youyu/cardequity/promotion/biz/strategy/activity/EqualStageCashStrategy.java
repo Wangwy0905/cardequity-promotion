@@ -56,6 +56,10 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
         //活动阶梯步长不能小于等于0
         if (!CommonUtils.isGtZeroDecimal(stage.getBeginValue()))
             return null;
+        //封顶值比门槛还低是废数据
+        if (CommonUtils.isGtZeroDecimal(stage.getEndValue()) && stage.getEndValue().compareTo(stage.getBeginValue())<0){
+            return null;
+        }
 
         BigDecimal countCondition = BigDecimal.ZERO;
         BigDecimal amountCondition = BigDecimal.ZERO;
@@ -89,11 +93,22 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
         if (TriggerByType.NUMBER.getDictValue().equals(stage.getTriggerByType())) {
             if (countCondition.compareTo(stage.getBeginValue())<0)
                 return null;
-            applyNum= totalRealAmount.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            //不能超过封顶值
+            if (CommonUtils.isGtZeroDecimal(stage.getEndValue()) && stage.getEndValue().compareTo(totalRealAmount) < 0) {
+                applyNum = stage.getEndValue().divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            } else {
+                applyNum = totalRealAmount.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            }
         }else {
             if (amountCondition.compareTo(stage.getBeginValue())<0)
                 return null;
-            applyNum= totalRealCount.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+
+            //不能超过封顶值
+            if (CommonUtils.isGtZeroDecimal(stage.getEndValue()) && stage.getEndValue().compareTo(totalRealCount) < 0) {
+                applyNum = stage.getEndValue().divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            } else {
+                applyNum = totalRealCount.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+            }
         }
 
         //达到门槛才返回

@@ -155,7 +155,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             couponStage = couponStageRuleMapper.findCouponStageById(coupon.getId(), req.getStageId());
             //如果找不到阶梯则传入参数有误
             if (couponStage == null) {
-                throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("找不到指定的子券StageId="+req.getStageId()));
             }
 
         } else {//保护一下如果没有传入StageId，且该券下只有一个id则自动补全
@@ -163,7 +163,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             if (stageByCouponId.size() == 1)
                 couponStage = stageByCouponId.get(0);
             if (stageByCouponId.size() > 1) {
-                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getDesc());
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("StageId不能为空,该券有多个子券无法确定领取的券"));
             }
         }
 
@@ -210,7 +210,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         entity.setJoinOrderId(req.getActivityId());
         int count = clientCouponMapper.insertSelective(entity);
         if (count <= 0) {
-            throw new BizException(COUPON_FAIL_OBTAIN.getCode(), COUPON_FAIL_OBTAIN.getDesc());
+            throw new BizException(COUPON_FAIL_OBTAIN.getCode(), COUPON_FAIL_OBTAIN.getFormatDesc("增加数据失败"));
         }
         ClientCouponDto rsp = new ClientCouponDto();
         BeanUtils.copyProperties(entity, rsp);
@@ -234,7 +234,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     public List<ClientCouponDto> findEnableUseCoupon(GetUseEnableCouponReq req) {
 
         if (CommonUtils.isEmptyorNull(req.getClinetId())) {
-            throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("客户编号为空，无法指定客户无法获取数据"));
         }
         //获取已领取的有效优惠券：排除过期，已使用、使用中的券
         List<ClientCouponEntity> clientCouponList = clientCouponMapper.findClientValidCoupon(req.getClinetId());
@@ -379,7 +379,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //将相关领券状态变更为使用中，并记录使用情况
         CommonBoolDto dto = useCoupon(req, rsps);
         if (!dto.getSuccess()) {
-            throw new BizException(COUPON_FAIL_USE.getCode(), COUPON_FAIL_USE.getDesc());
+            throw new BizException(COUPON_FAIL_USE.getCode(), COUPON_FAIL_USE.getFormatDesc(dto.getDesc()));
         }
 
         return rsps;
@@ -583,7 +583,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 CouponStageRuleEntity stage = couponStageRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
                         clientCoupon.getStageId());
                 if (stage == null) {
-                    throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("指定子券不存在StageId"+clientCoupon.getStageId()));
                 }
 
                 //优惠金额为指定阶梯的优惠金额
@@ -670,13 +670,11 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //根据券ID获取优惠券信息
         ProductCouponEntity coupon = productCouponMapper.findProductCouponById(item.getCouponId());
         if (coupon == null) {
-            throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+            throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc("找不到指定优惠券CouponId="+item.getCouponId()));
         }
-
 
         //校验基本信息是否符合使用条件
         CommonBoolDto dto = checkCouponBase(coupon, req);
-        dto.setData(coupon);
         //校验不通过继续
         if (!dto.getSuccess()) {
             return dto;
@@ -710,7 +708,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         if (!CommonUtils.isEmptyorNull(req.getActivityId())) {
             ActivityProfitEntity activeEntity = activityProfitMapper.findById(req.getActivityId());
             if (activeEntity == null) {
-                throw new BizException(ACTIVE_NOT_EXIST.getCode(), ACTIVE_NOT_EXIST.getDesc());
+                throw new BizException(ACTIVE_NOT_EXIST.getCode(), ACTIVE_NOT_EXIST.getFormatDesc("找不到指定活动ActivityId="+req.getActivityId()));
             }
 
             dto = checkReUseLimit(coupon, activeEntity);
@@ -719,7 +717,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             }
         }
 
-
+        dto.setData(coupon);
         return dto;
     }
 
@@ -934,7 +932,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 (coupon.getAllowUseEndDate() != null && coupon.getAllowUseEndDate().compareTo(LocalDate.now()) < 0)) {
 
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_DATE.getDesc());
+            dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowUseBeginDate(),coupon.getAllowUseEndDate()));
             return dto;
         }
         return dto;
@@ -956,7 +954,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 (coupon.getAllowGetEndDate() != null && coupon.getAllowGetEndDate().compareTo(LocalDate.now()) < 0)) {
 
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_DATE.getDesc());
+            dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowGetBeginDate(),coupon.getAllowGetEndDate()));
             return dto;
         }
         return dto;
@@ -978,7 +976,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             CouponRefProductEntity entity = couponRefProductMapper.findByBothId(coupon.getId(), productId);
             if (entity == null) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getDesc());
+                dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getFormatDesc(productId,"无",coupon.getId(),"无"));
                 return dto;
             }
         }
@@ -1006,7 +1004,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 req.getClinetType())) {
 
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_CLIENTTYPE.getDesc());
+            dto.setDesc(COUPON_NOT_ALLOW_CLIENTTYPE.getFormatDesc(req.getClinetType()));
             return dto;
         }
 
@@ -1030,7 +1028,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getEntrustWaySet(),
                 req.getEntrustWay())) {
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_ENTRUSTWAY.getDesc());
+            dto.setDesc(COUPON_NOT_ALLOW_ENTRUSTWAY.getFormatDesc(req.getEntrustWay()));
             return dto;
         }
 
@@ -1040,7 +1038,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 req.getBankCode())) {
 
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_ENTRUSTWAY.getDesc());
+            dto.setDesc(COUPON_NOT_ALLOW_BANKCODE.getFormatDesc(req.getBankCode()));
             return dto;
         }
 
@@ -1048,7 +1046,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getPayTypeSet(),
                 req.getPayType())) {
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_ENTRUSTWAY.getDesc());
+            dto.setDesc(COUPON_NOT_ALLOW_PAYTYPE.getFormatDesc(req.getPayType()));
             return dto;
         }
         return dto;
@@ -1089,13 +1087,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否客户当日已领取的优惠金额是否超限
                 if (quota.getPerDateAndAccMaxAmount().compareTo(statisticsQuotaDto.getClientPerDateAmount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getDesc());
+                    dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getFormatDesc(quota.getPerDateAndAccMaxAmount(),statisticsQuotaDto.getClientPerDateAmount(),clientId));
                     return dto;
                 }
 
             } else if (validflag == 0) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getDesc());
+                dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",clientId));
                 return dto;
             }
 
@@ -1110,12 +1108,12 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否客户已领取的优惠金额是否超限
                 if (quota.getPerMaxAmount().compareTo(statisticsQuotaDto.getClientAmount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_PERACCQUOTA.getDesc());
+                    dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(quota.getPerMaxAmount(),statisticsQuotaDto.getClientAmount(),clientId));
                     return dto;
                 }
             } else if (validflag == 0) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_PERACCQUOTA.getDesc());
+                dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",clientId));
                 return dto;
             }
 
@@ -1175,12 +1173,12 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否所有客户当日已领取的优惠金额是否超限
                 if (quota.getPerDateMaxAmount().compareTo(statisticsQuotaDto.getClientPerDateAmount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getDesc());
+                    dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getFormatDesc(quota.getPerDateMaxAmount(),statisticsQuotaDto.getClientPerDateAmount(),quota.getCouponId()));
                     return dto;
                 }
             } else if (validflag == 0) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getDesc());
+                dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",quota.getCouponId()));
                 return dto;
             }
 
@@ -1195,13 +1193,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否所有客户已领取的优惠金额是否超限
                 if (quota.getMaxAmount().compareTo(statisticsQuotaDto.getClientAmount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_QUOTA.getDesc());
+                    dto.setDesc(COUPON_FAIL_QUOTA.getFormatDesc(quota.getMaxAmount(),statisticsQuotaDto.getClientAmount(),quota.getCouponId()));
                     return dto;
                 }
 
             } else if (validflag == 0) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_QUOTA.getDesc());
+                dto.setDesc(COUPON_FAIL_QUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",quota.getCouponId()));
                 return dto;
             }
 
@@ -1219,12 +1217,12 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否所有客户已领取的优惠金额是否超限
                 if (maxCount.compareTo(statisticsQuotaDto.getClientCount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getDesc());
+                    dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getFormatDesc(maxCount,statisticsQuotaDto.getClientCount(),quota.getCouponId()));
                     return dto;
                 }
             } else if (validflag == 0) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getDesc());
+                dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",quota.getCouponId()));
                 return dto;
             }
 
