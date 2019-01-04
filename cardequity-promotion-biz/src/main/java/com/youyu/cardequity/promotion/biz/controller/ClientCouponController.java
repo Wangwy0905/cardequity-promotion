@@ -70,55 +70,5 @@ public class ClientCouponController implements ClientCouponApi {
         return Result.ok(clientCouponService.combCouponRefProductAndUse(req));
     }
 
-    /**
-     * 添加优惠券
-     *
-     * @param req
-     * @return
-     */
-    @Override
-    @ApiOperation(value = "添加优惠券(暂未实现)：添加基本信息、领取频率、使用门槛、关联商品等")
-    @PostMapping(path = "/addCoupon")
-    public Result<List<ProductCouponDto>> addCoupon(@RequestBody CouponDetailReq req){
-        return null;
-    }
 
-
-    /**
-     * 编辑优惠券
-     *
-     * @param req
-     * @return
-     */
-    @Override
-    @ApiOperation(value = "编辑优惠券(暂未实现)：编辑基本信息、领取频率、使用门槛、关联商品等")
-    @PostMapping(path = "/editCoupon")
-    public Result<List<ProductCouponDto>> editCoupon(@RequestBody CouponDetailReq req){
-        return null;
-    }
-
-    /**
-     * 查看商品对应优惠券列表
-     *
-     * @param req
-     * @return
-     */
-    @Override
-    @ApiOperation(value = "查看商品对应优惠券列表(暂未实现)")
-    @PostMapping(path = "/findCouponListByProduct")
-    public Result<List<CouponDefineRsp>> findCouponListByProduct(@RequestBody BaseProductReq req){
-        return null;
-    }
-
-    /**
-     * 查询所有优惠券列表
-     *
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "查询所有优惠券列表")
-    @PostMapping(path = "/findCouponListByCommon")
-    public Result<List<CouponDefineRsp>> findCouponListByCommon(@RequestBody BaseCouponReq req){
-        return null;
-    }
 }

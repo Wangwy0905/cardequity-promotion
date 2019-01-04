@@ -32,11 +32,11 @@ public enum ResultCode implements CardequityIBaseResultCode {
     COUPON_NOT_ALLOW_PRODUCT("0003", "该商品不能使用此券：商品编号{0},商品子编号{1},优惠券编号{2},子券编号{3}"),
     COUPON_NOT_ALLOW_ENTRUSTWAY("0004", "该渠道及方式不能使用此券,ENTRUSTWAY={0}"),
     COUPON_NOT_ALLOW_DATE("0005", "该期间不能领取或使用该优惠券,备注：开始时间{0},结束时间{1}"),
-    COUPON_FAIL_PERACCANDDATEQUOTA("0006", "超过该优惠券每人每日可领取优惠金额,券每人每日可领优惠金额{0},该客户当日已领优惠金额{1},客户编号{2}"),
-    COUPON_FAIL_PERACCQUOTA("0007", "超过该优惠券每人可领取优惠金额,券每人可领优惠金额{0},该客户已领优惠金额{1},客户编号{2}"),
-    COUPON_FAIL_PERDATEQUOTA("0008", "超过该优惠券每日可领取优惠金额,券每日可领优惠金额{0},券当日已领优惠金额{1},优惠券编号{2}"),
-    COUPON_FAIL_QUOTA("0009", "超过该优惠券所有客户可领取优惠总金额,券可领优惠金额{0},券已领优惠金额{1},优惠券编号{2}"),
-    COUPON_FAIL_COUNT_QUOTA("0010", "超过该优惠券所有客户可领取优惠总数量,券可领优惠数量{0},券已领优惠数量{1},优惠券数量{2}"),
+    COUPON_FAIL_PERACCANDDATEQUOTA("0006", "超过该优惠每人每日可领取优惠金额,每人每日可领优惠金额{0},该客户当日已领优惠金额{1},客户编号{2}"),
+    COUPON_FAIL_PERACCQUOTA("0007", "超过该优惠每人可领取优惠金额,每人可领优惠金额{0},该客户已领优惠金额{1},客户编号{2}"),
+    COUPON_FAIL_PERDATEQUOTA("0008", "超过该优惠每日可领取优惠金额,每日可领优惠金额{0},当日已领优惠金额{1},优惠编号{2}"),
+    COUPON_FAIL_QUOTA("0009", "超过该优惠所有客户可领取优惠总金额,可领优惠金额{0},已领优惠金额{1},优惠编号{2}"),
+    COUPON_FAIL_COUNT_QUOTA("0010", "超过该优惠所有客户可领取优惠总数量,可领优惠数量{0},已领优惠数量{1},优惠编号{2}"),
     COUPON_FAIL_OP_FREQ("0011", "超过该优惠券领取或使用频率"),
     COUPON_FAIL_OBTAIN("0012", "优惠券领取失败,备注：{0}"),
     ACTIVE_NOT_EXIST("0013", "活动不存在,备注：{0}"),
@@ -50,6 +50,9 @@ public enum ResultCode implements CardequityIBaseResultCode {
     ACTIVITY_NOT_ALLOW_DATE("0021", "该期间不能不能参加此活动,开始时间{0},结束时间{1}"),
     COUPON_NOT_ALLOW_BANKCODE("0022", "该银行不能使用此券,BANKCODE={0}"),
     COUPON_NOT_ALLOW_PAYTYPE("0023", "该支付方式不能使用此券,PAYTYPE={0}"),
+    COUPON_FAIL_COUNT_PERDATEQUOTA("0024", "超过该优惠所有客户当日可领取优惠总数量,券当日可领优惠数量{0},券当日已领优惠数量{1},优惠编号{2}"),
+    COUPON_FAIL_COUNT_PERACCANDDATEQUOTA("0006", "超过该优惠每日可领取优惠金额,每日可领优惠金额{0},当日已领优惠金额{1},优惠编号{2}"),
+    COUPON_FAIL_COUNT_PERACCQUOTA("0007", "超过该优惠可领取数量,可领优惠数量{0},已领优惠数量{1},优惠编号{2}"),
     ;
 
     /**

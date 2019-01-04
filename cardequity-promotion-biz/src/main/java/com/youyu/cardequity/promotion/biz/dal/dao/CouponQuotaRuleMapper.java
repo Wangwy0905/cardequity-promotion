@@ -19,6 +19,13 @@ public interface CouponQuotaRuleMapper extends YyMapper<CouponQuotaRuleEntity> {
      */
     CouponQuotaRuleEntity findCouponQuotaRuleById(@Param("couponId") String couponId );
 
+    /**
+     * 逻辑删除通过优惠id
+     * @param couponId
+     * @return
+     */
+    int logicDelByCouponId(@org.apache.ibatis.annotations.Param("couponId") String couponId);
+
 }
 
 

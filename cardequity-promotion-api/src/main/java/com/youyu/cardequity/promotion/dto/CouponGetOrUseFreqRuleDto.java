@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModel;
  */
 @Data
 @ApiModel
-public class CouponGetoOrUseFreqRuleDto implements IBaseDto<String>{
+public class CouponGetOrUseFreqRuleDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "编号:")
     private String uuid;
@@ -43,18 +43,6 @@ public class CouponGetoOrUseFreqRuleDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "备注:")
     private String remark;
-
-    @ApiModelProperty(value = "产生者:")
-    private String createAuthor;
-
-    @ApiModelProperty(value = "更新者:")
-    private String updateAuthor;
-
-    @ApiModelProperty(value = "更新时间:")
-    private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "产生时间:")
-    private LocalDateTime createTime;
 
     @ApiModelProperty(value = "是否有效:")
     private String isEnable;

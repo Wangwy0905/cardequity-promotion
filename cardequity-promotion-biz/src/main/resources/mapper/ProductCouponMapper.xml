@@ -19,7 +19,7 @@
             and (ifnull(a.ENTRUST_WAY_SET, '*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="clientType != null and clientType!=''">
-            and (ifnull(a.CLIENT_TYPE_SET, '*') = '*' or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR}))
+            and (ifnull(a.CLIENT_TYPE_SET, '*') = '*' or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
         and a.ALLOW_GET_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_GET_END_DATE &gt;= sysdate()
@@ -44,15 +44,89 @@
         and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)))
     </select>
 
-
-
-
     <select id="findProductCouponById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
     select *
-from TB_PRODUCT_COUPON a
-where ifnull(a.IS_ENABLE, '1') = '1'
-  and a.UUID = #{couponId,jdbcType=VARCHAR}
-  </select>
+      from TB_PRODUCT_COUPON a
+     where ifnull(a.IS_ENABLE, '1') = '1'
+       and a.UUID = #{couponId,jdbcType=VARCHAR}
+    </select>
 
+    <select id="findCouponListByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity"
+            parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq">
+        select *
+        from TB_PRODUCT_COUPON a
+        where ifnull(a.IS_ENABLE, '1') = '1'
+        <if test="commonQry.couponId!=null and commonQry.couponId!=''">
+            and a.UUID=#{commonQry.couponId,jdbcType=VARCHAR}
+        </if>
+        <if test="commonQry.couponStatus!=null and commonQry.couponStatus='0'">
+            and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+        </if>
+        <if test="commonQry.couponStatus!=null and commonQry.couponStatus='1'">
+            and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
+            and a.ALLOW_USE_END_DATE &gt;=curdate()
+        </if>
+        <if test="commonQry.couponStatus!=null and commonQry.couponStatus='2'">
+            and a.ALLOW_USE_END_DATE &lt;curdate()
+        </if>
+        <if test="commonQry.couponName!=null and commonQry.couponName!=''">
+            and a.COUPON_NAME like CONCAT('%',#{commonQry.couponName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="commonQry.productId!=null and commonQry.productId!=''">
+            and( a.APPLY_PRODUCT_FLAG='1' or
+            exists(select 1 from TB_COUPON_REF_PRODUCT b
+            where b.COUPON_ID = a.UUID
+            and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR})
+            )
+        </if>
+        <if test="commonQry.targetFlag!=null and commonQry.targetFlag='0'">
+            and (ifnull(a.CLIENT_TYPE_SET,'*')='*' or
+            (instr(a.CLIENT_TYPE_SET,'10') &gt;0 and instr(a.CLIENT_TYPE_SET,'11')&gt;0 ))
+            and ifnull(a.GET_STAGE,'6')!='3'
+        </if>
+        <if test="commonQry.targetFlag!=null and commonQry.targetFlag='1'">
+            and a.GET_STAGE='3'
+        </if>
+        <if test="commonQry.targetFlag!=null and commonQry.targetFlag='2'">
+            and instr(a.CLIENT_TYPE_SET,'11')&gt;0
+        </if>
+        <if test="commonQry.couponType!=null and commonQry.couponType='0'">
+            and COUPON_TYPE ='0'
+        </if>
+        <if test="commonQry.couponType!=null and commonQry.couponType='1'">
+            and COUPON_TYPE ='1'
+        </if>
+        <if test="commonQry.couponType!=null and commonQry.couponType='2'">
+            and COUPON_TYPE in ('2','3')
+        </if>
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus='0'">
+            and ALLOW_GET_BEGIN_DATE &gt;curdate()
+        </if>
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus='1'">
+            and ALLOW_GET_BEGIN_DATE &lt;=curdate()
+            and a.ALLOW_GET_END_DATE &gt;=curdate()
+        </if>
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus='2'">
+            and ALLOW_GET_END_DATE &lt;curdate()
+        </if>
+    </select>
+
+    <update id="logicDelByList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq">
+        UPDATE TB_PRODUCT_COUPON a
+           SET IS_ENABLE='0'
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND a.UUID IN
+        <foreach collection="list.baseCouponList" item="baseCoupon" index="index"
+                 open="(" close=")" separator=",">
+            #{baseCoupon.couponId}
+        </foreach>
+    </update>
+
+    <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq" >
+        UPDATE TB_PRODUCT_COUPON  a
+           SET IS_ENABLE='0'
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+         AND a.UUID=  #{baseCoupon.couponId,jdbcType=VARCHAR}
+    </update>
 
 </mapper>

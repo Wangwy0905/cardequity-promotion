@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.dal.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 
 import lombok.Getter;
@@ -83,13 +84,13 @@ public class ActivityProfitEntity extends com.youyu.common.entity.BaseEntity<Str
      * 优惠开始日:到分秒级别
      */
     @Column(name = "ALLOW_USE_BEGIN_DATE")
-    private LocalDate allowUseBeginDate;
+    private LocalDateTime allowUseBeginDate;
 
     /**
      * 优惠结束日:
      */
     @Column(name = "ALLOW_USE_END_DATE")
-    private LocalDate allowUseEndDate;
+    private LocalDateTime allowUseEndDate;
 
     /**
      * 优惠值:如果是按阶梯进行“现金立减”该值无效，如果是按阶梯进行“折扣”该值无效，如果是阶梯“优惠价”该值无效，如果是阶梯“限额任选”该值无效，是以最终的阶梯中优惠值覆盖；如果ActivityType=1填折扣值(0-1]

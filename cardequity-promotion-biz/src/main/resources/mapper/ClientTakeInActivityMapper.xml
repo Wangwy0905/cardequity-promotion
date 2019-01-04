@@ -3,5 +3,30 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.ClientTakeInActivityMapper">
-
+    <resultMap id="ClientCoupStatisticsQuotaDto" type="com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto">
+        <result column="COUPON_ID" property="couponId" jdbcType="VARCHAR" />
+        <result column="CLIENT_ID" property="clientId" jdbcType="VARCHAR" />
+        <result column="CLIENT_AMOUNT" property="clientAmount" jdbcType="DECIMAL" />
+        <result column="CLIENT_COUNT" property="clientCount" jdbcType="DECIMAL" />
+        <result column="CLIENT_PERDATE_AMOUNT" property="clientPerDateAmount" jdbcType="DECIMAL" />
+        <result column="CLIENT_PERDATE_COUNT" property="clientPerDateCount" jdbcType="DECIMAL" />
+    </resultMap>
+    <select id="statisticsCouponByCommon" resultMap="ClientCoupStatisticsQuotaDto">
+        SELECT ifnull(sum(ifnull(a.PROFIT_VALUE, 0)), 0) as CLIENT_AMOUNT,
+        count(a.UUID) as CLIENT_COUNT,
+        ifnull(sum(case when a.CREATE_TIME>CURDATE() then ifnull(a.PROFIT_VALUE, 0) else 0 end ),0) as CLIENT_PERDATE_AMOUNT,
+        ifnull(sum(case when a.CREATE_TIME>CURDATE() then 1 else 0 end ),0) as CLIENT_PERDATE_COUNT
+        FROM TB_CLIENT_TAKE_IN_ACTIVITY a
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        <if test="clientId != null and clientId !=''">
+            and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        </if>
+        <if test="couponId != null and couponId !=''">
+            and a.ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
+        </if>
+        <if test="stageId != null and stageId !=''">
+            and a.STAGE_ID=#{stageId,jdbcType=VARCHAR}
+        </if>
+        and a.BUSIN_CODE = '5003'
+    </select>
 </mapper>

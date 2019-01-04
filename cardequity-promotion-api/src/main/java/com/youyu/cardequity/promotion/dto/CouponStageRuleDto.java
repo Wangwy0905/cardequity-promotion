@@ -39,12 +39,6 @@ public class CouponStageRuleDto implements IBaseDto<String>{
     @ApiModelProperty(value = "优惠值:默认值等于ProductGroupCoupon中值，使用时覆盖ProductGroupCoupon中值起效，取值范围为ProductGroupCoupon中值")
     private BigDecimal couponValue;
 
-    @ApiModelProperty(value = "产生者:")
-    private String createAuthor;
-
-    @ApiModelProperty(value = "更新者:")
-    private String updateAuthor;
-
     @Override
     public String getId() {
         return uuid;

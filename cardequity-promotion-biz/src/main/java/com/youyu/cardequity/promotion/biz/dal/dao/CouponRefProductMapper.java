@@ -31,6 +31,13 @@ public interface CouponRefProductMapper extends YyMapper<CouponRefProductEntity>
     List<CouponRefProductEntity> findListByCommon(@Param("couponId") String couponId,
                                                   @Param("productId") String productId );
 
+    /**
+     * 通过优惠券id删除对应适用商品配置
+     * @param couponId
+     * @return
+     */
+    int deleteByCouponId(@Param("couponId") String couponId);
+
 }
 
 

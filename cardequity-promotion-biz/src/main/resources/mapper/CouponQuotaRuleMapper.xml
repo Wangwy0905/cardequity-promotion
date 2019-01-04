@@ -3,10 +3,18 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponQuotaRuleMapper">
-<select id="findCouponQuotaRuleById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity">
+    <select id="findCouponQuotaRuleById"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity">
 select *
 from TB_COUPON_QUOTA_RULE a
 where IFNULL(a.IS_ENABLE, '1') = '1'
 and a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
-</select>
+    </select>
+
+    <update id="logicDelByCouponId" parameterType="string">
+        UPDATE TB_COUPON_QUOTA_RULE a
+           SET IS_ENABLE='0'
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND COUPON_ID=#{couponId,jdbcType=VARCHAR}
+    </update>
 </mapper>

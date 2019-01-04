@@ -1,14 +1,14 @@
 package com.youyu.cardequity.promotion.biz.strategy.activity;
 
 import com.youyu.cardequity.common.base.annotation.StatusAndStrategyNum;
+import com.youyu.cardequity.promotion.biz.dal.dao.ActivityQuotaRuleMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.ActivityRefProductMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.ActivityStageCouponMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
+import com.youyu.cardequity.promotion.biz.dal.entity.ActivityQuotaRuleEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityStageCouponEntity;
-import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
-import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
-import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
@@ -36,6 +36,9 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
 
     @Autowired
     private ActivityStageCouponMapper activityStageCouponMapper;
+
+    @Autowired
+    private ActivityQuotaRuleMapper activityQuotaRuleMapper;
 
     @Override
     public UseActivityRsp applyActivity(ActivityProfitEntity item, List<OrderProductDetailDto> productList) {
@@ -66,6 +69,25 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
                 return entity2.getProfitValue().compareTo(entity1.getProfitValue());
             }
         });
+
+        //2.校验券的额度限制是否满足:只校验参与活动前是否有剩余额度，最终额度再和封顶值配合控制
+        //检查指定客户的额度信息
+        ActivityQuotaRuleEntity quota = activityQuotaRuleMapper.findActivityQuotaRuleById(item.getId());
+        CommonBoolDto<ClientCoupStatisticsQuotaDto> boolDto = checkActivityPersonQuota(quota, item.getId());
+        //校验不通过直接返回
+        if (!boolDto.getSuccess()) {
+            return null;
+        }
+        //客户活动优惠统计信息
+        ClientCoupStatisticsQuotaDto clientQuotaDto = boolDto.getData();
+
+        //检查所有客户领取额度情况
+        boolDto = checkActivityAllQuota(quota);
+        //校验不通过直接返回
+        if (!boolDto.getSuccess()) {
+            return null;
+        }
+        ClientCoupStatisticsQuotaDto allQuotaDto = boolDto.getData();
 
         BigDecimal countCondition = BigDecimal.ZERO;
         BigDecimal amountCondition = BigDecimal.ZERO;

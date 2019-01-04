@@ -64,7 +64,6 @@
         <if test="stageId != null and stageId !=''">
             and a.STAGE_ID=#{stageId,jdbcType=VARCHAR}
         </if>
-        order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
     <select id="findClientValidCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM

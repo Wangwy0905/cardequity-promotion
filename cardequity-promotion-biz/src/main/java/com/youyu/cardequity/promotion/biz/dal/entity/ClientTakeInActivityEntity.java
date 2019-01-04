@@ -65,6 +65,12 @@ public class ClientTakeInActivityEntity extends com.youyu.common.entity.BaseEnti
     private BigDecimal productCount;
 
     /**
+     * 刚好满足优惠条件时数量:
+     */
+    @Column(name = "PROFIT_COUNT")
+    private BigDecimal ProfitCount;
+
+    /**
      * 优惠值:主要优惠金额、
      */
     @Column(name = "PROFIT_VALUE")

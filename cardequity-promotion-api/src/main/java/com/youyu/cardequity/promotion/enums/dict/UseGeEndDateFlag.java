@@ -5,8 +5,8 @@ package com.youyu.cardequity.promotion.enums.dict;
  */
 public enum UseGeEndDateFlag {
 
-    NO("0", "获取"),
-    YES("1", "使用"),
+    NO("0", "否:有效结束日=实际领取日+期限"),
+    YES("1", "是:有效结束日=min(优惠结束日,(实际领取日+期限))"),
     ;
 
     public static final String DICTID = "100179";

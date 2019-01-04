@@ -33,7 +33,7 @@ public class ActivityStageCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "值起始（不含）:没有阶梯填(0,999999999]")
     private BigDecimal beginValue;
 
-    @ApiModelProperty(value = "结束值（含）:最大值为999999999；")
+    @ApiModelProperty(value = "结束值（含）:最大值为999999999；空时也表示最大值")
     private BigDecimal endValue;
 
     @ApiModelProperty(value = "优惠值:使用时覆盖ActivityProfit中值起效")

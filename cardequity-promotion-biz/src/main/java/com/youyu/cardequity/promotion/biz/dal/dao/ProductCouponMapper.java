@@ -2,6 +2,9 @@ package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.ShortCouponDetailDto;
+import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
+import com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq;
+import com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -41,6 +44,26 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
     ProductCouponEntity findProductCouponById(@Param("couponId") String couponId);
 
 
+    /**
+     * 通用查询
+     * @param commonQry 通用信息
+     * @return
+     */
+    List<ProductCouponEntity> findCouponListByCommon(@Param("commonQry") BaseQryCouponReq commonQry);
+
+    /**
+     * 批量逻辑删除
+     * @param list
+     * @return
+     */
+    int logicDelByList(@Param("list") BatchBaseCouponReq list);
+
+    /**
+     * 逻辑删除
+     * @param baseCoupon
+     * @return
+     */
+    int logicDelById(BaseCouponReq baseCoupon);
 
 }
 

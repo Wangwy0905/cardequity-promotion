@@ -1,6 +1,12 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
+import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
+import com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto;
+import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
+import com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq;
+import com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq;
+import com.youyu.cardequity.promotion.vo.req.BatchBaseActivityReq;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -37,7 +43,41 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
                                                            @Param("entrustWay") String entrustWay,
                                                            @Param("clientType") String clientType);
 
+    /**
+     * 根据活动id查询活动详情
+     * @param id
+     * @return
+     */
     ActivityProfitEntity findById(@Param("id") String id);
+
+    /**
+     * 通过商品id查询其查询特价活动信息
+     * @param productId
+     * @return
+     */
+    List<ActivityProfitEntity> findPriceActivityByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
+
+    /**
+     * 逻辑删除
+     * @param list
+     * @return
+     */
+    int logicDelByIdList(@Param("list") BatchBaseActivityReq list);
+
+    /**
+     * 逻辑删除
+     * @param baseActivity
+     * @return
+     */
+    int logicDelById(@Param("baseActivity") BaseActivityReq baseActivity);
+
+    /**
+     * 通用查询
+     * @param commonQry 通用信息
+     * @return
+     */
+    List<ActivityProfitEntity> findActivityListByCommon(@Param("commonQry") BaseQryActivityReq commonQry);
+
 }
 
 

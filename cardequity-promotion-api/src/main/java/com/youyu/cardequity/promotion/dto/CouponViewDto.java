@@ -1,0 +1,162 @@
+package com.youyu.cardequity.promotion.dto;
+
+import com.youyu.cardequity.promotion.constant.CommonConstant;
+import com.youyu.cardequity.promotion.enums.dict.*;
+import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.springframework.beans.BeanUtils;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by caiyi on 2019/1/2.
+ */
+@Data
+public class CouponViewDto {
+
+    @ApiModelProperty(value = "优惠券编号:")
+    private String uuid;
+
+    @ApiModelProperty(value = "领取对象：0-全部用户 1-新用户 2-会员")
+    private String targetFlag;
+
+    @ApiModelProperty(value = "级别：0-自动义 1-全局")
+    private String couponLevel;
+
+    @ApiModelProperty(value = "优惠标签id:标签：满返券、促销等")
+    private String couponLable;
+
+    @ApiModelProperty(value = "类型:0-消费券 1-运费券")
+    private String couponViewType;
+
+    @ApiModelProperty(value = "优惠名称:")
+    private String couponName;
+
+    @ApiModelProperty(value = "门槛短描:如满3件减20")
+    private String couponShortDesc;
+
+    @ApiModelProperty(value = "使用说明")
+    private String couponDesc;
+
+    @ApiModelProperty(value = "券数量")
+    private Integer maxCount;
+
+    @ApiModelProperty(value = "优惠值:如果是阶梯或随机的填0，存折扣、金额")
+    private BigDecimal profitValue;
+
+    @ApiModelProperty(value = "门槛id:前台不展示")
+    private String stageId;
+
+    @ApiModelProperty(value = "使用金额门槛")
+    private BigDecimal conditionFund;
+
+    @ApiModelProperty(value = "使用金额数量")
+    private BigDecimal conditionCount;
+
+    @ApiModelProperty(value = "每张券最大优惠金额")
+    private BigDecimal perProfitTopValue;
+
+    @ApiModelProperty(value = "优惠开始日:")
+    private LocalDate allowUseBeginDate;
+
+    @ApiModelProperty(value = "优惠结束日:")
+    private LocalDate allowUseEndDate;
+
+    @ApiModelProperty(value = "有效期限:以天为单位")
+    private Integer valIdTerm;
+
+    @ApiModelProperty(value = "领取开始日:到分秒级别")
+    private LocalDate allowGetBeginDate;
+
+    @ApiModelProperty(value = "领取结束日:")
+    private LocalDate allowGetEndDate;
+
+    @ApiModelProperty(value = "频率id:前台不展示")
+    private String freqId;
+
+    @ApiModelProperty(value = "频率周期类型")
+    private String unit;
+
+    @ApiModelProperty(value = "客户获取总数/客户每次使用数")
+    private Integer personTotalNum;
+
+    @ApiModelProperty(value = "周期内允许此时:")
+    private Integer allowCount;
+
+    @ApiModelProperty(value = "优惠券涉及的商品")
+    private List<BaseProductReq> productList;
+
+    public CouponDetailDto switchToModel() {
+        CouponDetailDto dto = new CouponDetailDto();
+        ProductCouponDto couponDto = new ProductCouponDto();
+        dto.setProductCouponDto(couponDto);
+        BeanUtils.copyProperties(this, couponDto);
+        couponDto.setClientTypeSet(CommonConstant.WILDCARD);
+        couponDto.setGetStage(UsedStage.Other.getDictValue());
+        //会员专属
+        if ("2".equals(targetFlag)) {
+            couponDto.setClientTypeSet(ClientType.MEMBER.getDictValue());
+            //新手注册专属
+        } else if ("1".equals(targetFlag)) {
+            couponDto.setClientTypeSet(CommonConstant.WILDCARD);
+            couponDto.setGetStage(UsedStage.Register.getDictValue());
+        }
+        couponDto.setCouponType(CouponType.COUPON.getDictValue());
+        if ("1".equals(couponViewType))
+            couponDto.setCouponType(CouponType.TRANSFERFARE.getDictValue());
+        if (conditionFund!=null && conditionFund.compareTo(BigDecimal.ZERO)>=0){
+            List<CouponStageRuleDto> stageList=new ArrayList<>();
+            CouponStageRuleDto stage=new CouponStageRuleDto();
+            stage.setCouponId(uuid);
+            stage.setId(stageId);
+            stage.setTriggerByType(TriggerByType.CAPITAL.getDictValue());
+            stage.setBeginValue(conditionFund);
+            stage.setCouponValue(profitValue);
+            stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionFund));
+            stageList.add(stage);
+            dto.setStageList(stageList);
+        } else if (conditionCount!=null && conditionCount.compareTo(BigDecimal.ZERO)>=0){
+            List<CouponStageRuleDto> stageList=new ArrayList<>();
+            CouponStageRuleDto stage=new CouponStageRuleDto();
+            stage.setCouponId(uuid);
+            stage.setId(stageId);
+            stage.setCouponShortDesc(this.couponShortDesc);
+            stage.setCouponValue(profitValue);
+            stage.setTriggerByType(TriggerByType.NUMBER.getDictValue());
+            stage.setBeginValue(conditionCount);
+            stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionCount));
+            stageList.add(stage);
+            dto.setStageList(stageList);
+        }
+        if (maxCount!=null && maxCount.intValue()>=0){
+            CouponQuotaRuleDto quotaRuleDto=new CouponQuotaRuleDto();
+            quotaRuleDto.setCouponId(uuid);
+            quotaRuleDto.setMaxCount(maxCount);
+            dto.setQuotaRule(quotaRuleDto);
+        }
+
+        if (allowCount!=null && allowCount.intValue()>=0){
+            List<CouponGetOrUseFreqRuleDto> freqRuleList=new ArrayList<>();
+            CouponGetOrUseFreqRuleDto freqRuleDto = new CouponGetOrUseFreqRuleDto();
+            freqRuleDto.setId(freqId);
+            freqRuleDto.setCouponId(uuid);
+            freqRuleDto.setStageId(stageId);
+            freqRuleDto.setOpCouponType(OpCouponType.GETRULE.getDictValue());
+            freqRuleDto.setAllowCount(allowCount);
+            freqRuleDto.setPersonTotalNum(personTotalNum);
+            freqRuleDto.setUnit(unit);
+            freqRuleDto.setValue(1);
+            freqRuleList.add(freqRuleDto);
+            dto.setFreqRuleList(freqRuleList);
+        }
+
+        dto.setProductList(productList);
+
+        return dto;
+    }
+}

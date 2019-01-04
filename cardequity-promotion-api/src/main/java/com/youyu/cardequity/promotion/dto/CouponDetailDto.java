@@ -1,0 +1,88 @@
+package com.youyu.cardequity.promotion.dto;
+
+import com.youyu.cardequity.promotion.enums.dict.*;
+import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.BeanUtils;
+
+import java.util.List;
+
+/**
+ * Created by caiyi on 2018/12/27.
+ */
+@Getter
+@Setter
+public class CouponDetailDto {
+    @ApiModelProperty(value = "优惠券基本信息", required = true)
+    private ProductCouponDto productCouponDto;
+
+    @ApiModelProperty(value = "优惠券涉及的商品")
+    private List<BaseProductReq> productList;
+
+    @ApiModelProperty(value = "领取或使用规则")
+    private List<CouponGetOrUseFreqRuleDto> freqRuleList;
+
+    @ApiModelProperty(value = "额度规则")
+    private CouponQuotaRuleDto quotaRule;
+
+    @ApiModelProperty(value = "子券信息")
+    private List<CouponStageRuleDto> stageList;
+
+    public CouponViewDto switchToView() {
+        CouponViewDto dto = new CouponViewDto();
+        if (productCouponDto != null) {
+            BeanUtils.copyProperties(productCouponDto, dto);
+            dto.setTargetFlag("0");
+            if (productCouponDto.getClientTypeSet() != null) {
+                //会员专属
+                if (productCouponDto.getClientTypeSet().equals(ClientType.MEMBER.getDictValue())) {
+                    dto.setTargetFlag("2");
+                } else {
+                    //注册用户
+                    if (UsedStage.Register.equals(productCouponDto.getGetStage())) {
+                        dto.setTargetFlag("1");
+                    }
+                }
+            }
+            dto.setCouponViewType("0");
+            if (CouponType.TRANSFERFARE.getDictValue().equals(productCouponDto.getCouponType()) ||
+                    CouponType.FREETRANSFERFARE.getDictValue().equals(productCouponDto.getCouponType()))
+                dto.setCouponViewType("1");
+        }
+
+        if (quotaRule != null) {
+            dto.setMaxCount(quotaRule.getMaxCount());
+        }
+
+        if (stageList != null && stageList.size() > 0) {
+            for (CouponStageRuleDto stage : stageList) {
+                if (TriggerByType.NUMBER.getDictValue().equals(stage.getTriggerByType())) {
+                    dto.setConditionFund(stage.getBeginValue());
+                } else {
+                    dto.setConditionCount(stage.getBeginValue());
+                }
+                dto.setProfitValue(stage.getCouponValue());
+                dto.setPerProfitTopValue(stage.getEndValue());
+                dto.setStageId(stage.getId());
+                break;//首期只有一个阶梯的数据
+            }
+
+        }
+        if (freqRuleList != null && freqRuleList.size() > 0){
+            for (CouponGetOrUseFreqRuleDto freq : freqRuleList) {
+              if (OpCouponType.USERULE.getDictValue().equals(freq.getOpCouponType()))
+                  continue;
+                dto.setFreqId(freq.getId());
+               dto.setUnit(freq.getUnit());
+               dto.setAllowCount(freq.getAllowCount());
+               dto.setPersonTotalNum(freq.getPersonTotalNum());
+            }
+        }
+
+        dto.setProductList(productList);
+        return dto;
+    }
+
+}

@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
@@ -53,10 +54,10 @@ public class ActivityProfitDto implements IBaseDto<String>{
     private String payTypeSet;
 
     @ApiModelProperty(value = "优惠开始日:到分秒级别")
-    private LocalDate allowUseBeginDate;
+    private LocalDateTime allowUseBeginDate;
 
     @ApiModelProperty(value = "优惠结束日:")
-    private LocalDate allowUseEndDate;
+    private LocalDateTime allowUseEndDate;
 
     @ApiModelProperty(value = "优惠值:如果是按阶梯进行“现金立减”该值无效，如果是按阶梯进行“折扣”该值无效，如果是阶梯“优惠价”该值无效，如果是阶梯“限额任选”该值无效，是以最终的阶梯中优惠值覆盖；如果ActivityType=1填折扣值(0-1]")
     private BigDecimal profitValue;

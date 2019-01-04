@@ -52,7 +52,6 @@ public class CouponStageRuleEntity extends com.youyu.common.entity.BaseEntity<St
     @Column(name = "COUPON_VALUE")
     private BigDecimal couponValue;
 
-
     /**
      * 是否有效:
      */

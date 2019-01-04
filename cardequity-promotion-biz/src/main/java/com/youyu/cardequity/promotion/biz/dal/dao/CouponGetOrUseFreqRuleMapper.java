@@ -26,6 +26,19 @@ public interface CouponGetOrUseFreqRuleMapper extends YyMapper<CouponGetOrUseFre
     List<ShortCouponDetailDto> findClinetFreqForbidCouponDetailListById(@Param("clientId") String clientId,
                                                                         @Param("couponId") String couponId,
                                                                         @Param("stageId") String stageId);
+    /**
+     * 逻辑删除通过优惠id
+     * @param couponId
+     * @return
+     */
+    int logicDelByCouponId(@Param("couponId") String couponId);
+
+    /**
+     * 查询频率使用规则
+     * @param couponId
+     * @return
+     */
+    List<CouponGetOrUseFreqRuleEntity> findByCouponId(@Param("couponId") String couponId);
 
 }
 

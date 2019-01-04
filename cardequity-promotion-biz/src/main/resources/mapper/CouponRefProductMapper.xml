@@ -20,4 +20,9 @@
         and a.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
         </if>
     </select>
+
+    <delete id="deleteByCouponId" parameterType="string">
+       DELETE  FROM TB_COUPON_REF_PRODUCT a
+        WHERE a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
+    </delete>
 </mapper>

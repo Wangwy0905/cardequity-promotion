@@ -20,4 +20,46 @@
         </if>
         and a.SKU_ID=#{productId,jdbcType=VARCHAR}
     </select>
+
+    <select id="findReProductBylist"  resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity">
+        SELECT *
+        FROM TB_ACTIVITY_REF_PRODUCT a
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND a.ACTIVITY_ID!=#{activity.uuid,jdbcType=VARCHAR}
+        and exists(
+          select 1 from TB_PRODUCT_COUPON b
+            where b.UUID=a.ACTIVITY_ID
+              and ifnull(b.IS_ENABLE, '1') = '1'
+              and b.ALLOW_USE_END_DATE &gt;= curdate()
+              and NOT (b.ALLOW_USE_END_DATE &lt; #{activity.allowUseBeginDate,jdbcType=DATE}
+                  OR b.ALLOW_USE_BEGIN_DATE &gt; #{activity.allowUseEndDate,jdbcType=DATE})
+        )
+        AND CONCAT(PRODUCT_ID,ifnull(a.SKU_ID, 'UNKNOW') ) IN
+        <foreach collection="list" item="product" index="index"
+                 open="(" close=")" separator=",">
+            <if test="product.skuId!=null and product.skuId!=''">
+                CONCAT(#{product.productId},#{product.skuId})
+            </if>
+            <if test="product.skuId=null or product.skuId=''">
+                CONCAT(#{product.productId},'UNKNOW')
+            </if>
+        </foreach>
+    </select>
+
+    <delete id="deleteByActivityId" parameterType="string">
+        DELETE  FROM TB_ACTIVITY_REF_PRODUCT a
+        WHERE a.ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
+    </delete>
+
+    <update id="deleteByBaseActivity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
+        DELETE  FROM TB_ACTIVITY_REF_PRODUCT a
+        WHERE a.ACTIVITY_ID=#{baseActivity.activityId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findByActivityId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity">
+         SELECT * FROM TB_ACTIVITY_REF_PRODUCT a
+        WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+        AND a.ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

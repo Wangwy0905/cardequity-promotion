@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityStageCouponEntity;
+import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.common.mapper.YyMapper;
 import feign.Param;
 
@@ -21,6 +22,20 @@ public interface ActivityStageCouponMapper extends YyMapper<ActivityStageCouponE
      * @return
      */
     List<ActivityStageCouponEntity> findActivityProfitDetail(@Param("activityId") String activityId);
+
+    /**
+     * 通过活动id逻辑删除
+     * @param activityId
+     * @return
+     */
+    int logicDelByActivityId(@Param("activityId") String activityId);
+
+    /**
+     * 通过活动id逻辑删除
+     * @param baseActivity
+     * @return
+     */
+    int logicDelByBaseActivity(@Param("baseActivity") BaseActivityReq baseActivity);
 }
 
 

@@ -16,7 +16,10 @@ import java.math.BigDecimal;
 public class OrderProductDetailDto {
     public OrderProductDetailDto(){
         totalAmount=BigDecimal.ZERO;
-        ProfitAmount=BigDecimal.ZERO;
+        profitAmount=BigDecimal.ZERO;
+        profitCount=BigDecimal.ZERO;
+        price=BigDecimal.ZERO;
+        appCount=BigDecimal.ZERO;
     }
     @ApiModelProperty(value = "商品id")
     private String productId;
@@ -34,5 +37,8 @@ public class OrderProductDetailDto {
     private BigDecimal appCount;
 
     @ApiModelProperty(value = "优惠金额：优惠使用后计算得到")
-    private BigDecimal ProfitAmount;
+    private BigDecimal profitAmount;
+
+    @ApiModelProperty(value = "适用优惠的商品数量")
+    private BigDecimal profitCount;
 }

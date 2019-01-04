@@ -72,4 +72,16 @@
         and DATE_SUB(CURDATE(), INTERVAL dayofyear(now()) - 1 DAY) &lt;= d.CREATE_TIME
         and concat(YEAR(now()), '-12-31') &gt;= d.CREATE_TIME))
     </select>
+
+    <update id="logicDelByCouponId" parameterType="string">
+        UPDATE TB_COUPON_GET_OR_USE_FREQ_RULE SET IS_ENABLE='0'
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND COUPON_ID=#{couponId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findByCouponId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponGetOrUseFreqRuleEntity">
+        SELECT * FROM TB_COUPON_GET_OR_USE_FREQ_RULE a
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND COUPON_ID=#{couponId,jdbcType=VARCHAR}
+    </select>
 </mapper>

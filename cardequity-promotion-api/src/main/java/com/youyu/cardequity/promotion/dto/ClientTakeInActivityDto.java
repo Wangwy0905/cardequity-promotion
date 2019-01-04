@@ -45,6 +45,9 @@ public class ClientTakeInActivityDto implements IBaseDto<String>{
     @ApiModelProperty(value = "数量:")
     private BigDecimal productCount;
 
+    @ApiModelProperty(value = "满足活动条件时的数量:")
+    private BigDecimal ProfitCount;
+
     @ApiModelProperty(value = "优惠值:主要优惠金额、")
     private BigDecimal profitValue;
 

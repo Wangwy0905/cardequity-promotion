@@ -59,6 +59,12 @@ public class ClientTakeInCouponEntity extends com.youyu.common.entity.BaseEntity
     private BigDecimal productCount;
 
     /**
+     * 刚好满足优惠条件时数量:
+     */
+    @Column(name = "PROFIT_COUNT")
+    private BigDecimal ProfitCount;
+
+    /**
      * 优惠值:主要优惠金额、如果一张券应用到多个商品上则按商品价值总额按比例分配优惠额
      */
     @Column(name = "PROFIT_VALUE")

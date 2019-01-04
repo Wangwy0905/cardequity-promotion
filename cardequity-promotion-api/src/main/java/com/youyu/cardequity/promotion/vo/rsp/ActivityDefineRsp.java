@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.vo.rsp;
 
 import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
+import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +26,7 @@ public class ActivityDefineRsp {
     private String activityName;
 
     @ApiModelProperty(value = "活动标签:用于前端展示：促销、秒杀")
-    private String activityLable;
+    private CouponAndActivityLabelDto couponAndActivityLabel;
 
     @ApiModelProperty(value = "活动短描:用于前端展示：如任选3件99元")
     private String activityShortDesc;

@@ -125,6 +125,26 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             checkreq.setProductList(productLsit);
         }
 
+        //获取领取的阶梯
+        CouponStageRuleEntity couponStage = null;
+        if (!CommonUtils.isEmptyorNull(req.getStageId())) {
+            couponStage = couponStageRuleMapper.findCouponStageById(req.getCouponId(), req.getStageId());
+            //如果找不到阶梯则传入参数有误
+            if (couponStage == null) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("找不到指定的子券StageId="+req.getStageId()));
+            }
+
+        } else {//保护一下如果没有传入StageId，且该券下只有一个id则自动补全
+            List<CouponStageRuleEntity> stageByCouponId = couponStageRuleMapper.findStageByCouponId(req.getCouponId());
+            if (stageByCouponId.size() == 1) {
+                couponStage = stageByCouponId.get(0);
+                entity.setStageId(couponStage.getId());
+            }
+            if (stageByCouponId.size() > 1) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("StageId不能为空,该券有多个子券无法确定领取的券"));
+            }
+        }
+
         //1.校验券基本信息是否允许领取：
         CommonBoolDto<ProductCouponEntity> fristdto = checkCouponFrist(entity, checkreq, false);
         if (!fristdto.getSuccess()) {
@@ -149,32 +169,18 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             return dto;
         }
 
-        //获取领取的阶梯
-        CouponStageRuleEntity couponStage = null;
-        if (!CommonUtils.isEmptyorNull(req.getStageId())) {
-            couponStage = couponStageRuleMapper.findCouponStageById(coupon.getId(), req.getStageId());
-            //如果找不到阶梯则传入参数有误
-            if (couponStage == null) {
-                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("找不到指定的子券StageId="+req.getStageId()));
-            }
-
-        } else {//保护一下如果没有传入StageId，且该券下只有一个id则自动补全
-            List<CouponStageRuleEntity> stageByCouponId = couponStageRuleMapper.findStageByCouponId(coupon.getId());
-            if (stageByCouponId.size() == 1)
-                couponStage = stageByCouponId.get(0);
-            if (stageByCouponId.size() > 1) {
-                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("StageId不能为空,该券有多个子券无法确定领取的券"));
-            }
-        }
-
         //3.增加客户已领优惠券
         entity.setId(CommonUtils.getUUID());
-        entity.setValidStartDate(LocalDate.now());
+        if (coupon.getAllowUseBeginDate()!=null ||LocalDate.now().compareTo(coupon.getAllowUseBeginDate())<0){
+            entity.setValidStartDate(coupon.getAllowUseBeginDate());
+        }else {
+            entity.setValidStartDate(LocalDate.now());
+        }
         //默认有效时间1个月
-        LocalDate validEndDate = LocalDate.now().plusMonths(1);
+        LocalDate validEndDate = entity.getValidStartDate().plusMonths(1);
         //如果定义了持有时间，则需要从当前领取日期上加持有时间作为最后有效日
         if (coupon.getValIdTerm() != null && coupon.getValIdTerm().intValue() > 0) {
-            validEndDate = LocalDate.now().plusDays(coupon.getValIdTerm());
+            validEndDate = entity.getValidStartDate().plusDays(coupon.getValIdTerm());
         }
 
         //如果算法是：有效结束日=min(优惠结束日,(实际领取日+期限))
@@ -705,17 +711,17 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         }
 
         //和指定活動是否存在冲突
-        if (!CommonUtils.isEmptyorNull(req.getActivityId())) {
-            ActivityProfitEntity activeEntity = activityProfitMapper.findById(req.getActivityId());
-            if (activeEntity == null) {
-                throw new BizException(ACTIVE_NOT_EXIST.getCode(), ACTIVE_NOT_EXIST.getFormatDesc("找不到指定活动ActivityId="+req.getActivityId()));
-            }
-
-            dto = checkReUseLimit(coupon, activeEntity);
-            if (!dto.getSuccess()) {
-                return dto;
-            }
-        }
+//        if (!CommonUtils.isEmptyorNull(req.getActivityId())) {
+//            ActivityProfitEntity activeEntity = activityProfitMapper.findById(req.getActivityId());
+//            if (activeEntity == null) {
+//                throw new BizException(ACTIVE_NOT_EXIST.getCode(), ACTIVE_NOT_EXIST.getFormatDesc("找不到指定活动ActivityId="+req.getActivityId()));
+//            }
+//
+//            dto = checkReUseLimit(coupon, activeEntity);
+//            if (!dto.getSuccess()) {
+//                return dto;
+//            }
+//        }
 
         dto.setData(coupon);
         return dto;
@@ -1063,8 +1069,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      */
     private CommonBoolDto checkCouponPersonQuota(CouponQuotaRuleEntity quota,
                                                  String clientId) {
-        CommonBoolDto dto = new CommonBoolDto();
-        dto.setSuccess(true);
+        CommonBoolDto dto = new CommonBoolDto(true);
 
         //存在规则才进行校验
         /**
@@ -1076,13 +1081,12 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
          */
         //大于等于该999999999值都标识不控制
         if (quota != null) {
-            ClientCoupStatisticsQuotaDto statisticsQuotaDto = null;
+            ClientCoupStatisticsQuotaDto  statisticsQuotaDto = statisticsClientCouponQuota(clientId, quota.getCouponId());
+            dto.setData(statisticsQuotaDto);
 
-            //校验每客每天最大优惠额
-            int validflag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateAndAccMaxAmount());
-            if (validflag == 2) {
-
-                    statisticsQuotaDto = statisticsClientCouponQuota(clientId, quota.getCouponId());
+            //1.校验每客每天最大优惠额
+            String validflag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateAndAccMaxAmount());
+            if (CommonDict.CONTINUEVALID.getCode().equals(validflag)) {
 
                 //判断是否客户当日已领取的优惠金额是否超限
                 if (quota.getPerDateAndAccMaxAmount().compareTo(statisticsQuotaDto.getClientPerDateAmount()) <= 0) {
@@ -1091,19 +1095,15 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     return dto;
                 }
 
-            } else if (validflag == 0) {
+            } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
                 dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",clientId));
                 return dto;
             }
 
-            //校验每客最大优惠额
+            //2.校验每客最大优惠额
             validflag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPersonMaxAmount());
-            if (validflag == 2) {
-
-                //统计获取客户已领取的优惠券金额数量情况
-                if (statisticsQuotaDto == null || statisticsQuotaDto.getStatisticsFlag().equals("0"))
-                    statisticsQuotaDto = statisticsClientCouponQuota(clientId, quota.getCouponId());
+            if (CommonDict.CONTINUEVALID.getCode().equals(validflag)) {
 
                 //判断是否客户已领取的优惠金额是否超限
                 if (quota.getPerMaxAmount().compareTo(statisticsQuotaDto.getClientAmount()) <= 0) {
@@ -1111,9 +1111,23 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(quota.getPerMaxAmount(),statisticsQuotaDto.getClientAmount(),clientId));
                     return dto;
                 }
-            } else if (validflag == 0) {
+            } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
                 dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",clientId));
+                return dto;
+            }
+
+            //检查领取数量PersonTotalNum
+            BigDecimal personTotalNum=BigDecimal.ZERO;
+            List<CouponGetOrUseFreqRuleEntity> freqRuleEntities = couponGetOrUseFreqRuleMapper.findByCouponId(quota.getCouponId());
+            for (CouponGetOrUseFreqRuleEntity freq: freqRuleEntities){
+                if (freq.getPersonTotalNum()!=null && freq.getPersonTotalNum().intValue()>0){
+                    personTotalNum= personTotalNum.add(new BigDecimal(freq.getPersonTotalNum().toString()));
+                }
+            }
+            if (CommonUtils.isGtZeroDecimal(personTotalNum) && personTotalNum.compareTo(statisticsQuotaDto.getClientCount())>=0){
+                dto.setSuccess(false);
+                dto.setDesc(COUPON_FAIL_COUNT_PERACCQUOTA.getFormatDesc(personTotalNum,statisticsQuotaDto.getClientCount(),quota.getCouponId()));
                 return dto;
             }
 
@@ -1164,11 +1178,11 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         dto.setSuccess(true);
 
         if (quota != null) {
-            ClientCoupStatisticsQuotaDto statisticsQuotaDto = null;
+            ClientCoupStatisticsQuotaDto statisticsQuotaDto = statisticsCouponQuota("", "", quota.getCouponId(), "");
+
             //校验所有客户每天最大优惠额getPerDateMaxAmount
-            int validflag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateMaxAmount());
-            if (validflag == 2) {
-                statisticsQuotaDto = statisticsCouponQuota("", "", quota.getCouponId(), "");
+            String validflag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateMaxAmount());
+            if (CommonDict.CONTINUEVALID.getCode().equals(validflag)) {
 
                 //判断是否所有客户当日已领取的优惠金额是否超限
                 if (quota.getPerDateMaxAmount().compareTo(statisticsQuotaDto.getClientPerDateAmount()) <= 0) {
@@ -1176,7 +1190,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getFormatDesc(quota.getPerDateMaxAmount(),statisticsQuotaDto.getClientPerDateAmount(),quota.getCouponId()));
                     return dto;
                 }
-            } else if (validflag == 0) {
+            } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
                 dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",quota.getCouponId()));
                 return dto;
@@ -1184,11 +1198,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
             //校验所有客户最大优惠额getMaxAmount
             validflag = CommonUtils.isQuotaValueNeedValidFlag(quota.getMaxAmount());
-            if (validflag == 2) {
-
-                //如果没做过统计，则统计获取客户已领取的优惠券金额数量情况
-                if (statisticsQuotaDto == null || statisticsQuotaDto.getStatisticsFlag().equals("0"))
-                    statisticsQuotaDto = statisticsCouponQuota("", "", quota.getCouponId(), "");
+            if (CommonDict.CONTINUEVALID.getCode().equals(validflag)) {
 
                 //判断是否所有客户已领取的优惠金额是否超限
                 if (quota.getMaxAmount().compareTo(statisticsQuotaDto.getClientAmount()) <= 0) {
@@ -1197,7 +1207,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     return dto;
                 }
 
-            } else if (validflag == 0) {
+            } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
                 dto.setDesc(COUPON_FAIL_QUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",quota.getCouponId()));
                 return dto;
@@ -1208,11 +1218,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 maxCount = new BigDecimal(quota.getMaxCount().toString());
             //校验所有客户最大领取数量maxCount:quota.getMaxCount()
             validflag = CommonUtils.isQuotaValueNeedValidFlag(maxCount);
-            if (validflag == 2) {
-
-                //如果没做过统计，则统计获取客户已领取的优惠券金额数量情况
-                if (statisticsQuotaDto == null || statisticsQuotaDto.getStatisticsFlag().equals("0"))
-                    statisticsQuotaDto = statisticsCouponQuota("", "", quota.getCouponId(), "");
+            if (CommonDict.CONTINUEVALID.getCode().equals(validflag)) {
 
                 //判断是否所有客户已领取的优惠金额是否超限
                 if (maxCount.compareTo(statisticsQuotaDto.getClientCount()) <= 0) {
@@ -1220,7 +1226,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getFormatDesc(maxCount,statisticsQuotaDto.getClientCount(),quota.getCouponId()));
                     return dto;
                 }
-            } else if (validflag == 0) {
+            } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
                 dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",quota.getCouponId()));
                 return dto;

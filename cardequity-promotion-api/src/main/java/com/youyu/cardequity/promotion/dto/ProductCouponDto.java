@@ -103,18 +103,6 @@ public class ProductCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "适用商品类型:0-自动义商品范围 1-全部")
     private String applyProductFlag;
 
-    @ApiModelProperty(value = "产生者:")
-    private String createAuthor;
-
-    @ApiModelProperty(value = "更新者:")
-    private String updateAuthor;
-
-    @ApiModelProperty(value = "更新时间:")
-    private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "产生时间:")
-    private LocalDateTime createTime;
-
     @ApiModelProperty(value = "是否有效:")
     private String isEnable;
 

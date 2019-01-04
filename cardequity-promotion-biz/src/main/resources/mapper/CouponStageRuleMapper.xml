@@ -20,6 +20,22 @@ where IFNULL(a.IS_ENABLE, '1') ='1'
 
 </select>
 
-
+    <update id="logicDelByList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq">
+        UPDATE TB_COUPON_STAGE_RULE a
+          SET IS_ENABLE='0'
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND COUPON_ID=#{couponId,,jdbcType=VARCHAR}
+        and STAGE_ID in
+        <foreach collection="list.baseCouponList" item="baseCoupon" index="index"
+                 open="(" close=")" separator=",">
+            #{baseCoupon.stageId}
+        </foreach>
+    </update>
+    <update id="logicDelByCouponId" parameterType="string">
+        UPDATE TB_COUPON_STAGE_RULE a
+          SET IS_ENABLE='0'
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND COUPON_ID=#{couponId,jdbcType=VARCHAR}
+    </update>
 
 </mapper>

@@ -2,8 +2,13 @@ package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity;
+import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
+import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
+import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  *  代码生成器
@@ -15,22 +20,52 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
 
     /**
      * 查询指定券和产品是否适用
-     * @param couponId 必填
+     * @param activityId 必填
      * @param productId 必填
      * @return
      */
-    ActivityRefProductEntity findByBothId(@Param("couponId") String couponId,
+    ActivityRefProductEntity findByBothId(@Param("activityId") String activityId,
                                         @Param("productId") String productId );
 
     /**
      * 查询指定券和产品是否适用
-     * @param couponId 必填
+     * @param activityId 必填
      * @param productId 必填
      * @return
      */
-    ActivityRefProductEntity findByActivityAndSkuId(@Param("couponId") String couponId,
+    ActivityRefProductEntity findByActivityAndSkuId(@Param("activityId") String activityId,
                                           @Param("productId") String productId ,
                                       @Param("skuId") String skuId);
+
+    /**
+     * 查询商品在其他活动中配置信息：用于检查是否一个商品配置了两个活动
+     * @param list
+     * @param activityId
+     * @return
+     */
+    List<ActivityRefProductEntity> findReProductBylist(@Param("list") List<BaseProductReq> list,
+                                                 @Param("activityId") ActivityProfitDto activityId);
+
+    /**
+     * 通过活动编号物理删除适用商品
+     * @param activityId
+     * @return
+     */
+    int deleteByActivityId(@Param("activityId") String activityId);
+
+    /**
+     * 通过活动信息物理删除适用商品
+     * @param baseActivity
+     * @return
+     */
+    int deleteByBaseActivity(@Param("baseActivity") BaseActivityReq baseActivity);
+
+    /**
+     * 通过活动编号获得配置的商品
+     * @param activityId
+     * @return
+     */
+    List<ActivityRefProductEntity> findByActivityId(@Param("activityId") String activityId);
 
 }
 

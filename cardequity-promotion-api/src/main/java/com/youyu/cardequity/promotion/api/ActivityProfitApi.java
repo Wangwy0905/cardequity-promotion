@@ -1,10 +1,10 @@
 package com.youyu.cardequity.promotion.api;
 
 
+import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
-import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
-import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
-import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
+import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.Result;
@@ -57,5 +57,41 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
-    Result<ActivityProfitDto> findActivityPrice(@RequestBody BaseProductReq req);
+     Result<ActivityProfitDto> findActivityPrice(@RequestBody BaseProductReq req);
+
+    /**
+     * 批量添加活动
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "批量添加活动")
+    @PostMapping(path = "/batchAddActivity")
+     Result<CommonBoolDto<BatchActivityDetailDto>> batchAddActivity(@RequestBody BatchActivityDetailDto req);
+
+    /**
+     * 批量编辑活动
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "批量添加活动")
+    @PostMapping(path = "/batchEditActivity")
+    Result<CommonBoolDto<BatchActivityDetailDto>> batchEditActivity(@RequestBody BatchActivityDetailDto req);
+
+    /**
+     * 批量删除活动
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "批量删除活动")
+    @PostMapping(path = "/batchDelActivity")
+    Result<CommonBoolDto<Integer>> batchDelActivity(@RequestBody BatchBaseActivityReq req);
+
+    /**
+     * 查找活动
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "查找活动")
+    @PostMapping(path = "/findActivityByCommon")
+    Result<List<ActivityDetailDto>> findActivityByCommon(@RequestBody BaseQryActivityReq req);
 }

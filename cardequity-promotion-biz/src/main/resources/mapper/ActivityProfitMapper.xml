@@ -24,24 +24,24 @@
         and (b.PER_DATE_MAX_AMOUNT is null or b.PER_DATE_MAX_AMOUNT &gt;
           (select sum(ifnull(c.Profit_Value, 0))
              from TB_CLIENT_TAKE_IN_ACTIVITY c
-             where BUSIN_CODE = '1006'
+             where BUSIN_CODE = '5003'
                and c.ACTIVITY_ID = a.UUID
                and c.create_time &gt;= curdate()))
         and (b.Max_Amount is null or b.Max_Amount &gt;
           (select sum(ifnull(c.Profit_Value, 0))
              from TB_CLIENT_TAKE_IN_ACTIVITY c
-             where BUSIN_CODE = '1006'
+             where BUSIN_CODE = '5003'
                and c.ACTIVITY_ID = a.UUID))
         and (b.Per_Date_Max_Count is null or b.Per_Date_Max_Count &gt;
           (select sum(ifnull(c.Product_Count, 0))
             from TB_CLIENT_TAKE_IN_ACTIVITY c
-            where BUSIN_CODE = '1006'
+            where BUSIN_CODE = '5003'
               and c.ACTIVITY_ID = a.UUID
               and c.create_time &gt;= curdate()))
         and (b.Max_Count is null or b.Max_Count &gt;
           (select sum(ifnull(c.Product_Count, 0))
             from TB_CLIENT_TAKE_IN_ACTIVITY c
-            where BUSIN_CODE = '1006'
+            where BUSIN_CODE = '5003'
               and c.ACTIVITY_ID = a.UUID));
     </select>
 
@@ -91,4 +91,67 @@
         WHERE IFNULL(a.IS_ENABLE, '1') = '1'
         AND a.Uuid= #{id,jdbcType=VARCHAR}
     </select>
+
+    <select id="findPriceActivityByProductId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+        select *
+        from TB_ACTIVITY_PROFIT a
+        where IFNULL(a.IS_ENABLE, '1') = '1'
+        and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
+        and a.ALLOW_USE_END_DATE &gt;= curdate()
+        AND ACTIVITY_COUPON_TYPE='2'
+        and (ifnull(a.APPLY_PRODUCT_FLAG, '0') = '1' or
+          EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
+           b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+           and b.SKU_ID=#{skuId,jdbcType=VARCHAR}))
+           Order by a.CREATE_TIME desc
+    </select>
+
+    <update id="logicDelByIdList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseActivityReq">
+        UPDATE TB_ACTIVITY_PROFIT SET a.IS_ENABLE='0'
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND a.UUID IN
+        <foreach collection="list.baseActivityList" item="baseActivity" index="index"
+                 open="(" close=")" separator=",">
+            #{baseActivity.activityId}
+        </foreach>
+    </update>
+
+    <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
+        UPDATE TB_ACTIVITY_PROFIT a SET a.IS_ENABLE='0'
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND a.UUID = #{baseActivity.activityId,jdbcType=VARCHAR}
+    </update>
+    <select id="findActivityListByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq">
+        SELECT * FROM TB_ACTIVITY_PROFIT a
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        <if test="commonQry.activityId!=null and commonQry.activityId!=''">
+            and a.UUID=#{commonQry.activityId,jdbcType=VARCHAR}
+        </if>
+        <if test="commonQry.couponStatus!=null and commonQry.status='0'">
+            and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+        </if>
+        <if test="commonQry.couponStatus!=null and commonQry.status='1'">
+            and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
+            and a.ALLOW_USE_END_DATE &gt;=curdate()
+        </if>
+        <if test="commonQry.couponStatus!=null and commonQry.status='2'">
+            and a.ALLOW_USE_END_DATE &lt;curdate()
+        </if>
+        <if test="commonQry.activityCouponType!=null and commonQry.activityCouponType!=''">
+            and a.ACTIVITY_COUPON_TYPE=#{commonQry.activityCouponType,jdbcType=VARCHAR}
+        </if>
+        <if test="commonQry.activityName!=null and commonQry.activityName!=''">
+            and a.COUPON_NAME like CONCAT('%',#{commonQry.activityName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="commonQry.productId!=null and commonQry.productId!=''">
+            and( a.APPLY_PRODUCT_FLAG='1' or
+            exists(select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID = a.UUID
+            and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR}
+            <if test="commonQry.skuId!=null and commonQry.skuId!=''">
+                and b.SKU_ID =#{commonQry.skuId,jdbcType=VARCHAR}
+            </if>
+            ))
+        </if>
+    </select>
+
 </mapper>

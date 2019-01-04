@@ -2,10 +2,10 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 
 import com.youyu.cardequity.promotion.api.ActivityProfitApi;
+import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
-import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
-import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
-import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
+import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.Result;
@@ -34,6 +34,11 @@ public class ActivityProfitController implements ActivityProfitApi {
     private ActivityProfitService activityProfitService;
 
 
+    /**
+     * 查询可参与的活动
+     * @param req：里面的clientType-客户类型如果为空，需要在网关层调用客户信息查询接口，同理groupId-商品组信息
+     * @return
+     */
     @Override
     @PostMapping(path = "/findEnableGetActivity")
     public Result<List<ActivityDefineRsp>> findEnableGetActivity(@RequestBody QryProfitCommonReq req) {
@@ -41,12 +46,15 @@ public class ActivityProfitController implements ActivityProfitApi {
         return Result.ok(result);
     }
 
+    /**
+     * 订单预处理活动详情：处理对应适用商品及其优惠值
+     * @param req
+     * @return
+     */
     @Override
     @PostMapping(path = "/combActivityRefProductDeal")
-    public Result<List<UseActivityRsp>> combActivityRefProductDeal(GetUseEnableCouponReq req) {
-
+    public Result<List<UseActivityRsp>> combActivityRefProductDeal(@RequestBody GetUseEnableCouponReq req) {
         List<UseActivityRsp> result = activityProfitService.combActivityRefProductDeal(req);
-
         return Result.ok(result);
     }
 
@@ -57,9 +65,57 @@ public class ActivityProfitController implements ActivityProfitApi {
      * 1004258-徐长焕-20181226 新建
      */
     @Override
-    @ApiOperation(value = "获取商品活动优惠价（暂未实现）")
+    @ApiOperation(value = "获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
     public Result<ActivityProfitDto> findActivityPrice(@RequestBody BaseProductReq req){
+        return null;
+    }
+
+    /**
+     * 批量添加活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "批量添加活动")
+    @PostMapping(path = "/batchAddActivity")
+    public Result<CommonBoolDto<BatchActivityDetailDto>> batchAddActivity(@RequestBody BatchActivityDetailDto req){
+        return null;
+    }
+
+    /**
+     * 批量编辑活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "批量添加活动")
+    @PostMapping(path = "/batchEditActivity")
+    public Result<CommonBoolDto<BatchActivityDetailDto>> batchEditActivity(@RequestBody BatchActivityDetailDto req){
+        return null;
+    }
+
+    /**
+     * 批量删除活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "批量删除活动")
+    @PostMapping(path = "/batchDelActivity")
+    public Result<CommonBoolDto<Integer>> batchDelActivity(@RequestBody BatchBaseActivityReq req){
+        return null;
+    }
+
+    /**
+     * 查找活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "查找活动")
+    @PostMapping(path = "/findActivityByCommon")
+    public Result<List<ActivityDetailDto>> findActivityByCommon(@RequestBody BaseQryActivityReq req){
         return null;
     }
 

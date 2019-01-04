@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.dto;
 
+import com.youyu.cardequity.promotion.enums.CommonDict;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ public class ClientCoupStatisticsQuotaDto {
         clientAmount=BigDecimal.ZERO;
         clientPerDateCount=BigDecimal.ZERO;
         clientCount=BigDecimal.ZERO;
-        statisticsFlag="0";
+        statisticsFlag= CommonDict.IF_NO.getCode();
     }
     @ApiModelProperty(value = "指定统计的客户")
     private String clientId;

@@ -13,6 +13,7 @@ public class BaseCouponReq {
     @ApiModelProperty(value = "指定优惠券id")
     private String couponId;
 
-    @ApiModelProperty(value = "是否有效的")
-    private String validFlag;
+    @ApiModelProperty(value = "指定子优惠券id")
+    private String stageId;
+
 }

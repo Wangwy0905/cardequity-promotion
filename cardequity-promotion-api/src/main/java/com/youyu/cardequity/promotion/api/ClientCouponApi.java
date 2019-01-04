@@ -98,45 +98,6 @@ public interface ClientCouponApi {
     Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req);
 
 
-    /**
-     * 添加优惠券
-     *
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "添加优惠券：添加基本信息、领取频率、使用门槛、关联商品等")
-    @PostMapping(path = "/addCoupon")
-    Result<List<ProductCouponDto>> addCoupon(@RequestBody CouponDetailReq req);
-
-    /**
-     * 编辑优惠券
-     *
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "编辑优惠券：编辑基本信息、领取频率、使用门槛、关联商品等")
-    @PostMapping(path = "/editCoupon")
-    Result<List<ProductCouponDto>> editCoupon(@RequestBody CouponDetailReq req);
-
-    /**
-     * 查看商品对应优惠券列表
-     *
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "查看商品对应优惠券列表")
-    @PostMapping(path = "/findCouponListByProduct")
-    Result<List<CouponDefineRsp>> findCouponListByProduct(@RequestBody BaseProductReq req);
-
-    /**
-     * 查询所有优惠券列表
-     *
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "查询所有优惠券列表")
-    @PostMapping(path = "/findCouponListByCommon")
-    Result<List<CouponDefineRsp>> findCouponListByCommon(@RequestBody BaseCouponReq req);
 
 
 }
