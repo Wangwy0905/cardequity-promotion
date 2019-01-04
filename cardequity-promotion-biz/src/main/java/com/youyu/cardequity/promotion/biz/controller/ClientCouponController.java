@@ -35,12 +35,14 @@ public class ClientCouponController implements ClientCouponApi {
 
 
     @Override
+    @ApiOperation(value = "查询已经领取的优惠券")
     @PostMapping(path = "/findClientCoupon")
     public Result<List<ClientCouponDto>> findClientCoupon(@RequestBody BaseClientReq req) {
         return  Result.ok(clientCouponService.findClientCoupon(req));
     }
 
     @Override
+    @ApiOperation(value = "领取优惠券")
     @PostMapping(path = "/obtainCoupon")
     public Result<CommonBoolDto> obtainCoupon(@RequestBody ClientObtainCouponReq req) {
 
@@ -48,12 +50,14 @@ public class ClientCouponController implements ClientCouponApi {
     }
 
     @Override
+    @ApiOperation(value = "查询可领取优惠券")
     @PostMapping(path = "/findEnableUseCoupon")
     public Result<List<ClientCouponDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req) {
         return Result.ok(clientCouponService.findEnableUseCoupon(req));
     }
 
     @Override
+    @ApiOperation(value = "订单预生成时优惠券使用情况")
     @PostMapping(path = "/combCouponRefProductDeal")
     public Result<List<UseCouponRsp>> combCouponRefProductDeal(@RequestBody GetUseEnableCouponReq req){
         return Result.ok(clientCouponService.combCouponRefProductDeal(req));
@@ -65,10 +69,14 @@ public class ClientCouponController implements ClientCouponApi {
      * @return
      */
     @Override
+    @ApiOperation(value = "订单生成时优惠券使用情况，并变动其状态和使用记录")
     @PostMapping(path = "/combCouponRefProductAndUse")
     public Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req){
         return Result.ok(clientCouponService.combCouponRefProductAndUse(req));
     }
+
+
+
 
 
 }

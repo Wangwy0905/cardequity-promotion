@@ -8,6 +8,7 @@ import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -65,7 +66,16 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @param req
      * @return
      */
-    public List<UseCouponRsp> combCouponRefProductAndUse(GetUseEnableCouponReq req);
+     List<UseCouponRsp> combCouponRefProductAndUse(GetUseEnableCouponReq req);
+
+    /**
+     * 使用优惠券数据库处理：内部服务
+     *
+     * @param orderId  订单编号
+     * @param rsps 优惠券的使用情况
+     * @return 是否处理成功
+     */
+    CommonBoolDto takeInCoupon(String orderId, List<UseCouponRsp> rsps);
 }
 
 

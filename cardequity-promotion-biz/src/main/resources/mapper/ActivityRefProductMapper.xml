@@ -26,8 +26,9 @@
         FROM TB_ACTIVITY_REF_PRODUCT a
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
         AND a.ACTIVITY_ID!=#{activity.uuid,jdbcType=VARCHAR}
+        and
         and exists(
-          select 1 from TB_PRODUCT_COUPON b
+          select 1 from TB_ACTIVITY_PROFIT b
             where b.UUID=a.ACTIVITY_ID
               and ifnull(b.IS_ENABLE, '1') = '1'
               and b.ALLOW_USE_END_DATE &gt;= curdate()
@@ -60,6 +61,12 @@
          SELECT * FROM TB_ACTIVITY_REF_PRODUCT a
         WHERE IFNULL(a.IS_ENABLE, '1') = '1'
         AND a.ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
+    </select>
+    <select id="findByExcludeActivityId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity">
+        SELECT * FROM TB_ACTIVITY_REF_PRODUCT a
+        WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+        and b.ALLOW_USE_END_DATE &gt;= curdate()
+        AND a.ACTIVITY_ID!=#{activityId,jdbcType=VARCHAR}
     </select>
 
 </mapper>

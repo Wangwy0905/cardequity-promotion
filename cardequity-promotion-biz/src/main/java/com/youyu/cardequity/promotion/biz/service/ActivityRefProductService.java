@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.ActivityRefProductDto;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import com.youyu.common.service.IService;
 
@@ -24,6 +25,12 @@ public interface ActivityRefProductService extends IService<ActivityRefProductDt
      * @return
      */
      CommonBoolDto<List<ActivityRefProductEntity>> checkProductReUse(List<BaseProductReq> req, ActivityProfitDto activity);
+
+    /**
+     * 查询已经配置了活动的商品
+     * @return
+     */
+    List<ActivityRefProductDto> findAllProductInValidActivity(BaseActivityReq req);
 }
 
 

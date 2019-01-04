@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.api.ClientTakeInActivityApi;
 import com.youyu.cardequity.promotion.biz.service.ClientTakeInActivityService;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +34,7 @@ public class ClientTakeInActivityController implements ClientTakeInActivityApi {
      * @return
      */
     @Override
+    @ApiOperation(value = "通过选购信息进行参加活动处理")
     @PostMapping(path = "/takeInActivityByOrder")
     public Result<List<UseActivityRsp>> takeInActivityByOrder(@RequestBody GetUseEnableCouponReq req) {
         return Result.ok(clientTakeInActivityService.takeInActivityByOrder(req));

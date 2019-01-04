@@ -493,15 +493,24 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * @return 1004258-徐长焕-20181226 新建
      */
     @Override
-    public ActivityProfitDto findActivityPrice(BaseProductReq req) {
+    public ActivityViewDto findActivityPrice(BaseProductReq req) {
         List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductId(req.getProductId(), req.getSkuId());
         if (entities.isEmpty())
             return null;
         if (entities.size()>1)
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("配置错误，该商品配置了多个特价活动"));
 
-        ActivityProfitDto result=new ActivityProfitDto();
+        ActivityViewDto result=new ActivityViewDto();
         BeanUtils.copyProperties(entities.get(0),result);
+        //获取额度
+        ActivityQuotaRuleEntity quotaRuleEntity = activityQuotaRuleMapper.findActivityQuotaRuleById(result.getUuid());
+        if (quotaRuleEntity!=null)
+            result.setMaxCount(quotaRuleEntity.getMaxCount());
+        //获取适用商品
+        List<ActivityRefProductEntity> refProductEntities = activityRefProductMapper.findByActivityId(result.getUuid());
+        result.setProductList(BeanPropertiesConverter.copyPropertiesOfList(refProductEntities,BaseProductReq.class));
+
+        //特价商品没有门槛
         return result;
     }
 

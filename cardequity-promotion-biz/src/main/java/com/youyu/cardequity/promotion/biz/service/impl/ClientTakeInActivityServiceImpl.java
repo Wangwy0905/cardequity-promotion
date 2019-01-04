@@ -55,11 +55,12 @@ public class ClientTakeInActivityServiceImpl extends AbstractService<String, Cli
     }
 
     /**
-     * 参加活动数据库层面处理
+     * 参加活动数据库层面处理:内部服务
      * @param req
      * @param orderId
      * @return
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public List<ClientTakeInActivityEntity> takeInActivity(List<UseActivityRsp> req, String orderId) {
         List<ClientTakeInActivityEntity> entities = new ArrayList<>();

@@ -22,6 +22,13 @@ public interface ClientTakeInActivityService extends IService<ClientTakeInActivi
      * @return
      */
     List<UseActivityRsp> takeInActivityByOrder(GetUseEnableCouponReq req);
+
+    /**
+     * 参加活动 数据库层面操作
+     * @param req
+     * @return
+     */
+    List<ClientTakeInActivityEntity> takeInActivity(List<UseActivityRsp> req, String orderId);
 }
 
 

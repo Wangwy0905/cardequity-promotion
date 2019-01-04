@@ -107,8 +107,11 @@ public class CouponViewDto {
             couponDto.setGetStage(UsedStage.Register.getDictValue());
         }
         couponDto.setCouponType(CouponType.COUPON.getDictValue());
-        if ("1".equals(couponViewType))
+        if ("1".equals(couponViewType)) {
             couponDto.setCouponType(CouponType.TRANSFERFARE.getDictValue());
+            if (productList==null || productList.isEmpty())
+                couponDto.setCouponLevel(CouponActivityLevel.GLOBAL.getDictValue());
+        }
         if (conditionFund!=null && conditionFund.compareTo(BigDecimal.ZERO)>=0){
             List<CouponStageRuleDto> stageList=new ArrayList<>();
             CouponStageRuleDto stage=new CouponStageRuleDto();

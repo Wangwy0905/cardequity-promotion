@@ -1,9 +1,13 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
 import com.youyu.cardequity.promotion.biz.service.ActivityRefProductService;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,7 @@ import java.util.List;
 public class ActivityRefProductServiceImpl extends AbstractService<String, ActivityRefProductDto, ActivityRefProductEntity, ActivityRefProductMapper> implements ActivityRefProductService {
     @Autowired
     private ActivityRefProductMapper activityRefProductMapper;
+
 
     /**
      * 指定活动的商品配置范围和其他活动是否冲突,考虑分页的问题
@@ -58,6 +63,16 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
         } while (index < req.size());
 
         return result;
+    }
+
+    /**
+     * 查询已经配置了活动的商品
+     * @return
+     */
+    @Override
+    public List<ActivityRefProductDto> findAllProductInValidActivity(BaseActivityReq req){
+        List<ActivityRefProductEntity> entities = activityRefProductMapper.findByExcludeActivityId(req.getActivityId());
+        return BeanPropertiesConverter.copyPropertiesOfList(entities,ActivityRefProductDto.class);
     }
 }
 

@@ -4,6 +4,7 @@ package com.youyu.cardequity.promotion.biz.controller;
 import com.youyu.cardequity.promotion.api.ActivityProfitApi;
 import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
+import com.youyu.cardequity.promotion.dto.ActivityViewDto;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
@@ -67,8 +68,9 @@ public class ActivityProfitController implements ActivityProfitApi {
     @Override
     @ApiOperation(value = "获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
-    public Result<ActivityProfitDto> findActivityPrice(@RequestBody BaseProductReq req){
-        return null;
+    public Result<ActivityViewDto> findActivityPrice(@RequestBody BaseProductReq req){
+
+        return Result.ok(activityProfitService.findActivityPrice(req));
     }
 
     /**
@@ -80,7 +82,7 @@ public class ActivityProfitController implements ActivityProfitApi {
     @ApiOperation(value = "批量添加活动")
     @PostMapping(path = "/batchAddActivity")
     public Result<CommonBoolDto<BatchActivityDetailDto>> batchAddActivity(@RequestBody BatchActivityDetailDto req){
-        return null;
+        return Result.ok(activityProfitService.batchAddActivity(req));
     }
 
     /**
@@ -92,7 +94,7 @@ public class ActivityProfitController implements ActivityProfitApi {
     @ApiOperation(value = "批量添加活动")
     @PostMapping(path = "/batchEditActivity")
     public Result<CommonBoolDto<BatchActivityDetailDto>> batchEditActivity(@RequestBody BatchActivityDetailDto req){
-        return null;
+        return Result.ok(activityProfitService.batchEditActivity(req));
     }
 
     /**
@@ -104,7 +106,8 @@ public class ActivityProfitController implements ActivityProfitApi {
     @ApiOperation(value = "批量删除活动")
     @PostMapping(path = "/batchDelActivity")
     public Result<CommonBoolDto<Integer>> batchDelActivity(@RequestBody BatchBaseActivityReq req){
-        return null;
+
+        return Result.ok(activityProfitService.batchDelActivity(req));
     }
 
     /**
@@ -116,7 +119,8 @@ public class ActivityProfitController implements ActivityProfitApi {
     @ApiOperation(value = "查找活动")
     @PostMapping(path = "/findActivityByCommon")
     public Result<List<ActivityDetailDto>> findActivityByCommon(@RequestBody BaseQryActivityReq req){
-        return null;
+
+        return Result.ok(activityProfitService.findActivityByCommon(req));
     }
 
 }

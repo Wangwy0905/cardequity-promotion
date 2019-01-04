@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz.service;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
 import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
+import com.youyu.cardequity.promotion.dto.ActivityViewDto;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
@@ -33,7 +34,7 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @return
      * 1004258-徐长焕-20181226 新建
      */
-    ActivityProfitDto findActivityPrice(BaseProductReq req);
+    ActivityViewDto findActivityPrice(BaseProductReq req);
 
     /**
      * 批量添加活动

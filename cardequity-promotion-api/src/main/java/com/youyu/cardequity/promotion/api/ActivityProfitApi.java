@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.api;
 
 import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
+import com.youyu.cardequity.promotion.dto.ActivityViewDto;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
@@ -57,7 +58,7 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
-     Result<ActivityProfitDto> findActivityPrice(@RequestBody BaseProductReq req);
+     Result<ActivityViewDto> findActivityPrice(@RequestBody BaseProductReq req);
 
     /**
      * 批量添加活动

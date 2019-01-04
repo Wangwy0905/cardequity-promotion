@@ -383,7 +383,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         List<UseCouponRsp> rsps = combCouponRefProductDeal(req);
 
         //将相关领券状态变更为使用中，并记录使用情况
-        CommonBoolDto dto = useCoupon(req, rsps);
+        CommonBoolDto dto = takeInCoupon(req.getOrderId(), rsps);
         if (!dto.getSuccess()) {
             throw new BizException(COUPON_FAIL_USE.getCode(), COUPON_FAIL_USE.getFormatDesc(dto.getDesc()));
         }
@@ -393,14 +393,15 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     }
 
     /**
-     * 使用优惠券
+     * 使用优惠券数据库处理：内部服务
      *
-     * @param req  获取可用优惠券请求体：主要包括用户信息、订单信息、商品列表
+     * @param orderId  订单编号
      * @param rsps 优惠券的使用情况
      * @return 是否处理成功
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
-    private CommonBoolDto useCoupon(GetUseEnableCouponReq req, List<UseCouponRsp> rsps) {
+    public CommonBoolDto takeInCoupon(String orderId, List<UseCouponRsp> rsps) {
         CommonBoolDto boolDto = new CommonBoolDto(true);
         //应获取自配置项
         String useType = CouponUseType.ORDER.getDictValue();
@@ -412,7 +413,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             //冻结clientCoupon
             clientCoupon = clientCouponMapper.findClientCouponById(rsp.getClientCoupon().getUuid());
             clientCoupon.setBusinDate(LocalDate.now());
-            clientCoupon.setJoinOrderId(req.getOrderId());
+            clientCoupon.setJoinOrderId(orderId);
             if (CouponUseType.CONFIRM.getDictValue().equals(useType)) {
                 clientCoupon.setStatus(CouponStatus.USING.getDictValue());
             } else {
