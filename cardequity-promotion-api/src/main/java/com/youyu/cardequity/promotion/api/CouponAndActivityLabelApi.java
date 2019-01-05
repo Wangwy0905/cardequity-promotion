@@ -4,6 +4,7 @@ package com.youyu.cardequity.promotion.api;
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
 import com.youyu.cardequity.promotion.vo.req.BaseLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
+import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,7 +53,7 @@ public interface CouponAndActivityLabelApi {
      */
     @ApiOperation(value = "删除标签")
     @PostMapping(path = "/deleteCouponAndActivityLabel")
-    Result<Integer> delete(@RequestBody BaseLabelReq req);
+    Result<Integer> delete(@RequestBody BatchBaseLabelReq req);
 
     /**
      * 查询标签

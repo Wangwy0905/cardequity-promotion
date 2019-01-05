@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.biz.service.CouponAndActivityLabelService;
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
 import com.youyu.cardequity.promotion.vo.req.BaseLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
+import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class CouponAndActivityLabelController implements CouponAndActivityLabelA
      */
     @ApiOperation(value = "删除标签")
     @PostMapping(path = "/deleteCouponAndActivityLabel")
-    public Result<Integer> delete(@RequestBody BaseLabelReq req){
+    public Result<Integer> delete(@RequestBody BatchBaseLabelReq req){
         return Result.ok(couponAndActivityLabelService.delete(req));
     }
 

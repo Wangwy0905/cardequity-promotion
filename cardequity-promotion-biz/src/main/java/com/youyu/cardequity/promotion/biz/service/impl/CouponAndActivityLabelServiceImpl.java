@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponAndActivityLabelMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity;
 import com.youyu.cardequity.promotion.biz.service.CouponAndActivityLabelService;
@@ -10,10 +11,13 @@ import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.ActiveOrCouponType;
 import com.youyu.cardequity.promotion.vo.req.BaseLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
+import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
 import com.youyu.common.exception.BizException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
@@ -25,12 +29,16 @@ public class CouponAndActivityLabelServiceImpl implements CouponAndActivityLabel
     @Autowired
     private CouponAndActivityLabelMapper couponAndActivityLabelMapper;
 
+    @Autowired
+    private BatchService batchService;
+
     /**
      * 添加标签
      *
      * @param req 标签详情
      * @return 处理后的标签详情
      */
+    @Transactional(rollbackFor = Exception.class)
     public CouponAndActivityLabelDto add(CouponAndActivityLabelDto req) {
         if (req == null) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定添加数据"));
@@ -62,6 +70,7 @@ public class CouponAndActivityLabelServiceImpl implements CouponAndActivityLabel
      * @param req 标签详情
      * @return 处理后的标签详情
      */
+    @Transactional(rollbackFor = Exception.class)
     public CouponAndActivityLabelDto edit(CouponAndActivityLabelDto req) {
 
         if (req == null) {
@@ -102,17 +111,25 @@ public class CouponAndActivityLabelServiceImpl implements CouponAndActivityLabel
      * @param req 标签基本数据
      * @return 处理成功数量
      */
-    public Integer delete(BaseLabelReq req) {
-        if (req == null) {
+    @Transactional(rollbackFor = Exception.class)
+    public Integer delete(BatchBaseLabelReq req) {
+
+        if (req == null || req.getLabelList()==null || req.getLabelList().isEmpty()) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定添加数据"));
         }
-        CouponAndActivityLabelEntity entity = couponAndActivityLabelMapper.findLabelById(req.getUuid());
-        if (entity == null) {
-            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有该标签"));
+        List<CouponAndActivityLabelEntity> entities=new ArrayList<>();
+        for (BaseLabelReq label:req.getLabelList()) {
+            CouponAndActivityLabelEntity entity = couponAndActivityLabelMapper.findLabelById(label.getUuid());
+            if (entity == null) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有该标签"));
+            }
+
         }
 
-        int result = couponAndActivityLabelMapper.deleteByPrimaryKey(entity);
-        return new Integer(result);
+        //数据库操作
+        batchService.batchDispose(entities, CouponAndActivityLabelMapper.class, "deleteByPrimaryKey");
+
+        return new Integer(req.getLabelList().size());
     }
 
     /**

@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz.service;
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
 import com.youyu.cardequity.promotion.vo.req.BaseLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
+import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ public interface CouponAndActivityLabelService {
      * @param req 标签基本数据
      * @return 处理成功数量
      */
-    Integer delete( BaseLabelReq req);
+    Integer delete( BatchBaseLabelReq req);
 
     /**
      * 查询标签
