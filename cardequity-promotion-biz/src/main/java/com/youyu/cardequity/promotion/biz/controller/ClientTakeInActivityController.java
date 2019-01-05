@@ -21,7 +21,7 @@ import java.util.List;
  * @date 2019-01-03
  */
 @RestController
-@RequestMapping(path = "/ClientTakeInActivity")
+@RequestMapping(path = "/clientTakeInActivity")
 public class ClientTakeInActivityController implements ClientTakeInActivityApi {
 
     @Autowired

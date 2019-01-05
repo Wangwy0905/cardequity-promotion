@@ -158,4 +158,14 @@
         AND a.uuid =#{uuid,jdbcType=VARCHAR}
     </select>
 
+    <update id="modRecoverByOrderinfo" parameterType="com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq">
+        UPDATE TB_CLIENT_COUPON a
+        SET a.STATUS='0',a.REMARK=CONCAT(ifnull(a.REMARK,''),sysdate(),'恢复券状态|')
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        AND a.JOIN_ORDER_ID=#{orderinfo.orderId,jdbcType=VARCHAR}
+        <if test="orderinfo.clientId!=null and orderinfo.clientId!=''">
+            AND a.CLIENT_ID=#{orderinfo.clientId,jdbcType=VARCHAR}
+        </if>
+    </update>
+
 </mapper>

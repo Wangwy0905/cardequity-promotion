@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
+import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
@@ -76,6 +77,15 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 是否处理成功
      */
     CommonBoolDto takeInCoupon(String orderId, List<UseCouponRsp> rsps);
+
+
+    /**
+     * 撤销使用优惠券数据库处理：内部服务
+     *
+     * @param req  订单情况
+     * @return 是否处理成功
+     */
+     CommonBoolDto<Integer> cancelTakeInCoupon(BaseOrderInPromotionReq req);
 }
 
 

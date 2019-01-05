@@ -3,16 +3,10 @@ package com.youyu.cardequity.promotion.biz.service;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
 import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
-import com.youyu.cardequity.promotion.dto.ActivityViewDto;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
-import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
-import com.youyu.common.api.Result;
 import com.youyu.common.service.IService;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 

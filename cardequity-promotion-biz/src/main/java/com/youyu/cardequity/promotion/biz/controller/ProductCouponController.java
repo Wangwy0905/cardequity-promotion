@@ -37,6 +37,7 @@ public class ProductCouponController implements ProductCouponApi {
      * @return
      */
     @Override
+    @ApiOperation(value = "获取可以领取的优惠券")
     @PostMapping(path = "/findEnableGetCoupon")
     public Result<List<CouponDetailDto>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req) {
         List<CouponDetailDto> rspList = productCouponService.findEnableGetCoupon(req);
@@ -50,7 +51,7 @@ public class ProductCouponController implements ProductCouponApi {
      * @return
      */
     @Override
-    @ApiOperation(value = "添加优惠券(暂未实现)：添加基本信息、领取频率、使用门槛、关联商品等")
+    @ApiOperation(value = "添加优惠券：添加基本信息、领取频率、使用门槛、关联商品等")
     @PostMapping(path = "/addCoupon")
     public Result<CommonBoolDto<CouponDetailDto> > addCoupon(@RequestBody CouponDetailDto req)
     {

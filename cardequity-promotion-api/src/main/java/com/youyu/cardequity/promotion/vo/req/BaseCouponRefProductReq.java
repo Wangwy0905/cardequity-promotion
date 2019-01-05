@@ -15,4 +15,7 @@ public class BaseCouponRefProductReq {
 
     @ApiModelProperty(value = "商品编号:必填", required = true)
     private String ProductId;
+
+    @ApiModelProperty(value = "子商品编号:必填", required = true)
+    private String skuId;
 }

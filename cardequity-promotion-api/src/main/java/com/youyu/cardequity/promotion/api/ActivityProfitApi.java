@@ -2,11 +2,8 @@ package com.youyu.cardequity.promotion.api;
 
 
 import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
-import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
-import com.youyu.cardequity.promotion.dto.ActivityViewDto;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
-import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
@@ -33,7 +30,8 @@ public interface ActivityProfitApi {
      * 根据客户指定商品获取可参加的活动
      *
      * @param req：里面的clientType-客户类型如果为空，需要在网关层调用客户信息查询接口，同理groupId-商品组信息
-     * @return 开发日志
+     * @return 活动详情列表
+     * 开发日志
      * 1004244-徐长焕-20181207 新建
      */
     @ApiOperation(value = "根据客户指定商品获取可参加的活动")
@@ -42,9 +40,11 @@ public interface ActivityProfitApi {
 
     /**
      * 【内部服务】订单信息能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额
-     *
-     * @param req
-     * @return 1004258-徐长焕-20181226 新建
+     *已过期
+     * @param req 预生成的订单信息
+     * @return 返回活动使用详情
+     * 开发日志
+     * 1004258-徐长焕-20181226 新建
      */
     @ApiOperation(value = "订单能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额")
     @PostMapping(path = "/combActivityRefProductDeal")
@@ -53,8 +53,10 @@ public interface ActivityProfitApi {
     /**
      * 【内部服务】获取商品活动优惠价：
      *
-     * @param req
-     * @return 1004258-徐长焕-20181226 新建
+     * @param req 商品
+     * @return 活动详情列表
+     * 开发日志
+     * 1004258-徐长焕-20181226 新建
      */
     @ApiOperation(value = "获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
@@ -63,8 +65,8 @@ public interface ActivityProfitApi {
     /**
      * 批量添加活动
      *
-     * @param req
-     * @return
+     * @param req 批量活动详情
+     * @return 成功后的批量活动详情
      */
     @ApiOperation(value = "批量添加活动")
     @PostMapping(path = "/batchAddActivity")
@@ -73,8 +75,8 @@ public interface ActivityProfitApi {
     /**
      * 批量编辑活动
      *
-     * @param req
-     * @return
+     * @param req 批量活动详情
+     * @return 成功后的批量活动详情
      */
     @ApiOperation(value = "批量添加活动")
     @PostMapping(path = "/batchEditActivity")
@@ -83,8 +85,8 @@ public interface ActivityProfitApi {
     /**
      * 批量删除活动
      *
-     * @param req
-     * @return
+     * @param req 批量活动
+     * @return 成功条数
      */
     @ApiOperation(value = "批量删除活动")
     @PostMapping(path = "/batchDelActivity")
@@ -93,8 +95,8 @@ public interface ActivityProfitApi {
     /**
      * 查找活动
      *
-     * @param req
-     * @return
+     * @param req 通用查询请求
+     * @return 活动详情列表
      */
     @ApiOperation(value = "查找活动")
     @PostMapping(path = "/findActivityByCommon")

@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz.dal.dao;
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto;
 import com.youyu.cardequity.promotion.dto.ShortClientCouponDto;
+import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -115,6 +116,13 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      * @return
      */
     ClientCouponEntity findClientCouponById(@Param("uuid") String uuid);
+
+    /**
+     * 根据订单信息更新恢复状态
+     * @param orderinfo
+     * @return
+     */
+    int modRecoverByOrderinfo(@Param("orderinfo") BaseOrderInPromotionReq orderinfo);
 }
 
 

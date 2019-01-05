@@ -22,11 +22,11 @@ import java.util.List;
  */
 @Api(tags = "参加活动相关动作")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/ClientTakeInActivityApi")
+@RequestMapping(path = "/clientTakeInActivity")
 public interface ClientTakeInActivityApi {
 
     /**
-     * 通过选购信息进行参加活动处理
+     * 【内部服务】通过选购信息进行参加活动处理
      * @param req
      * @return
      */

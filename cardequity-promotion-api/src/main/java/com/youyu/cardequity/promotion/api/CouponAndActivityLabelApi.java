@@ -23,9 +23,9 @@ import java.util.List;
  * 修改日志：
  * V1.0-V1 1004259-徐长焕-20190105 新增
  */
-@Api(tags = "优惠使用操作")
+@Api(tags = "标签管理")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/couponAndActivityLabelApi")
+@RequestMapping(path = "/couponAndActivityLabel")
 public interface CouponAndActivityLabelApi {
 
     /**

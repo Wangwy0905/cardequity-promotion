@@ -1,20 +1,17 @@
 package com.youyu.cardequity.promotion.biz.service;
 
+import com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity;
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
-import com.youyu.cardequity.promotion.vo.req.BaseLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
-import com.youyu.common.api.Result;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.youyu.common.service.IService;
 
 import java.util.List;
 
 /**
  * Created by caiyi on 2019/1/5.
  */
-public interface CouponAndActivityLabelService {
+public interface CouponAndActivityLabelService  extends IService<CouponAndActivityLabelDto, CouponAndActivityLabelEntity> {
 
     /**
      * 添加标签

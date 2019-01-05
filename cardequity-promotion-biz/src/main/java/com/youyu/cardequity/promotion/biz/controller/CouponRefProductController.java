@@ -1,33 +1,27 @@
-package com.youyu.cardequity.promotion.api;
+package com.youyu.cardequity.promotion.biz.controller;
 
+import com.youyu.cardequity.promotion.api.CouponRefProductApi;
+import com.youyu.cardequity.promotion.biz.service.CouponRefProductService;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.CouponRefProductDto;
-import com.youyu.cardequity.promotion.vo.req.BaseCouponRefProductReq;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
 import com.youyu.common.api.Result;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * 优惠券关联商品管理
- *
- * @author 徐长焕
- * @date 2018-12-27
- * 修改日志：
- * V1.0-V1 1004259-徐长焕-20181227 新增
- */
-@Api(tags = "优惠券关联商品管理：优惠券关联商品相关操作")
-@FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/couponRefProductApi")
-public interface CouponRefProductApi {
+@RestController
+@RequestMapping(path = "/couponRefProduct")
+public class CouponRefProductController implements CouponRefProductApi {
 
+    @Autowired
+    private CouponRefProductService couponRefProductService;
     /**
      * 添加优惠券关联商品
      *
@@ -36,7 +30,10 @@ public interface CouponRefProductApi {
      */
     @ApiOperation(value = "添加优惠券关联商品")
     @PostMapping(path = "/addProductRefCoupon")
-    Result<CommonBoolDto<Integer>> addProductRefCoupon(@RequestBody BatchRefProductReq req);
+    @Override
+    public Result<CommonBoolDto<Integer>> addProductRefCoupon(@RequestBody BatchRefProductReq req){
+        return Result.ok(couponRefProductService.batchAddCouponRefProduct(req));
+    }
 
     /**
      * 查询优惠券关联的商品列表
@@ -46,5 +43,10 @@ public interface CouponRefProductApi {
      */
     @ApiOperation(value = "查询优惠券关联的商品列表")
     @PostMapping(path = "/findJoinProductByCoupon")
-    Result<List<CouponRefProductDto>> findJoinProductByCoupon(@RequestBody BaseCouponReq req);
+    @Override
+    public Result<List<CouponRefProductDto>> findJoinProductByCoupon(@RequestBody BaseCouponReq req){
+        return Result.ok(couponRefProductService.findJoinProductByCoupon(req));
+    }
+
+
 }

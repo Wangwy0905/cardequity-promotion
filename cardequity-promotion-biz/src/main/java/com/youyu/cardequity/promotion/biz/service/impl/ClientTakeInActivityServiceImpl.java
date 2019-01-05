@@ -5,9 +5,11 @@ import com.youyu.cardequity.promotion.biz.constant.BusinessCode;
 import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
 import com.youyu.cardequity.promotion.biz.service.ClientTakeInActivityService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
+import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
+import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.service.AbstractService;
@@ -90,6 +92,21 @@ public class ClientTakeInActivityServiceImpl extends AbstractService<String, Cli
         return entities;
     }
 
+
+    /**
+     * 撤销使用优惠券数据库处理：内部服务
+     *
+     * @param req  订单情况
+     * @return 是否处理成功
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonBoolDto<Integer> cancelTakeInActivity(BaseOrderInPromotionReq req) {
+        CommonBoolDto<Integer> result = new CommonBoolDto(true);
+        int i = clientTakeInActivityMapper.modRecoverByOrderinfo(req);
+        result.setData(i);
+        return result;
+    }
 }
 
 

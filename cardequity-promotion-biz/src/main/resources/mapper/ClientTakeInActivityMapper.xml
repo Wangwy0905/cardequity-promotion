@@ -29,4 +29,14 @@
         </if>
         and a.BUSIN_CODE = '5003'
     </select>
+
+    <update id="modRecoverByOrderinfo" parameterType="com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq">
+        UPDATE TB_CLIENT_TAKE_IN_ACTIVITY a
+        SET a.IS_ENABLE='0',a.REMARK=CONCAT(ifnull(a.REMARK,''),sysdate(),'撤销使用|')
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        AND a.ORDER_ID=#{orderinfo.orderId,jdbcType=VARCHAR}
+        <if test="orderinfo.clientId!=null and orderinfo.clientId!=''">
+            AND a.CLIENT_ID=#{orderinfo.clientId,jdbcType=VARCHAR}
+        </if>
+    </update>
 </mapper>

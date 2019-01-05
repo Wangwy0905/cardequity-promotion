@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Api(tags = "配置活动的商品信息")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/activityRefProductApi")
+@RequestMapping(path = "/activityRefProduct")
 public interface ActivityRefProductApi {
 
     /**

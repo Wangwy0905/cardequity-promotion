@@ -2,11 +2,12 @@ package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientTakeInCouponEntity;
 import com.youyu.cardequity.promotion.dto.ClientTakeInCouponDto;
+import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;
 import com.youyu.cardequity.promotion.vo.rsp.OrderCouponAndActivityRsp;
 import com.youyu.common.service.IService;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 代码生成器
@@ -30,6 +31,16 @@ public interface ClientTakeInCouponService extends IService<ClientTakeInCouponDt
      * @return
      */
     OrderCouponAndActivityRsp preOrderCouponAndActivityDeal(GetUseEnableCouponReq req);
+
+    /**
+     * 【内部服务】取消订单预使用活动及优惠券详情
+     * 考虑了幂等性
+     * @param req
+     * @return
+     */
+    CommonBoolDto cancelOrderCouponAndActivityDeal(BaseOrderInPromotionReq req);
+
+
 }
 
 

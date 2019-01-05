@@ -3,11 +3,8 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 import com.youyu.cardequity.promotion.api.ActivityProfitApi;
 import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
-import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
-import com.youyu.cardequity.promotion.dto.ActivityViewDto;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
-import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
@@ -41,6 +38,7 @@ public class ActivityProfitController implements ActivityProfitApi {
      * @return
      */
     @Override
+    @ApiOperation(value = "查询可参与的活动")
     @PostMapping(path = "/findEnableGetActivity")
     public Result<List<ActivityDetailDto>> findEnableGetActivity(@RequestBody QryProfitCommonReq req) {
         List<ActivityDetailDto> result = activityProfitService.findEnableGetActivity(req);
@@ -53,6 +51,7 @@ public class ActivityProfitController implements ActivityProfitApi {
      * @return
      */
     @Override
+    @ApiOperation(value = "订单预处理活动详情")
     @PostMapping(path = "/combActivityRefProductDeal")
     public Result<List<UseActivityRsp>> combActivityRefProductDeal(@RequestBody GetUseEnableCouponReq req) {
         List<UseActivityRsp> result = activityProfitService.combActivityRefProductDeal(req);

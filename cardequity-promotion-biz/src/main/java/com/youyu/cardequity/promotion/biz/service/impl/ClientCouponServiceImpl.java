@@ -13,6 +13,7 @@ import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
+import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
@@ -62,9 +63,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
     @Autowired
     private CouponQuotaRuleMapper couponQuotaRuleMapper;
-
-    @Autowired
-    private ActivityProfitMapper activityProfitMapper;
 
     @Autowired
     private ProfitConflictOrReUseRefMapper profitConflictOrReUseRefMapper;
@@ -471,6 +469,21 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
     }
 
+
+    /**
+     * 撤销使用优惠券数据库处理：内部服务
+     *
+     * @param req  订单情况
+     * @return 是否处理成功
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonBoolDto<Integer> cancelTakeInCoupon(BaseOrderInPromotionReq req) {
+        CommonBoolDto<Integer> result = new CommonBoolDto(true);
+        int i = clientCouponMapper.modRecoverByOrderinfo(req);
+        result.setData(i);
+        return result;
+    }
 
     /**
      * 保守策略下计算[普通券]最优券组合及其使用情况

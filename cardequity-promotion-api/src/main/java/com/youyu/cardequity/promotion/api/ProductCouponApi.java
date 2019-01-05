@@ -65,7 +65,7 @@ public interface ProductCouponApi {
      * @return
      */
     @ApiOperation(value = "批量删除优惠券：商品对应关系、额度值、频率规则、门槛")
-    @PostMapping(path = "/editCoupon")
+    @PostMapping(path = "/batchDelCoupon")
     Result<CommonBoolDto<Integer>> batchDelCoupon(@RequestBody BatchBaseCouponReq req);
 
     /**

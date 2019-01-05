@@ -13,6 +13,7 @@ import com.youyu.cardequity.promotion.vo.req.BaseLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
 import com.youyu.common.exception.BizException;
+import com.youyu.common.service.AbstractService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 /**
  * Created by caiyi on 2019/1/5.
  */
-public class CouponAndActivityLabelServiceImpl implements CouponAndActivityLabelService {
+public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, CouponAndActivityLabelDto, CouponAndActivityLabelEntity, CouponAndActivityLabelMapper> implements CouponAndActivityLabelService {
     @Autowired
     private CouponAndActivityLabelMapper couponAndActivityLabelMapper;
 
@@ -38,6 +39,7 @@ public class CouponAndActivityLabelServiceImpl implements CouponAndActivityLabel
      * @param req 标签详情
      * @return 处理后的标签详情
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public CouponAndActivityLabelDto add(CouponAndActivityLabelDto req) {
         if (req == null) {
@@ -70,6 +72,7 @@ public class CouponAndActivityLabelServiceImpl implements CouponAndActivityLabel
      * @param req 标签详情
      * @return 处理后的标签详情
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public CouponAndActivityLabelDto edit(CouponAndActivityLabelDto req) {
 
@@ -111,6 +114,7 @@ public class CouponAndActivityLabelServiceImpl implements CouponAndActivityLabel
      * @param req 标签基本数据
      * @return 处理成功数量
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer delete(BatchBaseLabelReq req) {
 
@@ -129,7 +133,7 @@ public class CouponAndActivityLabelServiceImpl implements CouponAndActivityLabel
         //数据库操作
         batchService.batchDispose(entities, CouponAndActivityLabelMapper.class, "deleteByPrimaryKey");
 
-        return new Integer(req.getLabelList().size());
+        return req.getLabelList().size();
     }
 
     /**
@@ -138,6 +142,7 @@ public class CouponAndActivityLabelServiceImpl implements CouponAndActivityLabel
      * @param req 标签基本查询请求体
      * @return 标签详情列表
      */
+    @Override
     public List<CouponAndActivityLabelDto> findByCommon(BaseQryLabelReq req){
         if (req == null) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定参数"));

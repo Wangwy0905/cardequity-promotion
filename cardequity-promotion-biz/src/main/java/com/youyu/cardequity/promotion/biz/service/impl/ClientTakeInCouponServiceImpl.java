@@ -1,8 +1,6 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
-import com.youyu.cardequity.promotion.biz.constant.BusinessCode;
-import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.service.ClientTakeInActivityService;
@@ -10,10 +8,8 @@ import com.youyu.cardequity.promotion.biz.service.ClientTakeInCouponService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
-import com.youyu.cardequity.promotion.enums.CommonDict;
-import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.cardequity.promotion.enums.dict.CouponType;
-import com.youyu.cardequity.promotion.enums.dict.CouponUseType;
+import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;
 import com.youyu.cardequity.promotion.vo.rsp.OrderCouponAndActivityRsp;
@@ -28,8 +24,6 @@ import com.youyu.cardequity.promotion.dto.ClientTakeInCouponDto;
 import com.youyu.cardequity.promotion.biz.dal.dao.ClientTakeInCouponMapper;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
@@ -52,13 +46,16 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
     @Autowired
     private ClientTakeInActivityService clientTakeInActivityService;
 
+    @Autowired
+    private ClientTakeInCouponMapper clientTakeInCouponMapper;
+
     /**
      * 在订单预生成时候使用活动及优惠券详情
+     *
      * @param req
      * @return
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public OrderCouponAndActivityRsp preOrderCouponAndActivityDeal(GetUseEnableCouponReq req) {
         OrderCouponAndActivityRsp result = new OrderCouponAndActivityRsp();
         List<UseActivityRsp> useActivityRsps = activityProfitService.combActivityRefProductDeal(req);
@@ -67,7 +64,7 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
         for (OrderProductDetailDto product : innerReq.getProductList()) {
             if (useActivityRsps != null) {
                 for (UseActivityRsp useActivityRsp : useActivityRsps) {
-                    if (useActivityRsp.getProductLsit()!=null) {
+                    if (useActivityRsp.getProductLsit() != null) {
                         for (OrderProductDetailDto useProduct : useActivityRsp.getProductLsit()) {
                             if (product.getProductId().equals(useProduct.getProductId()) && product.getSkuId().equals(useProduct.getSkuId())) {
                                 product.setTotalAmount(product.getTotalAmount().subtract(product.getProfitAmount()));
@@ -83,7 +80,7 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
         //在活动基础上计算优惠券
         List<UseCouponRsp> useCouponRsps = clientCouponService.combCouponRefProductDeal(innerReq);
 
-        if (useCouponRsps!=null) {
+        if (useCouponRsps != null) {
             for (UseCouponRsp useCouponRsp : useCouponRsps) {
                 //运费券
                 if (CouponType.TRANSFERFARE.getDictValue().equals(useCouponRsp.getClientCoupon().getCouponType()) ||
@@ -100,25 +97,51 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
 
     /**
      * 在下订单时候使用活动及优惠券详情，并记录使用记录，处理优惠券状态
+     *
      * @param req
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderCouponAndActivityRsp orderCouponAndActivityDeal(PromotionDealReq req){
-        if (req==null)
-            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("参数为空"));
-        if (req.getOrderPromotion()!=null) {
-            if (req.getOrderPromotion().getActivities()!=null && !req.getOrderPromotion().getActivities().isEmpty())
+    public OrderCouponAndActivityRsp orderCouponAndActivityDeal(PromotionDealReq req) {
+        if (req == null)
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("参数为空"));
+        if (req.getOrderPromotion() != null) {
+            if (req.getOrderPromotion().getActivities() != null && !req.getOrderPromotion().getActivities().isEmpty())
                 clientTakeInActivityService.takeInActivity(req.getOrderPromotion().getActivities(), req.getOrderId());
-            if (req.getOrderPromotion().getCommonCoupons()!=null && !req.getOrderPromotion().getCommonCoupons().isEmpty())
+            if (req.getOrderPromotion().getCommonCoupons() != null && !req.getOrderPromotion().getCommonCoupons().isEmpty())
                 clientCouponService.takeInCoupon(req.getOrderId(), req.getOrderPromotion().getCommonCoupons());
-            if (req.getOrderPromotion().getTransferCoupons()!=null && !req.getOrderPromotion().getTransferCoupons().isEmpty())
+            if (req.getOrderPromotion().getTransferCoupons() != null && !req.getOrderPromotion().getTransferCoupons().isEmpty())
                 clientCouponService.takeInCoupon(req.getOrderId(), req.getOrderPromotion().getTransferCoupons());
         }
         return req.getOrderPromotion();
     }
 
+    /**
+     * 【内部服务】取消订单预使用活动及优惠券详情
+     * 考虑了幂等性
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonBoolDto cancelOrderCouponAndActivityDeal(BaseOrderInPromotionReq req) {
+        CommonBoolDto result = new CommonBoolDto(true);
+        if (req == null || CommonUtils.isEmptyorNull(req.getOrderId()))
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("参数为空"));
+
+        //解冻客户的优惠券
+        Integer i = clientCouponService.cancelTakeInCoupon(req).getData();
+
+        //撤销优惠券使用记录
+        i = i.intValue() + clientTakeInCouponMapper.modRecoverByOrderinfo(req);
+
+        //撤销活动使用记录
+        i = i.intValue() + clientTakeInActivityService.cancelTakeInActivity(req).getData();
+        result.setData(i);
+        return result;
+    }
 
 
 }

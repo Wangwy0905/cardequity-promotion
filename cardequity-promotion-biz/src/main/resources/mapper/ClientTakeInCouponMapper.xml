@@ -4,4 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.ClientTakeInCouponMapper">
 
+
+    <update id="modRecoverByOrderinfo" parameterType="com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq">
+        UPDATE TB_CLIENT_TAKE_IN_COUPON a
+        SET a.IS_ENABLE='0',a.REMARK=CONCAT(ifnull(a.REMARK,''),sysdate(),'撤销使用|')
+        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        AND a.ORDER_ID=#{orderinfo.orderId,jdbcType=VARCHAR}
+        <if test="orderinfo.clientId!=null and orderinfo.clientId!=''">
+            AND a.CLIENT_ID=#{orderinfo.clientId,jdbcType=VARCHAR}
+        </if>
+    </update>
 </mapper>
