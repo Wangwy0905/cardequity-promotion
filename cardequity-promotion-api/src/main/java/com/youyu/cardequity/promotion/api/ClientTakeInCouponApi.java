@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.api;
 
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;
 import com.youyu.cardequity.promotion.vo.rsp.OrderCouponAndActivityRsp;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
@@ -23,13 +24,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "/clientTakeInCouponApi")
 public interface ClientTakeInCouponApi {
     /**
-     * 在订单时候使用活动及优惠券详情:处理优惠券记录，记录使用痕迹
+     * 在订单时候根据使用活动及优惠券详情处理优惠券记录，记录使用痕迹
      * @param req
      * @return
      */
     @ApiOperation(value = "在订单时候使用活动及优惠券详情:处理优惠券记录，记录使用痕迹")
     @PostMapping(path = "/orderCouponAndActivityDeal")
-     Result<OrderCouponAndActivityRsp> orderCouponAndActivityDeal(@RequestBody GetUseEnableCouponReq req);
+     Result<OrderCouponAndActivityRsp> orderCouponAndActivityDeal(@RequestBody  PromotionDealReq req);
 
 
     /**
@@ -39,5 +40,5 @@ public interface ClientTakeInCouponApi {
      */
     @ApiOperation(value = "在订单预生成时候使用活动及优惠券详情")
     @PostMapping(path = "/preOrderCouponAndActivityDeal")
-     Result<OrderCouponAndActivityRsp> preOrderCouponAndActivityDeal(@RequestBody GetUseEnableCouponReq req);
+     Result<OrderCouponAndActivityRsp> preOrderCouponAndActivityDeal(@RequestBody GetUseEnableCouponReq  req);
 }

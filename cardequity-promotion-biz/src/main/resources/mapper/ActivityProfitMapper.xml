@@ -107,7 +107,8 @@
     </select>
 
     <update id="logicDelByIdList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseActivityReq">
-        UPDATE TB_ACTIVITY_PROFIT SET a.IS_ENABLE='0'
+        UPDATE TB_ACTIVITY_PROFIT a
+          SET a.IS_ENABLE='0'
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
         AND a.UUID IN
         <foreach collection="list.baseActivityList" item="baseActivity" index="index"
@@ -117,7 +118,8 @@
     </update>
 
     <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
-        UPDATE TB_ACTIVITY_PROFIT a SET a.IS_ENABLE='0'
+        UPDATE TB_ACTIVITY_PROFIT a
+        SET a.IS_ENABLE='0'
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
         AND a.UUID = #{baseActivity.activityId,jdbcType=VARCHAR}
     </update>
@@ -138,7 +140,7 @@
             and a.ALLOW_USE_END_DATE &lt;curdate()
         </if>
         <if test="commonQry.activityCouponType!=null and commonQry.activityCouponType!=''">
-            and a.ACTIVITY_COUPON_TYPE=#{commonQry.activityCouponType,jdbcType=VARCHAR}
+            and instr(#{commonQry.activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;>0
         </if>
         <if test="commonQry.activityName!=null and commonQry.activityName!=''">
             and a.COUPON_NAME like CONCAT('%',#{commonQry.activityName,jdbcType=VARCHAR},'%')
@@ -153,5 +155,15 @@
             ))
         </if>
     </select>
+    <select id="findActivityByIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
+        select * FROM TB_ACTIVITY_PROFIT a
+        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        AND a.UUID IN
+        <foreach collection="list.baseActivityList" item="baseActivity" index="index"
+                 open="(" close=")" separator=",">
+            #{baseActivity.activityId}
+        </foreach>
+    </select>
+
 
 </mapper>

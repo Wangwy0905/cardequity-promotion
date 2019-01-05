@@ -78,6 +78,14 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      */
     List<ActivityProfitEntity> findActivityListByCommon(@Param("commonQry") BaseQryActivityReq commonQry);
 
+
+    /**
+     * 通过活动id列表查询活动基本信息
+     * @param list
+     * @return
+     */
+    List<ActivityProfitEntity> findActivityByIds(@Param("list") BatchBaseActivityReq list);
+
 }
 
 

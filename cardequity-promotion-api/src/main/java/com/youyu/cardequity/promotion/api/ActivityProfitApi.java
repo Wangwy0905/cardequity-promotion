@@ -31,9 +31,9 @@ public interface ActivityProfitApi {
 
     /**
      * 根据客户指定商品获取可参加的活动
+     *
      * @param req：里面的clientType-客户类型如果为空，需要在网关层调用客户信息查询接口，同理groupId-商品组信息
-     * @return
-     * 开发日志
+     * @return 开发日志
      * 1004244-徐长焕-20181207 新建
      */
     @ApiOperation(value = "根据客户指定商品获取可参加的活动")
@@ -41,36 +41,38 @@ public interface ActivityProfitApi {
     Result<List<ActivityDetailDto>> findEnableGetActivity(@RequestBody QryProfitCommonReq req);
 
     /**
-     * 订单信息能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额
+     * 【内部服务】订单信息能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额
+     *
      * @param req
-     * @return
-     * 1004258-徐长焕-20181226 新建
+     * @return 1004258-徐长焕-20181226 新建
      */
     @ApiOperation(value = "订单能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额")
     @PostMapping(path = "/combActivityRefProductDeal")
     Result<List<UseActivityRsp>> combActivityRefProductDeal(@RequestBody GetUseEnableCouponReq req);
 
     /**
-     * 获取商品活动优惠价
+     * 【内部服务】获取商品活动优惠价：
+     *
      * @param req
-     * @return
-     * 1004258-徐长焕-20181226 新建
+     * @return 1004258-徐长焕-20181226 新建
      */
     @ApiOperation(value = "获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
-     Result<ActivityDetailDto> findActivityPrice(@RequestBody BaseProductReq req);
+    Result<ActivityDetailDto> findActivityPrice(@RequestBody BaseProductReq req);
 
     /**
      * 批量添加活动
+     *
      * @param req
      * @return
      */
     @ApiOperation(value = "批量添加活动")
     @PostMapping(path = "/batchAddActivity")
-     Result<CommonBoolDto<BatchActivityDetailDto>> batchAddActivity(@RequestBody BatchActivityDetailDto req);
+    Result<CommonBoolDto<BatchActivityDetailDto>> batchAddActivity(@RequestBody BatchActivityDetailDto req);
 
     /**
      * 批量编辑活动
+     *
      * @param req
      * @return
      */
@@ -80,6 +82,7 @@ public interface ActivityProfitApi {
 
     /**
      * 批量删除活动
+     *
      * @param req
      * @return
      */
@@ -89,6 +92,7 @@ public interface ActivityProfitApi {
 
     /**
      * 查找活动
+     *
      * @param req
      * @return
      */

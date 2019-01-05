@@ -95,16 +95,27 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     public List<UseActivityRsp> combActivityRefProductDeal(GetUseEnableCouponReq req) {
         //定义返回结果
         List<UseActivityRsp> rsps = new ArrayList<>();
-        //获取所有可以参与的活动：按初始条件，有效日期内
-        //获取普通活动列表
-        List<ActivityProfitEntity> activityList = activityProfitMapper.findEnableGetCommonActivity("", req.getEntrustWay());
+
         //空订单或者没有可用活动直接返回
         if (req.getProductList() == null ||
-                activityList == null ||
-                req.getProductList().size() <= 0 ||
-                activityList.size() <= 0) {
+                req.getProductList().size() <= 0 ) {
             return rsps;
         }
+
+        List<ActivityProfitEntity> activityList =new ArrayList<>();
+        //获取所有可以参与的活动：按初始条件，有效日期内
+        if (req.getActivityList()!=null) {
+            if (!req.getActivityList().isEmpty()) {
+                BatchBaseActivityReq innerReq = new BatchBaseActivityReq();
+                innerReq.setBaseActivityList(req.getActivityList());
+                activityList = activityProfitMapper.findActivityByIds(innerReq);
+            }
+        }else {
+
+            //获取普通活动列表
+            activityList = activityProfitMapper.findEnableGetCommonActivity("", req.getEntrustWay());
+        }
+
 
         //团购活动优先处理
         // TODO: 2018/12/25

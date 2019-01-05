@@ -73,7 +73,7 @@ public interface ClientCouponApi {
     Result<List<ClientCouponDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req);
 
     /**
-     * 按策略得到优惠券使用组合:不含运费券
+     * 【内部服务】按策略得到优惠券使用组合:不含运费券
      * 1.根据订单或待下单商品列表校验了使用门槛
      * 2.根据冲突关系按策略计算能使用的券
      * 3.计算出每张券的适配使用的商品列表
@@ -96,7 +96,6 @@ public interface ClientCouponApi {
     @ApiOperation(value = "根据指定的优惠券进行校验其适用情况，并变动其状态和增加使用记录")
     @PostMapping(path = "/combCouponRefProductAndUse")
     Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req);
-
 
 
 

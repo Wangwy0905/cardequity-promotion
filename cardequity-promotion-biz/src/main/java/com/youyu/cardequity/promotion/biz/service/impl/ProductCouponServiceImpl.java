@@ -90,10 +90,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 stageList = new ArrayList<>(0);
             }
 
-            List<ShortCouponDetailDto> shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClinetId(), item.getId(), "");
-            //做保护，后面直接通过素组长度判断
-            if (shortStageList == null) {
-                shortStageList = new ArrayList<>(0);
+            List<ShortCouponDetailDto> shortStageList = new ArrayList<>();
+            //查询客户受频率限制的券
+            if (!CommonUtils.isEmptyorNull(qryProfitCommonReq.getClinetId())) {
+                shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClinetId(), item.getId(), "");
             }
 
             //子券因领取频率受限的

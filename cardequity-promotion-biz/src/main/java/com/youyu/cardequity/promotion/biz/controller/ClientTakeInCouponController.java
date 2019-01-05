@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz.controller;
 import com.youyu.cardequity.promotion.api.ClientTakeInCouponApi;
 import com.youyu.cardequity.promotion.biz.service.ClientTakeInCouponService;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;
 import com.youyu.cardequity.promotion.vo.rsp.OrderCouponAndActivityRsp;
 
 import com.youyu.common.api.Result;
@@ -25,7 +26,7 @@ public class ClientTakeInCouponController implements ClientTakeInCouponApi {
      */
     @Override
     @PostMapping(path = "/orderCouponAndActivityDeal")
-    public Result<OrderCouponAndActivityRsp> orderCouponAndActivityDeal(@RequestBody GetUseEnableCouponReq req){
+    public Result<OrderCouponAndActivityRsp> orderCouponAndActivityDeal(@RequestBody PromotionDealReq req){
         return Result.ok(clientTakeInCouponService.orderCouponAndActivityDeal(req));
     }
 

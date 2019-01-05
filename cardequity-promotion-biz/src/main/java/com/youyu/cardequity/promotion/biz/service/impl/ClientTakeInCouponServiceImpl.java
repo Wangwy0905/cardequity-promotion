@@ -15,9 +15,11 @@ import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.cardequity.promotion.enums.dict.CouponType;
 import com.youyu.cardequity.promotion.enums.dict.CouponUseType;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;
 import com.youyu.cardequity.promotion.vo.rsp.OrderCouponAndActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
+import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
+import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 
 
 /**
@@ -101,16 +105,18 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderCouponAndActivityRsp orderCouponAndActivityDeal(GetUseEnableCouponReq req){
-        OrderCouponAndActivityRsp result = preOrderCouponAndActivityDeal(req);
-        if (!result.getActivities().isEmpty())
-            clientTakeInActivityService.takeInActivity(result.getActivities(),req.getOrderId());
-        if (!result.getCommonCoupons().isEmpty())
-            clientCouponService.takeInCoupon(req.getOrderId(),result.getCommonCoupons());
-        if (!result.getTransferCoupons().isEmpty())
-            clientCouponService.takeInCoupon(req.getOrderId(),result.getTransferCoupons());
-
-        return result;
+    public OrderCouponAndActivityRsp orderCouponAndActivityDeal(PromotionDealReq req){
+        if (req==null)
+            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("参数为空"));
+        if (req.getOrderPromotion()!=null) {
+            if (req.getOrderPromotion().getActivities()!=null && !req.getOrderPromotion().getActivities().isEmpty())
+                clientTakeInActivityService.takeInActivity(req.getOrderPromotion().getActivities(), req.getOrderId());
+            if (req.getOrderPromotion().getCommonCoupons()!=null && !req.getOrderPromotion().getCommonCoupons().isEmpty())
+                clientCouponService.takeInCoupon(req.getOrderId(), req.getOrderPromotion().getCommonCoupons());
+            if (req.getOrderPromotion().getTransferCoupons()!=null && !req.getOrderPromotion().getTransferCoupons().isEmpty())
+                clientCouponService.takeInCoupon(req.getOrderId(), req.getOrderPromotion().getTransferCoupons());
+        }
+        return req.getOrderPromotion();
     }
 
 

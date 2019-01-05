@@ -294,10 +294,12 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //优惠券基本信息
         ProductCouponEntity coupon = null;
 
-        List<ClientCouponEntity> enableCouponList = null;
+        List<ClientCouponEntity> enableCouponList = new ArrayList<>();
         //如果是指定了使用的券，检验后用使用的券
-        if (req.getObtainCouponList() != null && req.getObtainCouponList().size() > 0) {
-            enableCouponList = clientCouponMapper.findClientCouponByIds(req.getClientId(), req.getObtainCouponList());
+        if (req.getObtainCouponList() != null ) {
+            if (req.getObtainCouponList().size() > 0) {
+                enableCouponList = clientCouponMapper.findClientCouponByIds(req.getClientId(), req.getObtainCouponList());
+            }
         } else {
             //获取已领取的有效优惠券：排除过期，已使用、使用中的券，按优惠金额已排序后的
             //等阶券无法参与排序

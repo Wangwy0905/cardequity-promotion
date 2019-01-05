@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 public class GetUseActivityReq {
-    @ApiModelProperty(value = "客户编号:必填" ,required= true,example = "")
+    @ApiModelProperty(value = "客户编号:必填" ,required= true)
     private String clinetId;
 
     @ApiModelProperty(value = "客户类型:冗余，服务层调用时传入空，需要调用用户中心进行查询该字段")
