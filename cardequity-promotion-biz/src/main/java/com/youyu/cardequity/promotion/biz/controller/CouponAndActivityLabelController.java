@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping(path = "/couponAndActivityLabel")
 public class CouponAndActivityLabelController implements CouponAndActivityLabelApi {
 
-
+    @Autowired
     private CouponAndActivityLabelService couponAndActivityLabelService;
 
     /**

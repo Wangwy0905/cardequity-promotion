@@ -16,6 +16,7 @@ import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -23,9 +24,7 @@ import java.util.List;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 
-/**
- * Created by caiyi on 2019/1/5.
- */
+@Service
 public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, CouponAndActivityLabelDto, CouponAndActivityLabelEntity, CouponAndActivityLabelMapper> implements CouponAndActivityLabelService {
     @Autowired
     private CouponAndActivityLabelMapper couponAndActivityLabelMapper;
