@@ -36,7 +36,7 @@ public interface ProductCouponApi {
      */
     @ApiOperation(value = "获取可以领取的优惠券")
     @PostMapping(path = "/findEnableGetCoupon")
-    Result<List<CouponDefineRsp>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req);
+    Result<List<CouponDetailDto>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req);
 
     /**
      * 添加优惠券

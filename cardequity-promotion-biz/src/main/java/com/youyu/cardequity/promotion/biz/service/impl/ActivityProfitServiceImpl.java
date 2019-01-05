@@ -15,22 +15,15 @@ import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
-import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
@@ -75,26 +68,27 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * 获取可参与的活动列表
      *
      * @param req 查询优惠活动请求体
-     * @return 开发日志
+     * @return 活动详情列表
+     * 开发日志
      * 1004244-徐长焕-20181207 新建
      */
     @Override
-    public List<ActivityDefineRsp> findEnableGetActivity(QryProfitCommonReq req) {
+    public List<ActivityDetailDto> findEnableGetActivity(QryProfitCommonReq req) {
 
-        List<ActivityDefineRsp> rspList = new ArrayList<>();
+        List<ActivityDetailDto> result = new ArrayList<>();
 
         //获取普通活动列表
         List<ActivityProfitEntity> activityList = activityProfitMapper.findEnableGetCommonActivity(req.getProductId(), req.getEntrustWay());
 
         //将其使用门槛阶梯与活动主信息组装后返回
-        rspList.addAll(combinationActivity(activityList, false));
+        result.addAll(combinationActivity(activityList));
 
         //获取会员活动列表
         List<ActivityProfitEntity> activityForMemberList = activityProfitMapper.findEnableGetMemberActivity(req.getProductId(), req.getEntrustWay(), req.getClinetType());
         //将会员活动使用门槛阶梯与活动主信息组装后返回
-        rspList.addAll(combinationActivity(activityForMemberList, true));
+        result.addAll(combinationActivity(activityForMemberList));
 
-        return rspList;
+        return result;
     }
 
     @Override
@@ -259,8 +253,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     /**
      * 批量编辑活动
      *
-     * @param req
-     * @return
+     * @param req 活动详情列表请求体
+     * @return 编辑后活动详情列表请求体
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -415,8 +409,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     /**
      * 批量删除活动
      *
-     * @param req
-     * @return
+     * @param req 基本活动列表请求体
+     * @return 删除成功数量
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -454,8 +448,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     /**
      * 查找活动
      *
-     * @param req
-     * @return
+     * @param req 普通查询活动请求体
+     * @return 活动详情列表列表
      */
     @Override
     public List<ActivityDetailDto> findActivityByCommon(BaseQryActivityReq req) {
@@ -490,27 +484,19 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * 获取商品活动优惠价
      *
      * @param req
-     * @return 1004258-徐长焕-20181226 新建
+     * @return
+     * 开发日志
+     * 1004258-徐长焕-20181226 新建
      */
     @Override
-    public ActivityViewDto findActivityPrice(BaseProductReq req) {
+    public ActivityDetailDto findActivityPrice(BaseProductReq req) {
         List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductId(req.getProductId(), req.getSkuId());
         if (entities.isEmpty())
             return null;
         if (entities.size()>1)
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("配置错误，该商品配置了多个特价活动"));
 
-        ActivityViewDto result=new ActivityViewDto();
-        BeanUtils.copyProperties(entities.get(0),result);
-        //获取额度
-        ActivityQuotaRuleEntity quotaRuleEntity = activityQuotaRuleMapper.findActivityQuotaRuleById(result.getUuid());
-        if (quotaRuleEntity!=null)
-            result.setMaxCount(quotaRuleEntity.getMaxCount());
-        //获取适用商品
-        List<ActivityRefProductEntity> refProductEntities = activityRefProductMapper.findByActivityId(result.getUuid());
-        result.setProductList(BeanPropertiesConverter.copyPropertiesOfList(refProductEntities,BaseProductReq.class));
-
-        //特价商品没有门槛
+        ActivityDetailDto result=combinationActivity(entities.get(0));
         return result;
     }
 
@@ -616,54 +602,51 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * 组装活动信息（活动主信息+阶梯信息)
      *
      * @param activityList 活动实体列表
-     * @param isMember     是否会员活动
-     * @return 返回活动信息及其门槛阶梯
+     * @return 活动详情列表：含活动信息、门槛阶梯、额度、配置商品
      * 开发日志
      * 1004244-徐长焕-20181207 新建
      */
-    private List<ActivityDefineRsp> combinationActivity(List<ActivityProfitEntity> activityList, boolean isMember) {
+    private List<ActivityDetailDto> combinationActivity(List<ActivityProfitEntity> activityList) {
 
-        List<ActivityDefineRsp> rspList = new ArrayList<>();
-        //循环获取其阶梯信息
+        List<ActivityDetailDto> result = new ArrayList<>();
         for (ActivityProfitEntity item : activityList) {
 
-            //转换为传出参数
-            ActivityDefineRsp rsp = new ActivityDefineRsp();
-            BeanUtils.copyProperties(item, rsp);
-
-            CouponAndActivityLabelDto labelDto = null;
-            //查找标签信息
-            if (!CommonUtils.isEmptyorNull(item.getActivityLable())) {
-                CouponAndActivityLabelEntity labelEntity = couponAndActivityLabelMapper.findLabelById(item.getActivityLable());
-                if (labelEntity != null) {
-                    labelDto = new CouponAndActivityLabelDto();
-                    BeanUtils.copyProperties(labelEntity, labelDto);
-
-                }
-            }
-
-            rsp.setIsAboutMember(isMember ? "1" : "0");
-            rsp.setCouponAndActivityLabel(labelDto);
-
-            //获取指定活动的使用门槛阶梯
-            List<ActivityStageCouponEntity> stageList = activityStageCouponMapper.findActivityProfitDetail(item.getId());
-            if (stageList.size() > 0) {
-
-                //数据转换：从实体类转换为Dto
-                List<ActivityStageCouponDto> stageDtoList = new ArrayList<>();
-                for (ActivityStageCouponEntity stage : stageList) {
-                    ActivityStageCouponDto dto = new ActivityStageCouponDto();
-                    BeanUtils.copyProperties(stage, dto);
-                    stageDtoList.add(dto);
-                }
-
-                //BeanPropertiesConverter.copyPropertiesOfList无法对LocalDate数据进行拷贝
-                //List<ActivityStageCouponDto> stageDtoList=BeanPropertiesConverter.copyPropertiesOfList(stageList, ActivityStageCouponDto.class);
-                rsp.setActivityStageCouponDtoList(stageDtoList);
-            }
-            rspList.add(rsp);
+            result.add(combinationActivity(item));
         }
-        return rspList;
+        return result;
+    }
+
+    /**
+     * 组装活动信息（活动主信息+阶梯信息)
+     * @param entity 活动主体
+     * @return 活动详情：含活动信息、门槛阶梯、额度、配置商品
+     */
+    private ActivityDetailDto combinationActivity(ActivityProfitEntity entity){
+        ActivityDetailDto result = new ActivityDetailDto();
+
+        ActivityProfitDto activityProfit=new ActivityProfitDto();
+        //转换为传出参数
+        BeanUtils.copyProperties(entity, activityProfit);
+        result.setActivityProfit(activityProfit);
+
+        //获取指定活动的使用门槛阶梯
+        List<ActivityStageCouponEntity> stageList = activityStageCouponMapper.findActivityProfitDetail(entity.getId());
+        if (!stageList.isEmpty()) {
+            result.setStageList(BeanPropertiesConverter.copyPropertiesOfList(stageList,ActivityStageCouponDto.class));
+        }
+
+        //获取额度
+        ActivityQuotaRuleEntity quotaRuleEntity = activityQuotaRuleMapper.findActivityQuotaRuleById(activityProfit.getUuid());
+        if (quotaRuleEntity!=null) {
+            ActivityQuotaRuleDto quotaRuleDto = new ActivityQuotaRuleDto();
+            BeanUtils.copyProperties(quotaRuleEntity,quotaRuleDto);
+        }
+
+        //获取适用商品
+        List<ActivityRefProductEntity> refProductEntities = activityRefProductMapper.findByActivityId(activityProfit.getUuid());
+        result.setProductList(BeanPropertiesConverter.copyPropertiesOfList(refProductEntities,BaseProductReq.class));
+
+        return result;
     }
 
 

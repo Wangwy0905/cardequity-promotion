@@ -36,21 +36,6 @@ public class CouponAndActivityLabelDto implements IBaseDto<String> {
     @ApiModelProperty(value = "备注:")
     private String remark;
 
-    @ApiModelProperty(value = "产生者:")
-    private String createAuthor;
-
-    @ApiModelProperty(value = "更新者:")
-    private String updateAuthor;
-
-    @ApiModelProperty(value = "更新时间:")
-    private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "产生时间:")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "是否有效:")
-    private String isEnable;
-
     @Override
     public String getId() {
         return uuid;

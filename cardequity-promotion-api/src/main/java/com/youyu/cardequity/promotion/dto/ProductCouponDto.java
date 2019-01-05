@@ -32,7 +32,7 @@ public class ProductCouponDto implements IBaseDto<String>{
     private String couponName;
 
     @ApiModelProperty(value = "优惠标签:标签：满返券、促销等")
-    private String couponLable;
+    private CouponAndActivityLabelDto labelDto ;
 
     @ApiModelProperty(value = "优惠短描:如满3件减20")
     private String couponShortDesc;

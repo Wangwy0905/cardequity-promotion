@@ -74,13 +74,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      * 1004244-徐长焕-20181207 新建
      */
     @Override
-    public List<CouponDefineRsp> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq) {
+    public List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq) {
 
 
         //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
         List<ProductCouponEntity> productCouponlist = productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClinetType());
 
-        List<CouponDefineRsp> CouponDefinelist = new ArrayList<>();
+        List<CouponDetailDto> result = new ArrayList<>();
 
         //根据客户对上述券领取情况，以及该券领取频率限制进行排除
         for (ProductCouponEntity item : productCouponlist) {
@@ -96,20 +96,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 shortStageList = new ArrayList<>(0);
             }
 
-            CouponAndActivityLabelDto labelDto = null;
-            //查找标签信息
-            if (!CommonUtils.isEmptyorNull(item.getCouponLable())) {
-                CouponAndActivityLabelEntity labelEntity = couponAndActivityLabelMapper.findLabelById(item.getCouponLable());
-                if (labelEntity != null) {
-                    labelDto = new CouponAndActivityLabelDto();
-                    BeanUtils.copyProperties(labelEntity, labelDto);
-
-                }
-            }
-
-            //有阶梯的券进行排除
+            //子券因领取频率受限的
             if (stageList.size() > 0 && shortStageList.size() > 0) {
-
                 List<CouponStageRuleDto> couponStageList = new ArrayList<>();
 
                 for (CouponStageRuleEntity stageItem : stageList) {
@@ -128,45 +116,37 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
                 //有阶梯的优惠券，如果有0个阶梯能领取该券可领取，否则该券不能领取
                 if (couponStageList.size() > 0) {
-                    CouponDefineRsp rsp = BeanPropertiesConverter.copyProperties(item, CouponDefineRsp.class);
-                    rsp.setCouponStageDtoList(couponStageList);
-                    CouponDefinelist.add(rsp);
+                    CouponDetailDto rsp = combinationCoupon(item);
+                    rsp.setStageList(couponStageList);//重置可领的子券信息
+                    result.add(rsp);
                 }
             }
-            //没有阶梯但是也没有任何领取限制的全部可领取
-            else if (stageList.size() > 0 && shortStageList.size() <= 0) {
-                List<CouponStageRuleDto> couponStageList = BeanPropertiesConverter.copyPropertiesOfList(stageList, CouponStageRuleDto.class);
-                CouponDefineRsp rsp = BeanPropertiesConverter.copyProperties(item, CouponDefineRsp.class);
-                rsp.setCouponAndActivityLabel(labelDto);
-                rsp.setCouponStageDtoList(couponStageList);
-                CouponDefinelist.add(rsp);
+            //没有领取频率受限的
+            else if (shortStageList.size() <= 0) {
+                CouponDetailDto rsp = combinationCoupon(item);
+                result.add(rsp);
+
             }
-            //没有阶梯，同时也没有任何领取限制的全部可领取
-            else if (stageList.size() <= 0 && shortStageList.size() <= 0) {
-                CouponDefineRsp rsp = BeanPropertiesConverter.copyProperties(item, CouponDefineRsp.class);
-                rsp.setCouponAndActivityLabel(labelDto);
-                CouponDefinelist.add(rsp);
-            } else {
-                boolean isExsit = false;
+            //没有子券，受领取频率限制
+            else {
+                boolean isLimit = false;
                 //正常数据没有阶梯的券，此处只会有一条在shortStageList中，循环是为了容错
                 for (ShortCouponDetailDto shortItem : shortStageList) {
-                    if (item.getUuid().equals(shortItem.getCouponId()) && shortItem.getStageId() == null) {
-                        isExsit = true;
+                    if (item.getUuid().equals(shortItem.getCouponId()) &&
+                            CommonUtils.isEmptyorNull(shortItem.getStageId()) ) {
+                        isLimit = true;
                         break;
                     }
                 }
                 //该券没有领取频率限制则可领取
-                if (!isExsit) {
-                    CouponDefineRsp rsp = BeanPropertiesConverter.copyProperties(item, CouponDefineRsp.class);
-                    rsp.setCouponAndActivityLabel(labelDto);
-                    CouponDefinelist.add(rsp);
+                if (!isLimit) {
+                    CouponDetailDto rsp = combinationCoupon(item);
+                    result.add(rsp);
                 }
-
             }
-
         }
 
-        return CouponDefinelist;
+        return result;
 
     }
 
@@ -181,7 +161,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     public CommonBoolDto<CouponDetailDto> addCoupon(@RequestBody CouponDetailDto req) {
         //权益中心标志为3，活动表标识为1，ProductCoupon表标识为2
         SnowflakeIdWorker stageWorker = new SnowflakeIdWorker(3, 2);
-        CommonBoolDto<CouponDetailDto> result = new CommonBoolDto<CouponDetailDto>(false);
+        CommonBoolDto<CouponDetailDto> result = new CommonBoolDto<>(false);
         List<CouponStageRuleEntity> stageList = new ArrayList<>();
         List<CouponGetOrUseFreqRuleEntity> freqRuleList = new ArrayList<>();
         int sqlresult = 0;
@@ -260,13 +240,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             return result;
         }
 
-        if (!CommonUtils.isEmptyorNull(dto.getCouponLable())) {
+        if (dto.getLabelDto()==null) {
             result.setDesc("没有指定标签");
             return result;
         }
-        CouponAndActivityLabelEntity labelById = couponAndActivityLabelMapper.findLabelById(dto.getCouponLable());
+        CouponAndActivityLabelEntity labelById = couponAndActivityLabelMapper.findLabelById(dto.getLabelDto().getId());
         if (labelById == null) {
-            result.setDesc("指定标签不存在" + dto.getCouponLable());
+            result.setDesc("指定标签不存在" + dto.getLabelDto().getId());
             return result;
         }
 
@@ -355,6 +335,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //【基本信息】
         ProductCouponEntity entity = new ProductCouponEntity();
         BeanUtils.copyProperties(dto, entity);
+        entity.setCouponLable(dto.getLabelDto().getId());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
         sqlresult = productCouponMapper.insert(entity);
         if (sqlresult > 0) {
@@ -463,13 +444,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //校验标签是否存在
-        if (CommonUtils.isEmptyorNull(dto.getCouponLable())) {
+        if (dto.getLabelDto()==null) {
             result.setDesc("没有指定标签");
             return result;
         }
-        CouponAndActivityLabelEntity labelById = couponAndActivityLabelMapper.findLabelById(dto.getCouponLable());
+        CouponAndActivityLabelEntity labelById = couponAndActivityLabelMapper.findLabelById(dto.getLabelDto().getId());
         if (labelById == null) {
-            result.setDesc("指定标签不存在" + dto.getCouponLable());
+            result.setDesc("指定标签不存在" + dto.getLabelDto().getId());
             return result;
         }
 
@@ -591,6 +572,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         BeanUtils.copyProperties(dto, entity);
+        entity.setCouponLable(dto.getLabelDto().getId());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
 
         sqlresult = productCouponMapper.updateByPrimaryKey(entity);
@@ -724,23 +706,44 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<ProductCouponEntity> couponEntityList = productCouponMapper.findCouponListByCommon(req);
         List<CouponDetailDto> result = new ArrayList<>();
         for (ProductCouponEntity couponEntity : couponEntityList) {
-            CouponDetailDto rsp = new CouponDetailDto();
-            BeanUtils.copyProperties(couponEntity, rsp);
-            result.add(rsp);
-            //查询限额
-            CouponQuotaRuleEntity quotaRuleEntity = couponQuotaRuleMapper.findCouponQuotaRuleById(couponEntity.getId());
-            rsp.setQuotaRule(BeanPropertiesConverter.copyProperties(quotaRuleEntity, CouponQuotaRuleDto.class));
-
-            //查询领取频率
-            List<CouponGetOrUseFreqRuleEntity> freqRuleEntities = couponGetOrUseFreqRuleMapper.findByCouponId(couponEntity.getId());
-            rsp.setFreqRuleList(BeanPropertiesConverter.copyPropertiesOfList(freqRuleEntities, CouponGetOrUseFreqRuleDto.class));
-
-            //查询子券信息
-            List<CouponStageRuleEntity> stageRuleEntities = couponStageRuleMapper.findStageByCouponId(couponEntity.getId());
-            rsp.setStageList(BeanPropertiesConverter.copyPropertiesOfList(stageRuleEntities, CouponStageRuleDto.class));
-
+            result.add(combinationCoupon(couponEntity));
         }
 
+        return result;
+    }
+
+    /**
+     * 拼装优惠券详情
+     * @param entity 优惠券主体
+     * @return 优惠券详情：含限额、频率、子券信息
+     */
+    private CouponDetailDto combinationCoupon(ProductCouponEntity entity){
+        CouponDetailDto result = new CouponDetailDto();
+
+
+        ProductCouponDto productCouponDto=new ProductCouponDto();
+        BeanUtils.copyProperties(entity, productCouponDto);
+        if (CommonUtils.isEmptyorNull(entity.getCouponLable())){
+            CouponAndActivityLabelEntity labelEntity = couponAndActivityLabelMapper.findLabelById(entity.getCouponLable());
+            if (labelEntity!=null){
+                CouponAndActivityLabelDto labelDto = new CouponAndActivityLabelDto();
+                BeanUtils.copyProperties(labelEntity,labelDto);
+                productCouponDto.setLabelDto(labelDto);
+            }
+
+        }
+        result.setProductCouponDto(productCouponDto);
+        //查询限额
+        CouponQuotaRuleEntity quotaRuleEntity = couponQuotaRuleMapper.findCouponQuotaRuleById(entity.getId());
+        result.setQuotaRule(BeanPropertiesConverter.copyProperties(quotaRuleEntity, CouponQuotaRuleDto.class));
+
+        //查询领取频率
+        List<CouponGetOrUseFreqRuleEntity> freqRuleEntities = couponGetOrUseFreqRuleMapper.findByCouponId(entity.getId());
+        result.setFreqRuleList(BeanPropertiesConverter.copyPropertiesOfList(freqRuleEntities, CouponGetOrUseFreqRuleDto.class));
+
+        //查询子券信息
+        List<CouponStageRuleEntity> stageRuleEntities = couponStageRuleMapper.findStageByCouponId(entity.getId());
+        result.setStageList(BeanPropertiesConverter.copyPropertiesOfList(stageRuleEntities, CouponStageRuleDto.class));
         return result;
     }
 

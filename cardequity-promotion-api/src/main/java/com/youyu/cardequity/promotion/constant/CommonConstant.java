@@ -16,4 +16,11 @@ public interface CommonConstant {
      * 业务中指定的通配符
      */
     String WILDCARD="*";
+
+    /**
+     * 权益专属定义0-普通 1-会员专属 2-银行卡专属
+     */
+    String PROMOTION_APPLYTYPE_COMMON="0";
+    String PROMOTION_APPLYTYPE_MEMBER="1";
+    String PROMOTION_APPLYTYPE_BANKCODE="2";
 }

@@ -25,7 +25,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * 功能：查询指定商品可领取的优惠券
      * @return
      */
-     List<CouponDefineRsp> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq);
+     List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq);
 
 
 

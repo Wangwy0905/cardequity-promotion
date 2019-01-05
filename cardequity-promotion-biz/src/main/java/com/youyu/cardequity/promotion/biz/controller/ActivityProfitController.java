@@ -42,8 +42,8 @@ public class ActivityProfitController implements ActivityProfitApi {
      */
     @Override
     @PostMapping(path = "/findEnableGetActivity")
-    public Result<List<ActivityDefineRsp>> findEnableGetActivity(@RequestBody QryProfitCommonReq req) {
-        List<ActivityDefineRsp> result = activityProfitService.findEnableGetActivity(req);
+    public Result<List<ActivityDetailDto>> findEnableGetActivity(@RequestBody QryProfitCommonReq req) {
+        List<ActivityDetailDto> result = activityProfitService.findEnableGetActivity(req);
         return Result.ok(result);
     }
 
@@ -60,16 +60,15 @@ public class ActivityProfitController implements ActivityProfitApi {
     }
 
     /**
-     * 获取商品活动优惠价
+     * 获取商品活动优惠价:
      * @param req
-     * @return
+     * @return  一般获取到Result<ActivityDetailDto>后通过ActivityDetailDto对象switchToView转换为ActivityViewDto
      * 1004258-徐长焕-20181226 新建
      */
     @Override
     @ApiOperation(value = "获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
-    public Result<ActivityViewDto> findActivityPrice(@RequestBody BaseProductReq req){
-
+    public Result<ActivityDetailDto> findActivityPrice(@RequestBody BaseProductReq req){
         return Result.ok(activityProfitService.findActivityPrice(req));
     }
 

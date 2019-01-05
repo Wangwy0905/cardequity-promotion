@@ -38,8 +38,8 @@ public class ProductCouponController implements ProductCouponApi {
      */
     @Override
     @PostMapping(path = "/findEnableGetCoupon")
-    public Result<List<CouponDefineRsp>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req) {
-        List<CouponDefineRsp> rspList = productCouponService.findEnableGetCoupon(req);
+    public Result<List<CouponDetailDto>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req) {
+        List<CouponDetailDto> rspList = productCouponService.findEnableGetCoupon(req);
         return Result.ok(rspList);
     }
 

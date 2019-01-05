@@ -24,7 +24,7 @@ import java.util.List;
  */
 public interface ActivityProfitService extends IService<ActivityProfitDto, ActivityProfitEntity> {
 
-    List<ActivityDefineRsp> findEnableGetActivity(QryProfitCommonReq req);
+    List<ActivityDetailDto> findEnableGetActivity(QryProfitCommonReq req);
 
     List<UseActivityRsp> combActivityRefProductDeal(GetUseEnableCouponReq req);
 
@@ -34,7 +34,7 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @return
      * 1004258-徐长焕-20181226 新建
      */
-    ActivityViewDto findActivityPrice(BaseProductReq req);
+    ActivityDetailDto findActivityPrice(BaseProductReq req);
 
     /**
      * 批量添加活动

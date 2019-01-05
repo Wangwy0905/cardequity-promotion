@@ -38,7 +38,7 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "根据客户指定商品获取可参加的活动")
     @PostMapping(path = "/findEnableGetActivity")
-    Result<List<ActivityDefineRsp>> findEnableGetActivity(@RequestBody QryProfitCommonReq req);
+    Result<List<ActivityDetailDto>> findEnableGetActivity(@RequestBody QryProfitCommonReq req);
 
     /**
      * 订单信息能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额
@@ -58,7 +58,7 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
-     Result<ActivityViewDto> findActivityPrice(@RequestBody BaseProductReq req);
+     Result<ActivityDetailDto> findActivityPrice(@RequestBody BaseProductReq req);
 
     /**
      * 批量添加活动

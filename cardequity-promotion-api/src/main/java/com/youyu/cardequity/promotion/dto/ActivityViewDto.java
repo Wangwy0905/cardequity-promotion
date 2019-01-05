@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.dto;
 import com.youyu.cardequity.common.base.util.CommonUtils;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.enums.CommonDict;
+import com.youyu.cardequity.promotion.enums.dict.ClientType;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -49,10 +50,16 @@ public class ActivityViewDto {
     @ApiModelProperty(value = "优惠券涉及的商品")
     private List<BaseProductReq> productList;
 
+    @ApiModelProperty(value = "适用类型:0-普通 1-会员专属 2-银行卡专属")
+    private String applyType;
+
     public ActivityDetailDto switchToModel(){
         ActivityDetailDto result=new ActivityDetailDto();
         ActivityProfitDto dto = new ActivityProfitDto();
         BeanUtils.copyProperties(this,dto);
+        if (CommonConstant.PROMOTION_APPLYTYPE_MEMBER.equals(applyType)){
+            dto.setClientTypeSet(ClientType.MEMBER.getDictValue());
+        }
 
         if (maxCount!=null && maxCount.compareTo(BigDecimal.ZERO)>0){
             ActivityQuotaRuleDto quotaRuleDto = new ActivityQuotaRuleDto();

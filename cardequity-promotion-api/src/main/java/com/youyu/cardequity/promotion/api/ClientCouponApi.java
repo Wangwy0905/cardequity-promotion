@@ -94,7 +94,7 @@ public interface ClientCouponApi {
      * @return
      */
     @ApiOperation(value = "根据指定的优惠券进行校验其适用情况，并变动其状态和增加使用记录")
-    @PostMapping(path = "/combCouponRefProductDeal")
+    @PostMapping(path = "/combCouponRefProductAndUse")
     Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req);
 
 

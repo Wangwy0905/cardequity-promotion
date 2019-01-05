@@ -6,6 +6,8 @@ package com.youyu.cardequity.promotion.dto;
 
 import com.youyu.cardequity.common.base.bean.BeanProperties;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.promotion.constant.CommonConstant;
+import com.youyu.cardequity.promotion.enums.dict.ClientType;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -29,8 +31,18 @@ public class ActivityDetailDto {
 
     public ActivityViewDto switchToView() {
         ActivityViewDto result = new ActivityViewDto();
-        if (activityProfit != null)
+        if (activityProfit != null) {
             BeanUtils.copyProperties(activityProfit, result);
+            //适配适用的银行卡指定额则为银行卡专属
+            if (activityProfit.getBankCodeSet()!=null &&
+                    activityProfit.getBankCodeSet()!="" &&
+                    activityProfit.getBankCodeSet()!="*"){
+                result.setApplyType(CommonConstant.PROMOTION_APPLYTYPE_BANKCODE);
+            }
+            if (ClientType.MEMBER.getDictValue().equals(activityProfit.getClientTypeSet())){
+                result.setApplyType(CommonConstant.PROMOTION_APPLYTYPE_MEMBER);
+            }
+        }
 
         if (activityQuotaRule!=null){
             result.setMaxCount(activityQuotaRule.getMaxCount());
