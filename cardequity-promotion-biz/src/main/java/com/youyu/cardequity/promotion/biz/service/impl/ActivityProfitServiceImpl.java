@@ -514,10 +514,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         //a.客户属性校验
         // 客户类型是否允许领取
         if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(activity.getClientTypeSet(),
-                req.getClinetType())) {
+                req.getClientType())) {
 
             dto.setSuccess(false);
-            dto.setDesc(ACTIVITY_NOT_ALLOW_CLIENTTYPE.getFormatDesc(req.getClinetType()));
+            dto.setDesc(ACTIVITY_NOT_ALLOW_CLIENTTYPE.getFormatDesc(req.getClientType()));
             return dto;
         }
 

@@ -239,11 +239,11 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     @Override
     public List<ClientCouponDto> findEnableUseCoupon(GetUseEnableCouponReq req) {
 
-        if (CommonUtils.isEmptyorNull(req.getClinetId())) {
+        if (CommonUtils.isEmptyorNull(req.getClientId())) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("客户编号为空，无法指定客户无法获取数据"));
         }
         //获取已领取的有效优惠券：排除过期，已使用、使用中的券
-        List<ClientCouponEntity> clientCouponList = clientCouponMapper.findClientValidCoupon(req.getClinetId());
+        List<ClientCouponEntity> clientCouponList = clientCouponMapper.findClientValidCoupon(req.getClientId());
         //返回的结果，数组长度最大不超过有效的优惠券数量
         List<ClientCouponDto> rsp = new ArrayList<>(clientCouponList.size());
         ClientCouponDto rspdto = null;
@@ -297,11 +297,11 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         List<ClientCouponEntity> enableCouponList = null;
         //如果是指定了使用的券，检验后用使用的券
         if (req.getObtainCouponList() != null && req.getObtainCouponList().size() > 0) {
-            enableCouponList = clientCouponMapper.findClientCouponByIds(req.getClinetId(), req.getObtainCouponList());
+            enableCouponList = clientCouponMapper.findClientCouponByIds(req.getClientId(), req.getObtainCouponList());
         } else {
             //获取已领取的有效优惠券：排除过期，已使用、使用中的券，按优惠金额已排序后的
             //等阶券无法参与排序
-            enableCouponList = clientCouponMapper.findClientCoupon(req.getClinetId());
+            enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId());
         }
 
         //空订单或者没有可用优惠券直接返回
@@ -484,7 +484,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         dto.setSuccess(true);
 
         //获取已领取的有效优惠券：排除过期，已使用、使用中的券
-        List<ClientCouponEntity> enableCouponList = clientCouponMapper.findClientValidCommonCoupon(req.getClinetId(),
+        List<ClientCouponEntity> enableCouponList = clientCouponMapper.findClientValidCommonCoupon(req.getClientId(),
                 couponLevel);
         List<OrderProductDetailDto> productList = req.getProductList();
 
@@ -1008,10 +1008,10 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //a.客户属性校验
         // 客户类型是否允许领取
         if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getClientTypeSet(),
-                req.getClinetType())) {
+                req.getClientId())) {
 
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_CLIENTTYPE.getFormatDesc(req.getClinetType()));
+            dto.setDesc(COUPON_NOT_ALLOW_CLIENTTYPE.getFormatDesc(req.getClientType()));
             return dto;
         }
 

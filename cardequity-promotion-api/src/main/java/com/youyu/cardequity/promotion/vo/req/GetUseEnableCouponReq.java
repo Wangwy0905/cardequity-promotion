@@ -17,10 +17,10 @@ import java.util.List;
 @Setter
 public class GetUseEnableCouponReq {
     @ApiModelProperty(value = "客户编号:必填")
-    private String clinetId;
+    private String clientId;
 
     @ApiModelProperty(value = "客户类型:冗余，服务层调用时传入空，需要调用用户中心进行查询该字段")
-    private String clinetType;
+    private String clientType;
 
     @ApiModelProperty(value = "委托方式:验证该渠道操作方式是否可以领取")
     private String entrustWay;

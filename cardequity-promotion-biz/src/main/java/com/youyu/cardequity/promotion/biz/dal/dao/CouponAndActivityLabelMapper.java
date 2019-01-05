@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity;
+import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,4 +22,11 @@ public interface  CouponAndActivityLabelMapper extends YyMapper<CouponAndActivit
      * @return
      */
     CouponAndActivityLabelEntity findLabelById(@Param("id") String id);
+
+    /**
+     * 通用查询
+     * @param qryInfo
+     * @return
+     */
+    List<CouponAndActivityLabelEntity> findLabelByCommon(@Param("qryInfo") BaseQryLabelReq qryInfo);
 }

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @ApiModel
 public class CouponAndActivityLabelDto implements IBaseDto<String> {
-    @ApiModelProperty(value = "活动编号:")
+    @ApiModelProperty(value = "编号:")
     private String uuid;
 
     @ApiModelProperty(value = "标签名称:")
