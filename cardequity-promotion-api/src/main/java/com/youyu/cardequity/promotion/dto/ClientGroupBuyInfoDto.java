@@ -86,9 +86,6 @@ public class ClientGroupBuyInfoDto  implements IBaseDto<String> {
     @ApiModelProperty(value = "产生时间:")
     private LocalDateTime createTime;
 
-    @ApiModelProperty(value = "是否有效:")
-    private String isEnable;
-
     @Override
     public String getId() {
         return uuid;

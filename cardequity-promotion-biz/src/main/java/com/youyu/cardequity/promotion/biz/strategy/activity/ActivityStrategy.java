@@ -19,7 +19,9 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static com.youyu.cardequity.promotion.enums.ResultCode.COUPON_FAIL_COUNT_PERDATEQUOTA;
 
 /**
- * Created by caiyi on 2018/12/26.
+ * 活动策略
+ * @author 徐长焕
+ * @date 2018-12-20
  */
 public abstract class ActivityStrategy {
 
@@ -33,7 +35,7 @@ public abstract class ActivityStrategy {
      * 统计允许差值
      * @param quota  定义的额度
      * @param statisticsQuotaDto 统计的数据
-     * @return
+     * @return 定义额度与统计数据之间差额
      */
     QuotaIndexDiffInfo statisticsQuotaIndexMinDiff(ActivityQuotaRuleEntity quota,
                                                    ClientCoupStatisticsQuotaDto statisticsQuotaDto){

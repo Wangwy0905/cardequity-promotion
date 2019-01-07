@@ -54,9 +54,6 @@ public class ActivityQuotaRuleDto implements IBaseDto<String>{
     @ApiModelProperty(value = "备注:")
     private String remark;
 
-    @ApiModelProperty(value = "是否有效:")
-    private String isEnable;
-
     @Override
     public String getId() {
         return activityId;

@@ -116,7 +116,7 @@ public class CouponViewDto {
             List<CouponStageRuleDto> stageList=new ArrayList<>();
             CouponStageRuleDto stage=new CouponStageRuleDto();
             stage.setCouponId(uuid);
-            stage.setId(stageId);
+            stage.setUuid(stageId);
             stage.setTriggerByType(TriggerByType.CAPITAL.getDictValue());
             stage.setBeginValue(conditionFund);
             stage.setCouponValue(profitValue);
@@ -127,7 +127,7 @@ public class CouponViewDto {
             List<CouponStageRuleDto> stageList=new ArrayList<>();
             CouponStageRuleDto stage=new CouponStageRuleDto();
             stage.setCouponId(uuid);
-            stage.setId(stageId);
+            stage.setUuid(stageId);
             stage.setCouponShortDesc(this.couponShortDesc);
             stage.setCouponValue(profitValue);
             stage.setTriggerByType(TriggerByType.NUMBER.getDictValue());
@@ -146,7 +146,7 @@ public class CouponViewDto {
         if (allowCount!=null && allowCount.intValue()>=0){
             List<CouponGetOrUseFreqRuleDto> freqRuleList=new ArrayList<>();
             CouponGetOrUseFreqRuleDto freqRuleDto = new CouponGetOrUseFreqRuleDto();
-            freqRuleDto.setId(freqId);
+            freqRuleDto.setUuid(freqId);
             freqRuleDto.setCouponId(uuid);
             freqRuleDto.setStageId(stageId);
             freqRuleDto.setOpCouponType(OpCouponType.GETRULE.getDictValue());

@@ -69,9 +69,6 @@ public class ClientTakeInCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "产生时间:使用时间")
     private LocalDateTime createTime;
 
-    @ApiModelProperty(value = "是否有效:当恢复正常时设置为0")
-    private String isEnable;
-
     @Override
     public String getId() {
         return uuid;

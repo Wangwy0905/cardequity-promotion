@@ -39,9 +39,6 @@ public class ActivityStageCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "优惠值:使用时覆盖ActivityProfit中值起效")
     private BigDecimal profitValue;
 
-    @ApiModelProperty(value = "是否有效:")
-    private String isEnable;
-
     @Override
     public String getId() {
         return uuid;

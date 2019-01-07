@@ -72,6 +72,7 @@ public class ActivityProfitDto implements IBaseDto<String>{
     private String applyProductFlag;
 
     @Override
+    @ApiModelProperty(value = "活动编号:")
     public String getId() {
         return uuid;
     }

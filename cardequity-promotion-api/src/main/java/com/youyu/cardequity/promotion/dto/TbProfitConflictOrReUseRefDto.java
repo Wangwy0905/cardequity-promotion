@@ -35,21 +35,6 @@ public class TbProfitConflictOrReUseRefDto implements IBaseDto<String>{
     @ApiModelProperty(value = "对应关系:0-叠加(配置白名单) 1-冲突(配置黑名单)")
     private String refType;
 
-    @ApiModelProperty(value = "产生者:")
-    private String createAuthor;
-
-    @ApiModelProperty(value = "更新者:")
-    private String updateAuthor;
-
-    @ApiModelProperty(value = "更新时间:")
-    private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "产生时间:")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "是否有效:")
-    private String isEnable;
-
     @Override
     public String getId() {
         return uuid;

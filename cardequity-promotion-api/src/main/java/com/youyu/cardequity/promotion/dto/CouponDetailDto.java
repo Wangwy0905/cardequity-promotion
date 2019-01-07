@@ -65,7 +65,7 @@ public class CouponDetailDto {
                 }
                 dto.setProfitValue(stage.getCouponValue());
                 dto.setPerProfitTopValue(stage.getEndValue());
-                dto.setStageId(stage.getId());
+                dto.setStageId(stage.getUuid());
                 break;//首期只有一个阶梯的数据
             }
 
@@ -74,7 +74,7 @@ public class CouponDetailDto {
             for (CouponGetOrUseFreqRuleDto freq : freqRuleList) {
               if (OpCouponType.USERULE.getDictValue().equals(freq.getOpCouponType()))
                   continue;
-                dto.setFreqId(freq.getId());
+                dto.setFreqId(freq.getUuid());
                dto.setUnit(freq.getUnit());
                dto.setAllowCount(freq.getAllowCount());
                dto.setPersonTotalNum(freq.getPersonTotalNum());

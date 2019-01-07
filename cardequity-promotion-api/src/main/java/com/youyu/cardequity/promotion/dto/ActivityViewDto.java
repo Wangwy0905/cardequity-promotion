@@ -65,7 +65,6 @@ public class ActivityViewDto {
             ActivityQuotaRuleDto quotaRuleDto = new ActivityQuotaRuleDto();
             quotaRuleDto.setActivityId(uuid);
             quotaRuleDto.setMaxCount(maxCount);
-            quotaRuleDto.setIsEnable(CommonDict.IF_YES.getCode());
         }
 
         result.setActivityProfit(dto);

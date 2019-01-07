@@ -73,20 +73,7 @@ public class GroupBuyBaseInfoDto implements IBaseDto<String>{
     @ApiModelProperty(value = "叠加标志:0-不可叠加 1-可叠加 2-自定义（建议规则简单点，不采用该值）")
     private String reCouponFlag;
 
-    @ApiModelProperty(value = "产生者:")
-    private String createAuthor;
 
-    @ApiModelProperty(value = "更新者:")
-    private String updateAuthor;
-
-    @ApiModelProperty(value = "更新时间:")
-    private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "产生时间:")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "是否有效:")
-    private String isEnable;
 
     @Override
     public String getId() {
