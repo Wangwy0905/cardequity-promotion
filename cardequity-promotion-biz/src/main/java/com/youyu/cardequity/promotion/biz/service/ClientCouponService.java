@@ -1,7 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
 import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
@@ -9,7 +9,6 @@ import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.service.IService;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

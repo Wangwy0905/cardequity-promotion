@@ -40,11 +40,11 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
     /**
      * 查询商品在其他活动中配置信息：用于检查是否一个商品配置了两个活动
      * @param list
-     * @param activityId
+     * @param activity
      * @return
      */
     List<ActivityRefProductEntity> findReProductBylist(@Param("list") List<BaseProductReq> list,
-                                                 @Param("activityId") ActivityProfitDto activityId);
+                                                 @Param("activity") ActivityProfitDto activity);
 
     /**
      * 通过活动编号物理删除适用商品

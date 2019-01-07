@@ -1,7 +1,9 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.youyu.cardequity.common.base.bean.BeanProperties;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.constant.CommonConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
@@ -12,13 +14,15 @@ import com.youyu.cardequity.promotion.biz.strategy.activity.ActivityStrategy;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.biz.utils.SnowflakeIdWorker;
 import com.youyu.cardequity.promotion.dto.*;
+import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,6 +95,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         return result;
     }
 
+    /**
+     * 订单预生成时使用活动详情
+     * @param req
+     * @return
+     */
     @Override
     public List<UseActivityRsp> combActivityRefProductDeal(GetUseEnableCouponReq req) {
         //定义返回结果
@@ -137,6 +146,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         return rsps;
     }
 
+    /**
+     * 新增活动
+     * @param req
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<BatchActivityDetailDto> batchAddActivity(BatchActivityDetailDto req) {
@@ -196,16 +210,22 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
             //2.处理基本信息
             profit.setId(stageWorker.nextId() + "");
-            ActivityProfitEntity profitEntity = new ActivityProfitEntity();
+
+            ActivityProfitEntity profitEntity = BeanPropertiesUtils.copyProperties(profit, ActivityProfitEntity.class);
             profitEntity.setIsEnable(CommonDict.IF_YES.getCode());
-            BeanUtils.copyProperties(profit, profitEntity);
+            profitEntity.setUpdateAuthor(req.getOperator());
+            profitEntity.setCreateAuthor(req.getOperator());
             activityList.add(profitEntity);
 
             //3.处理限额信息
-            ActivityQuotaRuleEntity quotaRuleEntity = new ActivityQuotaRuleEntity();
             ActivityQuotaRuleDto quotaRule = item.getActivityQuotaRule();
+            //将编号传出
             quotaRule.setActivityId(profitEntity.getId());
-            BeanUtils.copyProperties(quotaRule, quotaRuleEntity);
+
+            ActivityQuotaRuleEntity quotaRuleEntity =BeanPropertiesUtils.copyProperties(quotaRule, ActivityQuotaRuleEntity.class);
+            //将操作者传入，一般存ip
+            quotaRuleEntity.setUpdateAuthor(req.getOperator());
+            quotaRuleEntity.setCreateAuthor(req.getOperator());
             quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
             quotaList.add(quotaRuleEntity);
 
@@ -228,8 +248,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     if (!CommonUtils.isGtZeroDecimal(stage.getProfitValue()))
                         throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定对应的优惠值"));
 
-                    ActivityStageCouponEntity stageCouponEntity = new ActivityStageCouponEntity();
-                    BeanUtils.copyProperties(stage,stageCouponEntity);
+                    ActivityStageCouponEntity stageCouponEntity =BeanPropertiesUtils.copyProperties(stage,ActivityStageCouponEntity.class);
+                    stageCouponEntity.setUpdateAuthor(req.getOperator());
+                    stageCouponEntity.setCreateAuthor(req.getOperator());
                     stageCouponEntity.setIsEnable(CommonDict.IF_YES.getCode());
                     stageList.add(stageCouponEntity);
                 }
@@ -238,9 +259,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //5.配置适用商品
             if (item.getProductList()!=null){
                 for (BaseProductReq product:item.getProductList()){
-                    ActivityRefProductEntity refProductEntity=new ActivityRefProductEntity();
-                    BeanUtils.copyProperties(product,refProductEntity);
+                    ActivityRefProductEntity refProductEntity=BeanPropertiesUtils.copyProperties(product,ActivityRefProductEntity.class);
                     refProductEntity.setActivityId(profitEntity.getId());
+                    refProductEntity.setCreateAuthor(req.getOperator());
+                    refProductEntity.setUpdateAuthor(req.getOperator());
                     refProductEntity.setId(CommonUtils.getUUID());
                     refProductEntity.setIsEnable(CommonDict.IF_YES.getCode());
                     refProductList.add(refProductEntity);
@@ -258,6 +280,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
 
         result.setSuccess(true);
+        result.setData(req);
         return result;
     }
 
@@ -336,8 +359,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (profitEntity==null){
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("指定活动不存在，活动编号"+profit.getId()));
             }
+            BeanPropertiesUtils.copyProperties(profit, profitEntity);
+            profitEntity.setUpdateAuthor(req.getOperator());
             profitEntity.setIsEnable(CommonDict.IF_YES.getCode());
-            BeanUtils.copyProperties(profit, profitEntity);
             activityList.add(profitEntity);
 
             //3.处理限额信息
@@ -345,13 +369,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //如果是新增做插入操作
             if (quotaRuleEntity==null){
                 quotaRuleEntity=new ActivityQuotaRuleEntity();
+                quotaRuleEntity.setCreateAuthor(req.getOperator());
                 addQuotaList.add(quotaRuleEntity);
             }else{//非新增做更新操作
                 modQuotaList.add(quotaRuleEntity);
             }
             ActivityQuotaRuleDto quotaRule = item.getActivityQuotaRule();
             quotaRule.setActivityId(profitEntity.getId());
-            BeanUtils.copyProperties(quotaRule, quotaRuleEntity);
+            BeanPropertiesUtils.copyProperties(quotaRule, quotaRuleEntity);
+
+            quotaRuleEntity.setUpdateAuthor(req.getOperator());
             quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
             quotaList.add(quotaRuleEntity);
 
@@ -378,11 +405,13 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     ActivityStageCouponEntity stageCouponEntity = new ActivityStageCouponEntity();
                     if (CommonUtils.isEmptyorNull(stage.getId())) {
                         stage.setId(CommonUtils.getUUID());
+                        stageCouponEntity.setCreateAuthor(req.getOperator());
                         addStageList.add(stageCouponEntity);
                     }else {
                         modStageList.add(stageCouponEntity);
                     }
-                    BeanUtils.copyProperties(stage,stageCouponEntity);
+                    BeanPropertiesUtils.copyProperties(stage,stageCouponEntity);
+                    stageCouponEntity.setUpdateAuthor(req.getOperator());
                     stageCouponEntity.setIsEnable(CommonDict.IF_YES.getCode());
                 }
             }
@@ -390,8 +419,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //5.配置适用商品：先删后插
             if (item.getProductList()!=null){
                 for (BaseProductReq product:item.getProductList()){
-                    ActivityRefProductEntity refProductEntity=new ActivityRefProductEntity();
-                    BeanUtils.copyProperties(product,refProductEntity);
+                    ActivityRefProductEntity refProductEntity=BeanPropertiesUtils.copyProperties(product,ActivityRefProductEntity.class);
+                    refProductEntity.setUpdateAuthor(req.getOperator());
+                    refProductEntity.setCreateAuthor(req.getOperator());
                     refProductEntity.setActivityId(profitEntity.getId());
                     refProductEntity.setId(CommonUtils.getUUID());
                     refProductEntity.setIsEnable(CommonDict.IF_YES.getCode());
@@ -401,7 +431,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
 
         //数据库操作
-        batchService.batchDispose(activityList, ActivityProfitMapper.class, "insert");
+        batchService.batchDispose(activityList, ActivityProfitMapper.class, "updateByPrimaryKey");
 
         batchService.batchDispose(addQuotaList, ActivityQuotaRuleMapper.class, "insert");
         batchService.batchDispose(modQuotaList, ActivityQuotaRuleMapper.class, "updateByPrimaryKey");
@@ -414,6 +444,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
 
         result.setSuccess(true);
+        result.setData(req);
         return result;
     }
 
@@ -471,13 +502,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         for (ActivityProfitEntity item:entities){
             ActivityDetailDto dto=new ActivityDetailDto();
 
-            ActivityProfitDto profitDto = new ActivityProfitDto();
-            BeanUtils.copyProperties(item,profitDto);
+            ActivityProfitDto profitDto =BeanPropertiesUtils.copyProperties(item,ActivityProfitDto.class);
             dto.setActivityProfit(profitDto);
+
             //查询额度
-            ActivityQuotaRuleDto quotaRuleDto = new ActivityQuotaRuleDto();
             ActivityQuotaRuleEntity quotaRuleEntity = activityQuotaRuleMapper.findActivityQuotaRuleById(item.getId());
-            BeanUtils.copyProperties(quotaRuleEntity,quotaRuleDto);
+            ActivityQuotaRuleDto quotaRuleDto = BeanPropertiesUtils.copyProperties(quotaRuleEntity,ActivityQuotaRuleDto.class);
             dto.setActivityQuotaRule(quotaRuleDto);
             //查询门槛
             List<ActivityStageCouponEntity> detailList = activityStageCouponMapper.findActivityProfitDetail(item.getId());
@@ -635,9 +665,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     private ActivityDetailDto combinationActivity(ActivityProfitEntity entity){
         ActivityDetailDto result = new ActivityDetailDto();
 
-        ActivityProfitDto activityProfit=new ActivityProfitDto();
         //转换为传出参数
-        BeanUtils.copyProperties(entity, activityProfit);
+        ActivityProfitDto activityProfit=BeanPropertiesUtils.copyProperties(entity, ActivityProfitDto.class);
         result.setActivityProfit(activityProfit);
 
         //获取指定活动的使用门槛阶梯
@@ -649,8 +678,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         //获取额度
         ActivityQuotaRuleEntity quotaRuleEntity = activityQuotaRuleMapper.findActivityQuotaRuleById(activityProfit.getUuid());
         if (quotaRuleEntity!=null) {
-            ActivityQuotaRuleDto quotaRuleDto = new ActivityQuotaRuleDto();
-            BeanUtils.copyProperties(quotaRuleEntity,quotaRuleDto);
+            ActivityQuotaRuleDto quotaRuleDto = BeanPropertiesUtils.copyProperties(quotaRuleEntity, ActivityQuotaRuleDto.class);
+            result.setActivityQuotaRule(quotaRuleDto);
         }
 
         //获取适用商品

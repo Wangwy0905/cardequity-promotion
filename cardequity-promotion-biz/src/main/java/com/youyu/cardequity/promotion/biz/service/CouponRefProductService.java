@@ -1,13 +1,11 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.CouponRefProductDto;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
-import com.youyu.common.api.Result;
 import com.youyu.common.service.IService;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 

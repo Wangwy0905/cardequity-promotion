@@ -3,19 +3,14 @@ package com.youyu.cardequity.promotion.biz;
 import com.youyu.cardequity.promotion.biz.controller.ActivityProfitController;
 import com.youyu.cardequity.promotion.biz.controller.ClientCouponController;
 import com.youyu.cardequity.promotion.biz.controller.ProductCouponController;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
-import com.youyu.cardequity.promotion.dto.ObtainRspDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
-import com.youyu.cardequity.promotion.vo.req.QryProfitCommonReq;
-import com.youyu.cardequity.promotion.vo.rsp.ActivityDefineRsp;
 import com.youyu.common.api.Result;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.List;
 
 /**
  * Created by caiyi on 2018/12/11.

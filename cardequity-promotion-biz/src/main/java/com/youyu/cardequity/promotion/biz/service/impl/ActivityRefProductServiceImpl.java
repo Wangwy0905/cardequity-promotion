@@ -1,13 +1,11 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
-import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
 import com.youyu.cardequity.promotion.biz.service.ActivityRefProductService;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
-import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +13,6 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity;
 import com.youyu.cardequity.promotion.dto.ActivityRefProductDto;
 import com.youyu.cardequity.promotion.biz.dal.dao.ActivityRefProductMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -47,7 +44,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             if (req.size() > (index+perCount)) {
                 listTemp = req.subList(index, index+perCount);// 分段处理
             } else {
-                listTemp = req.subList(index, req.size()-1);
+                listTemp = req.subList(index, req.size());//获得[index, req.size())
             }
 
             List<ActivityRefProductEntity> entities = activityRefProductMapper.findReProductBylist(listTemp, activity);
@@ -59,8 +56,8 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
                 result.setData(entities);
                 return result;
             }
-            index = index + perCount+1;
-        } while (index < req.size());
+            index = index + perCount;
+        } while (index <= req.size());
 
         return result;
     }

@@ -1,7 +1,7 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientTakeInActivityEntity;
-import com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto;
+import com.youyu.cardequity.promotion.dto.other.ClientCoupStatisticsQuotaDto;
 import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;

@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.constant.CommonConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
@@ -10,14 +11,14 @@ import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.biz.utils.SnowflakeIdWorker;
 import com.youyu.cardequity.promotion.dto.*;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
+import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
-import com.youyu.cardequity.promotion.enums.ResultCode;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
-import com.youyu.cardequity.promotion.vo.rsp.CouponDefineRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -265,7 +266,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         } else {
             //组装子券信息
             for (CouponStageRuleDto stage : req.getStageList()) {
-                CouponStageRuleEntity stageRuleEntity = new CouponStageRuleEntity();
                 if (stage.getBeginValue() == null)
                     stage.setBeginValue(BigDecimal.ZERO);
                 if (!CommonUtils.isGtZeroDecimal(stage.getEndValue())){
@@ -275,7 +275,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     stage.setCouponValue(dto.getProfitValue());
                 }
 
-                BeanUtils.copyProperties(stage, stageRuleEntity);
+                CouponStageRuleEntity stageRuleEntity = BeanPropertiesUtils.copyProperties(stage, CouponStageRuleEntity.class);
                 stage.setCouponId(dto.getId());//将先生成的id设置到门槛阶梯
                 stageRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
                 //子券id=券id+前补03位
@@ -301,8 +301,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                         item.setStageId(req.getStageList().get(0).getId());
                     }
                 }
-                CouponGetOrUseFreqRuleEntity freqRuleEntity = new CouponGetOrUseFreqRuleEntity();
-                BeanUtils.copyProperties(item, freqRuleEntity);
+
+                CouponGetOrUseFreqRuleEntity freqRuleEntity =BeanPropertiesUtils.copyProperties(item, CouponGetOrUseFreqRuleEntity.class);
                 freqRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
                 freqRuleEntity.setId(CommonUtils.getUUID());
                 item.setId(freqRuleEntity.getId());//返回生成的id
@@ -314,9 +314,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         //【处理限额】
         if (req.getQuotaRule() != null) {
-            CouponQuotaRuleEntity quotaRuleEntity = new CouponQuotaRuleEntity();
+
             req.getQuotaRule().setCouponId(dto.getId());//将先生成的id设置到额度
-            BeanUtils.copyProperties(req.getQuotaRule(), quotaRuleEntity);
+            CouponQuotaRuleEntity quotaRuleEntity =BeanPropertiesUtils.copyProperties(req.getQuotaRule(), CouponQuotaRuleEntity.class);
             quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
             sqlresult = couponQuotaRuleMapper.insert(quotaRuleEntity);
             if (sqlresult <= 0) {
@@ -333,8 +333,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //【基本信息】
-        ProductCouponEntity entity = new ProductCouponEntity();
-        BeanUtils.copyProperties(dto, entity);
+        ProductCouponEntity entity = BeanPropertiesUtils.copyProperties(dto, ProductCouponEntity.class);
         entity.setCouponLable(dto.getLabelDto().getId());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
         sqlresult = productCouponMapper.insert(entity);
@@ -487,7 +486,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
 
                 stage.setCouponId(dto.getId());
-                BeanUtils.copyProperties(stage, stageRuleEntity);
+                BeanPropertiesUtils.copyProperties(stage, stageRuleEntity);
                 stageRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
                 if (CommonUtils.isEmptyorNull(stage.getId())) {
                     //子券id=券id+前补03位
@@ -523,9 +522,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                         item.setStageId(req.getStageList().get(0).getId());
                     }
                 }
-                CouponGetOrUseFreqRuleEntity freqRuleEntity = new CouponGetOrUseFreqRuleEntity();
+
                 item.setCouponId(dto.getId());
-                BeanUtils.copyProperties(item, freqRuleEntity);
+                CouponGetOrUseFreqRuleEntity freqRuleEntity =BeanPropertiesUtils.copyProperties(item, CouponGetOrUseFreqRuleEntity.class);
                 freqRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
                 if (CommonUtils.isEmptyorNull(item.getId())) {
                     freqRuleEntity.setId(CommonUtils.getUUID());
@@ -548,9 +547,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //【处理限额】
         sqlresult = couponQuotaRuleMapper.logicDelByCouponId(dto.getId());
         if (req.getQuotaRule() != null) {
-            CouponQuotaRuleEntity quotaRuleEntity = new CouponQuotaRuleEntity();
+
             req.getQuotaRule().setCouponId(dto.getId());
-            BeanUtils.copyProperties(req.getQuotaRule(), quotaRuleEntity);
+            CouponQuotaRuleEntity quotaRuleEntity =BeanPropertiesUtils.copyProperties(req.getQuotaRule(), CouponQuotaRuleEntity.class);
             quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
             if (sqlresult > 0) {
                 sqlresult = couponQuotaRuleMapper.updateByPrimaryKey(quotaRuleEntity);
@@ -571,7 +570,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             couponRefProductService.batchAddCouponRefProduct(refProductReq);
         }
 
-        BeanUtils.copyProperties(dto, entity);
+        BeanPropertiesUtils.copyProperties(dto, entity);
         entity.setCouponLable(dto.getLabelDto().getId());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
 
@@ -689,7 +688,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     public List<CouponDetailDto> findCouponListByProduct(@RequestBody BaseProductReq req) {
         BaseQryCouponReq qryReq = new BaseQryCouponReq();
         if (req != null)
-            BeanUtils.copyProperties(req, qryReq);
+            BeanPropertiesUtils.copyProperties(req, qryReq);
         return findCouponListByCommon(qryReq);
     }
 
@@ -720,14 +719,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     private CouponDetailDto combinationCoupon(ProductCouponEntity entity){
         CouponDetailDto result = new CouponDetailDto();
 
-
-        ProductCouponDto productCouponDto=new ProductCouponDto();
-        BeanUtils.copyProperties(entity, productCouponDto);
+        ProductCouponDto productCouponDto=BeanPropertiesUtils.copyProperties(entity, ProductCouponDto.class);
         if (CommonUtils.isEmptyorNull(entity.getCouponLable())){
             CouponAndActivityLabelEntity labelEntity = couponAndActivityLabelMapper.findLabelById(entity.getCouponLable());
             if (labelEntity!=null){
-                CouponAndActivityLabelDto labelDto = new CouponAndActivityLabelDto();
-                BeanUtils.copyProperties(labelEntity,labelDto);
+                CouponAndActivityLabelDto labelDto =BeanPropertiesUtils.copyProperties(labelEntity,CouponAndActivityLabelDto.class);
                 productCouponDto.setLabelDto(labelDto);
             }
 

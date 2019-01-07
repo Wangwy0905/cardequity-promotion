@@ -10,6 +10,9 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityStageCouponEntity;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.*;
+import com.youyu.cardequity.promotion.dto.other.ClientCoupStatisticsQuotaDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
 import com.youyu.cardequity.promotion.enums.dict.CouponApplyProductStage;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
@@ -22,8 +25,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**

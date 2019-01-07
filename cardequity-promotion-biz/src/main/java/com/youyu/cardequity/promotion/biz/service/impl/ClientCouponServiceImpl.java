@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.bean.CustomHandler;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.promotion.biz.constant.BusinessCode;
 import com.youyu.cardequity.promotion.biz.constant.CommonConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
@@ -10,6 +11,10 @@ import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.strategy.coupon.CouponStrategy;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.*;
+import com.youyu.cardequity.promotion.dto.other.ClientCoupStatisticsQuotaDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
@@ -24,7 +29,6 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,11 +113,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         dto.setSuccess(true);
 
         //领取后存储的信息
-        ClientCouponEntity entity = new ClientCouponEntity();
-        BeanUtils.copyProperties(req, entity);
+        ClientCouponEntity entity = BeanPropertiesUtils.copyProperties(req, ClientCouponEntity.class);
 
-        GetUseEnableCouponReq checkreq = new GetUseEnableCouponReq();
-        BeanUtils.copyProperties(req, checkreq);
+        GetUseEnableCouponReq checkreq =BeanPropertiesUtils.copyProperties(req, GetUseEnableCouponReq.class);
         //如果需要校验相关联产品
         if (!CommonUtils.isEmptyorNull(req.getProductId())) {
             OrderProductDetailDto orderProductDetailDto = new OrderProductDetailDto();
@@ -146,7 +148,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //1.校验券基本信息是否允许领取：
         CommonBoolDto<ProductCouponEntity> fristdto = checkCouponFrist(entity, checkreq, false);
         if (!fristdto.getSuccess()) {
-            BeanUtils.copyProperties(fristdto, dto);
+            BeanPropertiesUtils.copyProperties(fristdto, dto);
             return dto;
         }
         ProductCouponEntity coupon = fristdto.getData();
@@ -216,8 +218,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         if (count <= 0) {
             throw new BizException(COUPON_FAIL_OBTAIN.getCode(), COUPON_FAIL_OBTAIN.getFormatDesc("增加数据失败"));
         }
-        ClientCouponDto rsp = new ClientCouponDto();
-        BeanUtils.copyProperties(entity, rsp);
+
+        ClientCouponDto rsp = BeanPropertiesUtils.copyProperties(entity, ClientCouponDto.class);
         dto.setData(rsp);
 
         return dto;
@@ -253,8 +255,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 continue;
             }
 
-            rspdto = new ClientCouponDto();
-            BeanUtils.copyProperties(item, rspdto);
+            rspdto = BeanPropertiesUtils.copyProperties(item, ClientCouponDto.class);
             rsp.add(rspdto);
         }
 
@@ -574,7 +575,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             //装箱返回数据
             UseCouponRsp useCouponRsp = new UseCouponRsp();
             ClientCouponDto clientCouponDto = new ClientCouponDto();
-            BeanUtils.copyProperties(clientCoupon, clientCouponDto);
+            BeanPropertiesUtils.copyProperties(clientCoupon, clientCouponDto);
             useCouponRsp.setClientCoupon(clientCouponDto);
             useCouponRsp.setProfitAmount(clientCoupon.getCouponAmout());
 
@@ -1097,7 +1098,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
          */
         //大于等于该999999999值都标识不控制
         if (quota != null) {
-            ClientCoupStatisticsQuotaDto  statisticsQuotaDto = statisticsClientCouponQuota(clientId, quota.getCouponId());
+            ClientCoupStatisticsQuotaDto statisticsQuotaDto = statisticsClientCouponQuota(clientId, quota.getCouponId());
             dto.setData(statisticsQuotaDto);
 
             //1.校验每客每天最大优惠额

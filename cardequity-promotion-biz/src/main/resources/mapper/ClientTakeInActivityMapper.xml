@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.ClientTakeInActivityMapper">
-    <resultMap id="ClientCoupStatisticsQuotaDto" type="com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto">
+    <resultMap id="ClientCoupStatisticsQuotaDto" type="com.youyu.cardequity.promotion.dto.other.ClientCoupStatisticsQuotaDto">
         <result column="COUPON_ID" property="couponId" jdbcType="VARCHAR" />
         <result column="CLIENT_ID" property="clientId" jdbcType="VARCHAR" />
         <result column="CLIENT_AMOUNT" property="clientAmount" jdbcType="DECIMAL" />
@@ -17,7 +17,7 @@
         ifnull(sum(case when a.CREATE_TIME>CURDATE() then ifnull(a.PROFIT_VALUE, 0) else 0 end ),0) as CLIENT_PERDATE_AMOUNT,
         ifnull(sum(case when a.CREATE_TIME>CURDATE() then 1 else 0 end ),0) as CLIENT_PERDATE_COUNT
         FROM TB_CLIENT_TAKE_IN_ACTIVITY a
-        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="clientId != null and clientId !=''">
             and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
         </if>
@@ -33,7 +33,7 @@
     <update id="modRecoverByOrderinfo" parameterType="com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq">
         UPDATE TB_CLIENT_TAKE_IN_ACTIVITY a
         SET a.IS_ENABLE='0',a.REMARK=CONCAT(ifnull(a.REMARK,''),sysdate(),'撤销使用|')
-        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.ORDER_ID=#{orderinfo.orderId,jdbcType=VARCHAR}
         <if test="orderinfo.clientId!=null and orderinfo.clientId!=''">
             AND a.CLIENT_ID=#{orderinfo.clientId,jdbcType=VARCHAR}

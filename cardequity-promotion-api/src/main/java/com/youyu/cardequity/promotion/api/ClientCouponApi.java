@@ -1,11 +1,8 @@
 package com.youyu.cardequity.promotion.api;
 
 
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
-import com.youyu.cardequity.promotion.dto.CouponRefProductDto;
-import com.youyu.cardequity.promotion.dto.ProductCouponDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
-import com.youyu.cardequity.promotion.vo.rsp.CouponDefineRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;

@@ -1,6 +1,8 @@
-package com.youyu.cardequity.promotion.dto;
+package com.youyu.cardequity.promotion.dto.other;
 
 
+import com.youyu.cardequity.promotion.dto.ClientCouponDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ObtainRspDto extends  CommonBoolDto{
+public class ObtainRspDto extends CommonBoolDto {
 
     @ApiModelProperty(value = "添加成功后的数据")
     private ClientCouponDto data;

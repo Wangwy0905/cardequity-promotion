@@ -7,8 +7,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
-import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.youyu.cardequity.promotion.enums.ResultCode.COUPON_NOT_ALLOW_PRODUCT;
 import static com.youyu.cardequity.promotion.enums.ResultCode.COUPON_NOT_EXISTS;
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 

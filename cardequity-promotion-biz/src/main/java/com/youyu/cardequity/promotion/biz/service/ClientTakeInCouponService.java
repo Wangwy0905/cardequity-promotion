@@ -2,7 +2,7 @@ package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientTakeInCouponEntity;
 import com.youyu.cardequity.promotion.dto.ClientTakeInCouponDto;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;

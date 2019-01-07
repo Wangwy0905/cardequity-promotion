@@ -1,12 +1,13 @@
-package com.youyu.cardequity.promotion.dto;
+package com.youyu.cardequity.promotion.dto.other;
 
 /**
  * Created by caiyi on 2019/1/3.
  */
 
-import com.youyu.cardequity.common.base.bean.BeanProperties;
-import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
+import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
+import com.youyu.cardequity.promotion.dto.ActivityQuotaRuleDto;
+import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
 import com.youyu.cardequity.promotion.enums.dict.ClientType;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import io.swagger.annotations.ApiModelProperty;

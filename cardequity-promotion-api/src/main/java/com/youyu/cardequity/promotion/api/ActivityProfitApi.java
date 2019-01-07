@@ -1,8 +1,8 @@
 package com.youyu.cardequity.promotion.api;
 
 
-import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.Result;

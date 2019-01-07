@@ -1,11 +1,13 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponAndActivityLabelMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity;
 import com.youyu.cardequity.promotion.biz.service.CouponAndActivityLabelService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
+import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.ActiveOrCouponType;
@@ -14,7 +16,6 @@ import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,8 +53,8 @@ public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, 
         if (CommonUtils.isEmptyorNull(req.getLabelType())) {
             req.setLabelType(ActiveOrCouponType.COUPON.getDictValue());
         }
-        CouponAndActivityLabelEntity entity = new CouponAndActivityLabelEntity();
-        BeanUtils.copyProperties(req, entity);
+
+        CouponAndActivityLabelEntity entity =  BeanPropertiesUtils.copyProperties(req, CouponAndActivityLabelEntity.class);
         entity.setId(CommonUtils.getUUID());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
 
@@ -95,7 +96,7 @@ public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, 
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有该标签"));
 
         }
-        BeanUtils.copyProperties(req, entity);
+        BeanPropertiesUtils.copyProperties(req, entity);
         entity.setIsEnable(CommonDict.IF_YES.getCode());
 
         int i = couponAndActivityLabelMapper.updateByPrimaryKeySelective(entity);
@@ -108,7 +109,7 @@ public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, 
     }
 
     /**
-     * 编辑标签
+     * 删除标签
      *
      * @param req 标签基本数据
      * @return 处理成功数量
@@ -126,7 +127,7 @@ public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, 
             if (entity == null) {
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有该标签"));
             }
-
+            entities.add(entity);
         }
 
         //数据库操作

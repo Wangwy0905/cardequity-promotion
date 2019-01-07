@@ -1,4 +1,4 @@
-package com.youyu.cardequity.promotion.dto;
+package com.youyu.cardequity.promotion.dto.other;
 
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import io.swagger.annotations.ApiModelProperty;

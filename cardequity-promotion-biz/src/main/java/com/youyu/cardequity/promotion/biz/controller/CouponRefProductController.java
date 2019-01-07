@@ -2,7 +2,7 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 import com.youyu.cardequity.promotion.api.CouponRefProductApi;
 import com.youyu.cardequity.promotion.biz.service.CouponRefProductService;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.CouponRefProductDto;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;

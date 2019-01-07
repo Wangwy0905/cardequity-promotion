@@ -1,11 +1,9 @@
 package com.youyu.cardequity.promotion.api;
 
 
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
-import com.youyu.cardequity.promotion.dto.ProductCouponDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
-import com.youyu.cardequity.promotion.dto.CouponDetailDto;
-import com.youyu.cardequity.promotion.vo.rsp.CouponDefineRsp;
+import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
 import org.springframework.cloud.openfeign.FeignClient;

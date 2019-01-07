@@ -1,6 +1,11 @@
-package com.youyu.cardequity.promotion.dto;
+package com.youyu.cardequity.promotion.dto.other;
 
 import com.youyu.cardequity.promotion.constant.CommonConstant;
+import com.youyu.cardequity.promotion.dto.CouponGetOrUseFreqRuleDto;
+import com.youyu.cardequity.promotion.dto.CouponQuotaRuleDto;
+import com.youyu.cardequity.promotion.dto.CouponStageRuleDto;
+import com.youyu.cardequity.promotion.dto.ProductCouponDto;
+import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,7 +14,6 @@ import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

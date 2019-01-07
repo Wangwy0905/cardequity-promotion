@@ -2,11 +2,9 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 
 import com.youyu.cardequity.promotion.api.ProductCouponApi;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
-import com.youyu.cardequity.promotion.dto.CouponDetailDto;
-import com.youyu.cardequity.promotion.dto.ProductCouponDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.*;
-import com.youyu.cardequity.promotion.vo.rsp.CouponDefineRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
 import io.swagger.annotations.ApiOperation;

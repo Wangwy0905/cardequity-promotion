@@ -1,9 +1,9 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
-import com.youyu.cardequity.promotion.dto.ActivityDetailDto;
+import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
-import com.youyu.cardequity.promotion.dto.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.service.IService;
