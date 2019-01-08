@@ -108,11 +108,11 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("参数为空"));
         if (req.getOrderPromotion() != null) {
             if (req.getOrderPromotion().getActivities() != null && !req.getOrderPromotion().getActivities().isEmpty())
-                clientTakeInActivityService.takeInActivity(req.getOrderPromotion().getActivities(), req.getOrderId());
+                clientTakeInActivityService.takeInActivity(req.getOrderPromotion().getActivities(), req.getOrderId(),req.getOperator());
             if (req.getOrderPromotion().getCommonCoupons() != null && !req.getOrderPromotion().getCommonCoupons().isEmpty())
-                clientCouponService.takeInCoupon(req.getOrderId(), req.getOrderPromotion().getCommonCoupons());
+                clientCouponService.takeInCoupon(req.getOrderId(),req.getOperator(), req.getOrderPromotion().getCommonCoupons());
             if (req.getOrderPromotion().getTransferCoupons() != null && !req.getOrderPromotion().getTransferCoupons().isEmpty())
-                clientCouponService.takeInCoupon(req.getOrderId(), req.getOrderPromotion().getTransferCoupons());
+                clientCouponService.takeInCoupon(req.getOrderId(),req.getOperator(), req.getOrderPromotion().getTransferCoupons());
         }
         return req.getOrderPromotion();
     }

@@ -30,7 +30,7 @@ public interface ClientTakeInActivityService extends IService<ClientTakeInActivi
      * @param req
      * @return
      */
-    List<ClientTakeInActivityEntity> takeInActivity(List<UseActivityRsp> req, String orderId);
+    List<ClientTakeInActivityEntity> takeInActivity(List<UseActivityRsp> req, String orderId,String operator);
 
     /**
      * 【内部服务】撤销使用优惠券数据库处理

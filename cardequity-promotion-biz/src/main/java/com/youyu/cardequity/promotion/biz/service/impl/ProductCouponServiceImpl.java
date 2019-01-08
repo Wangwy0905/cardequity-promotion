@@ -59,9 +59,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     private CouponQuotaRuleMapper couponQuotaRuleMapper;
 
     @Autowired
-    private CouponRefProductMapper couponRefProductMapper;
-
-    @Autowired
     private BatchService batchService;
 
     @Autowired

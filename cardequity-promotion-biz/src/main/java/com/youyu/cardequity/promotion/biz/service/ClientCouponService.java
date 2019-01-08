@@ -75,7 +75,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @param rsps 优惠券的使用情况
      * @return 是否处理成功
      */
-    CommonBoolDto takeInCoupon(String orderId, List<UseCouponRsp> rsps);
+    CommonBoolDto takeInCoupon(String orderId, String operator,List<UseCouponRsp> rsps);
 
 
     /**

@@ -377,7 +377,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             ActivityQuotaRuleDto quotaRule = item.getActivityQuotaRule();
             quotaRule.setActivityId(profitEntity.getId());
             BeanPropertiesUtils.copyProperties(quotaRule, quotaRuleEntity);
-
+            //补全默认信息
             quotaRuleEntity.setUpdateAuthor(req.getOperator());
             quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
             quotaList.add(quotaRuleEntity);

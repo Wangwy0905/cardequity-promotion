@@ -32,7 +32,9 @@
 
     <update id="modRecoverByOrderinfo" parameterType="com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq">
         UPDATE TB_CLIENT_TAKE_IN_ACTIVITY a
-        SET a.IS_ENABLE='0',a.REMARK=CONCAT(ifnull(a.REMARK,''),sysdate(),'撤销使用|')
+        SET a.IS_ENABLE='0',
+        a.REMARK=CONCAT(ifnull(a.REMARK,''),sysdate(),'撤销使用|'),
+        a.Update_Author=#{orderinfo.operator,jdbcType=VARCHAR}
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.ORDER_ID=#{orderinfo.orderId,jdbcType=VARCHAR}
         <if test="orderinfo.clientId!=null and orderinfo.clientId!=''">

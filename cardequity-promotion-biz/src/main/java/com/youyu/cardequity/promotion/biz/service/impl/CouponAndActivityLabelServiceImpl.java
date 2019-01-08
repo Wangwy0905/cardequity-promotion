@@ -7,7 +7,6 @@ import com.youyu.cardequity.promotion.biz.dal.dao.CouponAndActivityLabelMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity;
 import com.youyu.cardequity.promotion.biz.service.CouponAndActivityLabelService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
-import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.ActiveOrCouponType;

@@ -52,7 +52,7 @@ public class ClientTakeInActivityServiceImpl extends AbstractService<String, Cli
         //计算参加获得信息
         List<UseActivityRsp> useActivityRspList= activityProfitService.combActivityRefProductDeal(req);
         //进行数据库处理
-        takeInActivity(useActivityRspList,req.getOrderId());
+        takeInActivity(useActivityRspList,req.getOrderId(),req.getOperator());
         return useActivityRspList;
     }
 
@@ -64,7 +64,7 @@ public class ClientTakeInActivityServiceImpl extends AbstractService<String, Cli
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<ClientTakeInActivityEntity> takeInActivity(List<UseActivityRsp> req, String orderId) {
+    public List<ClientTakeInActivityEntity> takeInActivity(List<UseActivityRsp> req, String orderId,String operator) {
         List<ClientTakeInActivityEntity> entities = new ArrayList<>();
         if (req != null)
             for (UseActivityRsp useItem : req) {
@@ -82,6 +82,8 @@ public class ClientTakeInActivityServiceImpl extends AbstractService<String, Cli
                     takeInActivityEntity.setProfitCount(produt.getProfitCount());
                     takeInActivityEntity.setProfitValue(produt.getProfitAmount());
                     takeInActivityEntity.setSkuId(produt.getSkuId());
+                    takeInActivityEntity.setUpdateAuthor(operator);
+                    takeInActivityEntity.setCreateAuthor(operator);
                     if (useItem.getStage() != null)
                         takeInActivityEntity.setStageId(useItem.getStage().getId());
                     takeInActivityEntity.setStatus(CouponStatus.USED.getDictValue());

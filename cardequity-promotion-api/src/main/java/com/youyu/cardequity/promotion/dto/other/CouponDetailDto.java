@@ -31,6 +31,9 @@ public class CouponDetailDto {
     @ApiModelProperty(value = "子券信息")
     private List<CouponStageRuleDto> stageList;
 
+    @ApiModelProperty(value = "操作者：用于更新产生者或更新者,一般存IP地址")
+    private String operator;
+
     public CouponViewDto switchToView() {
         CouponViewDto dto = new CouponViewDto();
         if (productCouponDto != null) {

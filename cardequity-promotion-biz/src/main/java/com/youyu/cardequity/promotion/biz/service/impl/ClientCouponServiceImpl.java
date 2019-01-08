@@ -115,7 +115,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //领取后存储的信息
         ClientCouponEntity entity = BeanPropertiesUtils.copyProperties(req, ClientCouponEntity.class);
 
-        GetUseEnableCouponReq checkreq =BeanPropertiesUtils.copyProperties(req, GetUseEnableCouponReq.class);
+        GetUseEnableCouponReq checkreq = BeanPropertiesUtils.copyProperties(req, GetUseEnableCouponReq.class);
         //如果需要校验相关联产品
         if (!CommonUtils.isEmptyorNull(req.getProductId())) {
             OrderProductDetailDto orderProductDetailDto = new OrderProductDetailDto();
@@ -131,7 +131,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             couponStage = couponStageRuleMapper.findCouponStageById(req.getCouponId(), req.getStageId());
             //如果找不到阶梯则传入参数有误
             if (couponStage == null) {
-                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("找不到指定的子券StageId="+req.getStageId()));
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("找不到指定的子券StageId=" + req.getStageId()));
             }
 
         } else {//保护一下如果没有传入StageId，且该券下只有一个id则自动补全
@@ -171,9 +171,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         //3.增加客户已领优惠券
         entity.setId(CommonUtils.getUUID());
-        if (coupon.getAllowUseBeginDate()!=null ||LocalDate.now().compareTo(coupon.getAllowUseBeginDate())<0){
+        if (coupon.getAllowUseBeginDate() != null || LocalDate.now().compareTo(coupon.getAllowUseBeginDate()) < 0) {
             entity.setValidStartDate(coupon.getAllowUseBeginDate());
-        }else {
+        } else {
             entity.setValidStartDate(LocalDate.now());
         }
         //默认有效时间1个月
@@ -211,6 +211,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         entity.setCouponType(coupon.getCouponType());
         entity.setCouponLable(coupon.getCouponLable());
         entity.setCouponLevel(coupon.getCouponLevel());
+        entity.setUpdateAuthor(req.getOperator());
+        entity.setCreateAuthor(req.getOperator());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
         entity.setStatus(CouponStatus.NORMAL.getDictValue());
         entity.setJoinOrderId(req.getActivityId());
@@ -295,7 +297,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         List<ClientCouponEntity> enableCouponList = new ArrayList<>();
         //如果是指定了使用的券，检验后用使用的券
-        if (req.getObtainCouponList() != null ) {
+        if (req.getObtainCouponList() != null) {
             if (req.getObtainCouponList().size() > 0) {
                 enableCouponList = clientCouponMapper.findClientCouponByIds(req.getClientId(), req.getObtainCouponList());
             }
@@ -384,7 +386,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         List<UseCouponRsp> rsps = combCouponRefProductDeal(req);
 
         //将相关领券状态变更为使用中，并记录使用情况
-        CommonBoolDto dto = takeInCoupon(req.getOrderId(), rsps);
+        CommonBoolDto dto = takeInCoupon(req.getOrderId(),req.getOperator(), rsps);
         if (!dto.getSuccess()) {
             throw new BizException(COUPON_FAIL_USE.getCode(), COUPON_FAIL_USE.getFormatDesc(dto.getDesc()));
         }
@@ -396,13 +398,14 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     /**
      * 使用优惠券数据库处理：内部服务
      *
-     * @param orderId  订单编号
-     * @param rsps 优惠券的使用情况
+     * @param orderId 订单编号
+     * @param operator 操作者
+     * @param rsps    优惠券的使用情况
      * @return 是否处理成功
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CommonBoolDto takeInCoupon(String orderId, List<UseCouponRsp> rsps) {
+    public CommonBoolDto takeInCoupon(String orderId, String operator, List<UseCouponRsp> rsps) {
         CommonBoolDto boolDto = new CommonBoolDto(true);
         //应获取自配置项
         String useType = CouponUseType.ORDER.getDictValue();
@@ -458,6 +461,10 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 clientTakeInCoupon.setBusinCode(BusinessCode.USECOUPON);
                 clientTakeInCoupon.setStatus(clientCoupon.getStatus());
                 clientTakeInCoupon.setRemark("确认订单时处理优惠券信息");
+                if (!CommonUtils.isEmptyorNull(operator)) {
+                    clientTakeInCoupon.setUpdateAuthor(operator);
+                    clientTakeInCoupon.setCreateAuthor(operator);
+                }
                 clientTakeInCoupon.setIsEnable(CommonDict.IF_YES.getCode());
                 if (clientTakeInCouponMapper.insert(clientTakeInCoupon) <= 0) {
                     boolDto.setSuccess(false);
@@ -474,7 +481,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     /**
      * 撤销使用优惠券数据库处理：内部服务
      *
-     * @param req  订单情况
+     * @param req 订单情况
      * @return 是否处理成功
      */
     @Override
@@ -606,7 +613,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 CouponStageRuleEntity stage = couponStageRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
                         clientCoupon.getStageId());
                 if (stage == null) {
-                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("指定子券不存在StageId"+clientCoupon.getStageId()));
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("指定子券不存在StageId" + clientCoupon.getStageId()));
                 }
 
                 //优惠金额为指定阶梯的优惠金额
@@ -693,7 +700,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //根据券ID获取优惠券信息
         ProductCouponEntity coupon = productCouponMapper.findProductCouponById(item.getCouponId());
         if (coupon == null) {
-            throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc("找不到指定优惠券CouponId="+item.getCouponId()));
+            throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc("找不到指定优惠券CouponId=" + item.getCouponId()));
         }
 
         //校验基本信息是否符合使用条件
@@ -875,7 +882,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     private CommonBoolDto checkCouponUseFreqLimit(String clientId, String couponId, String stageId) {
 
         //获取因为频率限制无法获取的券
-        List<ShortCouponDetailDto> couponDetailListByIds =couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(clientId, couponId, stageId);
+        List<ShortCouponDetailDto> couponDetailListByIds = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(clientId, couponId, stageId);
 
         //逐一进行排除
         return excludeFreqLimit(couponDetailListByIds, couponId, stageId);
@@ -955,7 +962,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 (coupon.getAllowUseEndDate() != null && coupon.getAllowUseEndDate().compareTo(LocalDate.now()) < 0)) {
 
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowUseBeginDate(),coupon.getAllowUseEndDate()));
+            dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowUseBeginDate(), coupon.getAllowUseEndDate()));
             return dto;
         }
         return dto;
@@ -977,7 +984,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 (coupon.getAllowGetEndDate() != null && coupon.getAllowGetEndDate().compareTo(LocalDate.now()) < 0)) {
 
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowGetBeginDate(),coupon.getAllowGetEndDate()));
+            dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowGetBeginDate(), coupon.getAllowGetEndDate()));
             return dto;
         }
         return dto;
@@ -999,7 +1006,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             CouponRefProductEntity entity = couponRefProductMapper.findByBothId(coupon.getId(), productId);
             if (entity == null) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getFormatDesc(productId,"无",coupon.getId(),"无"));
+                dto.setDesc(COUPON_NOT_ALLOW_PRODUCT.getFormatDesc(productId, "无", coupon.getId(), "无"));
                 return dto;
             }
         }
@@ -1108,13 +1115,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否客户当日已领取的优惠金额是否超限
                 if (quota.getPerDateAndAccMaxAmount().compareTo(statisticsQuotaDto.getClientPerDateAmount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getFormatDesc(quota.getPerDateAndAccMaxAmount(),statisticsQuotaDto.getClientPerDateAmount(),clientId));
+                    dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getFormatDesc(quota.getPerDateAndAccMaxAmount(), statisticsQuotaDto.getClientPerDateAmount(), clientId));
                     return dto;
                 }
 
             } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",clientId));
+                dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getFormatDesc(BigDecimal.ZERO, "忽略", clientId));
                 return dto;
             }
 
@@ -1125,26 +1132,26 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否客户已领取的优惠金额是否超限
                 if (quota.getPerMaxAmount().compareTo(statisticsQuotaDto.getClientAmount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(quota.getPerMaxAmount(),statisticsQuotaDto.getClientAmount(),clientId));
+                    dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(quota.getPerMaxAmount(), statisticsQuotaDto.getClientAmount(), clientId));
                     return dto;
                 }
             } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",clientId));
+                dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(BigDecimal.ZERO, "忽略", clientId));
                 return dto;
             }
 
             //检查领取数量PersonTotalNum
-            BigDecimal personTotalNum=BigDecimal.ZERO;
+            BigDecimal personTotalNum = BigDecimal.ZERO;
             List<CouponGetOrUseFreqRuleEntity> freqRuleEntities = couponGetOrUseFreqRuleMapper.findByCouponId(quota.getCouponId());
-            for (CouponGetOrUseFreqRuleEntity freq: freqRuleEntities){
-                if (freq.getPersonTotalNum()!=null && freq.getPersonTotalNum().intValue()>0){
-                    personTotalNum= personTotalNum.add(new BigDecimal(freq.getPersonTotalNum().toString()));
+            for (CouponGetOrUseFreqRuleEntity freq : freqRuleEntities) {
+                if (freq.getPersonTotalNum() != null && freq.getPersonTotalNum().intValue() > 0) {
+                    personTotalNum = personTotalNum.add(new BigDecimal(freq.getPersonTotalNum().toString()));
                 }
             }
-            if (CommonUtils.isGtZeroDecimal(personTotalNum) && personTotalNum.compareTo(statisticsQuotaDto.getClientCount())>=0){
+            if (CommonUtils.isGtZeroDecimal(personTotalNum) && personTotalNum.compareTo(statisticsQuotaDto.getClientCount()) >= 0) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_COUNT_PERACCQUOTA.getFormatDesc(personTotalNum,statisticsQuotaDto.getClientCount(),quota.getCouponId()));
+                dto.setDesc(COUPON_FAIL_COUNT_PERACCQUOTA.getFormatDesc(personTotalNum, statisticsQuotaDto.getClientCount(), quota.getCouponId()));
                 return dto;
             }
 
@@ -1204,12 +1211,12 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否所有客户当日已领取的优惠金额是否超限
                 if (quota.getPerDateMaxAmount().compareTo(statisticsQuotaDto.getClientPerDateAmount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getFormatDesc(quota.getPerDateMaxAmount(),statisticsQuotaDto.getClientPerDateAmount(),quota.getCouponId()));
+                    dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getFormatDesc(quota.getPerDateMaxAmount(), statisticsQuotaDto.getClientPerDateAmount(), quota.getCouponId()));
                     return dto;
                 }
             } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",quota.getCouponId()));
+                dto.setDesc(COUPON_FAIL_PERDATEQUOTA.getFormatDesc(BigDecimal.ZERO, "忽略", quota.getCouponId()));
                 return dto;
             }
 
@@ -1220,13 +1227,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否所有客户已领取的优惠金额是否超限
                 if (quota.getMaxAmount().compareTo(statisticsQuotaDto.getClientAmount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_QUOTA.getFormatDesc(quota.getMaxAmount(),statisticsQuotaDto.getClientAmount(),quota.getCouponId()));
+                    dto.setDesc(COUPON_FAIL_QUOTA.getFormatDesc(quota.getMaxAmount(), statisticsQuotaDto.getClientAmount(), quota.getCouponId()));
                     return dto;
                 }
 
             } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_QUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",quota.getCouponId()));
+                dto.setDesc(COUPON_FAIL_QUOTA.getFormatDesc(BigDecimal.ZERO, "忽略", quota.getCouponId()));
                 return dto;
             }
 
@@ -1240,12 +1247,12 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //判断是否所有客户已领取的优惠金额是否超限
                 if (maxCount.compareTo(statisticsQuotaDto.getClientCount()) <= 0) {
                     dto.setSuccess(false);
-                    dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getFormatDesc(maxCount,statisticsQuotaDto.getClientCount(),quota.getCouponId()));
+                    dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getFormatDesc(maxCount, statisticsQuotaDto.getClientCount(), quota.getCouponId()));
                     return dto;
                 }
             } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getFormatDesc(BigDecimal.ZERO,"忽略",quota.getCouponId()));
+                dto.setDesc(COUPON_FAIL_COUNT_QUOTA.getFormatDesc(BigDecimal.ZERO, "忽略", quota.getCouponId()));
                 return dto;
             }
 
