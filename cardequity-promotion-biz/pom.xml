@@ -60,10 +60,10 @@
 				<groupId>com.youyu.platform</groupId>
 				<artifactId>common-handler</artifactId>
 			</dependency>
-			<dependency>
-				<groupId>com.youyu.platform</groupId>
-				<artifactId>common-monitor</artifactId>
-			</dependency>
+			<!--<dependency>-->
+				<!--<groupId>com.youyu.platform</groupId>-->
+				<!--<artifactId>common-monitor</artifactId>-->
+			<!--</dependency>-->
 
 			<dependency>
 				<groupId>com.youyu.platform</groupId>
