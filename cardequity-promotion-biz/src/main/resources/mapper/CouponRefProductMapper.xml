@@ -5,14 +5,14 @@
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponRefProductMapper">
     <select id="findByBothId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity">
     SELECT * FROM TB_COUPON_REF_PRODUCT a
-    WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+    WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
     AND a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
     and a.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
     </select>
 
     <select id="findListByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity">
         SELECT * FROM TB_COUPON_REF_PRODUCT a
-        WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="couponId != null and couponId!=''">
         AND a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
         </if>
@@ -22,7 +22,7 @@
     </select>
 
     <delete id="deleteByCouponId" parameterType="string">
-       DELETE  FROM TB_COUPON_REF_PRODUCT a
-        WHERE a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
+       DELETE  FROM TB_COUPON_REF_PRODUCT
+        WHERE COUPON_ID=#{couponId,jdbcType=VARCHAR}
     </delete>
 </mapper>

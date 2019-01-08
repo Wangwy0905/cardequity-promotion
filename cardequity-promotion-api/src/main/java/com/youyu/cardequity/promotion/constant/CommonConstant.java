@@ -11,6 +11,11 @@ public interface CommonConstant {
      */
     BigDecimal IGNOREVALUE=new BigDecimal("999999999");
 
+    /**
+     * 数值参数的边界有效上限
+     */
+    Integer IGNOREINTVALUE=new Integer("999999999");
+
 
     /**
      * 业务中指定的通配符

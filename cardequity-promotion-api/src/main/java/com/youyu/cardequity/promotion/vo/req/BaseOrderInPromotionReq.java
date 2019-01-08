@@ -13,4 +13,7 @@ public class BaseOrderInPromotionReq {
 
     @ApiModelProperty(value = "订单号")
     private String orderId;
+
+    @ApiModelProperty(value = "操作者：用于更新产生者或更新者，一般传网关获取的ip")
+    private String operator;
 }

@@ -1,4 +1,4 @@
-package com.youyu.cardequity.promotion.dto;
+package com.youyu.cardequity.promotion.dto.other;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

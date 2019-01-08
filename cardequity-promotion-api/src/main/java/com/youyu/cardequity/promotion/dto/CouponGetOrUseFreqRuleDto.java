@@ -1,6 +1,8 @@
 package com.youyu.cardequity.promotion.dto;
 
 import java.time.LocalDateTime;
+
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,6 +18,9 @@ import io.swagger.annotations.ApiModel;
 @Data
 @ApiModel
 public class CouponGetOrUseFreqRuleDto implements IBaseDto<String>{
+    public CouponGetOrUseFreqRuleDto(){
+        personTotalNum= CommonConstant.IGNOREINTVALUE;;
+    }
 
     @ApiModelProperty(value = "编号:")
     private String uuid;

@@ -4,7 +4,7 @@ import com.youyu.cardequity.promotion.biz.service.ProfitConflictOrReUseRefServic
 import com.youyu.common.service.AbstractService;
 import org.springframework.stereotype.Service;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProfitConflictOrReUseRefEntity;
-import com.youyu.cardequity.promotion.dto.TbProfitConflictOrReUseRefDto;
+import com.youyu.cardequity.promotion.dto.ProfitConflictOrReUseRefDto;
 import com.youyu.cardequity.promotion.biz.dal.dao.ProfitConflictOrReUseRefMapper;
 
 
@@ -15,7 +15,7 @@ import com.youyu.cardequity.promotion.biz.dal.dao.ProfitConflictOrReUseRefMapper
  * @date 2018-12-13
  */
 @Service
-public class ProfitConflictOrReUseRefServiceImpl extends AbstractService<String, TbProfitConflictOrReUseRefDto, ProfitConflictOrReUseRefEntity, ProfitConflictOrReUseRefMapper> implements ProfitConflictOrReUseRefService {
+public class ProfitConflictOrReUseRefServiceImpl extends AbstractService<String, ProfitConflictOrReUseRefDto, ProfitConflictOrReUseRefEntity, ProfitConflictOrReUseRefMapper> implements ProfitConflictOrReUseRefService {
 
 }
 

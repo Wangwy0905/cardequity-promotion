@@ -5,7 +5,7 @@ import com.youyu.cardequity.promotion.biz.dal.dao.CouponRefProductMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
-import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.CouponApplyProductStage;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;

@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.dto;
 
 import java.math.BigDecimal;
 
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,6 +18,9 @@ import io.swagger.annotations.ApiModel;
 @Data
 @ApiModel
 public class CouponStageRuleDto implements IBaseDto<String>{
+    public CouponStageRuleDto(){
+        endValue= CommonConstant.IGNOREVALUE;
+    }
 
     @ApiModelProperty(value = "阶段编号:")
     private String uuid;

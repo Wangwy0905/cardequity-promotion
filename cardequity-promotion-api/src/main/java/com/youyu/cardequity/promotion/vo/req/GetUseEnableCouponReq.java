@@ -1,8 +1,7 @@
 package com.youyu.cardequity.promotion.vo.req;
 
-import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
-import com.youyu.cardequity.promotion.dto.ShortClientCouponDto;
-import com.youyu.cardequity.promotion.dto.ShortCouponDetailDto;
+import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.dto.other.ShortClientCouponDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,6 +38,9 @@ public class GetUseEnableCouponReq {
 
     @ApiModelProperty(value = "本次订单未优惠前运费")
     private BigDecimal transferFare;
+
+    @ApiModelProperty(value = "操作者：用于更新产生者或更新者，一般传网关获取的ip")
+    private String operator;
 
     @ApiModelProperty(value = "指定使用的优惠券，必须是已领用的：每个级别（大鱼券券和小鱼券）只能指定一个")
     private List<ShortClientCouponDto> obtainCouponList;

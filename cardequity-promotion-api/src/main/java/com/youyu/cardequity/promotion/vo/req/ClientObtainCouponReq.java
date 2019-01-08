@@ -34,6 +34,9 @@ public class ClientObtainCouponReq {
     @ApiModelProperty(value = "支付类型:传入用于校验是否该支付类型可用")
     private String payType;
 
-    @ApiModelProperty(value = "活动编号:关联的活动编号")
+    @ApiModelProperty(value = "活动编号:关联的活动编号,暂时不用")
     private String activityId;
+
+    @ApiModelProperty(value = "操作者：用于更新产生者或更新者")
+    private String operator;
 }

@@ -5,13 +5,13 @@
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponAndActivityLabelMapper">
     <select id="findLabelById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity">
      SELECT * FROM TB_COUPON_AND_ACTIVITY_LABEL a
-     WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+     WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
      AND a.UUID=#{id,jdbcType=VARCHAR}
     </select>
     <select id="findLabelByCommon"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity">
         SELECT * FROM TB_COUPON_AND_ACTIVITY_LABEL a
-        WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="qryInfo.labelName!=null and qryInfo.labelName!=''">
             AND a.label_Name LIKE CONCAT('%',#{qryInfo.labelName,jdbcType=VARCHAR},'%')
         </if>

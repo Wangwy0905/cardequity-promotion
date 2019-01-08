@@ -22,7 +22,7 @@ import java.util.List;
  * V1.0-V1 1004244-徐长焕-20181207 新建代码，findEnableGetActivity：获取客户可参与的活动
  */
 @Api(tags = "活动信息管理：活动的的定义信息、使用规则、额度设置等")
-@FeignClient(name = "cardequity-promotion")
+@FeignClient(name = "cardequity-promotion",url="10.0.52.83:8080")
 @RequestMapping(path = "/activityProfit")
 public interface ActivityProfitApi {
 

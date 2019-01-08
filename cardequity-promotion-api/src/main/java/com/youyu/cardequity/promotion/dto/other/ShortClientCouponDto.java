@@ -1,5 +1,6 @@
-package com.youyu.cardequity.promotion.dto;
+package com.youyu.cardequity.promotion.dto.other;
 
+import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;

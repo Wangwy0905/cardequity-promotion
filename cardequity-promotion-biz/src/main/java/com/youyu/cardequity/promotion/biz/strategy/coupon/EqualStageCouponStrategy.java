@@ -6,7 +6,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
-import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import lombok.extern.slf4j.Slf4j;

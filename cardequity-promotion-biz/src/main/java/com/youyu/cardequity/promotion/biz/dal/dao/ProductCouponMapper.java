@@ -1,7 +1,6 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
-import com.youyu.cardequity.promotion.dto.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq;

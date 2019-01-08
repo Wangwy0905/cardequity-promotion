@@ -6,13 +6,13 @@
     <select id="findActivityQuotaRuleById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityQuotaRuleEntity">
         select *
         from TB_ACTIVITY_QUOTA_RULE a
-        where IFNULL(a.IS_ENABLE, '1') = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.ACTIVITY_ID=#{id,jdbcType=VARCHAR}
     </select>
 
     <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
         UPDATE TB_ACTIVITY_QUOTA_RULE a SET a.IS_ENABLE='0'
-        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.ACTIVITY_ID = #{baseActivity.activityId,jdbcType=VARCHAR}
     </update>
 </mapper>

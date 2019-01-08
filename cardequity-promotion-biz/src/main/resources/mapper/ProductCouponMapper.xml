@@ -9,34 +9,36 @@
         select a.*
         from TB_PRODUCT_COUPON a
         left join TB_COUPON_QUOTA_RULE b on a.UUID = b.COUPON_ID and IFNULL(b.IS_ENABLE, '1') = '1'
-        where IFNULL(a.IS_ENABLE, '1') = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="productId != null and productId!=''">
-            and (ifnull(a.APPLY_PRODUCT_FLAG, '0') = '1' or
+            and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
             EXISTS (select 1 from TB_COUPON_REF_PRODUCT b where b.COUPON_ID=a.UUID and
             b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
         </if>
         <if test="entrustWay != null and entrustWay!=''">
-            and (ifnull(a.ENTRUST_WAY_SET, '*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+
+            and (if(length(a.ENTRUST_WAY_SET),a.ENTRUST_WAY_SET,'*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="clientType != null and clientType!=''">
-            and (ifnull(a.CLIENT_TYPE_SET, '*') = '*' or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
+
+            and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
         and a.ALLOW_GET_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_GET_END_DATE &gt;= sysdate()
-        and (b.PER_DATE_MAX_AMOUNT is null or b.PER_DATE_MAX_AMOUNT &gt;
+        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select sum(ifnull(d.COUPON_AMOUT, 0))
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID
         and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)
         and d.CREATE_TIME &gt;= curdate()))
-        and (b.MAX_AMOUNT is null or b.MAX_AMOUNT &gt;
+        and (ifnull(b.MAX_AMOUNT,999999999)>=999999999 or b.MAX_AMOUNT &gt;
         (select sum(ifnull(d.COUPON_AMOUT, 0))
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID
         and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)))
-        and (b.MAX_COUNT is null or b.MAX_COUNT &gt;
+        and (ifnull(b.MAX_COUNT,999999999)>=999999999 or b.MAX_COUNT &gt;
         (select count(ifnull(d.UUID, 0))
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
@@ -59,14 +61,14 @@
         <if test="commonQry.couponId!=null and commonQry.couponId!=''">
             and a.UUID=#{commonQry.couponId,jdbcType=VARCHAR}
         </if>
-        <if test="commonQry.couponStatus!=null and commonQry.couponStatus='0'">
+        <if test="commonQry.couponStatus!=null and commonQry.couponStatus=='0'.toString()">
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
         </if>
-        <if test="commonQry.couponStatus!=null and commonQry.couponStatus='1'">
+        <if test="commonQry.couponStatus!=null and commonQry.couponStatus=='1'.toString()">
             and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
             and a.ALLOW_USE_END_DATE &gt;=curdate()
         </if>
-        <if test="commonQry.couponStatus!=null and commonQry.couponStatus='2'">
+        <if test="commonQry.couponStatus!=null and commonQry.couponStatus=='2'.toString()">
             and a.ALLOW_USE_END_DATE &lt;curdate()
         </if>
         <if test="commonQry.couponName!=null and commonQry.couponName!=''">
@@ -79,34 +81,34 @@
             and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR})
             )
         </if>
-        <if test="commonQry.targetFlag!=null and commonQry.targetFlag='0'">
-            and (ifnull(a.CLIENT_TYPE_SET,'*')='*' or
+        <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='0'.toString()">
+            and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*')='*' or
             (instr(a.CLIENT_TYPE_SET,'10') &gt;0 and instr(a.CLIENT_TYPE_SET,'11')&gt;0 ))
-            and ifnull(a.GET_STAGE,'6')!='3'
+            and  if(length(a.GET_STAGE),a.GET_STAGE,'6')!='3'
         </if>
-        <if test="commonQry.targetFlag!=null and commonQry.targetFlag='1'">
+        <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='1'.toString()">
             and a.GET_STAGE='3'
         </if>
-        <if test="commonQry.targetFlag!=null and commonQry.targetFlag='2'">
+        <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='2'.toString()">
             and instr(a.CLIENT_TYPE_SET,'11')&gt;0
         </if>
-        <if test="commonQry.couponType!=null and commonQry.couponType='0'">
+        <if test="commonQry.couponType!=null and commonQry.couponType=='0'.toString()">
             and COUPON_TYPE ='0'
         </if>
-        <if test="commonQry.couponType!=null and commonQry.couponType='1'">
+        <if test="commonQry.couponType!=null and commonQry.couponType=='1'.toString()">
             and COUPON_TYPE ='1'
         </if>
-        <if test="commonQry.couponType!=null and commonQry.couponType='2'">
+        <if test="commonQry.couponType!=null and commonQry.couponType=='2'.toString()">
             and COUPON_TYPE in ('2','3')
         </if>
-        <if test="commonQry.sendStatus!=null and commonQry.sendStatus='0'">
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='0'.toString()">
             and ALLOW_GET_BEGIN_DATE &gt;curdate()
         </if>
-        <if test="commonQry.sendStatus!=null and commonQry.sendStatus='1'">
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='1'.toString()">
             and ALLOW_GET_BEGIN_DATE &lt;=curdate()
             and a.ALLOW_GET_END_DATE &gt;=curdate()
         </if>
-        <if test="commonQry.sendStatus!=null and commonQry.sendStatus='2'">
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='2'.toString()">
             and ALLOW_GET_END_DATE &lt;curdate()
         </if>
     </select>

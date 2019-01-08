@@ -17,4 +17,7 @@ public class BatchRefProductReq {
 
     @ApiModelProperty(value = "优惠券涉及的商品")
     private  List<BaseProductReq> productList;
+
+    @ApiModelProperty(value = "操作者：用于更新产生者或更新者，一般传网关获取的ip")
+    private String operator;
 }

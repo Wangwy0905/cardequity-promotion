@@ -1,6 +1,6 @@
 package com.youyu.cardequity.promotion.vo.req;
 
-import com.youyu.cardequity.promotion.dto.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;

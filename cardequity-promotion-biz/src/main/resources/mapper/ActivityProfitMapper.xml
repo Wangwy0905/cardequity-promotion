@@ -7,38 +7,39 @@
     <select id="findEnableGetCommonActivity" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
         select *
         from TB_ACTIVITY_PROFIT a
-        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and IFNULL(b.IS_ENABLE, '1') = '1'
-        where IFNULL(a.IS_ENABLE, '1') = '1'
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE), b.IS_ENABLE,'1')= '1'
+        where if(length(a.IS_ENABLE), a.IS_ENABLE,'1') = '1'
         <if test="productId != null and productId!=''">
-            and (ifnull(a.APPLY_PRODUCT_FLAG, '0') = '1' or
+            and (if(length(a.APPLY_PRODUCT_FLAG), APPLY_PRODUCT_FLAG,'0')  = '1' or
             EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
         </if>
         <if test="entrustWay != null and entrustWay!=''">
-            and (ifnull(a.ENTRUST_WAY_SET, '*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+            and if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*')  = '*'
+            or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
-        and ifnull(a.CLIENT_TYPE_SET, '*') = '*'
-        and ifnull(a.BANK_CODE_SET, '*') = '*'
-        and ifnull(a.PAY_TYPE_SET, '*') = '*'
+        and if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*'
+        and if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
+        and if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
         and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
-        and (b.PER_DATE_MAX_AMOUNT is null or b.PER_DATE_MAX_AMOUNT &gt;
+        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
           (select sum(ifnull(c.Profit_Value, 0))
              from TB_CLIENT_TAKE_IN_ACTIVITY c
              where BUSIN_CODE = '5003'
                and c.ACTIVITY_ID = a.UUID
                and c.create_time &gt;= curdate()))
-        and (b.Max_Amount is null or b.Max_Amount &gt;
+        and (ifnull(b.Max_Amount,999999999)>=999999999 or b.Max_Amount &gt;
           (select sum(ifnull(c.Profit_Value, 0))
              from TB_CLIENT_TAKE_IN_ACTIVITY c
              where BUSIN_CODE = '5003'
                and c.ACTIVITY_ID = a.UUID))
-        and (b.Per_Date_Max_Count is null or b.Per_Date_Max_Count &gt;
+        and (ifnull(b.Per_Date_Max_Count,999999999)>=999999999 or b.Per_Date_Max_Count &gt;
           (select sum(ifnull(c.Product_Count, 0))
             from TB_CLIENT_TAKE_IN_ACTIVITY c
             where BUSIN_CODE = '5003'
               and c.ACTIVITY_ID = a.UUID
               and c.create_time &gt;= curdate()))
-        and (b.Max_Count is null or b.Max_Count &gt;
+        and (ifnull(b.Max_Count,999999999)>=999999999 or b.Max_Count &gt;
           (select sum(ifnull(c.Product_Count, 0))
             from TB_CLIENT_TAKE_IN_ACTIVITY c
             where BUSIN_CODE = '5003'
@@ -48,38 +49,39 @@
     <select id="findEnableGetMemberActivity" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
         select *
         from TB_ACTIVITY_PROFIT a
-        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and IFNULL(b.IS_ENABLE, '1') = '1'
-        where IFNULL(a.IS_ENABLE, '1') = '1'
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1' = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="productId != null and productId!=''">
-            and (ifnull(a.APPLY_PRODUCT_FLAG, '0') = '1' or
+            and (if(length(a.APPLY_PRODUCT_FLAG), APPLY_PRODUCT_FLAG,'0')  = '1' or
             EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
         </if>
         <if test="entrustWay != null and entrustWay!=''">
-            and (ifnull(a.ENTRUST_WAY_SET, '*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+            and if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*')  = '*'
+            or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
-        and ifnull(a.CLIENT_TYPE_SET, '*') != '*'
-        and ifnull(a.BANK_CODE_SET, '*') = '*'
-        and ifnull(a.PAY_TYPE_SET, '*') = '*'
+        and if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') != '*'
+        and if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
+        and if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
         and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
-        and (b.PER_DATE_MAX_AMOUNT is null or b.PER_DATE_MAX_AMOUNT &gt;
+        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select sum(ifnull(c.Profit_Value, 0))
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
-        and (b.Max_Amount is null or b.Max_Amount &gt;
+        and (ifnull(b.Max_Amount,999999999)>=999999999 or b.Max_Amount &gt;
         (select sum(ifnull(c.Profit_Value, 0))
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
-        and (b.Per_Date_Max_Count is null or b.Per_Date_Max_Count &gt;
+        and (ifnull(b.Per_Date_Max_Count,999999999)>=999999999 or b.Per_Date_Max_Count &gt;
         (select sum(ifnull(c.Product_Count, 0))
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
-        and (b.Max_Count is null or b.Max_Count &gt;
+        and (ifnull(b.Max_Count,999999999)>=999999999 or b.Max_Count &gt;
         (select sum(ifnull(c.Product_Count, 0))
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
@@ -88,18 +90,18 @@
     <select id="findById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
          select *
         from TB_ACTIVITY_PROFIT a
-        WHERE IFNULL(a.IS_ENABLE, '1') = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.Uuid= #{id,jdbcType=VARCHAR}
     </select>
 
     <select id="findPriceActivityByProductId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
         select *
         from TB_ACTIVITY_PROFIT a
-        where IFNULL(a.IS_ENABLE, '1') = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         AND ACTIVITY_COUPON_TYPE='2'
-        and (ifnull(a.APPLY_PRODUCT_FLAG, '0') = '1' or
+        and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
           EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
            b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
            and b.SKU_ID=#{skuId,jdbcType=VARCHAR}))
@@ -109,7 +111,10 @@
     <update id="logicDelByIdList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseActivityReq">
         UPDATE TB_ACTIVITY_PROFIT a
           SET a.IS_ENABLE='0'
-        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        <if test="list.operator!=null and list.operator!=''">
+            ,a.UPDATE_AUTHOR=#{list.operator,jdbcType=VARCHAR}
+        </if>
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.UUID IN
         <foreach collection="list.baseActivityList" item="baseActivity" index="index"
                  open="(" close=")" separator=",">
@@ -120,30 +125,30 @@
     <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
         UPDATE TB_ACTIVITY_PROFIT a
         SET a.IS_ENABLE='0'
-        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.UUID = #{baseActivity.activityId,jdbcType=VARCHAR}
     </update>
     <select id="findActivityListByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq">
         SELECT * FROM TB_ACTIVITY_PROFIT a
-        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="commonQry.activityId!=null and commonQry.activityId!=''">
             and a.UUID=#{commonQry.activityId,jdbcType=VARCHAR}
         </if>
-        <if test="commonQry.couponStatus!=null and commonQry.status='0'">
+        <if test="commonQry.status=='0'.toString()">
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
         </if>
-        <if test="commonQry.couponStatus!=null and commonQry.status='1'">
+        <if test="commonQry.status=='1'.toString()">
             and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
             and a.ALLOW_USE_END_DATE &gt;=curdate()
         </if>
-        <if test="commonQry.couponStatus!=null and commonQry.status='2'">
+        <if test="commonQry.status=='2'.toString()">
             and a.ALLOW_USE_END_DATE &lt;curdate()
         </if>
         <if test="commonQry.activityCouponType!=null and commonQry.activityCouponType!=''">
-            and instr(#{commonQry.activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;>0
+            and instr(#{commonQry.activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;0
         </if>
         <if test="commonQry.activityName!=null and commonQry.activityName!=''">
-            and a.COUPON_NAME like CONCAT('%',#{commonQry.activityName,jdbcType=VARCHAR},'%')
+            and a.ACTIVITY_NAME like CONCAT('%',#{commonQry.activityName,jdbcType=VARCHAR},'%')
         </if>
         <if test="commonQry.productId!=null and commonQry.productId!=''">
             and( a.APPLY_PRODUCT_FLAG='1' or
@@ -157,7 +162,7 @@
     </select>
     <select id="findActivityByIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
         select * FROM TB_ACTIVITY_PROFIT a
-        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.UUID IN
         <foreach collection="list.baseActivityList" item="baseActivity" index="index"
                  open="(" close=")" separator=",">
