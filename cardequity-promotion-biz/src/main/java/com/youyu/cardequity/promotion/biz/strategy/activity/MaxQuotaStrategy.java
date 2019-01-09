@@ -159,7 +159,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
                         temproductLsit.clear();
                         temproductLsit.addAll(rsp.getProductLsit());
                         temproductLsit.add(cyproduct);
-                        log.info("任选限额券满足使用条件处理");
+                        log.info("任选限额券满足使用条件处理;活动编号：" + item.getId() +";门槛编号："+stage.getId()+ ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                     }
                 }
             }

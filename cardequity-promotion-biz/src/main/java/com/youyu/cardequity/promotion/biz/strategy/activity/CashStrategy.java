@@ -154,9 +154,9 @@ public class CashStrategy extends ActivityStrategy {
                                     temproductLsit.clear();
                                     //计算：该商品适用优惠金额、该活动总优惠金额、及适用商品和数量
                                     calculationProfitAmount(product, applyNum, stage, rsp, temproductLsit);
-                                    log.info("金额门槛现金立减券满足使用条件处理");
+                                    log.info("金额门槛现金立减券满足使用条件处理;活动编号：" + item.getId() +";门槛编号："+stage.getId()+ ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                                 } else {
-                                    log.info("金额门槛现金立减券额度受限");
+                                    log.info("金额门槛现金立减券额度受限;活动编号：" + item.getId() +";门槛编号："+stage.getId()+ ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                                 }
                             }
 
@@ -177,9 +177,9 @@ public class CashStrategy extends ActivityStrategy {
                                     temproductLsit.clear();
                                     //计算：该商品适用优惠金额、该活动总优惠金额、及适用商品和数量
                                     calculationProfitAmount(product, applyNum, stage, rsp, temproductLsit);
-                                    log.info("数量门槛现金立减券满足使用条件处理");
+                                    log.info("数量门槛现金立减券满足使用条件处理;活动编号：" + item.getId() +";门槛编号："+stage.getId()+ ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                                 } else {
-                                    log.info("数量门槛现金立减券额度受限");
+                                    log.info("数量门槛现金立减券额度受限;活动编号：" + item.getId() +";门槛编号："+stage.getId()+ ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                                 }
 
                             }
@@ -190,22 +190,23 @@ public class CashStrategy extends ActivityStrategy {
                 }
                 //无门槛的活动
             } else {
-                //第一次进来时候进行限额校验
-                if (temproductLsit.size() == 0) {
-                    applyNum = GetFinalEnableQuota(quota,
-                            clientQuotaDto,
-                            allQuotaDto,
-                            product,
-                            BigDecimal.ZERO,//无门槛
-                            applyNum,
-                            item.getProfitValue());
+                //每次次进来时候进行限额校验
+                //if (temproductLsit.size() == 0) {
+                applyNum = GetFinalEnableQuota(quota,
+                        clientQuotaDto,
+                        allQuotaDto,
+                        product,
+                        countCondition,//无门槛
+                        applyNum,
+                        item.getProfitValue());
 
-                    if (applyNum.compareTo(BigDecimal.ZERO) <= 0) {
-                        log.info("无门槛现金立减券额度受限");
-                        return null;
-                    }
-                    log.info("无门槛现金立减券满足使用条件处理");
+                if (applyNum.compareTo(BigDecimal.ZERO) <= 0) {
+                    log.info("无门槛现金立减活动额度受限;活动编号" + item.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
+                    break;
                 }
+                product.setProfitCount(applyNum);
+                log.info("无门槛现金立减活动满足使用条件;活动编号" + item.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
+                //}
             }
 
             //记录活动适用的商品，但是没有计算对应优惠值，对应优惠值是在满足门槛后再calculationProfitAmount中计算
@@ -229,14 +230,13 @@ public class CashStrategy extends ActivityStrategy {
                 return rsp;
             }
         } else {
-            rsp.setProductLsit(temproductLsit);
             if (rsp.getProductLsit() != null && !rsp.getProductLsit().isEmpty()) {
 
                 BigDecimal totalProfitAmount = BigDecimal.ZERO;
                 //无门槛的每个商品都是单独优惠金额
                 for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    totalProfitAmount = totalProfitAmount.add(item.getProfitValue().multiply(product.getAppCount()));
-                    product.setProfitAmount(item.getProfitValue().multiply(product.getAppCount()));
+                    totalProfitAmount = totalProfitAmount.add(item.getProfitValue().multiply(product.getProfitCount()));
+                    product.setProfitAmount(item.getProfitValue().multiply(product.getProfitCount()));
                 }
                 rsp.setProfitAmount(totalProfitAmount);
                 return rsp;

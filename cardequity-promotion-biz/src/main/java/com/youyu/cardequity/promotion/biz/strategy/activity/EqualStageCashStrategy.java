@@ -151,7 +151,7 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
                     product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
                 }
             }
-            log.info("等阶立减券满足使用条件处理");
+            log.info("等阶立减券满足使用条件处理;活动编号：" + item.getId() +";门槛编号："+stage.getId());
             return rsp;
         }
         return null;
