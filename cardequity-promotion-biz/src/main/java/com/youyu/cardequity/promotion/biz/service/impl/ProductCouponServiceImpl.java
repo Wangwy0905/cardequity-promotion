@@ -1,5 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
@@ -17,6 +19,7 @@ import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 
 
@@ -686,7 +690,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         BaseQryCouponReq qryReq = new BaseQryCouponReq();
         if (req != null)
             BeanPropertiesUtils.copyProperties(req, qryReq);
-        return findCouponListByCommon(qryReq);
+        List<ProductCouponEntity> entities = productCouponMapper.findCouponListByCommon(qryReq);
+        List<CouponDetailDto> dtoList = new ArrayList<>();
+        for (ProductCouponEntity couponEntity : entities) {
+            dtoList.add(combinationCoupon(couponEntity));
+        }
+        return dtoList;
     }
 
     /**
@@ -696,15 +705,19 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      * @return
      */
     @Override
-    public List<CouponDetailDto> findCouponListByCommon(@RequestBody BaseQryCouponReq req) {
+    public PageData<CouponDetailDto> findCouponListByCommon(@RequestBody BaseQryCouponReq req) {
         if (req != null)
             req = new BaseQryCouponReq();
-        List<ProductCouponEntity> couponEntityList = productCouponMapper.findCouponListByCommon(req);
-        List<CouponDetailDto> result = new ArrayList<>();
-        for (ProductCouponEntity couponEntity : couponEntityList) {
-            result.add(combinationCoupon(couponEntity));
-        }
 
+        // pagination
+        PageHelper.startPage(req.getPageNo(), req.getPageSize());
+        // 获取活动分页信息
+        PageInfo<ProductCouponEntity> entitiesPage = new PageInfo<>(productCouponMapper.findCouponListByCommon(req));
+        List<CouponDetailDto> dtoList = new ArrayList<>();
+        for (ProductCouponEntity couponEntity : entitiesPage.getList()) {
+            dtoList.add(combinationCoupon(couponEntity));
+        }
+        PageData<CouponDetailDto> result=convert(entitiesPage, dtoList);
         return result;
     }
 

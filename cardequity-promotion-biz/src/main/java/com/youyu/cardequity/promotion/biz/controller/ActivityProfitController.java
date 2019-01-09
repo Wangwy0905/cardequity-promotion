@@ -6,6 +6,7 @@ import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
+import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
 import io.swagger.annotations.ApiOperation;
@@ -116,7 +117,7 @@ public class ActivityProfitController implements ActivityProfitApi {
     @Override
     @ApiOperation(value = "查找活动")
     @PostMapping(path = "/findActivityByCommon")
-    public Result<List<ActivityDetailDto>> findActivityByCommon(@RequestBody BaseQryActivityReq req){
+    public Result<PageData<ActivityDetailDto>> findActivityByCommon(@RequestBody BaseQryActivityReq req){
 
         return Result.ok(activityProfitService.findActivityByCommon(req));
     }

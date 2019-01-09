@@ -31,4 +31,10 @@ public class BaseQryCouponReq {
 
     @ApiModelProperty(value = "发放状态：0-待发放 1-发放中 2-已停止")
     private String sendStatus;
+
+    @ApiModelProperty(value = "页码：从1开始")
+    private int pageNo;
+
+    @ApiModelProperty(value = "每页数量：从1开始")
+    private int pageSize;
 }

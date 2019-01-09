@@ -102,6 +102,8 @@ public class CouponViewDto {
         BeanUtils.copyProperties(this, couponDto);
         couponDto.setClientTypeSet(CommonConstant.WILDCARD);
         couponDto.setGetStage(UsedStage.Other.getDictValue());
+        //默认没有门槛
+        couponDto.setCouponStrategyType(CouponStrategyType.fix.getDictValue());
         //会员专属
         if ("2".equals(targetFlag)) {
             couponDto.setClientTypeSet(ClientType.MEMBER.getDictValue());
@@ -117,6 +119,7 @@ public class CouponViewDto {
                 couponDto.setCouponLevel(CouponActivityLevel.GLOBAL.getDictValue());
         }
         if (conditionFund!=null && conditionFund.compareTo(BigDecimal.ZERO)>=0){
+            couponDto.setCouponStrategyType(CouponStrategyType.stage.getDictValue());
             List<CouponStageRuleDto> stageList=new ArrayList<>();
             CouponStageRuleDto stage=new CouponStageRuleDto();
             stage.setCouponId(uuid);
@@ -124,10 +127,14 @@ public class CouponViewDto {
             stage.setTriggerByType(TriggerByType.CAPITAL.getDictValue());
             stage.setBeginValue(conditionFund);
             stage.setCouponValue(profitValue);
-            stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionFund));
+            if (perProfitTopValue!=null && perProfitTopValue.compareTo(BigDecimal.ZERO)>0) {
+                couponDto.setCouponStrategyType(CouponStrategyType.equalstage.getDictValue());
+                stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionFund));
+            }
             stageList.add(stage);
             dto.setStageList(stageList);
         } else if (conditionCount!=null && conditionCount.compareTo(BigDecimal.ZERO)>=0){
+            couponDto.setCouponStrategyType(CouponStrategyType.stage.getDictValue());
             List<CouponStageRuleDto> stageList=new ArrayList<>();
             CouponStageRuleDto stage=new CouponStageRuleDto();
             stage.setCouponId(uuid);
@@ -136,7 +143,10 @@ public class CouponViewDto {
             stage.setCouponValue(profitValue);
             stage.setTriggerByType(TriggerByType.NUMBER.getDictValue());
             stage.setBeginValue(conditionCount);
-            stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionCount));
+            if (perProfitTopValue!=null && perProfitTopValue.compareTo(BigDecimal.ZERO)>0) {
+                couponDto.setCouponStrategyType(CouponStrategyType.equalstage.getDictValue());
+                stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionCount));
+            }
             stageList.add(stage);
             dto.setStageList(stageList);
         }

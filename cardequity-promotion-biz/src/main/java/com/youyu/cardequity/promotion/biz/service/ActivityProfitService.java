@@ -1,11 +1,13 @@
 package com.youyu.cardequity.promotion.biz.service;
 
+import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
 import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
+import com.youyu.common.api.PageData;
 import com.youyu.common.service.IService;
 
 import java.util.List;
@@ -56,7 +58,7 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @param req
      * @return
      */
-    List<ActivityDetailDto> findActivityByCommon(BaseQryActivityReq req);
+    PageData<ActivityDetailDto> findActivityByCommon(BaseQryActivityReq req);
 }
 
 

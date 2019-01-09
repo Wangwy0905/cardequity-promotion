@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
+import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -100,5 +101,5 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "查找活动")
     @PostMapping(path = "/findActivityByCommon")
-    Result<List<ActivityDetailDto>> findActivityByCommon(@RequestBody BaseQryActivityReq req);
+    Result<PageData<ActivityDetailDto>> findActivityByCommon(@RequestBody BaseQryActivityReq req);
 }

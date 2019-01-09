@@ -1,5 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.bean.BeanProperties;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
@@ -21,6 +23,7 @@ import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
+import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 
 
@@ -496,12 +500,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * @return 活动详情列表列表
      */
     @Override
-    public List<ActivityDetailDto> findActivityByCommon(BaseQryActivityReq req) {
+    public PageData<ActivityDetailDto> findActivityByCommon(BaseQryActivityReq req) {
         if (req==null)
             return null;
-        List<ActivityDetailDto> result=new ArrayList<>();
-        List<ActivityProfitEntity> entities = activityProfitMapper.findActivityListByCommon(req);
-        for (ActivityProfitEntity item:entities){
+
+        // pagination
+        PageHelper.startPage(req.getPageNo(), req.getPageSize());
+        // 获取活动分页信息
+        PageInfo<ActivityProfitEntity> entitiesPage = new PageInfo<>(activityProfitMapper.findActivityListByCommon(req));
+        List<ActivityDetailDto> dtoList=new ArrayList<>();
+        for (ActivityProfitEntity item:entitiesPage.getList()){
             ActivityDetailDto dto=new ActivityDetailDto();
 
             ActivityProfitDto profitDto =BeanPropertiesUtils.copyProperties(item,ActivityProfitDto.class);
@@ -517,10 +525,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //查询配置的商品
             List<ActivityRefProductEntity> refProductEntities = activityRefProductMapper.findByActivityId(item.getId());
             dto.setProductList(BeanPropertiesConverter.copyPropertiesOfList(refProductEntities,BaseProductReq.class));
-            result.add(dto);
+            dtoList.add(dto);
         }
-
-        return result;
+        return convert(entitiesPage, dtoList);
     }
 
     /**
@@ -533,6 +540,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      */
     @Override
     public ActivityDetailDto findActivityPrice(BaseProductReq req) {
+
         List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductId(req.getProductId(), req.getSkuId());
         if (entities.isEmpty())
             return null;

@@ -1,10 +1,12 @@
 package com.youyu.cardequity.promotion.biz.service;
 
+import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.common.api.PageData;
 import com.youyu.common.service.IService;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -80,7 +82,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param req
      * @return
      */
-    List<CouponDetailDto> findCouponListByCommon(@RequestBody BaseQryCouponReq req);
+    PageData<CouponDetailDto> findCouponListByCommon(@RequestBody BaseQryCouponReq req);
 
 }
 

@@ -4,6 +4,7 @@ package com.youyu.cardequity.promotion.api;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
+import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -84,7 +85,7 @@ public interface ProductCouponApi {
      */
     @ApiOperation(value = "查询所有优惠券列表")
     @PostMapping(path = "/findCouponListByCommon")
-    Result<List<CouponDetailDto>> findCouponListByCommon(@RequestBody BaseQryCouponReq req);
+    Result<PageData<CouponDetailDto>> findCouponListByCommon(@RequestBody BaseQryCouponReq req);
 
 
 }

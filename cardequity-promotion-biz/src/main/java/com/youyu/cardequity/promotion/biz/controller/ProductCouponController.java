@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.api.ProductCouponApi;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
 import io.swagger.annotations.ApiOperation;
@@ -104,7 +105,7 @@ public class ProductCouponController implements ProductCouponApi {
     @Override
     @ApiOperation(value = "查询所有优惠券列表")
     @PostMapping(path = "/findCouponListByCommon")
-    public Result<List<CouponDetailDto>> findCouponListByCommon(@RequestBody BaseQryCouponReq req){
+    public Result<PageData<CouponDetailDto>> findCouponListByCommon(@RequestBody BaseQryCouponReq req){
         return Result.ok(productCouponService.findCouponListByCommon(req));
 
     }
