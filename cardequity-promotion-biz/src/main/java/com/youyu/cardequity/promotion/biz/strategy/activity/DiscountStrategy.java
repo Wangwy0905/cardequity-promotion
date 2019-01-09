@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.strategy.activity;
 
 import com.youyu.cardequity.common.base.annotation.StatusAndStrategyNum;
+import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.promotion.biz.dal.dao.ActivityQuotaRuleMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.ActivityRefProductMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.ActivityStageCouponMapper;
@@ -53,7 +54,6 @@ public class DiscountStrategy extends ActivityStrategy {
         ActivityProfitDto dto = new ActivityProfitDto();
         BeanUtils.copyProperties(item, dto);
         rsp.setActivity(dto);
-        rsp.setProfitAmount(item.getProfitValue());
 
         //获取活动阶梯
         List<ActivityStageCouponEntity> orgStageList = activityStageCouponMapper.findActivityProfitDetail(item.getId());
@@ -104,6 +104,8 @@ public class DiscountStrategy extends ActivityStrategy {
                 //该商品属性是否允许参与活动
                 ActivityRefProductEntity entity = activityRefProductMapper.findByBothId(item.getId(), productItem.getProductId());
                 if (entity == null) {
+                    log.info("该商品不能参与该活动;活动编号：" + item.getId() + ";商品编号" + productItem.getProductId() + ";子商品编号" + productItem.getSkuId());
+
                     continue;
                 }
             }
@@ -145,11 +147,12 @@ public class DiscountStrategy extends ActivityStrategy {
                                 amountCondition,
                                 applyNum,
                                 stage.getProfitValue());
+                        log.info("已满足折扣活动门槛继续处理后续商品;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
 
                         //所有校验全通关
                         if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                             temproductLsit = calculationProfitAmount(product, applyNum, amountCondition, stage, rsp, temproductLsit);
-                            log.info("已满足折扣活动门槛继续处理后续商品;活动编号：" + item.getId() +";门槛编号："+stage.getId()+ ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
+                            log.info("已满足折扣活动门槛继续处理后续商品时额度交易通过;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                         }
                     } else {
                         //暂时没有达到门槛时，全额数量作为下一次计算门槛进行累计计算
@@ -187,7 +190,7 @@ public class DiscountStrategy extends ActivityStrategy {
                                     //该子券第一次满足门槛，重新生成对应该子券商品列表
                                     temproductLsit.clear();
                                     temproductLsit = calculationProfitAmount(product, applyNum, amountCondition, stage, rsp, temproductLsit);
-                                    log.info("金额门槛折扣活动满足使用条件处理;活动编号：" + item.getId() +";门槛编号："+stage.getId()+ ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
+                                    log.info("金额门槛折扣活动满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                                 }
                                 //if (oldApplyNum != applyNum)
                                 //   isApplyFlag=false;
@@ -226,7 +229,7 @@ public class DiscountStrategy extends ActivityStrategy {
                                 if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                                     temproductLsit.clear();
                                     temproductLsit = calculationProfitAmount(product, applyNum, amountCondition, stage, rsp, temproductLsit);
-                                    log.info("数量门槛折扣活动满足使用条件处理;活动编号：" + item.getId() +";门槛编号："+stage.getId()+ ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
+                                    log.info("数量门槛折扣活动满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                                 }
                                 //已达到限额最大，后续不需要再处理
                                 //if (oldApplyNum != applyNum)
@@ -278,7 +281,7 @@ public class DiscountStrategy extends ActivityStrategy {
                 rsp.setProductLsit(temproductLsit);
                 //对于适用商品明细优惠值进行计算
                 for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    product.setProfitAmount(product.getTotalAmount().multiply(BigDecimal.ONE.subtract(item.getProfitValue())));
+                    product.setProfitAmount(product.getTotalAmount().multiply(BigDecimal.ONE.subtract(rsp.getStage().getProfitValue())));
                 }
                 return rsp;
             }
@@ -307,8 +310,7 @@ public class DiscountStrategy extends ActivityStrategy {
                                                                 UseActivityRsp rsp,
                                                                 List<OrderProductDetailDto> temproductLsit) {
 
-        OrderProductDetailDto cyproduct = new OrderProductDetailDto();
-        BeanUtils.copyProperties(product, cyproduct);
+        OrderProductDetailDto cyproduct = BeanPropertiesUtils.copyProperties(product, OrderProductDetailDto.class);
         //涉及适用的数量
         cyproduct.setProfitCount(applyNum);
 
@@ -318,14 +320,12 @@ public class DiscountStrategy extends ActivityStrategy {
         BigDecimal profitAmount = amountCondition.add(cyproduct.getPrice().multiply(applyNum)).multiply(BigDecimal.ONE.subtract(stage.getProfitValue()));
         rsp.setProfitAmount(profitAmount);
 
-        if (rsp.getStage() != null && rsp.getStage().getId().equals(stage.getId())) {
+        //最新满足门槛的
+        if (rsp.getStage() == null ||
+                (stage != null && !rsp.getStage().getId().equals(stage.getId()))) {
             ActivityStageCouponDto stageDto = new ActivityStageCouponDto();
             BeanUtils.copyProperties(stage, stageDto);
             rsp.setStage(stageDto);
-        }
-        if (temproductLsit == null || temproductLsit.size() <= 0) {
-            if (temproductLsit == null)
-                temproductLsit = new ArrayList<>();
             //用最新适用的折扣重算商品对应优惠金额:之前已经满足条件的按全部数量计算优惠金额
             for (OrderProductDetailDto item : rsp.getProductLsit()) {
                 item.setProfitAmount(item.getTotalAmount().multiply(BigDecimal.ONE.subtract(stage.getProfitValue())));
@@ -333,6 +333,7 @@ public class DiscountStrategy extends ActivityStrategy {
             }
         }
         temproductLsit.add(cyproduct);
+
         return temproductLsit;
     }
 
