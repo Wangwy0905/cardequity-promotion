@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,10 +73,10 @@ public class CouponViewDto {
     private Integer valIdTerm;
 
     @ApiModelProperty(value = "领取开始日:到分秒级别")
-    private LocalDate allowGetBeginDate;
+    private LocalDateTime allowGetBeginDate;
 
     @ApiModelProperty(value = "领取结束日:")
-    private LocalDate allowGetEndDate;
+    private LocalDateTime allowGetEndDate;
 
     @ApiModelProperty(value = "频率id:前台不展示")
     private String freqId;

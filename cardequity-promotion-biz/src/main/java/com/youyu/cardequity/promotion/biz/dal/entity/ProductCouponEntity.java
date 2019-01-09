@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.dal.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -94,25 +95,25 @@ public class ProductCouponEntity extends com.youyu.common.entity.BaseEntity<Stri
      * 优惠开始日:到分秒级别
      */
     @Column(name = "ALLOW_USE_BEGIN_DATE")
-    private LocalDate allowUseBeginDate;
+    private LocalDateTime allowUseBeginDate;
 
     /**
      * 优惠结束日:
      */
     @Column(name = "ALLOW_USE_END_DATE")
-    private LocalDate allowUseEndDate;
+    private LocalDateTime allowUseEndDate;
 
     /**
      * 领取开始日:到分秒级别
      */
     @Column(name = "ALLOW_GET_BEGIN_DATE")
-    private LocalDate allowGetBeginDate;
+    private LocalDateTime allowGetBeginDate;
 
     /**
      * 领取结束日:
      */
     @Column(name = "ALLOW_GET_END_DATE")
-    private LocalDate allowGetEndDate;
+    private LocalDateTime allowGetEndDate;
 
     /**
      * 有效期限:以天为单位

@@ -171,16 +171,18 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         //3.增加客户已领优惠券
         entity.setId(CommonUtils.getUUID());
-        if (coupon.getAllowUseBeginDate() != null || LocalDate.now().compareTo(coupon.getAllowUseBeginDate()) < 0) {
+        if (coupon.getAllowUseBeginDate() != null || LocalDateTime.now().compareTo(coupon.getAllowUseBeginDate()) < 0) {
             entity.setValidStartDate(coupon.getAllowUseBeginDate());
         } else {
-            entity.setValidStartDate(LocalDate.now());
+            entity.setValidStartDate(LocalDateTime.now());
         }
         //默认有效时间1个月
-        LocalDate validEndDate = entity.getValidStartDate().plusMonths(1);
+        LocalDateTime validEndDate = entity.getValidStartDate().plusMonths(1);
         //如果定义了持有时间，则需要从当前领取日期上加持有时间作为最后有效日
         if (coupon.getValIdTerm() != null && coupon.getValIdTerm().intValue() > 0) {
             validEndDate = entity.getValidStartDate().plusDays(coupon.getValIdTerm());
+        }else if (coupon.getAllowUseEndDate() != null){
+            validEndDate=coupon.getAllowUseEndDate();
         }
 
         //如果算法是：有效结束日=min(优惠结束日,(实际领取日+期限))
@@ -960,8 +962,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
         //是否在允許使用期間
-        if ((coupon.getAllowUseBeginDate() != null && coupon.getAllowUseBeginDate().compareTo(LocalDate.now()) > 0) ||
-                (coupon.getAllowUseEndDate() != null && coupon.getAllowUseEndDate().compareTo(LocalDate.now()) < 0)) {
+        if ((coupon.getAllowUseBeginDate() != null && coupon.getAllowUseBeginDate().compareTo(LocalDateTime.now()) > 0) ||
+                (coupon.getAllowUseEndDate() != null && coupon.getAllowUseEndDate().compareTo(LocalDateTime.now()) < 0)) {
 
             dto.setSuccess(false);
             dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowUseBeginDate(), coupon.getAllowUseEndDate()));
@@ -982,8 +984,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
         //是否在允許領取期間
-        if ((coupon.getAllowGetBeginDate() != null && coupon.getAllowGetBeginDate().compareTo(LocalDate.now()) > 0) ||
-                (coupon.getAllowGetEndDate() != null && coupon.getAllowGetEndDate().compareTo(LocalDate.now()) < 0)) {
+        if ((coupon.getAllowGetBeginDate() != null && coupon.getAllowGetBeginDate().compareTo(LocalDateTime.now()) > 0) ||
+                (coupon.getAllowGetEndDate() != null && coupon.getAllowGetEndDate().compareTo(LocalDateTime.now()) < 0)) {
 
             dto.setSuccess(false);
             dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowGetBeginDate(), coupon.getAllowGetEndDate()));

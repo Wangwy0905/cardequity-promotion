@@ -21,6 +21,7 @@ import java.util.List;
 @Data
 public class ActivityViewDto {
 
+
     @ApiModelProperty(value = "活动编号:")
     private String uuid;
 

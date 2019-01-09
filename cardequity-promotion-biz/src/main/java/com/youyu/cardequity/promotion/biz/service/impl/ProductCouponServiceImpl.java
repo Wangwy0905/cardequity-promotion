@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -176,7 +177,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         if (dto.getAllowGetBeginDate() == null) {
             if (dto.getAllowUseBeginDate() == null) {
-                dto.setAllowUseBeginDate(LocalDate.now());
+                dto.setAllowUseBeginDate(LocalDateTime.now());
             }
             dto.setAllowGetBeginDate(dto.getAllowUseBeginDate());
         } else {
@@ -186,9 +187,22 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
         }
 
+        if (dto.getAllowGetBeginDate() == null){
+            dto.setAllowGetBeginDate(LocalDateTime.now());
+        }
+        if (dto.getAllowGetEndDate() == null){
+            dto.setAllowGetEndDate(LocalDateTime.of(2099,12,31,0,0,0));
+        }
+        if (dto.getAllowUseBeginDate() == null){
+            dto.setAllowUseBeginDate(LocalDateTime.now());
+        }
+        if (dto.getAllowUseEndDate() == null){
+            dto.setAllowUseEndDate(LocalDateTime.of(2099,12,31,0,0,0));
+        }
+
         //参数保护，默认使用日期为最大
         if (dto.getAllowUseEndDate() == null) {
-            dto.setAllowUseEndDate(LocalDate.of(2099, 12, 31));
+            dto.setAllowUseEndDate(LocalDateTime.of(2099, 12, 31,0,0,0));
         }
         if (dto.getAllowGetEndDate() == null) {
             dto.setAllowGetEndDate(dto.getAllowUseEndDate());
@@ -207,6 +221,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         if (dto.getGetStage() == null)
             dto.setGetStage(UsedStage.Other.getDictValue());
+
 
 
         if (dto.getAllowUseEndDate().compareTo(dto.getAllowUseBeginDate()) < 0) {
@@ -371,7 +386,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         if (dto.getAllowGetBeginDate() == null) {
             if (dto.getAllowUseBeginDate() == null) {
-                dto.setAllowUseBeginDate(LocalDate.now());
+                dto.setAllowUseBeginDate(LocalDateTime.now());
             }
             dto.setAllowGetBeginDate(dto.getAllowUseBeginDate());
         } else {
@@ -383,7 +398,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         //参数保护，默认使用日期为最大
         if (dto.getAllowUseEndDate() == null) {
-            dto.setAllowUseEndDate(LocalDate.of(2099, 12, 31));
+            dto.setAllowUseEndDate(LocalDateTime.of(2099, 12, 31,0,0,0));
         }
         if (dto.getAllowGetEndDate() == null) {
             dto.setAllowGetEndDate(dto.getAllowUseEndDate());
@@ -631,7 +646,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         CommonBoolDto<ProductCouponDto> result = new CommonBoolDto<ProductCouponDto>(false);
         ProductCouponEntity productCouponById = productCouponMapper.findProductCouponById(req.getCouponId());
         if (productCouponById != null) {
-            productCouponById.setAllowGetBeginDate(LocalDate.now());
+            productCouponById.setAllowGetBeginDate(LocalDateTime.now().minusSeconds(1));
             productCouponById.setRemark("开始发放优惠券");
             ProductCouponDto dto = new ProductCouponDto();
             int updateresult = productCouponMapper.updateByPrimaryKey(productCouponById);
@@ -661,7 +676,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         CommonBoolDto<ProductCouponDto> result = new CommonBoolDto<ProductCouponDto>(false);
         ProductCouponEntity productCouponById = productCouponMapper.findProductCouponById(req.getCouponId());
         if (productCouponById != null) {
-            productCouponById.setAllowGetEndDate(LocalDate.now().minusDays(1));
+            productCouponById.setAllowGetEndDate(LocalDateTime.now().minusSeconds(1));
             productCouponById.setRemark("停止发放优惠券");
             ProductCouponDto dto = new ProductCouponDto();
             int updateresult = productCouponMapper.updateByPrimaryKey(productCouponById);

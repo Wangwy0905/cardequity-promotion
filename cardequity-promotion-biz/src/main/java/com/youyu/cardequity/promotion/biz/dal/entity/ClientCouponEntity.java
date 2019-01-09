@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.dal.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -94,13 +95,13 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
      * 有效起始日:到时分秒
      */
     @Column(name = "VALID_START_DATE")
-    private LocalDate validStartDate;
+    private LocalDateTime validStartDate;
 
     /**
      * 有效结束日:到时分秒
      */
     @Column(name = "VALID_END_DATE")
-    private LocalDate validEndDate;
+    private LocalDateTime validEndDate;
 
     /**
      * 状态:0-正常 1-使用中 2-已使用

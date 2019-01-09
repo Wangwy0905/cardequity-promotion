@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
@@ -50,10 +51,10 @@ public class ClientCouponDto implements IBaseDto<String>{
     private BigDecimal couponAmout;
 
     @ApiModelProperty(value = "有效起始日:到时分秒")
-    private LocalDate validStartDate;
+    private LocalDateTime validStartDate;
 
     @ApiModelProperty(value = "有效结束日:到时分秒")
-    private LocalDate validEndDate;
+    private LocalDateTime validEndDate;
 
     @ApiModelProperty(value = "状态:0-正常 1-使用中 2-已使用")
     private String status;

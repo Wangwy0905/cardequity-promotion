@@ -59,16 +59,16 @@ public class ProductCouponDto implements IBaseDto<String>{
     private String payTypeSet;
 
     @ApiModelProperty(value = "优惠开始日:到分秒级别")
-    private LocalDate allowUseBeginDate;
+    private LocalDateTime allowUseBeginDate;
 
     @ApiModelProperty(value = "优惠结束日:")
-    private LocalDate allowUseEndDate;
+    private LocalDateTime allowUseEndDate;
 
     @ApiModelProperty(value = "领取开始日:到分秒级别")
-    private LocalDate allowGetBeginDate;
+    private LocalDateTime allowGetBeginDate;
 
     @ApiModelProperty(value = "领取结束日:")
-    private LocalDate allowGetEndDate;
+    private LocalDateTime allowGetEndDate;
 
     @ApiModelProperty(value = "有效期限:以天为单位")
     private Integer valIdTerm;
