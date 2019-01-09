@@ -43,7 +43,8 @@
           (select sum(ifnull(c.Product_Count, 0))
             from TB_CLIENT_TAKE_IN_ACTIVITY c
             where BUSIN_CODE = '5003'
-              and c.ACTIVITY_ID = a.UUID));
+              and c.ACTIVITY_ID = a.UUID))
+        Order by a.CREATE_TIME desc
     </select>
 
     <select id="findEnableGetMemberActivity" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
@@ -85,7 +86,8 @@
         (select sum(ifnull(c.Product_Count, 0))
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
-        and c.ACTIVITY_ID = a.UUID));
+        and c.ACTIVITY_ID = a.UUID))
+        Order by a.CREATE_TIME desc
     </select>
     <select id="findById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
          select *
@@ -159,6 +161,7 @@
             </if>
             ))
         </if>
+        Order by a.CREATE_TIME desc
     </select>
     <select id="findActivityByIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
         select * FROM TB_ACTIVITY_PROFIT a

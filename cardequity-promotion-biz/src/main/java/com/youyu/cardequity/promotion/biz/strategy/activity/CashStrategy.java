@@ -110,7 +110,7 @@ public class CashStrategy extends ActivityStrategy {
             //总额做保护
             product.setTotalAmount(product.getAppCount().multiply(product.getPrice()));
 
-            applyNum=product.getAppCount();
+            applyNum = product.getAppCount();
             //有门槛的活动
             if (activityProfitDetail.size() > 0) {
                 //3.有门槛的活动处理
@@ -154,6 +154,9 @@ public class CashStrategy extends ActivityStrategy {
                                     temproductLsit.clear();
                                     //计算：该商品适用优惠金额、该活动总优惠金额、及适用商品和数量
                                     calculationProfitAmount(product, applyNum, stage, rsp, temproductLsit);
+                                    log.info("金额门槛现金立减券满足使用条件处理");
+                                } else {
+                                    log.info("金额门槛现金立减券额度受限");
                                 }
                             }
 
@@ -174,7 +177,11 @@ public class CashStrategy extends ActivityStrategy {
                                     temproductLsit.clear();
                                     //计算：该商品适用优惠金额、该活动总优惠金额、及适用商品和数量
                                     calculationProfitAmount(product, applyNum, stage, rsp, temproductLsit);
+                                    log.info("数量门槛现金立减券满足使用条件处理");
+                                } else {
+                                    log.info("数量门槛现金立减券额度受限");
                                 }
+
                             }
 
                         }
@@ -182,9 +189,9 @@ public class CashStrategy extends ActivityStrategy {
                     }
                 }
                 //无门槛的活动
-            }else{
+            } else {
                 //第一次进来时候进行限额校验
-                if (temproductLsit.size()==0) {
+                if (temproductLsit.size() == 0) {
                     applyNum = GetFinalEnableQuota(quota,
                             clientQuotaDto,
                             allQuotaDto,
@@ -192,9 +199,12 @@ public class CashStrategy extends ActivityStrategy {
                             BigDecimal.ZERO,//无门槛
                             applyNum,
                             item.getProfitValue());
+
                     if (applyNum.compareTo(BigDecimal.ZERO) <= 0) {
+                        log.info("无门槛现金立减券额度受限");
                         return null;
                     }
+                    log.info("无门槛现金立减券满足使用条件处理");
                 }
             }
 
@@ -208,6 +218,7 @@ public class CashStrategy extends ActivityStrategy {
         if (activityProfitDetail.size() > 0) {
             if (rsp.getStage() != null) {
                 rsp.setProductLsit(temproductLsit);
+                rsp.setProfitAmount(item.getProfitValue());
                 BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
                 //每种商品优惠的金额是按适用金额比例来的
                 if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
@@ -217,23 +228,31 @@ public class CashStrategy extends ActivityStrategy {
                 }
                 return rsp;
             }
-            //无适用门槛立减活动需要将每个商品的优惠值进行再次计算；每个数量单独适用该立减
         } else {
-            for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                product.setProfitAmount(product.getAppCount().multiply(item.getProfitValue()));
+            rsp.setProductLsit(temproductLsit);
+            if (rsp.getProductLsit() != null && !rsp.getProductLsit().isEmpty()) {
+
+                BigDecimal totalProfitAmount = BigDecimal.ZERO;
+                //无门槛的每个商品都是单独优惠金额
+                for (OrderProductDetailDto product : rsp.getProductLsit()) {
+                    totalProfitAmount = totalProfitAmount.add(item.getProfitValue().multiply(product.getAppCount()));
+                    product.setProfitAmount(item.getProfitValue().multiply(product.getAppCount()));
+                }
+                rsp.setProfitAmount(totalProfitAmount);
+                return rsp;
             }
-            return rsp;
         }
+
         return null;
     }
 
     /**
      * 计算活动对应商品适用数量，该活动总优惠金额，返回适用的商品范围及数量
      *
-     * @param product  选购商品详情
-     * @param applyNum 计算门槛时适用数量
-     * @param stage 适用阶梯
-     * @param rsp 适用总体详情
+     * @param product        选购商品详情
+     * @param applyNum       计算门槛时适用数量
+     * @param stage          适用阶梯
+     * @param rsp            适用总体详情
      * @param temproductLsit 适用商品明细情况
      * @return
      */
@@ -257,9 +276,9 @@ public class CashStrategy extends ActivityStrategy {
             rsp.setStage(stageDto);
         }
 
-        if (temproductLsit==null || temproductLsit.size()<=0) {
-            if (temproductLsit==null )
-                temproductLsit=new ArrayList<>();
+        if (temproductLsit == null || temproductLsit.size() <= 0) {
+            if (temproductLsit == null)
+                temproductLsit = new ArrayList<>();
             //适用商品列表=之前已匹配商品+本次达到门槛适用商品及数量
             temproductLsit.addAll(rsp.getProductLsit());
         }
@@ -276,7 +295,7 @@ public class CashStrategy extends ActivityStrategy {
      * @param product        指定选购商品详情：含数量价格
      * @param countCondition 达到该数量条件，此活动才生效
      * @param applyNum       适用数量初始值：需校验的值
-     * @param profitAmount 本活动满减值
+     * @param profitAmount   本活动满减值
      * @return
      */
     private BigDecimal GetFinalEnableQuota(ActivityQuotaRuleEntity quota,

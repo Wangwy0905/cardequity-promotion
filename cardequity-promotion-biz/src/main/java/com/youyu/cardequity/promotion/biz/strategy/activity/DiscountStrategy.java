@@ -149,6 +149,7 @@ public class DiscountStrategy extends ActivityStrategy {
                         //所有校验全通关
                         if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                             temproductLsit = calculationProfitAmount(product, applyNum, amountCondition, stage, rsp, temproductLsit);
+                            log.info("无门槛折扣活动满足使用条件处理");
                         }
                     } else {
                         //暂时没有达到门槛时，全额数量作为下一次计算门槛进行累计计算
@@ -186,6 +187,7 @@ public class DiscountStrategy extends ActivityStrategy {
                                     //该子券第一次满足门槛，重新生成对应该子券商品列表
                                     temproductLsit.clear();
                                     temproductLsit = calculationProfitAmount(product, applyNum, amountCondition, stage, rsp, temproductLsit);
+                                    log.info("金额门槛折扣活动满足使用条件处理");
                                 }
                                 //if (oldApplyNum != applyNum)
                                 //   isApplyFlag=false;
@@ -224,6 +226,7 @@ public class DiscountStrategy extends ActivityStrategy {
                                 if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                                     temproductLsit.clear();
                                     temproductLsit = calculationProfitAmount(product, applyNum, amountCondition, stage, rsp, temproductLsit);
+                                    log.info("数量门槛折扣活动满足使用条件处理");
                                 }
                                 //已达到限额最大，后续不需要再处理
                                 //if (oldApplyNum != applyNum)
@@ -257,7 +260,7 @@ public class DiscountStrategy extends ActivityStrategy {
                     BigDecimal profitAmount = amountCondition.add(product.getPrice().multiply(applyNum)).multiply(BigDecimal.ONE.subtract(item.getProfitValue()));
                     rsp.setProfitAmount(profitAmount);
                     temproductLsit.add(product);
-
+                    log.info("无门槛折扣活动满足使用条件处理");
                 }
                 //最后符合数量和初始值不一致，说明已经触发了限额
                 //if (oldApplyNum != applyNum)

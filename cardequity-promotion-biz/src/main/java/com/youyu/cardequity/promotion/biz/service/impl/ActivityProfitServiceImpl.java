@@ -138,8 +138,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             String key = ActivityStrategy.class.getSimpleName() + item.getActivityCouponType();
             ActivityStrategy executor = (ActivityStrategy) CustomHandler.getBeanByName(key);
             UseActivityRsp rsp = executor.applyActivity(item, req.getProductList());
-            if (rsp != null)
+            if (rsp != null) {
+                rsp.setClientId(req.getClientId());
                 rsps.add(rsp);
+            }
         }
 
         //使用

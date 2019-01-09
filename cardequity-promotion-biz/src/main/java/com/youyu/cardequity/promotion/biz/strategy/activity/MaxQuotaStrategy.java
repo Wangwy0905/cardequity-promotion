@@ -112,7 +112,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
             //一个商品如果存在适用多个活动时需要单独开辟内存
             OrderProductDetailDto product = new OrderProductDetailDto();
             BeanUtils.copyProperties(productItem, product);
-            product.setTotalAmount(product.getAppCount().multiply(cyproduct.getPrice()));
+            product.setTotalAmount(product.getAppCount().multiply(product.getPrice()));
 
             //任选3件99元，哪怕有6个商品满足也只使用一次,即前3件会使用
             for (ActivityStageCouponEntity stage : activityProfitDetail) {
@@ -159,6 +159,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
                         temproductLsit.clear();
                         temproductLsit.addAll(rsp.getProductLsit());
                         temproductLsit.add(cyproduct);
+                        log.info("任选限额券满足使用条件处理");
                     }
                 }
             }

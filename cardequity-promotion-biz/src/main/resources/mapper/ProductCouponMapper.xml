@@ -44,6 +44,7 @@
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID
         and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)))
+        Order by a.CREATE_TIME desc
     </select>
 
     <select id="findProductCouponById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
@@ -111,6 +112,7 @@
         <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='2'.toString()">
             and ALLOW_GET_END_DATE &lt;curdate()
         </if>
+        Order by a.CREATE_TIME desc
     </select>
 
     <update id="logicDelByList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq">

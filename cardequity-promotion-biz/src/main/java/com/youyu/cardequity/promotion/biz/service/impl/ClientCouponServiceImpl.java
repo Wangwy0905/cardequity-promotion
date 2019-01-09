@@ -334,6 +334,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             CouponStrategy executor = (CouponStrategy) CustomHandler.getBeanByName(key);
             useCouponRsp = executor.applyCoupon(clientCoupon, coupon, req.getProductList());
             if (useCouponRsp != null) {
+                //useCouponRsp.set(req.getClientId());
                 //运费券，条件1：选择免邮券，条件2：选择>运费的最接近，如果条件2不满足选择<运费的最接近的券
                 if (clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue())) {
                     if (useTransferCouponRsp == null)
@@ -432,6 +433,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             for (OrderProductDetailDto productDetailDto : rsp.getProductLsit()) {
                 ClientTakeInCouponEntity clientTakeInCoupon = new ClientTakeInCouponEntity();
                 clientTakeInCoupon.setId(CommonUtils.getUUID());
+                clientTakeInCoupon.setClientId(clientCoupon.getClientId());
                 clientTakeInCoupon.setGetId(clientCoupon.getId());
                 clientTakeInCoupon.setOrderId(clientCoupon.getJoinOrderId());
                 clientTakeInCoupon.setProductId(productDetailDto.getProductId());
