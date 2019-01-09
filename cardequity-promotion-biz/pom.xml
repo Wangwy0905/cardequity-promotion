@@ -60,10 +60,10 @@
 				<groupId>com.youyu.platform</groupId>
 				<artifactId>common-handler</artifactId>
 			</dependency>
-			<!--<dependency>-->
-				<!--<groupId>com.youyu.platform</groupId>-->
-				<!--<artifactId>common-monitor</artifactId>-->
-			<!--</dependency>-->
+			<dependency>
+				<groupId>com.youyu.platform</groupId>
+				<artifactId>common-monitor</artifactId>
+			</dependency>
 
 			<dependency>
 				<groupId>com.youyu.platform</groupId>
@@ -84,6 +84,11 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
 			<dependency>
