@@ -57,7 +57,7 @@ public class ProductCouponEntity extends com.youyu.common.entity.BaseEntity<Stri
     /**
      * 优惠说明
      */
-    @Column(name = "COUPON_SHORT_DESC")
+    @Column(name = "COUPON_DESC")
     private String couponDesc;
 
 
