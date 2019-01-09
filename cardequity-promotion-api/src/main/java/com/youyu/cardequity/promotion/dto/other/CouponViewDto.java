@@ -1,10 +1,7 @@
 package com.youyu.cardequity.promotion.dto.other;
 
 import com.youyu.cardequity.promotion.constant.CommonConstant;
-import com.youyu.cardequity.promotion.dto.CouponGetOrUseFreqRuleDto;
-import com.youyu.cardequity.promotion.dto.CouponQuotaRuleDto;
-import com.youyu.cardequity.promotion.dto.CouponStageRuleDto;
-import com.youyu.cardequity.promotion.dto.ProductCouponDto;
+import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
@@ -100,6 +97,9 @@ public class CouponViewDto {
         ProductCouponDto couponDto = new ProductCouponDto();
         dto.setProductCouponDto(couponDto);
         BeanUtils.copyProperties(this, couponDto);
+        couponDto.setLabelDto(new CouponAndActivityLabelDto());
+        couponDto.getLabelDto().setId(this.getCouponLable());
+
         couponDto.setClientTypeSet(CommonConstant.WILDCARD);
         couponDto.setGetStage(UsedStage.Other.getDictValue());
         //默认没有门槛
