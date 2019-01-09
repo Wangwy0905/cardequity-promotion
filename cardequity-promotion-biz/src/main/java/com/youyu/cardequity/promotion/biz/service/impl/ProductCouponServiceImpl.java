@@ -353,7 +353,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         entity.setCouponLable(dto.getLabelDto().getId());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
         sqlresult = productCouponMapper.insert(entity);
-        if (sqlresult > 0) {
+        if (sqlresult <= 0) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("新增优惠信息错误，编号" + entity.getId()));
         }
         result.setSuccess(true);
@@ -591,7 +591,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         entity.setIsEnable(CommonDict.IF_YES.getCode());
 
         sqlresult = productCouponMapper.updateByPrimaryKey(entity);
-        if (sqlresult > 0) {
+        if (sqlresult <= 0) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("更新优惠信息错误，编号" + entity.getId()));
         }
         result.setSuccess(true);
