@@ -123,7 +123,7 @@ public class DiscountStrategy extends ActivityStrategy {
                 for (ActivityStageCouponEntity stage : activityProfitDetail) {
                     //3-1.折扣活动只取优惠力度最大的,同一个活动ProfitValue值越小的阶梯优惠额度越大
                     if (rsp.getStage() != null &&
-                            rsp.getStage().getProfitValue().compareTo(stage.getProfitValue()) <= 0)
+                            rsp.getStage().getProfitValue().compareTo(stage.getProfitValue()) < 0)
                         continue;
 
                     //3-2.如果折扣活动只适用于满足条件的个数和商品，则后面商品都不算入该阶梯适用商品
