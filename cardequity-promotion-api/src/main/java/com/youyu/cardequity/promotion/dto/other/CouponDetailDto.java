@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.dto.other;
 
 import com.youyu.cardequity.promotion.dto.*;
+import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import io.swagger.annotations.ApiModelProperty;
@@ -38,15 +39,15 @@ public class CouponDetailDto {
         CouponViewDto dto = new CouponViewDto();
         if (productCouponDto != null) {
             BeanUtils.copyProperties(productCouponDto, dto);
-            dto.setTargetFlag("0");
+            dto.setTargetFlag(CommonDict.FRONDEND_ALL.getCode());
             if (productCouponDto.getClientTypeSet() != null) {
                 //会员专属
                 if (productCouponDto.getClientTypeSet().equals(ClientType.MEMBER.getDictValue())) {
-                    dto.setTargetFlag("2");
+                    dto.setTargetFlag(CommonDict.FRONDEND_MEMBER.getCode());
                 } else {
                     //注册用户
                     if (UsedStage.Register.equals(productCouponDto.getGetStage())) {
-                        dto.setTargetFlag("1");
+                        dto.setTargetFlag(CommonDict.FRONDEND_NEW.getCode());
                     }
                 }
             }

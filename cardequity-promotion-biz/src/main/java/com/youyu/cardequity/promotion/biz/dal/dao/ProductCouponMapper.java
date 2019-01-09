@@ -64,6 +64,14 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      */
     int logicDelById(BaseCouponReq baseCoupon);
 
+
+    /**
+     * 通用查询
+     * @param commonQry 通用信息
+     * @return
+     */
+    List<ProductCouponEntity> findCouponList(@Param("commonQry") BaseQryCouponReq commonQry);
+
 }
 
 

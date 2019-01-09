@@ -26,6 +26,14 @@ public enum CommonDict {
     PASSVALID("1", "校验通过"),
     CONTINUEVALID("2", "需要继续校验"),
 
+
+    /**
+     * 前台领取对象：0-全部用户 1-新用户 2-会员
+     */
+    FRONDEND_ALL("0", "全部用户"),
+    FRONDEND_NEW("1", "新用户"),
+    FRONDEND_MEMBER("2", "会员"),
+
     ;
 
     /**

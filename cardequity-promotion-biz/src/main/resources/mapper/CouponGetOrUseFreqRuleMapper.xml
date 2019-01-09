@@ -29,7 +29,7 @@
         and (d.STATUS in ('0', '1') or
         curdate() &lt;= d.VALID_END_DATE)))
         and (ifnull(a.Person_Total_Num,999999999)>=999999 or a.Person_Total_Num &lt;=
-        (select count(d.UUID)
+        (select count(d.UUID) #有效期内
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.COUPON_ID

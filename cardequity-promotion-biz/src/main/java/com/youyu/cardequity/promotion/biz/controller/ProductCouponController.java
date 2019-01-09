@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.api.ProductCouponApi;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
@@ -105,8 +106,34 @@ public class ProductCouponController implements ProductCouponApi {
     @Override
     @ApiOperation(value = "查询所有优惠券列表")
     @PostMapping(path = "/findCouponListByCommon")
-    public Result<PageData<CouponDetailDto>> findCouponListByCommon(@RequestBody BaseQryCouponReq req){
+    public Result<CouponPageQryRsp> findCouponListByCommon(@RequestBody BaseQryCouponReq req){
         return Result.ok(productCouponService.findCouponListByCommon(req));
 
+    }
+
+    /**
+     * 模糊查询所有优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "模糊查询所有优惠券列表")
+    @PostMapping(path = "/findCouponList")
+    public Result<CouponPageQryRsp> findCouponList(@RequestBody BaseQryCouponReq req){
+        return Result.ok(productCouponService.findCouponList(req));
+
+    }
+
+    /**
+     * 查询指定优惠券详情
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "查询指定优惠券详情")
+    @PostMapping(path = "/findCouponById")
+    public Result<CouponDetailDto> findCouponById(@RequestBody BaseCouponReq req){
+        return Result.ok(productCouponService.findCouponById(req));
     }
 }

@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.dto.other;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
+import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
 import io.swagger.annotations.ApiModelProperty;
@@ -106,10 +107,10 @@ public class CouponViewDto {
         //默认没有门槛
         couponDto.setCouponStrategyType(CouponStrategyType.fix.getDictValue());
         //会员专属
-        if ("2".equals(targetFlag)) {
+        if (CommonDict.FRONDEND_MEMBER.getCode().equals(targetFlag)) {
             couponDto.setClientTypeSet(ClientType.MEMBER.getDictValue());
             //新手注册专属
-        } else if ("1".equals(targetFlag)) {
+        } else if (CommonDict.FRONDEND_NEW.getCode().equals(targetFlag)) {
             couponDto.setClientTypeSet(CommonConstant.WILDCARD);
             couponDto.setGetStage(UsedStage.Register.getDictValue());
         }

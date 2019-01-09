@@ -133,4 +133,63 @@
          AND a.UUID=  #{baseCoupon.couponId,jdbcType=VARCHAR}
     </update>
 
+
+    <select id="findCouponList" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity"
+            parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq">
+        select *
+        from TB_PRODUCT_COUPON a
+        where ifnull(a.IS_ENABLE, '1') = '1'
+        <if test="commonQry.couponStatus!=null and commonQry.couponStatus=='0'.toString()">
+            and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+        </if>
+        <if test="commonQry.couponStatus!=null and commonQry.couponStatus=='1'.toString()">
+            and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
+            and a.ALLOW_USE_END_DATE &gt;=curdate()
+        </if>
+        <if test="commonQry.couponStatus!=null and commonQry.couponStatus=='2'.toString()">
+            and a.ALLOW_USE_END_DATE &lt;curdate()
+        </if>
+        <if test="commonQry.couponId!=null and commonQry.couponId!=''">
+            and ( a.UUID=#{commonQry.couponId,jdbcType=VARCHAR} or
+            a.COUPON_NAME like CONCAT('%',#{commonQry.couponName,jdbcType=VARCHAR},'%') or
+            ( a.APPLY_PRODUCT_FLAG='1' or
+            exists(select 1 from TB_COUPON_REF_PRODUCT b
+            where b.COUPON_ID = a.UUID
+            and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR})
+            )
+            )
+        </if>
+        <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='0'.toString()">
+            and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*')='*' or
+            (instr(a.CLIENT_TYPE_SET,'10') &gt;0 and instr(a.CLIENT_TYPE_SET,'11')&gt;0 ))
+            and  if(length(a.GET_STAGE),a.GET_STAGE,'6')!='3'
+        </if>
+        <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='1'.toString()">
+            and a.GET_STAGE='3'
+        </if>
+        <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='2'.toString()">
+            and instr(a.CLIENT_TYPE_SET,'11')&gt;0
+        </if>
+        <if test="commonQry.couponType!=null and commonQry.couponType=='0'.toString()">
+            and COUPON_TYPE ='0'
+        </if>
+        <if test="commonQry.couponType!=null and commonQry.couponType=='1'.toString()">
+            and COUPON_TYPE ='1'
+        </if>
+        <if test="commonQry.couponType!=null and commonQry.couponType=='2'.toString()">
+            and COUPON_TYPE in ('2','3')
+        </if>
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='0'.toString()">
+            and ALLOW_GET_BEGIN_DATE &gt;curdate()
+        </if>
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='1'.toString()">
+            and ALLOW_GET_BEGIN_DATE &lt;=curdate()
+            and a.ALLOW_GET_END_DATE &gt;=curdate()
+        </if>
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='2'.toString()">
+            and ALLOW_GET_END_DATE &lt;curdate()
+        </if>
+        Order by a.CREATE_TIME desc
+    </select>
+
 </mapper>
