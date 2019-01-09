@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Table(name = "TB_COUPON_STAGE_USE_AND_GET_RULE")
+@Table(name = "TB_COUPON_STAGE_RULE")
 public class CouponStageRuleEntity extends com.youyu.common.entity.BaseEntity<String> {
     /**
      * 阶段编号:
