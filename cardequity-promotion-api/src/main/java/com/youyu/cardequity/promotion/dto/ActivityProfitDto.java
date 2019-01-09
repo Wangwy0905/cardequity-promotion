@@ -29,8 +29,8 @@ public class ActivityProfitDto implements IBaseDto<String>{
     @ApiModelProperty(value = "活动名称:")
     private String activityName;
 
-    @ApiModelProperty(value = "活动标签:用于前端展示：促销、秒杀")
-    private String activityLable;
+    @ApiModelProperty(value = "优惠标签:标签：满返券、促销等")
+    private CouponAndActivityLabelDto labelDto ;
 
     @ApiModelProperty(value = "活动短描:用于前端展示：如任选3件99元")
     private String activityShortDesc;

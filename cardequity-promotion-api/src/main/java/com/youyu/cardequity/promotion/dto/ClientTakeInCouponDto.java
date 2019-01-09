@@ -43,7 +43,7 @@ public class ClientTakeInCouponDto implements IBaseDto<String>{
     private BigDecimal productCount;
 
     @ApiModelProperty(value = "满足活动条件时的数量:")
-    private BigDecimal ProfitCount;
+    private BigDecimal profitCount;
 
     @ApiModelProperty(value = "优惠值:主要优惠金额、如果一张券应用到多个商品上则按商品价值总额按比例分配优惠额")
     private BigDecimal profitValue;

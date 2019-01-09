@@ -20,7 +20,7 @@ public class CommonBoolDto<T> {
     private String desc;
 
     @ApiModelProperty(value = "执行码")
-    private String Code;
+    private String code;
 
     @ApiModelProperty(value = "数据")
     private T data;

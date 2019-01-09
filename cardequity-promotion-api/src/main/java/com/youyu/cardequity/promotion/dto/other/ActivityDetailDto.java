@@ -35,17 +35,19 @@ public class ActivityDetailDto {
         if (activityProfit != null) {
             BeanUtils.copyProperties(activityProfit, result);
             //适配适用的银行卡指定额则为银行卡专属
-            if (activityProfit.getBankCodeSet()!=null &&
-                    activityProfit.getBankCodeSet()!="" &&
-                    activityProfit.getBankCodeSet()!="*"){
+            if (activityProfit.getBankCodeSet() != null &&
+                    activityProfit.getBankCodeSet() != "" &&
+                    activityProfit.getBankCodeSet() != "*") {
                 result.setApplyType(CommonConstant.PROMOTION_APPLYTYPE_BANKCODE);
             }
-            if (ClientType.MEMBER.getDictValue().equals(activityProfit.getClientTypeSet())){
+            if (ClientType.MEMBER.getDictValue().equals(activityProfit.getClientTypeSet())) {
                 result.setApplyType(CommonConstant.PROMOTION_APPLYTYPE_MEMBER);
             }
+            if (activityProfit.getLabelDto() != null)
+                result.setActivityLable(activityProfit.getLabelDto().getId());
         }
 
-        if (activityQuotaRule!=null){
+        if (activityQuotaRule != null) {
             result.setMaxCount(activityQuotaRule.getMaxCount());
         }
         result.setStageList(stageList);

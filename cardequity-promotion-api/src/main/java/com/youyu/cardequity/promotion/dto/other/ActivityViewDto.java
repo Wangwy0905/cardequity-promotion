@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.ActivityQuotaRuleDto;
 import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
+import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
 import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.ClientType;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
@@ -32,7 +33,10 @@ public class ActivityViewDto {
     private String activityName;
 
     @ApiModelProperty(value = "门槛短描:如满3件减20")
-    private String ActivityShortDesc;
+    private String activityShortDesc;
+
+    @ApiModelProperty(value = "优惠标签id:标签：满返、秒杀、促销等")
+    private String activityLable;
 
     @ApiModelProperty(value = "优惠值:如果是阶梯或随机的填0，存折扣、金额")
     private BigDecimal profitValue;
@@ -59,6 +63,8 @@ public class ActivityViewDto {
         ActivityDetailDto result=new ActivityDetailDto();
         ActivityProfitDto dto = new ActivityProfitDto();
         BeanUtils.copyProperties(this,dto);
+        dto.setLabelDto(new CouponAndActivityLabelDto());
+        dto.getLabelDto().setId(this.activityLable);
         if (CommonConstant.PROMOTION_APPLYTYPE_MEMBER.equals(applyType)){
             dto.setClientTypeSet(ClientType.MEMBER.getDictValue());
         }

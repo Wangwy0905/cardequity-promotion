@@ -19,13 +19,11 @@ public class CouponAndActivityLabelDto implements IBaseDto<String> {
     @ApiModelProperty(value = "标签名称:")
     private String labelName;
 
-    @ApiModelProperty(value = "标签使用类型:0-优惠券 1-活动")
+    @ApiModelProperty(value = "标签使用类型:0-优惠券 1-活动 2-无关")
     private String labelType;
-
 
     @ApiModelProperty(value = "主题颜色:")
     private String themeColour;
-
 
     @ApiModelProperty(value = "背景色:")
     private String backgroundColour;
