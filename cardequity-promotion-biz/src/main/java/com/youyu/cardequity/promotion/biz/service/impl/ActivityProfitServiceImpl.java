@@ -571,6 +571,18 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByProductId(req.getProductId(), req.getSkuId());
         return combinationActivity(entities);
     }
+
+
+    /**
+     * 查询指定活动
+     * @param req 活动基本信息
+     * @return 活动详情列表
+     */
+    @Override
+    public ActivityDetailDto findActivityById(BaseActivityReq req){
+        ActivityProfitEntity entitie = activityProfitMapper.findById(req.getActivityId());
+        return combinationActivity(entitie);
+    }
     
     /**
      * 校验活动基本信息

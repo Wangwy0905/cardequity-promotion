@@ -123,4 +123,13 @@ public interface ActivityProfitApi {
     @ApiOperation(value = "查找活动")
     @PostMapping(path = "/findProductAboutActivity")
     Result<List<ActivityDetailDto>> findProductAboutActivity(@RequestBody BaseProductReq req);
+
+    /**
+     * 查询指定活动
+     * @param req 活动基本信息
+     * @return 活动详情列表
+     */
+    @ApiOperation(value = "查找活动")
+    @PostMapping(path = "/findActivityById")
+    Result<ActivityDetailDto> findActivityById(@RequestBody BaseActivityReq req);
 }

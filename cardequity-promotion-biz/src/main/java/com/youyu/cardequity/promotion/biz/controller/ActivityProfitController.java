@@ -131,7 +131,7 @@ public class ActivityProfitController implements ActivityProfitApi {
      * @return 活动汇总列表
      */
     @Override
-    @ApiOperation(value = "查找活动")
+    @ApiOperation(value = "查询活动汇总信息")
     @PostMapping(path = "/findGatherActivityByCommon")
     public Result<List<GatherInfoRsp>> findGatherActivityByCommon(BaseQryActivityReq req){
         return Result.ok(activityProfitService.findGatherActivityByCommon(req));
@@ -144,9 +144,22 @@ public class ActivityProfitController implements ActivityProfitApi {
      * @return 活动详情列表
      */
     @Override
-    @ApiOperation(value = "查找活动")
+    @ApiOperation(value = "查找商品相关活动")
     @PostMapping(path = "/findProductAboutActivity")
     public Result<List<ActivityDetailDto>> findProductAboutActivity(@RequestBody BaseProductReq req){
         return Result.ok(activityProfitService.findProductAboutActivity(req));
+    }
+
+    /**
+     * 查询指定活动
+     * @param req 活动基本信息
+     * @return 活动详情列表
+     */
+    @Override
+    @ApiOperation(value = "查询指定活动")
+    @PostMapping(path = "/findActivityById")
+    public Result<ActivityDetailDto> findActivityById(@RequestBody BaseActivityReq req){
+        return Result.ok(activityProfitService.findActivityById(req));
+
     }
 }
