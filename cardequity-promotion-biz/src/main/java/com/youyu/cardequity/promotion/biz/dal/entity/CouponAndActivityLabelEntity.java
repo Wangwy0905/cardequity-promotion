@@ -34,7 +34,7 @@ public class CouponAndActivityLabelEntity  extends com.youyu.common.entity.BaseE
      * 标签适用类型:0-优惠券 1-活动
      */
     @Column(name = "LABEL_TYPE")
-    private String labelype;
+    private String labelType;
 
 
     /**
