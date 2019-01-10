@@ -68,7 +68,7 @@ public class ClientCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "使用日")
     private LocalDate businDate;
 
-    @ApiModelProperty(value = "级别：0-自定义 1-全局")
+    @ApiModelProperty(value = "级别：0-小鱼券 1-大鱼券")
     private String couponLevel;
 
     @ApiModelProperty(value = "门槛触发类型:0-按买入金额 1-按买入数量")

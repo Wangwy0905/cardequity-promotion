@@ -22,10 +22,10 @@ public class ProductCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "优惠券编号:")
     private String uuid;
 
-    @ApiModelProperty(value = "优惠策略类型:0-折扣券(该表不会出现) 1-阶梯优惠券(满多少减多少)  2-定额优惠券（该券无阶梯优惠固定金额）")
+    @ApiModelProperty(value = "优惠策略类型:0-折扣券 1-现金  3-随机  4-满减现金；")
     private String couponStrategyType;
 
-    @ApiModelProperty(value = "类型:0-红包 1-优惠券 2-运费券")
+    @ApiModelProperty(value = "类型:0-红包 1-消费券 2-运费券")
     private String couponType;
 
     @ApiModelProperty(value = "优惠名称:")

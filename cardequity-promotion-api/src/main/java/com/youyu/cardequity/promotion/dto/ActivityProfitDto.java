@@ -23,7 +23,7 @@ public class ActivityProfitDto implements IBaseDto<String>{
     @ApiModelProperty(value = "活动编号:")
     private String uuid;
 
-    @ApiModelProperty(value = "活动类型:0-限额任选 1-折扣 2-优惠价（只针对某一商品和折扣类型一样可以互相转换） 3-现金立减")
+    @ApiModelProperty(value = "活动类型:0-任选 1-折扣 2-特价 3-立减 4-自动返券")
     private String activityCouponType;
 
     @ApiModelProperty(value = "活动名称:")
@@ -35,7 +35,7 @@ public class ActivityProfitDto implements IBaseDto<String>{
     @ApiModelProperty(value = "活动短描:用于前端展示：如任选3件99元")
     private String activityShortDesc;
 
-    @ApiModelProperty(value = "级别：0-自动义 1-全局")
+    @ApiModelProperty(value = "级别：0-小鱼券 1-大鱼券")
     private String activityLevel;
 
     @ApiModelProperty(value = "专属客户类型集合:订单涉及门槛属性：只有这些这些客户类型才提供优惠。多种客户类型用逗号相隔，为*标识所有")
