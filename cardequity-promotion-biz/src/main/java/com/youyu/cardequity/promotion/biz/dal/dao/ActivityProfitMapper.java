@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
 import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseActivityReq;
+import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
@@ -97,6 +98,8 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * @return
      */
     List<ActivityProfitEntity> findActivityByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
+
+    List<GatherInfoRsp> findActivityNumByProducts(@Param("list") BatchBaseProductReq list);
 }
 
 

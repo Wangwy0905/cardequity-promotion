@@ -12,7 +12,9 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
 import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import com.youyu.cardequity.promotion.biz.dal.dao.ActivityRefProductMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 
@@ -143,6 +146,21 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
         }
         return result;
 
+    }
+
+
+    /**
+     * 查询商品对应的活动数量
+     * @param req 商品列表
+     * @return 商品对应活动数量
+     */
+    @Override
+    public List<GatherInfoRsp> findProductAboutActivityNum(BatchBaseProductReq req){
+        if (req == null || req.getProductList()==null || req.getProductList().isEmpty())
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定商品"));
+
+        List<GatherInfoRsp> result = activityProfitMapper.findActivityNumByProducts(req);
+        return result;
     }
 }
 

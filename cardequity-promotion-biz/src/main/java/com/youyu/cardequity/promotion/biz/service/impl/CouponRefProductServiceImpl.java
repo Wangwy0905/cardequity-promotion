@@ -2,13 +2,13 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.spring.service.BatchService;
+import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
 import com.youyu.cardequity.promotion.biz.service.CouponRefProductService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
-import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
-import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
-import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
+import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +37,9 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
 
     @Autowired
     private BatchService batchService;
+
+    @Autowired
+    private ProductCouponMapper productCouponMapper;
 
     /**
      * 配置优惠的适用商品范围
@@ -84,6 +87,23 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
         List<CouponRefProductEntity> entities = couponRefProductMapper.findListByCommon(req.getCouponId(), "");
         return BeanPropertiesConverter.copyPropertiesOfList(entities, CouponRefProductDto.class);
     }
+
+    /**
+     * 查询商品对应的优惠券数量
+     * @param req 商品列表
+     * @return 商品对应优惠券数量
+     */
+    @Override
+    public List<GatherInfoRsp> findProductAboutCouponNum(BatchBaseProductReq req){
+        if (req == null || req.getProductList()==null || req.getProductList().isEmpty())
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定商品"));
+
+        List<GatherInfoRsp> result = productCouponMapper.findCouPonNumByProducts(req);
+        return result;
+    }
+
+
+
 }
 
 

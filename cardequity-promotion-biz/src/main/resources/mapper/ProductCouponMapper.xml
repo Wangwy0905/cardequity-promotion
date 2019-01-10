@@ -259,4 +259,24 @@
         group by case when a.CLIENT_TYPE_SET = '11' then '2' when ifnull(a.GET_STAGE, '6') = '3' then '1' else '0' end
     </select>
 
+
+    <select id="findCouPonNumByProducts" resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">
+        select CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY') as gatherItem,
+        count(*) as gatherValue
+        from TB_PRODUCT_COUPON a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
+        and a.ALLOW_USE_END_DATE &gt;= curdate()
+        and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
+        EXISTS (select 1 from
+        TB_COUPON_REF_PRODUCT b
+        where b.COUPON_ID=a.UUID
+        and CONCAT(PRODUCT_ID,if(length(a.SKU_ID),a.SKU_ID,'EMPTY')) IN
+        <foreach collection="list.productList" item="product" index="index"
+                 open="(" close=")" separator=",">
+            CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY'))
+        </foreach>
+        ))
+    </select>
+
 </mapper>

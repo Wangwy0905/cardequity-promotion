@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq;
+import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
@@ -80,6 +81,13 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      * @return
      */
     List<GatherInfoRsp> findGatherCouponList(@Param("commonQry") BaseQryCouponReq commonQry);
+
+    /**
+     *查询商品相关优惠数量
+     * @param list
+     * @return
+     */
+    List<GatherInfoRsp> findCouPonNumByProducts(@Param("list") BatchBaseProductReq list);
 
 }
 
