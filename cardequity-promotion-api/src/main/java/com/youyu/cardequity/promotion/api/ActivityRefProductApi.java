@@ -1,7 +1,10 @@
 package com.youyu.cardequity.promotion.api;
 
 import com.youyu.cardequity.promotion.dto.ActivityRefProductDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
+import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,4 +36,22 @@ public interface ActivityRefProductApi {
     @PostMapping(path = "/findAllProductInValidActivity")
     Result<List<ActivityRefProductDto>> findAllProductInValidActivity(@RequestBody BaseActivityReq req);
 
+    /**
+     * 查询活动配置的商品
+     * @param req 活动基本信息
+     * @return 商品基本信息
+     */
+    @ApiOperation(value = "查询活动配置的商品")
+    @PostMapping(path = "/findActivityProducts")
+    Result<List<BaseProductReq>> findActivityProducts(@RequestBody BaseActivityReq req);
+
+
+    /**
+     * 配置优惠的适用商品范围
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "配置优惠的适用商品范围")
+    @PostMapping(path = "/batchAddActivityRefProduct")
+    Result<CommonBoolDto<Integer>> batchAddActivityRefProduct(@RequestBody BatchRefProductReq req);
 }

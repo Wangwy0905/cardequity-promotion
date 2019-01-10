@@ -559,6 +559,19 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         return result;
     }
 
+
+
+    /**
+     * 查询商品相关的活动
+     * @param req 商品基本信息
+     * @return 活动详情列表
+     */
+    @Override
+    public List<ActivityDetailDto> findProductAboutActivity(BaseProductReq req){
+        List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByProductId(req.getProductId(), req.getSkuId());
+        return combinationActivity(entities);
+    }
+    
     /**
      * 校验活动基本信息
      *

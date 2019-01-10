@@ -72,7 +72,7 @@ public interface CouponAndActivityLabelApi {
      * @return 标签详情列表
      */
     @ApiOperation(value = "[分页]查询标签")
-    @PostMapping(path = "/notcontrol/cardequity/promotion/findPageCouponAndActivityLabelByCommon")
+    @PostMapping(path = "/findPageCouponAndActivityLabelByCommon")
     Result<PageData<CouponAndActivityLabelDto>> findPageByCommon(@RequestBody BasePageQryLabelReq req);
 
 }

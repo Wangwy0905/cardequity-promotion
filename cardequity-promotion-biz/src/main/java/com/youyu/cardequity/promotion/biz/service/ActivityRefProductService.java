@@ -6,6 +6,7 @@ import com.youyu.cardequity.promotion.dto.ActivityRefProductDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
 import com.youyu.common.service.IService;
 
 import java.util.List;
@@ -31,6 +32,21 @@ public interface ActivityRefProductService extends IService<ActivityRefProductDt
      * @return
      */
     List<ActivityRefProductDto> findAllProductInValidActivity(BaseActivityReq req);
+
+    /**
+     * 查询活动配置的商品
+     * @param req 活动基本信息
+     * @return 商品基本信息
+     */
+    List<BaseProductReq> findActivityProducts(BaseActivityReq req);
+
+    /**
+     * 配置优惠的适用商品范围
+     * @param req
+     * @return
+     */
+    CommonBoolDto<Integer> batchAddActivityRefProduct(BatchRefProductReq req);
+
 }
 
 

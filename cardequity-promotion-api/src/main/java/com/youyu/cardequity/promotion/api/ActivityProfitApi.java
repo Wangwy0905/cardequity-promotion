@@ -112,5 +112,15 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "查找活动")
     @PostMapping(path = "/findGatherActivityByCommon")
-    Result<List<GatherInfoRsp>> findGatherActivityByCommon(BaseQryActivityReq req);
+    Result<List<GatherInfoRsp>> findGatherActivityByCommon(@RequestBody BaseQryActivityReq req);
+
+
+    /**
+     * 查询商品的活动
+     * @param req 商品基本信息
+     * @return 活动详情列表
+     */
+    @ApiOperation(value = "查找活动")
+    @PostMapping(path = "/findProductAboutActivity")
+    Result<List<ActivityDetailDto>> findProductAboutActivity(@RequestBody BaseProductReq req);
 }

@@ -136,4 +136,17 @@ public class ActivityProfitController implements ActivityProfitApi {
     public Result<List<GatherInfoRsp>> findGatherActivityByCommon(BaseQryActivityReq req){
         return Result.ok(activityProfitService.findGatherActivityByCommon(req));
     }
+
+
+    /**
+     * 查询商品的活动
+     * @param req 商品基本信息
+     * @return 活动详情列表
+     */
+    @Override
+    @ApiOperation(value = "查找活动")
+    @PostMapping(path = "/findProductAboutActivity")
+    public Result<List<ActivityDetailDto>> findProductAboutActivity(@RequestBody BaseProductReq req){
+        return Result.ok(activityProfitService.findProductAboutActivity(req));
+    }
 }

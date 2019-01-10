@@ -3,7 +3,10 @@ package com.youyu.cardequity.promotion.biz.controller;
 import com.youyu.cardequity.promotion.api.ActivityRefProductApi;
 import com.youyu.cardequity.promotion.biz.service.ActivityRefProductService;
 import com.youyu.cardequity.promotion.dto.ActivityRefProductDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
+import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +34,31 @@ public class ActivityRefProductController implements ActivityRefProductApi {
     @PostMapping(path = "/findAllProductInValidActivity")
     public Result<List<ActivityRefProductDto>> findAllProductInValidActivity(@RequestBody BaseActivityReq req) {
         return Result.ok(activityRefProductService.findAllProductInValidActivity(req));
+    }
+
+    /**
+     * 查询活动配置的商品
+     * @param req 活动基本信息
+     * @return 商品基本信息
+     */
+    @Override
+    @ApiOperation(value = "查询活动配置的商品")
+    @PostMapping(path = "/findActivityProducts")
+    public Result<List<BaseProductReq>> findActivityProducts(@RequestBody BaseActivityReq req){
+        return Result.ok(activityRefProductService.findActivityProducts(req));
+
+    }
+
+    /**
+     * 配置优惠的适用商品范围
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "配置优惠的适用商品范围")
+    @PostMapping(path = "/batchAddActivityRefProduct")
+    public Result<CommonBoolDto<Integer>> batchAddActivityRefProduct(BatchRefProductReq req){
+        return Result.ok(activityRefProductService.batchAddActivityRefProduct(req));
+
     }
 }

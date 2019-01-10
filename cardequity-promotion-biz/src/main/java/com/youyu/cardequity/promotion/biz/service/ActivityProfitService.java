@@ -21,8 +21,18 @@ import java.util.List;
  */
 public interface ActivityProfitService extends IService<ActivityProfitDto, ActivityProfitEntity> {
 
+    /**
+     * 查找可参与的活动
+     * @param req
+     * @return
+     */
     List<ActivityDetailDto> findEnableGetActivity(QryProfitCommonReq req);
 
+    /**
+     * 订单预处理使用活动
+     * @param req
+     * @return
+     */
     List<UseActivityRsp> combActivityRefProductDeal(GetUseEnableCouponReq req);
 
     /**
@@ -68,6 +78,14 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @return 活动汇总列表
      */
      List<GatherInfoRsp> findGatherActivityByCommon(BaseQryActivityReq req);
+
+    /**
+     * 查询商品的活动
+     * @param req 商品基本信息
+     * @return 活动详情列表
+     */
+    List<ActivityDetailDto> findProductAboutActivity(BaseProductReq req);
+
 }
 
 
