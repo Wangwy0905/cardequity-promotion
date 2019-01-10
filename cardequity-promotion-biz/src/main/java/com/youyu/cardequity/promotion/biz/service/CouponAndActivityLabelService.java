@@ -2,8 +2,10 @@ package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity;
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
+import com.youyu.cardequity.promotion.vo.req.BasePageQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
+import com.youyu.common.api.PageData;
 import com.youyu.common.service.IService;
 
 import java.util.List;
@@ -40,5 +42,12 @@ public interface CouponAndActivityLabelService  extends IService<CouponAndActivi
      * @return 标签详情列表
      */
     List<CouponAndActivityLabelDto> findByCommon( BaseQryLabelReq req);
+
+    /**
+     * [分页]查询标签
+     * @param req 标签基本查询请求体
+     * @return 标签详情列表
+     */
+    PageData<CouponAndActivityLabelDto> findPageByCommon(BasePageQryLabelReq req);
 
 }

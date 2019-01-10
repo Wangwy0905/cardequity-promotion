@@ -1,18 +1,23 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponAndActivityLabelMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity;
+import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.biz.service.CouponAndActivityLabelService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.ActiveOrCouponType;
 import com.youyu.cardequity.promotion.vo.req.BaseLabelReq;
+import com.youyu.cardequity.promotion.vo.req.BasePageQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
+import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 
 @Service
-public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, CouponAndActivityLabelDto, CouponAndActivityLabelEntity, CouponAndActivityLabelMapper> implements CouponAndActivityLabelService {
+public class CouponAndActivityLabelServiceImpl extends AbstractService<String, CouponAndActivityLabelDto, CouponAndActivityLabelEntity, CouponAndActivityLabelMapper> implements CouponAndActivityLabelService {
     @Autowired
     private CouponAndActivityLabelMapper couponAndActivityLabelMapper;
 
@@ -53,7 +59,7 @@ public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, 
             req.setLabelType(ActiveOrCouponType.COUPON.getDictValue());
         }
 
-        CouponAndActivityLabelEntity entity =  BeanPropertiesUtils.copyProperties(req, CouponAndActivityLabelEntity.class);
+        CouponAndActivityLabelEntity entity = BeanPropertiesUtils.copyProperties(req, CouponAndActivityLabelEntity.class);
         entity.setId(CommonUtils.getUUID());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
 
@@ -61,7 +67,8 @@ public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, 
         if (i < 1) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("增加签名失败"));
         }
-
+        //返回存储的id
+        req.setId(entity.getId());
         return req;
     }
 
@@ -117,11 +124,11 @@ public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, 
     @Transactional(rollbackFor = Exception.class)
     public Integer delete(BatchBaseLabelReq req) {
 
-        if (req == null || req.getLabelList()==null || req.getLabelList().isEmpty()) {
+        if (req == null || req.getLabelList() == null || req.getLabelList().isEmpty()) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定添加数据"));
         }
-        List<CouponAndActivityLabelEntity> entities=new ArrayList<>();
-        for (BaseLabelReq label:req.getLabelList()) {
+        List<CouponAndActivityLabelEntity> entities = new ArrayList<>();
+        for (BaseLabelReq label : req.getLabelList()) {
             CouponAndActivityLabelEntity entity = couponAndActivityLabelMapper.findLabelById(label.getUuid());
             if (entity == null) {
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有该标签"));
@@ -142,12 +149,32 @@ public class CouponAndActivityLabelServiceImpl  extends AbstractService<String, 
      * @return 标签详情列表
      */
     @Override
-    public List<CouponAndActivityLabelDto> findByCommon(BaseQryLabelReq req){
+    public List<CouponAndActivityLabelDto> findByCommon(BaseQryLabelReq req) {
         if (req == null) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定参数"));
         }
 
         List<CouponAndActivityLabelEntity> entities = couponAndActivityLabelMapper.findLabelByCommon(req);
-        return BeanPropertiesConverter.copyPropertiesOfList(entities,CouponAndActivityLabelDto.class);
+        return BeanPropertiesConverter.copyPropertiesOfList(entities, CouponAndActivityLabelDto.class);
+    }
+
+    /**
+     * [分页]查询标签
+     *
+     * @param req 标签基本查询请求体
+     * @return 标签详情列表
+     */
+    @Override
+    public PageData<CouponAndActivityLabelDto> findPageByCommon(BasePageQryLabelReq req) {
+        PageHelper.startPage(req.getPageNo(), req.getPageSize());
+        // 获取活动分页信息
+        PageInfo<CouponAndActivityLabelEntity> entitiesPage = new PageInfo<>(couponAndActivityLabelMapper.findLabelByCommon(req));
+
+        List<CouponAndActivityLabelDto> dtoList = new ArrayList<>();
+        if (entitiesPage.getList() != null)
+            for (CouponAndActivityLabelEntity entity : entitiesPage.getList()) {
+                dtoList.add(BeanPropertiesUtils.copyProperties(entity, CouponAndActivityLabelDto.class));
+            }
+        return convert(entitiesPage, dtoList);
     }
 }

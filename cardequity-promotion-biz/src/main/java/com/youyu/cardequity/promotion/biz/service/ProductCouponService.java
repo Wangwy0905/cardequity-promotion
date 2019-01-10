@@ -7,6 +7,7 @@ import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.service.IService;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -99,6 +100,14 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @return
      */
     CouponDetailDto findCouponById(BaseCouponReq req);
+
+    /**
+     * 查询优惠汇总信息
+     *
+     * @param req 普通优惠活动请求体
+     * @return 优惠汇总列表
+     */
+    List<GatherInfoRsp> findGatherCouponByCommon(BaseQryCouponReq req);
 
 }
 

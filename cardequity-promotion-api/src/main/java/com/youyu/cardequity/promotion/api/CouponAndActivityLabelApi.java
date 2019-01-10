@@ -3,8 +3,10 @@ package com.youyu.cardequity.promotion.api;
 
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
 import com.youyu.cardequity.promotion.vo.req.BaseLabelReq;
+import com.youyu.cardequity.promotion.vo.req.BasePageQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
+import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -63,4 +65,14 @@ public interface CouponAndActivityLabelApi {
     @ApiOperation(value = "查询标签")
     @PostMapping(path = "/findCouponAndActivityLabelByCommon")
     Result<List<CouponAndActivityLabelDto>> findByCommon(@RequestBody BaseQryLabelReq req);
+
+    /**
+     * [分页]查询标签
+     * @param req 标签基本查询请求体
+     * @return 标签详情列表
+     */
+    @ApiOperation(value = "[分页]查询标签")
+    @PostMapping(path = "/notcontrol/cardequity/promotion/findPageCouponAndActivityLabelByCommon")
+    Result<PageData<CouponAndActivityLabelDto>> findPageByCommon(@RequestBody BasePageQryLabelReq req);
+
 }

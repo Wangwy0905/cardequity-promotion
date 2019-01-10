@@ -3,8 +3,10 @@ package com.youyu.cardequity.promotion.biz.controller;
 import com.youyu.cardequity.promotion.api.CouponAndActivityLabelApi;
 import com.youyu.cardequity.promotion.biz.service.CouponAndActivityLabelService;
 import com.youyu.cardequity.promotion.dto.CouponAndActivityLabelDto;
+import com.youyu.cardequity.promotion.vo.req.BasePageQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryLabelReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseLabelReq;
+import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,4 +77,15 @@ public class CouponAndActivityLabelController implements CouponAndActivityLabelA
         return Result.ok(couponAndActivityLabelService.findByCommon(req));
     }
 
+    /**
+     * [分页]查询标签
+     * @param req 标签基本查询请求体
+     * @return 标签详情列表
+     */
+    @ApiOperation(value = "[分页]查询标签")
+    @PostMapping(path = "/findPageCouponAndActivityLabelByCommon")
+    public Result<PageData<CouponAndActivityLabelDto>> findPageByCommon(@RequestBody BasePageQryLabelReq req){
+        return Result.ok(couponAndActivityLabelService.findPageByCommon(req));
+
+    }
 }

@@ -6,6 +6,7 @@ import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.service.IService;
@@ -59,6 +60,14 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @return
      */
     PageData<ActivityDetailDto> findActivityByCommon(BaseQryActivityReq req);
+
+    /**
+     * 查询活动汇总信息
+     *
+     * @param req 普通查询活动请求体
+     * @return 活动汇总列表
+     */
+     List<GatherInfoRsp> findGatherActivityByCommon(BaseQryActivityReq req);
 }
 
 

@@ -5,7 +5,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
-import com.youyu.common.api.PageData;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -108,4 +108,13 @@ public interface ProductCouponApi {
     @PostMapping(path = "/findCouponById")
     Result<CouponDetailDto> findCouponById(@RequestBody BaseCouponReq req);
 
+    /**
+     * 查询活动汇总信息
+     *
+     * @param req 普通查询活动请求体
+     * @return 活动汇总列表
+     */
+    @ApiOperation(value = "查找活动")
+    @PostMapping(path = "/findGatherCouponByCommon")
+    Result<List<GatherInfoRsp>> findGatherCouponByCommon(BaseQryCouponReq req);
 }

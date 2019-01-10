@@ -22,6 +22,7 @@ import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
@@ -523,6 +524,20 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
         return convert(entitiesPage, dtoList);
     }
+
+    /**
+     * 查询活动汇总信息
+     *
+     * @param req 普通查询活动请求体
+     * @return 活动详情列表列表
+     */
+    @Override
+    public List<GatherInfoRsp> findGatherActivityByCommon(BaseQryActivityReq req) {
+        if (req==null)
+            req=new BaseQryActivityReq();
+        return activityProfitMapper.findGatherActivityListByCommon(req);
+    }
+
 
     /**
      * 获取商品活动优惠价

@@ -130,7 +130,8 @@
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.UUID = #{baseActivity.activityId,jdbcType=VARCHAR}
     </update>
-    <select id="findActivityListByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq">
+    <select id="findActivityListByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity"
+            parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq">
         SELECT * FROM TB_ACTIVITY_PROFIT a
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="commonQry.activityId!=null and commonQry.activityId!=''">
@@ -173,5 +174,42 @@
         </foreach>
     </select>
 
+
+    <select id="findGatherActivityListByCommon" resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp"
+            parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq">
+        SELECT a.ACTIVITY_COUPON_TYPE as gatherItem,
+            count(1) as gatherValue
+        FROM TB_ACTIVITY_PROFIT a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        <if test="commonQry.activityId!=null and commonQry.activityId!=''">
+            and a.UUID=#{commonQry.activityId,jdbcType=VARCHAR}
+        </if>
+        <if test="commonQry.status=='0'.toString()">
+            and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+        </if>
+        <if test="commonQry.status=='1'.toString()">
+            and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
+            and a.ALLOW_USE_END_DATE &gt;=curdate()
+        </if>
+        <if test="commonQry.status=='2'.toString()">
+            and a.ALLOW_USE_END_DATE &lt;curdate()
+        </if>
+        <if test="commonQry.activityCouponType!=null and commonQry.activityCouponType!=''">
+            and instr(#{commonQry.activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;0
+        </if>
+        <if test="commonQry.activityName!=null and commonQry.activityName!=''">
+            and a.ACTIVITY_NAME like CONCAT('%',#{commonQry.activityName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="commonQry.productId!=null and commonQry.productId!=''">
+            and( a.APPLY_PRODUCT_FLAG='1' or
+            exists(select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID = a.UUID
+            and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR}
+            <if test="commonQry.skuId!=null and commonQry.skuId!=''">
+                and b.SKU_ID =#{commonQry.skuId,jdbcType=VARCHAR}
+            </if>
+            ))
+        </if>
+        group by ACTIVITY_COUPON_TYPE
+    </select>
 
 </mapper>

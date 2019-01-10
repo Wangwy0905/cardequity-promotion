@@ -6,6 +6,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
@@ -135,5 +136,19 @@ public class ProductCouponController implements ProductCouponApi {
     @PostMapping(path = "/findCouponById")
     public Result<CouponDetailDto> findCouponById(@RequestBody BaseCouponReq req){
         return Result.ok(productCouponService.findCouponById(req));
+    }
+
+
+    /**
+     * 查询优惠汇总信息
+     *
+     * @param req 普通优惠活动请求体
+     * @return 优惠汇总列表
+     */
+    @Override
+    @ApiOperation(value = "查询优惠汇总信息")
+    @PostMapping(path = "/findGatherCouponByCommon")
+    public Result<List<GatherInfoRsp>> findGatherCouponByCommon(BaseQryCouponReq req){
+        return Result.ok(productCouponService.findGatherCouponByCommon(req));
     }
 }

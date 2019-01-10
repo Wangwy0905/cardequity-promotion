@@ -4,6 +4,7 @@ package com.youyu.cardequity.promotion.api;
 import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
@@ -102,4 +103,14 @@ public interface ActivityProfitApi {
     @ApiOperation(value = "查找活动")
     @PostMapping(path = "/findActivityByCommon")
     Result<PageData<ActivityDetailDto>> findActivityByCommon(@RequestBody BaseQryActivityReq req);
+
+    /**
+     * 查询活动汇总信息
+     *
+     * @param req 普通查询活动请求体
+     * @return 活动汇总列表
+     */
+    @ApiOperation(value = "查找活动")
+    @PostMapping(path = "/findGatherActivityByCommon")
+    Result<List<GatherInfoRsp>> findGatherActivityByCommon(BaseQryActivityReq req);
 }

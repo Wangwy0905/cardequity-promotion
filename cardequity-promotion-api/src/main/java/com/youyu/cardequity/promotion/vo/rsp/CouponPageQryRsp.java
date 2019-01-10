@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,12 +14,10 @@ import java.util.Map;
  */
 @Data
 public class CouponPageQryRsp {
-    public CouponPageQryRsp(){
-        gatherResult=new HashMap<>();
-    }
+
     @ApiModelProperty(value = "查询结果")
     private PageData<CouponDetailDto> result;
 
     @ApiModelProperty(value = "汇总结果")
-    private Map<String,Integer> gatherResult;
+    private List<GatherInfoRsp> gatherResult;
 }

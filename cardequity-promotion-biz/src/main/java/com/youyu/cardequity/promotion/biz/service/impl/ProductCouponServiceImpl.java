@@ -20,6 +20,7 @@ import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
@@ -721,7 +722,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      */
     @Override
     public CouponPageQryRsp findCouponListByCommon(BaseQryCouponReq req) {
-        if (req != null)
+        if (req == null)
             req = new BaseQryCouponReq();
 
         CouponPageQryRsp result = new CouponPageQryRsp();
@@ -729,24 +730,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         // 获取活动分页信息
         PageInfo<ProductCouponEntity> entitiesPage = new PageInfo<>(productCouponMapper.findCouponListByCommon(req));
         List<CouponDetailDto> dtoList = new ArrayList<>();
-        int newi = 0, memberi = 0;
+
         for (ProductCouponEntity couponEntity : entitiesPage.getList()) {
             dtoList.add(combinationCoupon(couponEntity));
-            if (!CommonUtils.isEmptyorNull(couponEntity.getClientTypeSet())) {
-                //会员专属
-                if (couponEntity.getClientTypeSet().equals(ClientType.MEMBER.getDictValue())) {
-                    memberi++;
-                } else {
-                    //注册用户
-                    if (UsedStage.Register.equals(couponEntity.getGetStage())) {
-                        newi++;
-                    }
-                }
-            }
+
         }
-        result.getGatherResult().put(CommonDict.FRONDEND_MEMBER.getCode(), memberi);
-        result.getGatherResult().put(CommonDict.FRONDEND_MEMBER.getCode(), newi);
-        result.getGatherResult().put(CommonDict.FRONDEND_MEMBER.getCode(), dtoList.size() - newi - memberi);
+        List<GatherInfoRsp> gatherInfoRspList = productCouponMapper.findGatherCouponList(req);
+        result.setGatherResult(gatherInfoRspList);
+
         PageData<CouponDetailDto> pageresult = convert(entitiesPage, dtoList);
         result.setResult(pageresult);
         return result;
@@ -760,7 +751,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      */
     @Override
     public CouponPageQryRsp findCouponList(BaseQryCouponReq req) {
-        if (req != null)
+        if (req == null)
             req = new BaseQryCouponReq();
         CouponPageQryRsp result = new CouponPageQryRsp();
         // pagination
@@ -771,25 +762,27 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         int newi = 0, memberi = 0;
         for (ProductCouponEntity couponEntity : entitiesPage.getList()) {
             dtoList.add(combinationCoupon(couponEntity));
-            if (!CommonUtils.isEmptyorNull(couponEntity.getClientTypeSet())) {
-                //会员专属
-                if (couponEntity.getClientTypeSet().equals(ClientType.MEMBER.getDictValue())) {
-                    memberi++;
-                } else {
-                    //注册用户
-                    if (UsedStage.Register.equals(couponEntity.getGetStage())) {
-                        newi++;
-                    }
-                }
-            }
         }
-        result.getGatherResult().put(CommonDict.FRONDEND_MEMBER.getCode(), memberi);
-        result.getGatherResult().put(CommonDict.FRONDEND_MEMBER.getCode(), newi);
-        result.getGatherResult().put(CommonDict.FRONDEND_MEMBER.getCode(), dtoList.size() - newi - memberi);
 
         PageData<CouponDetailDto> pageresult = convert(entitiesPage, dtoList);
         result.setResult(pageresult);
+
+        List<GatherInfoRsp> gatherInfoRspList = productCouponMapper.findGatherCouponList(req);
+        result.setGatherResult(gatherInfoRspList);
         return result;
+    }
+
+    /**
+     * 查询优惠汇总信息
+     *
+     * @param req 普通优惠活动请求体
+     * @return 优惠汇总列表
+     */
+    @Override
+    public List<GatherInfoRsp> findGatherCouponByCommon(BaseQryCouponReq req) {
+        if (req==null)
+            req=new BaseQryCouponReq();
+        return productCouponMapper.findGatherCouponList(req);
     }
 
     /**
