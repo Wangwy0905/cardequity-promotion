@@ -162,4 +162,18 @@ public class ActivityProfitController implements ActivityProfitApi {
         return Result.ok(activityProfitService.findActivityById(req));
 
     }
+
+
+    /**
+     * 查找活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "查找活动列表：模糊指定id、商品编号、名称匹配其中之一进行查询")
+    @PostMapping(path = "/findActivityList")
+    public Result<PageData<ActivityDetailDto>> findActivityList(@RequestBody BaseQryActivityReq req){
+
+        return Result.ok(activityProfitService.findActivityList(req));
+    }
 }

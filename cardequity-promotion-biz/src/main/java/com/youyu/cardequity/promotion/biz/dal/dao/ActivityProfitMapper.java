@@ -99,7 +99,21 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      */
     List<ActivityProfitEntity> findActivityByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
 
+    /**
+     * 查询商品对应活动数量
+     * @param list
+     * @return
+     */
     List<GatherInfoRsp> findActivityNumByProducts(@Param("list") BatchBaseProductReq list);
+
+    /**
+     * 通用查询：支持按id、商品id、名称模糊指定
+     * @param commonQry 通用信息
+     * @return
+     */
+    List<ActivityProfitEntity> findActivityList(@Param("commonQry") BaseQryActivityReq commonQry);
+
+
 }
 
 

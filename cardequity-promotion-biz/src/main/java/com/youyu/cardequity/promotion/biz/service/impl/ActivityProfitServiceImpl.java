@@ -511,12 +511,35 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     public PageData<ActivityDetailDto> findActivityByCommon(BaseQryActivityReq req) {
         if (req == null)
-            return null;
+            req=new BaseQryActivityReq() ;
 
         // pagination
         PageHelper.startPage(req.getPageNo(), req.getPageSize());
         // 获取活动分页信息
         PageInfo<ActivityProfitEntity> entitiesPage = new PageInfo<>(activityProfitMapper.findActivityListByCommon(req));
+        List<ActivityDetailDto> dtoList = new ArrayList<>();
+        for (ActivityProfitEntity item : entitiesPage.getList()) {
+            ActivityDetailDto dto = combinationActivity(item);
+            dtoList.add(dto);
+        }
+        return convert(entitiesPage, dtoList);
+    }
+
+    /**
+     * 查找活动:支持id、商品编号、名称只要其中之一匹配即返回
+     *
+     * @param req 普通查询活动请求体
+     * @return 活动详情列表列表
+     */
+    @Override
+    public PageData<ActivityDetailDto> findActivityList(BaseQryActivityReq req) {
+        if (req == null)
+            req=new BaseQryActivityReq() ;
+
+        // pagination
+        PageHelper.startPage(req.getPageNo(), req.getPageSize());
+        // 获取活动分页信息
+        PageInfo<ActivityProfitEntity> entitiesPage = new PageInfo<>(activityProfitMapper.findActivityList(req));
         List<ActivityDetailDto> dtoList = new ArrayList<>();
         for (ActivityProfitEntity item : entitiesPage.getList()) {
             ActivityDetailDto dto = combinationActivity(item);

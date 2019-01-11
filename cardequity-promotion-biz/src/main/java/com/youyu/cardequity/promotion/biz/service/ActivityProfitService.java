@@ -93,6 +93,14 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      */
     ActivityDetailDto findActivityById(BaseActivityReq req);
 
+    /**
+     * 查找活动:支持id、商品编号、名称只要其中之一匹配即返回
+     *
+     * @param req 普通查询活动请求体
+     * @return 活动详情列表列表
+     */
+    PageData<ActivityDetailDto> findActivityList(BaseQryActivityReq req);
+
 }
 
 
