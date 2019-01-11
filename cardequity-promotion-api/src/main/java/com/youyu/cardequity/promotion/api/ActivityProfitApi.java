@@ -165,7 +165,7 @@ public interface ActivityProfitApi {
      * @return
      *
      */
-    @ApiOperation(value = "获取商品活动优惠价")
+    @ApiOperation(value = "获取商品有效的优惠价活动（排除了已达额度的活动）")
     @PostMapping(path = "/findValidActivityPrice")
     Result<List<ActivityDetailDto>> findValidActivityPrice(@RequestBody BaseProductReq req);
 }

@@ -203,7 +203,7 @@ public class ActivityProfitController implements ActivityProfitApi {
      *
      */
     @Override
-    @ApiOperation(value = "获取商品活动优惠价")
+    @ApiOperation(value = "获取商品有效的优惠价活动（排除了已达额度的活动）")
     @PostMapping(path = "/findValidActivityPrice")
     public Result<List<ActivityDetailDto>> findValidActivityPrice(@RequestBody BaseProductReq req){
         return Result.ok(activityProfitService.findValidActivityPrice(req));
