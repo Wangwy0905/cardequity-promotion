@@ -284,13 +284,17 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
 
         //数据库操作
-        batchService.batchDispose(activityList, ActivityProfitMapper.class, "insert");
+        if (!activityList.isEmpty())
+            batchService.batchDispose(activityList, ActivityProfitMapper.class, "insert");
 
-        batchService.batchDispose(quotaList, ActivityQuotaRuleMapper.class, "insert");
+        if (!quotaList.isEmpty())
+            batchService.batchDispose(quotaList, ActivityQuotaRuleMapper.class, "insert");
 
-        batchService.batchDispose(stageList, ActivityStageCouponMapper.class, "insert");
+        if (!stageList.isEmpty())
+            batchService.batchDispose(stageList, ActivityStageCouponMapper.class, "insert");
 
-        batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
+        if (!refProductList.isEmpty())
+            batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
 
         result.setSuccess(true);
         result.setData(req);
@@ -447,17 +451,28 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
 
         //数据库操作
-        batchService.batchDispose(activityList, ActivityProfitMapper.class, "updateByPrimaryKey");
+        if (!activityList.isEmpty())
+            batchService.batchDispose(activityList, ActivityProfitMapper.class, "updateByPrimaryKey");
 
-        batchService.batchDispose(addQuotaList, ActivityQuotaRuleMapper.class, "insert");
-        batchService.batchDispose(modQuotaList, ActivityQuotaRuleMapper.class, "updateByPrimaryKey");
+        if (!activityIds.isEmpty()) {
+            batchService.batchDispose(activityIds, ActivityStageCouponMapper.class, "logicDelByActivityId");
+            batchService.batchDispose(activityIds, ActivityRefProductMapper.class, "deleteByActivityId");
+        }
 
-        batchService.batchDispose(activityIds, ActivityStageCouponMapper.class, "logicDelByActivityId");
-        batchService.batchDispose(addStageList, ActivityStageCouponMapper.class, "insert");
-        batchService.batchDispose(modStageList, ActivityStageCouponMapper.class, "updateByPrimaryKey");
+        if (!addQuotaList.isEmpty())
+            batchService.batchDispose(addQuotaList, ActivityQuotaRuleMapper.class, "insert");
 
-        batchService.batchDispose(activityIds, ActivityRefProductMapper.class, "deleteByActivityId");
-        batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
+        if (!modQuotaList.isEmpty())
+            batchService.batchDispose(modQuotaList, ActivityQuotaRuleMapper.class, "updateByPrimaryKey");
+
+        if (!addStageList.isEmpty())
+            batchService.batchDispose(addStageList, ActivityStageCouponMapper.class, "insert");
+
+        if (!modStageList.isEmpty())
+            batchService.batchDispose(modStageList, ActivityStageCouponMapper.class, "updateByPrimaryKey");
+
+        if (!refProductList.isEmpty())
+            batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
 
         result.setSuccess(true);
         result.setData(req);
