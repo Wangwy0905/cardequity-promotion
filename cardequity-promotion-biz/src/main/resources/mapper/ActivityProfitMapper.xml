@@ -153,8 +153,6 @@
         select *
         from TB_ACTIVITY_PROFIT a
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-        and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
-        and a.ALLOW_USE_END_DATE &gt;= curdate()
         AND ACTIVITY_COUPON_TYPE='2'
         and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
           EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
@@ -163,6 +161,47 @@
              )
            )
            Order by a.CREATE_TIME desc
+    </select>
+
+    <select id="findValidPriceActivityByProduct" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+        select *
+        from TB_ACTIVITY_PROFIT a
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1' = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
+        and a.ALLOW_USE_END_DATE &gt;= curdate()
+        AND ACTIVITY_COUPON_TYPE='2'
+        and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
+        EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
+        b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+        <if test="skuId!=null and skuId!=''">
+            and b.SKU_ID=#{skuId,jdbcType=VARCHAR}
+        </if>
+          )
+        )
+        and  (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
+        (select sum(ifnull(c.Profit_Value, 0))
+        from TB_CLIENT_TAKE_IN_ACTIVITY c
+        where BUSIN_CODE = '5003'
+        and c.ACTIVITY_ID = a.UUID
+        and c.create_time &gt;= curdate()))
+        and (ifnull(b.Max_Amount,999999999)>=999999999 or b.Max_Amount &gt;
+        (select sum(ifnull(c.Profit_Value, 0))
+        from TB_CLIENT_TAKE_IN_ACTIVITY c
+        where BUSIN_CODE = '5003'
+        and c.ACTIVITY_ID = a.UUID))
+        and (ifnull(b.Per_Date_Max_Count,999999999)>=999999999 or b.Per_Date_Max_Count &gt;
+        (select sum(ifnull(c.Product_Count, 0))
+        from TB_CLIENT_TAKE_IN_ACTIVITY c
+        where BUSIN_CODE = '5003'
+        and c.ACTIVITY_ID = a.UUID
+        and c.create_time &gt;= curdate()))
+        and (ifnull(b.Max_Count,999999999)>=999999999 or b.Max_Count &gt;
+        (select sum(ifnull(c.Product_Count, 0))
+        from TB_CLIENT_TAKE_IN_ACTIVITY c
+        where BUSIN_CODE = '5003'
+        and c.ACTIVITY_ID = a.UUID))
+        Order by a.CREATE_TIME desc
     </select>
 
 

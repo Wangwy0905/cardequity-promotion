@@ -148,6 +148,13 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
     List<ActivityProfitEntity> findActivityList(@Param("commonQry") BaseQryActivityReq commonQry);
 
 
+    /**
+     * 查询有效的特价活动：去除已经达到额度的活动
+     * @param productId
+     * @param skuId
+     * @return
+     */
+    List<ActivityProfitEntity> findValidPriceActivityByProduct(@Param("productId") String productId,@Param("skuId") String skuId);
 }
 
 

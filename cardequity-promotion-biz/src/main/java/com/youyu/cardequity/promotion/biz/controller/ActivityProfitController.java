@@ -183,7 +183,7 @@ public class ActivityProfitController implements ActivityProfitApi {
      * 【内部服务】获取商品活动优惠价：
      *
      * @param req 商品
-     * @return 活动详情列表
+     * @return 商品对应特价基本信息列表
      * 开发日志
      * 1004258-徐长焕-20190111 新建
      */
@@ -193,5 +193,19 @@ public class ActivityProfitController implements ActivityProfitApi {
     public Result<List<BasePriceActivityRsp>> findActivityPriceValue(@RequestBody BaseProductReq req){
 
         return Result.ok(activityProfitService.findActivityPriceValue(req));
+    }
+
+
+    /**
+     * 获取商品有效的优惠价活动（排除了已达额度的活动）
+     * @param req
+     * @return
+     *
+     */
+    @Override
+    @ApiOperation(value = "获取商品活动优惠价")
+    @PostMapping(path = "/findValidActivityPrice")
+    public Result<List<ActivityDetailDto>> findValidActivityPrice(@RequestBody BaseProductReq req){
+        return Result.ok(activityProfitService.findValidActivityPrice(req));
     }
 }

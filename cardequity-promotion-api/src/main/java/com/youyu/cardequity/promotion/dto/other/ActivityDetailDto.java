@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -45,11 +46,21 @@ public class ActivityDetailDto {
             }
             if (activityProfit.getLabelDto() != null)
                 result.setActivityLable(activityProfit.getLabelDto().getId());
+
+            //保护优惠值
+            if (activityProfit.getProfitValue()!=null && activityProfit.getProfitValue().compareTo(BigDecimal.ZERO)>0){
+                if (stageList!=null && !stageList.isEmpty()){
+                    activityProfit.setProfitValue(stageList.get(0).getProfitValue());
+                }
+            }
         }
 
         if (activityQuotaRule != null) {
             result.setMaxCount(activityQuotaRule.getMaxCount());
         }
+
+
+
         result.setStageList(stageList);
         result.setProductList(productList);
         return result;

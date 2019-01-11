@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.vo.rsp;
 
+import com.youyu.cardequity.promotion.dto.other.ActivityViewDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -16,6 +17,6 @@ public class BasePriceActivityRsp {
     @ApiModelProperty(value = "子商品编号:必填")
     private String skuId;
 
-    @ApiModelProperty(value = "活动价格")
+    @ApiModelProperty(value = "活动详情视图")
     private BigDecimal price;
 }

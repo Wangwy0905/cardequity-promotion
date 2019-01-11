@@ -576,9 +576,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductId(req.getProductId(), req.getSkuId());
         if (entities.isEmpty())
             return null;
-        if (entities.size() > 1)
-            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("配置错误，该商品配置了多个特价活动"));
-
+        //多个特价活动以最新的为准
         ActivityDetailDto result = combinationActivity(entities.get(0));
         return result;
     }
@@ -607,6 +605,23 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     public ActivityDetailDto findActivityById(BaseActivityReq req) {
         ActivityProfitEntity entitie = activityProfitMapper.findById(req.getActivityId());
         return combinationActivity(entitie);
+    }
+
+
+    /**
+     * 获取商品有效的优惠价活动（排除了已达额度的活动）
+     *
+     * @param req
+     * @return 开发日志
+     * 1004258-徐长焕-20181226 新建
+     */
+    @Override
+    public List<ActivityDetailDto> findValidActivityPrice(BaseProductReq req) {
+
+        List<ActivityProfitEntity> entities = activityProfitMapper.findValidPriceActivityByProduct(req.getProductId(), req.getSkuId());
+
+        List<ActivityDetailDto> result = combinationActivity(entities);
+        return result;
     }
 
     /**

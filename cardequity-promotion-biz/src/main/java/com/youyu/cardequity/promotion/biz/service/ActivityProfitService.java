@@ -112,6 +112,15 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      */
     List<BasePriceActivityRsp> findActivityPriceValue(BaseProductReq req);
 
+
+    /**
+     * 获取商品有效的优惠价活动（排除了已达额度的活动）
+     *
+     * @param req
+     * @return 开发日志
+     * 1004258-徐长焕-20181226 新建
+     */
+    List<ActivityDetailDto> findValidActivityPrice(BaseProductReq req);
 }
 
 
