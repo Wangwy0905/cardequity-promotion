@@ -28,6 +28,8 @@
 		<common-parent.version>2.0.2.RELEASE</common-parent.version>
 		<java.version>1.8</java.version>
 		<spring-boot.version>2.0.1.RELEASE</spring-boot.version>
+		<cardequity-common-base.version>0.0.1-SNAPSHOT</cardequity-common-base.version>
+		<cardequity-common-spring.version>0.0.1-SNAPSHOT</cardequity-common-spring.version>
 	</properties>
 
 
@@ -47,6 +49,18 @@
 				<version>${common-parent.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<!-- 权益公共base模块 -->
+			<dependency>
+				<groupId>com.youyu.cardequity</groupId>
+				<artifactId>cardequity-common-base</artifactId>
+				<version>${cardequity-common-base.version}</version>
+			</dependency>
+			<!-- 权益公共spring模块 -->
+			<dependency>
+				<groupId>com.youyu.cardequity</groupId>
+				<artifactId>cardequity-common-spring</artifactId>
+				<version>${cardequity-common-spring.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
