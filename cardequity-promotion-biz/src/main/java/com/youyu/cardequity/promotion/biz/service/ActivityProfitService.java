@@ -6,11 +6,14 @@ import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.BasePriceActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.service.IService;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -100,6 +103,14 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @return 活动详情列表列表
      */
     PageData<ActivityDetailDto> findActivityList(BaseQryActivityReq req);
+
+
+    /**
+     * 查询活动特价
+     * @param req
+     * @return
+     */
+    List<BasePriceActivityRsp> findActivityPriceValue(BaseProductReq req);
 
 }
 

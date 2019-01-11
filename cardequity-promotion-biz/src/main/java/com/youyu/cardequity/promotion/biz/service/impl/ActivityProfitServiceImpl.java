@@ -21,6 +21,7 @@ import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.BasePriceActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.PageData;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -87,9 +89,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         //获取普通活动列表
         List<ActivityProfitEntity> activityList = null;
-        if(CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag()) ) {
+        if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())) {
             activityList = activityProfitMapper.findEnableGetCommonFirstActivity(req.getProductId(), req.getEntrustWay());
-        }else{
+        } else {
             activityList = activityProfitMapper.findEnableGetCommonActivity(req.getProductId(), req.getEntrustWay());
         }
 
@@ -510,7 +512,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     public PageData<ActivityDetailDto> findActivityByCommon(BaseQryActivityReq req) {
         if (req == null)
-            req=new BaseQryActivityReq() ;
+            req = new BaseQryActivityReq();
 
         // pagination
         PageHelper.startPage(req.getPageNo(), req.getPageSize());
@@ -533,7 +535,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     public PageData<ActivityDetailDto> findActivityList(BaseQryActivityReq req) {
         if (req == null)
-            req=new BaseQryActivityReq() ;
+            req = new BaseQryActivityReq();
 
         // pagination
         PageHelper.startPage(req.getPageNo(), req.getPageSize());
@@ -555,8 +557,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      */
     @Override
     public List<GatherInfoRsp> findGatherActivityByCommon(BaseQryActivityReq req) {
-        if (req==null)
-            req=new BaseQryActivityReq();
+        if (req == null)
+            req = new BaseQryActivityReq();
         return activityProfitMapper.findGatherActivityListByCommon(req);
     }
 
@@ -582,14 +584,14 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     }
 
 
-
     /**
      * 查询商品相关的活动
+     *
      * @param req 商品基本信息
      * @return 活动详情列表
      */
     @Override
-    public List<ActivityDetailDto> findProductAboutActivity(BaseProductReq req){
+    public List<ActivityDetailDto> findProductAboutActivity(BaseProductReq req) {
         List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByProductId(req.getProductId(), req.getSkuId());
         return combinationActivity(entities);
     }
@@ -597,15 +599,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
     /**
      * 查询指定活动
+     *
      * @param req 活动基本信息
      * @return 活动详情列表
      */
     @Override
-    public ActivityDetailDto findActivityById(BaseActivityReq req){
+    public ActivityDetailDto findActivityById(BaseActivityReq req) {
         ActivityProfitEntity entitie = activityProfitMapper.findById(req.getActivityId());
         return combinationActivity(entitie);
     }
-    
+
     /**
      * 校验活动基本信息
      *
@@ -762,6 +765,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     }
 
 
+    /**
+     * 查询活动特价
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public List<BasePriceActivityRsp> findActivityPriceValue(BaseProductReq req) {
+        return activityProfitMapper.findBasePriceByProduct(req.getProductId(), req.getSkuId());
+    }
 }
 
 

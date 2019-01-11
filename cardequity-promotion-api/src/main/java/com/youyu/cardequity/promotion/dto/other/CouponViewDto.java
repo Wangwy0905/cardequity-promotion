@@ -91,6 +91,9 @@ public class CouponViewDto {
     @ApiModelProperty(value = "周期内允许此时:")
     private Integer allowCount;
 
+    @ApiModelProperty(value = "适用商品类型:0-自动义商品范围 1-全部")
+    private String applyProductFlag;
+
     @ApiModelProperty(value = "优惠券涉及的商品")
     private List<BaseProductReq> productList;
 

@@ -59,6 +59,9 @@ public class ActivityViewDto {
     @ApiModelProperty(value = "适用类型:0-普通 1-会员专属 2-银行卡专属")
     private String applyType;
 
+    @ApiModelProperty(value = "适用商品类型:0-自动义商品范围 1-全部")
+    private String applyProductFlag;
+
     public ActivityDetailDto switchToModel(){
         ActivityDetailDto result=new ActivityDetailDto();
         ActivityProfitDto dto = new ActivityProfitDto();

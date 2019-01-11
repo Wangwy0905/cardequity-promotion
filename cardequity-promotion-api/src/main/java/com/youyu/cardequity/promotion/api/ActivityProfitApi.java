@@ -4,6 +4,7 @@ package com.youyu.cardequity.promotion.api;
 import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.BasePriceActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.PageData;
@@ -13,6 +14,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.ApiOperation;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -60,7 +62,7 @@ public interface ActivityProfitApi {
      * 开发日志
      * 1004258-徐长焕-20181226 新建
      */
-    @ApiOperation(value = "获取商品活动优惠价")
+    @ApiOperation(value = "获取商品特价活动")
     @PostMapping(path = "/findActivityPrice")
     Result<ActivityDetailDto> findActivityPrice(@RequestBody BaseProductReq req);
 
@@ -142,4 +144,17 @@ public interface ActivityProfitApi {
     @ApiOperation(value = "查找活动列表：模糊指定id、商品编号、名称匹配其中之一进行查询")
     @PostMapping(path = "/findActivityList")
     Result<PageData<ActivityDetailDto>> findActivityList(@RequestBody BaseQryActivityReq req);
+
+
+    /**
+     * 【内部服务】获取商品活动优惠价：
+     *
+     * @param req 商品
+     * @return 活动详情列表
+     * 开发日志
+     * 1004258-徐长焕-20181226 新建
+     */
+    @ApiOperation(value = "获取商品活动优惠价")
+    @PostMapping(path = "/findActivityPriceValue")
+    Result<List<BasePriceActivityRsp>> findActivityPriceValue(@RequestBody BaseProductReq req);
 }

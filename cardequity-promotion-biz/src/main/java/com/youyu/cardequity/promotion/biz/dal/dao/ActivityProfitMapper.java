@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
+import com.youyu.cardequity.promotion.vo.rsp.BasePriceActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
@@ -79,6 +80,15 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * @return
      */
     List<ActivityProfitEntity> findPriceActivityByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
+
+    /**
+     * 查询商品的特价基础信息
+     * @param productId
+     * @param skuId
+     * @return
+     */
+    List<BasePriceActivityRsp> findBasePriceByProduct(@Param("productId") String productId, @Param("skuId") String skuId);
+
 
     /**
      * 逻辑删除
