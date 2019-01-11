@@ -232,15 +232,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
             //3.处理限额信息
             ActivityQuotaRuleDto quotaRule = item.getActivityQuotaRule();
-            //将编号传出
-            quotaRule.setActivityId(profitEntity.getId());
-
-            ActivityQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(quotaRule, ActivityQuotaRuleEntity.class);
-            //将操作者传入，一般存ip
-            quotaRuleEntity.setUpdateAuthor(req.getOperator());
-            quotaRuleEntity.setCreateAuthor(req.getOperator());
-            quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
-            quotaList.add(quotaRuleEntity);
+            if (quotaRule!=null) {
+                //将编号传出
+                quotaRule.setActivityId(profitEntity.getId());
+                ActivityQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(quotaRule, ActivityQuotaRuleEntity.class);
+                //将操作者传入，一般存ip
+                quotaRuleEntity.setUpdateAuthor(req.getOperator());
+                quotaRuleEntity.setCreateAuthor(req.getOperator());
+                quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+                quotaList.add(quotaRuleEntity);
+            }
 
             //4.处理阶梯信息
             if (item.getStageList() != null) {
@@ -317,7 +318,6 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
 
         List<ActivityProfitEntity> activityList = new ArrayList<>();
-        List<ActivityQuotaRuleEntity> quotaList = new ArrayList<>();
         List<ActivityRefProductEntity> refProductList = new ArrayList<>();
         List<String> activityIds = new ArrayList<>();
         List<ActivityStageCouponEntity> modStageList = new ArrayList<>();
@@ -384,23 +384,25 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             profitEntity.setIsEnable(CommonDict.IF_YES.getCode());
             activityList.add(profitEntity);
 
-            //3.处理限额信息
-            ActivityQuotaRuleEntity quotaRuleEntity = activityQuotaRuleMapper.findActivityQuotaRuleById(profitEntity.getId());
-            //如果是新增做插入操作
-            if (quotaRuleEntity == null) {
-                quotaRuleEntity = new ActivityQuotaRuleEntity();
-                quotaRuleEntity.setCreateAuthor(req.getOperator());
-                addQuotaList.add(quotaRuleEntity);
-            } else {//非新增做更新操作
-                modQuotaList.add(quotaRuleEntity);
-            }
             ActivityQuotaRuleDto quotaRule = item.getActivityQuotaRule();
-            quotaRule.setActivityId(profitEntity.getId());
-            BeanPropertiesUtils.copyProperties(quotaRule, quotaRuleEntity);
-            //补全默认信息
-            quotaRuleEntity.setUpdateAuthor(req.getOperator());
-            quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
-            quotaList.add(quotaRuleEntity);
+            if (quotaRule!=null) {
+                //3.处理限额信息
+                ActivityQuotaRuleEntity quotaRuleEntity = activityQuotaRuleMapper.findActivityQuotaRuleById(profitEntity.getId());
+                //如果是新增做插入操作
+                if (quotaRuleEntity == null) {
+                    quotaRuleEntity = new ActivityQuotaRuleEntity();
+                    quotaRuleEntity.setCreateAuthor(req.getOperator());
+                    addQuotaList.add(quotaRuleEntity);
+                } else {//非新增做更新操作
+                    modQuotaList.add(quotaRuleEntity);
+                }
+
+                quotaRule.setActivityId(profitEntity.getId());
+                BeanPropertiesUtils.copyProperties(quotaRule, quotaRuleEntity);
+                //补全默认信息
+                quotaRuleEntity.setUpdateAuthor(req.getOperator());
+                quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+            }
 
             //4.处理阶梯信息：先逻辑删除再更新或增加
             if (item.getStageList() != null) {
