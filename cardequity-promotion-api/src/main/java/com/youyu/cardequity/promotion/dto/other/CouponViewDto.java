@@ -65,10 +65,10 @@ public class CouponViewDto {
     private BigDecimal perProfitTopValue;
 
     @ApiModelProperty(value = "优惠开始日:")
-    private LocalDate allowUseBeginDate;
+    private LocalDateTime allowUseBeginDate;
 
     @ApiModelProperty(value = "优惠结束日:")
-    private LocalDate allowUseEndDate;
+    private LocalDateTime allowUseEndDate;
 
     @ApiModelProperty(value = "有效期限:以天为单位")
     private Integer valIdTerm;

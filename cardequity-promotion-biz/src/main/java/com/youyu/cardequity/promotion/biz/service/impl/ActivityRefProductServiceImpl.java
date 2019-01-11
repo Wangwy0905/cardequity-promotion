@@ -110,7 +110,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
     }
 
     /**
-     * 配置优惠的适用商品范围
+     * 配置活动的商品信息
      *
      * @param req
      * @return

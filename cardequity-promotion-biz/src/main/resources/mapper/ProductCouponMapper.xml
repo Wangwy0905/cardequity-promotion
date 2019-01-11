@@ -196,10 +196,10 @@
             and instr(a.CLIENT_TYPE_SET,'11')&gt;0
         </if>
         <if test="commonQry.couponType!=null and commonQry.couponType=='0'.toString()">
-            and COUPON_TYPE ='0'
+            and COUPON_LEVEL ='0'
         </if>
         <if test="commonQry.couponType!=null and commonQry.couponType=='1'.toString()">
-            and COUPON_TYPE ='1'
+            and COUPON_LEVEL ='1'
         </if>
         <if test="commonQry.couponType!=null and commonQry.couponType=='2'.toString()">
             and COUPON_TYPE in ('2','3')
