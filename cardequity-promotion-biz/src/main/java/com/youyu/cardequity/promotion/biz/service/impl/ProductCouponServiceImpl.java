@@ -5,13 +5,13 @@ import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
-import com.youyu.cardequity.promotion.biz.constant.CommonConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
 import com.youyu.cardequity.promotion.biz.service.CouponRefProductService;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.biz.utils.SnowflakeIdWorker;
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
@@ -27,10 +27,8 @@ import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,31 +72,42 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     /**
      * 1004259-徐长焕-20181210 新增
      * 功能：查询指定商品可领取的优惠券
-     *
-     * @return 开发日志
+     * @param qryProfitCommonReq 优惠查询请求体
+     * @return 优惠券详情列表
+     * 开发日志
      * 1004244-徐长焕-20181207 新建
      */
     @Override
     public List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq) {
+        List<ProductCouponEntity> productCouponlist =null;
 
-
-        //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
-        List<ProductCouponEntity> productCouponlist = productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClinetType());
-
+        if(CommonConstant.EXCLUSIONFLAG_ALL.equals(qryProfitCommonReq.getExclusionFlag()) ) {
+            //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
+            productCouponlist = productCouponMapper.findEnableGetCouponList(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClinetType());
+        }else{
+            productCouponlist = productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClinetType());
+        }
         List<CouponDetailDto> result = new ArrayList<>();
 
         //根据客户对上述券领取情况，以及该券领取频率限制进行排除
         for (ProductCouponEntity item : productCouponlist) {
-            List<CouponStageRuleEntity> stageList = couponStageRuleMapper.findStageByCouponId(item.getId());
-            //做保护，后面直接通过素组长度判断
-            if (stageList == null) {
-                stageList = new ArrayList<>(0);
+            //如果非新注册用户,排除掉新用户专享的
+            if (!CommonConstant.USENEWREGISTER_YES.equals(qryProfitCommonReq.getNewRegisterFlag())){
+                if (UsedStage.Register.getDictValue().equals(item.getGetType())){
+                    continue;
+                }
             }
 
+            //查询子券信息
+            List<CouponStageRuleEntity> stageList = couponStageRuleMapper.findStageByCouponId(item.getId());
+
             List<ShortCouponDetailDto> shortStageList = new ArrayList<>();
-            //查询客户受频率限制的券
-            if (!CommonUtils.isEmptyorNull(qryProfitCommonReq.getClinetId())) {
-                shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClinetId(), item.getId(), "");
+            //获取不满足领取频率的数据
+            if(!CommonConstant.EXCLUSIONFLAG_ALL.equals(qryProfitCommonReq.getExclusionFlag()) ) {
+                //查询客户受频率限制的券
+                if (!CommonUtils.isEmptyorNull(qryProfitCommonReq.getClinetId())) {
+                    shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClinetId(), item.getId(), "");
+                }
             }
 
             //子券因领取频率受限的

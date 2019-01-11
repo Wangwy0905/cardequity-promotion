@@ -1,6 +1,6 @@
 package com.youyu.cardequity.promotion.biz.utils;
 
-import com.youyu.cardequity.promotion.biz.constant.CommonConstant;
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 
 import java.math.BigDecimal;

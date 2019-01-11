@@ -47,6 +47,31 @@
         Order by a.CREATE_TIME desc
     </select>
 
+
+    <select id="findEnableGetCouponList"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
+        select a.*
+        from TB_PRODUCT_COUPON a
+        left join TB_COUPON_QUOTA_RULE b on a.UUID = b.COUPON_ID and IFNULL(b.IS_ENABLE, '1') = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        <if test="productId != null and productId!=''">
+            and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
+            EXISTS (select 1 from TB_COUPON_REF_PRODUCT b where b.COUPON_ID=a.UUID and
+            b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
+        </if>
+        <if test="entrustWay != null and entrustWay!=''">
+
+            and (if(length(a.ENTRUST_WAY_SET),a.ENTRUST_WAY_SET,'*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="clientType != null and clientType!=''">
+
+            and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
+        </if>
+        and a.ALLOW_GET_BEGIN_DATE &lt;= sysdate()
+        and a.ALLOW_GET_END_DATE &gt;= sysdate()
+        Order by a.CREATE_TIME desc
+    </select>
+
     <select id="findProductCouponById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
     select *
       from TB_PRODUCT_COUPON a

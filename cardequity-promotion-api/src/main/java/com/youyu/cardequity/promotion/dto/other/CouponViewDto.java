@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by caiyi on 2019/1/2.
+ * 优惠券详情视图
  */
 @Data
 public class CouponViewDto {

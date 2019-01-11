@@ -11,13 +11,17 @@
         where if(length(a.IS_ENABLE), a.IS_ENABLE,'1') = '1'
         <if test="productId != null and productId!=''">
             and (if(length(a.APPLY_PRODUCT_FLAG), APPLY_PRODUCT_FLAG,'0')  = '1' or
-            EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
+            EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR})
+            )
         </if>
         <if test="entrustWay != null and entrustWay!=''">
-            and if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*')  = '*'
+            and (if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*')  = '*'
             or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
-        and if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*'
+        <if test="clientType != null and clientType!=''">
+        and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*' or
+            or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
+        </if>
         and if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
         and if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
         and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
@@ -47,6 +51,31 @@
         Order by a.CREATE_TIME desc
     </select>
 
+    <select id="findEnableGetCommonFirstActivity" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+        select *
+        from TB_ACTIVITY_PROFIT a
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE), b.IS_ENABLE,'1')= '1'
+        where if(length(a.IS_ENABLE), a.IS_ENABLE,'1') = '1'
+        <if test="productId != null and productId!=''">
+            and (if(length(a.APPLY_PRODUCT_FLAG), APPLY_PRODUCT_FLAG,'0')  = '1' or
+            EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR})
+            )
+        </if>
+        <if test="entrustWay != null and entrustWay!=''">
+            and (if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*')  = '*'
+            or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="clientType != null and clientType!=''">
+            and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*' or
+            or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
+        </if>
+        and if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
+        and if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
+        and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
+        and a.ALLOW_USE_END_DATE &gt;= sysdate()
+        Order by a.CREATE_TIME desc
+    </select>
+
     <select id="findEnableGetMemberActivity" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
         select *
         from TB_ACTIVITY_PROFIT a
@@ -54,13 +83,14 @@
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="productId != null and productId!=''">
             and (if(length(a.APPLY_PRODUCT_FLAG), APPLY_PRODUCT_FLAG,'0')  = '1' or
-            EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
+            EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR})
+            )
         </if>
         <if test="entrustWay != null and entrustWay!=''">
-            and if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*')  = '*'
+            and (if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*')  = '*'
             or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
-        and if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') != '*'
+        and a.CLIENT_TYPE_SET = '11'
         and if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
         and if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
         and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
@@ -89,6 +119,29 @@
         and c.ACTIVITY_ID = a.UUID))
         Order by a.CREATE_TIME desc
     </select>
+
+    <select id="findEnableGetMemberFirstActivity" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+        select *
+        from TB_ACTIVITY_PROFIT a
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1' = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        <if test="productId != null and productId!=''">
+            and (if(length(a.APPLY_PRODUCT_FLAG), APPLY_PRODUCT_FLAG,'0')  = '1' or
+            EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
+        </if>
+        <if test="entrustWay != null and entrustWay!=''">
+            and (if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*')  = '*'
+            or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+        </if>
+        and a.CLIENT_TYPE_SET = '11'
+        and if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
+        and if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
+        and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
+        and a.ALLOW_USE_END_DATE &gt;= sysdate()
+
+        Order by a.CREATE_TIME desc
+    </select>
+
     <select id="findById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
          select *
         from TB_ACTIVITY_PROFIT a

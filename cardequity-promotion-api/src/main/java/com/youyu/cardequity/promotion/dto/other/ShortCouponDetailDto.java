@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * Created by caiyi on 2018/12/10.
+ *
  * 优惠券与阶段的简短传输实体
  */
 @Data

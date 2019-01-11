@@ -12,7 +12,7 @@ import org.springframework.beans.BeanUtils;
 import java.util.List;
 
 /**
- * Created by caiyi on 2018/12/27.
+ * 优惠券详情
  */
 @Getter
 @Setter

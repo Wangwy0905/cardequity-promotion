@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Created by caiyi on 2019/1/3.
+ * 活动详情视图
  */
 @Data
 public class ActivityViewDto {

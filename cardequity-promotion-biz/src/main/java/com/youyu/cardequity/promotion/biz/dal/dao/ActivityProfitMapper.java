@@ -32,7 +32,18 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
                                                            @Param("entrustWay") String entrustWay);
 
     /**
-     * 获取可参与普通活动(非银行卡相关和会员相关)根据订单及商品属性
+     * 获取可参与（粗粒度校验）普通活动(非银行卡相关和会员相关)根据订单及商品属性
+     * @param productId：商品编号
+     * @return
+     * 开发日志
+     * 1004244-徐长焕-20181207 新建
+     */
+    List<ActivityProfitEntity> findEnableGetCommonFirstActivity(@Param("productId") String productId,
+                                                           @Param("entrustWay") String entrustWay);
+
+
+    /**
+     * 获取可参与会员活动(非银行卡相关和会员相关)根据订单及商品属性
      * @param productId：商品编号，为空表示查询不指定相关商品的活动
      * @return
      * 开发日志
@@ -41,6 +52,19 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
     List<ActivityProfitEntity> findEnableGetMemberActivity(@Param("productId") String productId,
                                                            @Param("entrustWay") String entrustWay,
                                                            @Param("clientType") String clientType);
+
+
+    /**
+     * 获取可参与（粗粒度校验）会员活动(非银行卡相关和会员相关)根据订单及商品属性
+     * @param productId：商品编号，为空表示查询不指定相关商品的活动
+     * @return
+     * 开发日志
+     * 1004244-徐长焕-20181207 新建
+     */
+    List<ActivityProfitEntity> findEnableGetMemberFirstActivity(@Param("productId") String productId,
+                                                           @Param("entrustWay") String entrustWay,
+                                                           @Param("clientType") String clientType);
+
 
     /**
      * 根据活动id查询活动详情

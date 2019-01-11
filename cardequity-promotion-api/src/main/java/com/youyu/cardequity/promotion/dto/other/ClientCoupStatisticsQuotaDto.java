@@ -2,16 +2,14 @@ package com.youyu.cardequity.promotion.dto.other;
 
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
 /**
- * Created by caiyi on 2018/12/12.
+ * 优惠使用情况统计数据结构
  */
-@Getter
-@Setter
+@Data
 public class ClientCoupStatisticsQuotaDto {
 
     public ClientCoupStatisticsQuotaDto(){

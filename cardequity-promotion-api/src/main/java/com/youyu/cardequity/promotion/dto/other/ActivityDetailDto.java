@@ -1,7 +1,7 @@
 package com.youyu.cardequity.promotion.dto.other;
 
 /**
- * Created by caiyi on 2019/1/3.
+ * 活动详情
  */
 
 import com.youyu.cardequity.promotion.constant.CommonConstant;

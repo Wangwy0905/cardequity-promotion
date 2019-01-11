@@ -1,14 +1,12 @@
 package com.youyu.cardequity.promotion.dto.other;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
- * Created by caiyi on 2018/12/14.
+ * 执行结果描述
  */
-@Getter
-@Setter
+@Data
 public class CommonBoolDto<T> {
     public CommonBoolDto(){}
 

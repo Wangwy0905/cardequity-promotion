@@ -2,14 +2,12 @@ package com.youyu.cardequity.promotion.dto.other;
 
 import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
- * Created by caiyi on 2018/12/21.
+ * 客户优惠券基本信息
  */
-@Getter
-@Setter
+@Data
 public class ShortClientCouponDto extends ShortCouponDetailDto {
     @ApiModelProperty(value = "领取编号:")
     private String uuid;

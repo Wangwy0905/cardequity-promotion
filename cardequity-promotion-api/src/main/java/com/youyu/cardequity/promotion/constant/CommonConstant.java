@@ -28,4 +28,18 @@ public interface CommonConstant {
     String PROMOTION_APPLYTYPE_COMMON="0";
     String PROMOTION_APPLYTYPE_MEMBER="1";
     String PROMOTION_APPLYTYPE_BANKCODE="2";
+
+    /**
+     * 查询优惠信息时是否排除掉因额度和领取频率限制的
+     */
+    String EXCLUSIONFLAG_ALL="0";
+    String EXCLUSIONFLAG_ACCURATE="1";
+
+
+    /**
+     * 查询优惠信息时是否排除掉因额度和领取频率限制的
+     */
+    String USENEWREGISTER_NO="0";
+    String USENEWREGISTER_YES="1";
+
 }

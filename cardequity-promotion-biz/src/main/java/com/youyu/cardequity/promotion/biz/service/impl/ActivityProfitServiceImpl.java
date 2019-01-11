@@ -2,12 +2,10 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.youyu.cardequity.common.base.bean.BeanProperties;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
-import com.youyu.cardequity.promotion.biz.constant.CommonConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
 import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
@@ -15,6 +13,7 @@ import com.youyu.cardequity.promotion.biz.service.ActivityRefProductService;
 import com.youyu.cardequity.promotion.biz.strategy.activity.ActivityStrategy;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.biz.utils.SnowflakeIdWorker;
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
@@ -87,15 +86,15 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<ActivityDetailDto> result = new ArrayList<>();
 
         //获取普通活动列表
-        List<ActivityProfitEntity> activityList = activityProfitMapper.findEnableGetCommonActivity(req.getProductId(), req.getEntrustWay());
+        List<ActivityProfitEntity> activityList = null;
+        if(CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag()) ) {
+            activityList = activityProfitMapper.findEnableGetCommonFirstActivity(req.getProductId(), req.getEntrustWay());
+        }else{
+            activityList = activityProfitMapper.findEnableGetCommonActivity(req.getProductId(), req.getEntrustWay());
+        }
 
         //将其使用门槛阶梯与活动主信息组装后返回
         result.addAll(combinationActivity(activityList));
-
-        //获取会员活动列表
-        List<ActivityProfitEntity> activityForMemberList = activityProfitMapper.findEnableGetMemberActivity(req.getProductId(), req.getEntrustWay(), req.getClinetType());
-        //将会员活动使用门槛阶梯与活动主信息组装后返回
-        result.addAll(combinationActivity(activityForMemberList));
 
         return result;
     }

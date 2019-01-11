@@ -8,11 +8,9 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 /**
- * 订单涉及商品信息：订单下对应商品、价格、数量
+ * [权益模块的订单中]商品详情视图：订单下对应商品、价格、数量、指定使用活动、优惠券等
  */
 @Data
-@Getter
-@Setter
 public class OrderProductDetailDto {
     public OrderProductDetailDto(){
         totalAmount=BigDecimal.ZERO;
