@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.vo.req;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +10,7 @@ import java.util.List;
 /**
  * Created by caiyi on 2019/1/2.
  */
-@Getter
-@Setter
+@Data
 public class BatchRefProductReq {
     @ApiModelProperty(value = "优惠id")
     private String id;

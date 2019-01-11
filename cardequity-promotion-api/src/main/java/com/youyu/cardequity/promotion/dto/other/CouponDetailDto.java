@@ -40,6 +40,8 @@ public class CouponDetailDto {
         if (productCouponDto != null) {
             BeanUtils.copyProperties(productCouponDto, dto);
             dto.setTargetFlag(CommonDict.FRONDEND_ALL.getCode());
+
+            //转义领取对象
             if (productCouponDto.getClientTypeSet() != null) {
                 //会员专属
                 if (productCouponDto.getClientTypeSet().equals(ClientType.MEMBER.getDictValue())) {
@@ -51,10 +53,13 @@ public class CouponDetailDto {
                     }
                 }
             }
+
+            //转义优惠券类型
             dto.setCouponViewType("0");
             if (CouponType.TRANSFERFARE.getDictValue().equals(productCouponDto.getCouponType()) ||
                     CouponType.FREETRANSFERFARE.getDictValue().equals(productCouponDto.getCouponType()))
                 dto.setCouponViewType("1");
+
         }
 
         if (quotaRule != null) {

@@ -116,5 +116,5 @@ public interface ProductCouponApi {
      */
     @ApiOperation(value = "查找活动")
     @PostMapping(path = "/findGatherCouponByCommon")
-    Result<List<GatherInfoRsp>> findGatherCouponByCommon(BaseQryCouponReq req);
+    Result<List<GatherInfoRsp>> findGatherCouponByCommon(@RequestBody BaseQryCouponReq req);
 }

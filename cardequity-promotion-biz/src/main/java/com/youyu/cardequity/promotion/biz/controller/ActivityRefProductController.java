@@ -60,7 +60,7 @@ public class ActivityRefProductController implements ActivityRefProductApi {
     @Override
     @ApiOperation(value = "配置优惠的适用商品范围")
     @PostMapping(path = "/batchAddActivityRefProduct")
-    public Result<CommonBoolDto<Integer>> batchAddActivityRefProduct(BatchRefProductReq req){
+    public Result<CommonBoolDto<Integer>> batchAddActivityRefProduct(@RequestBody BatchRefProductReq req){
         return Result.ok(activityRefProductService.batchAddActivityRefProduct(req));
 
     }

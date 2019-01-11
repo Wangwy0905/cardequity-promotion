@@ -133,7 +133,7 @@ public class ActivityProfitController implements ActivityProfitApi {
     @Override
     @ApiOperation(value = "查询活动汇总信息")
     @PostMapping(path = "/findGatherActivityByCommon")
-    public Result<List<GatherInfoRsp>> findGatherActivityByCommon(BaseQryActivityReq req){
+    public Result<List<GatherInfoRsp>> findGatherActivityByCommon(@RequestBody BaseQryActivityReq req){
         return Result.ok(activityProfitService.findGatherActivityByCommon(req));
     }
 
