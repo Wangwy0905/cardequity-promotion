@@ -487,6 +487,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         ProductCouponEntity entity = productCouponMapper.findProductCouponById(dto.getId());
         if (entity == null) {
             result.setDesc("指定编辑优惠券不存在");
+            return result;
         }
 
         //如果指定商品集合，默认为自定义配置

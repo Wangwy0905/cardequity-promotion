@@ -25,6 +25,7 @@ public class CouponRefProductController implements CouponRefProductApi {
 
     @Autowired
     private CouponRefProductService couponRefProductService;
+
     /**
      * 添加优惠券关联商品
      *

@@ -51,6 +51,10 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> batchAddCouponRefProduct(BatchRefProductReq req) {
+        if (req == null || CommonUtils.isEmptyorNull(req.getId())) {
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定优惠券id 参数"));
+        }
+
 
         CommonBoolDto<Integer> dto = new CommonBoolDto(true);
         List<CouponRefProductEntity> productList = new ArrayList<>();
