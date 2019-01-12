@@ -157,6 +157,11 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
         activities.add(req.getId());
         batchService.batchDispose(activities, ActivityRefProductMapper.class, "deleteByActivityId");
         if (req.getProductList() != null && !req.getProductList().isEmpty()) {
+
+            CommonBoolDto<List<ActivityRefProductEntity>> boolDto = checkProductReUse(req.getProductList(), BeanPropertiesUtils.copyProperties(profitEntity, ActivityProfitDto.class));
+            if (!boolDto.getSuccess()){
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
+            }
             List<ActivityRefProductEntity> entities = new ArrayList<>();
             for (BaseProductReq item : req.getProductList()) {
                 ActivityRefProductEntity entity = new ActivityRefProductEntity();
