@@ -21,7 +21,7 @@
         UPDATE TB_ACTIVITY_STAGE_COUPON a
         SET IS_ENABLE='0'
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-        AND ACTIVITY_ID=#{baseActivity.activityId,jdbcType=VARCHAR}
+        AND ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
     </update>
 
 

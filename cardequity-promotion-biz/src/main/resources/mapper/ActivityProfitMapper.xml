@@ -243,12 +243,12 @@
     <update id="logicDelByIdList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseActivityReq">
         UPDATE TB_ACTIVITY_PROFIT a
           SET a.IS_ENABLE='0'
-        <if test="list.operator!=null and list.operator!=''">
+        <if test="operator!=null and operator!=''">
             ,a.UPDATE_AUTHOR=#{list.operator,jdbcType=VARCHAR}
         </if>
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.UUID IN
-        <foreach collection="list.baseActivityList" item="baseActivity" index="index"
+        <foreach collection="baseActivityList" item="baseActivity" index="index"
                  open="(" close=")" separator=",">
             #{baseActivity.activityId}
         </foreach>
@@ -258,7 +258,7 @@
         UPDATE TB_ACTIVITY_PROFIT a
         SET a.IS_ENABLE='0'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-        AND a.UUID = #{baseActivity.activityId,jdbcType=VARCHAR}
+        AND a.UUID = #{activityId,jdbcType=VARCHAR}
     </update>
     <select id="findActivityListByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity"
             parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq">
@@ -311,31 +311,31 @@
             count(1) as gatherValue
         FROM TB_ACTIVITY_PROFIT a
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-        <if test="commonQry.activityId!=null and commonQry.activityId!=''">
-            and a.UUID=#{commonQry.activityId,jdbcType=VARCHAR}
+        <if test="activityId!=null and activityId!=''">
+            and a.UUID=#{activityId,jdbcType=VARCHAR}
         </if>
-        <if test="commonQry.status=='0'.toString()">
+        <if test="status=='0'.toString()">
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
         </if>
-        <if test="commonQry.status=='1'.toString()">
+        <if test="status=='1'.toString()">
             and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
             and a.ALLOW_USE_END_DATE &gt;=curdate()
         </if>
-        <if test="commonQry.status=='2'.toString()">
+        <if test="status=='2'.toString()">
             and a.ALLOW_USE_END_DATE &lt;curdate()
         </if>
-        <if test="commonQry.activityCouponType!=null and commonQry.activityCouponType!=''">
-            and instr(#{commonQry.activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;0
+        <if test="activityCouponType!=null and activityCouponType!=''">
+            and instr(#{activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;0
         </if>
-        <if test="commonQry.activityName!=null and commonQry.activityName!=''">
-            and a.ACTIVITY_NAME like CONCAT('%',#{commonQry.activityName,jdbcType=VARCHAR},'%')
+        <if test="activityName!=null and activityName!=''">
+            and a.ACTIVITY_NAME like CONCAT('%',#{activityName,jdbcType=VARCHAR},'%')
         </if>
-        <if test="commonQry.productId!=null and commonQry.productId!=''">
+        <if test="productId!=null and productId!=''">
             and( a.APPLY_PRODUCT_FLAG='1' or
             exists(select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID = a.UUID
-            and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR}
-            <if test="commonQry.skuId!=null and commonQry.skuId!=''">
-                and b.SKU_ID =#{commonQry.skuId,jdbcType=VARCHAR}
+            and b.PRODUCT_ID =#{productId,jdbcType=VARCHAR}
+            <if test="skuId!=null and skuId!=''">
+                and b.SKU_ID =#{skuId,jdbcType=VARCHAR}
             </if>
             ))
         </if>
@@ -353,7 +353,7 @@
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '0'
         and CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY')) IN
-        <foreach collection="list.productList" item="product" index="index"
+        <foreach collection="productList" item="product" index="index"
                  open="(" close=")" separator=",">
             CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY'))
         </foreach>
@@ -364,33 +364,33 @@
             parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq">
         SELECT * FROM TB_ACTIVITY_PROFIT a
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-        <if test="commonQry.activityId!=null and commonQry.activityId!=''">
-            and (a.UUID=#{commonQry.activityId,jdbcType=VARCHAR} or
-            a.ACTIVITY_NAME like CONCAT('%',#{commonQry.activityName,jdbcType=VARCHAR},'%') or
+        <if test="activityId!=null and activityId!=''">
+            and (a.UUID=#{activityId,jdbcType=VARCHAR} or
+            a.ACTIVITY_NAME like CONCAT('%',#{activityName,jdbcType=VARCHAR},'%') or
             ( a.APPLY_PRODUCT_FLAG='1' or
                  exists(
                     select 1
                       from TB_ACTIVITY_REF_PRODUCT b
                       where b.ACTIVITY_ID = a.UUID
-                      and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR}
-                    <if test="commonQry.skuId!=null and commonQry.skuId!=''">
-                      and b.SKU_ID =#{commonQry.skuId,jdbcType=VARCHAR}
+                      and b.PRODUCT_ID =#{productId,jdbcType=VARCHAR}
+                    <if test="skuId!=null and skuId!=''">
+                      and b.SKU_ID =#{skuId,jdbcType=VARCHAR}
                     </if>
             ))
             )
         </if>
-        <if test="commonQry.status=='0'.toString()">
+        <if test='"0"==status'>
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
         </if>
-        <if test="commonQry.status=='1'.toString()">
+        <if test='"1"==status'>
             and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
             and a.ALLOW_USE_END_DATE &gt;=curdate()
         </if>
-        <if test="commonQry.status=='2'.toString()">
+        <if test='"2"==status'>
             and a.ALLOW_USE_END_DATE &lt;curdate()
         </if>
-        <if test="commonQry.activityCouponType!=null and commonQry.activityCouponType!=''">
-            and instr(#{commonQry.activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;0
+        <if test="activityCouponType!=null and activityCouponType!=''">
+            and instr(#{activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;0
         </if>
         Order by a.CREATE_TIME desc
     </select>

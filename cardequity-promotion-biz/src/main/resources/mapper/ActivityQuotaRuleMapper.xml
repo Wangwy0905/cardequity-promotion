@@ -13,6 +13,6 @@
     <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
         UPDATE TB_ACTIVITY_QUOTA_RULE a SET a.IS_ENABLE='0'
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-        AND a.ACTIVITY_ID = #{baseActivity.activityId,jdbcType=VARCHAR}
+        AND a.ACTIVITY_ID = #{activityId,jdbcType=VARCHAR}
     </update>
 </mapper>

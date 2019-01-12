@@ -26,7 +26,7 @@ where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND COUPON_ID=#{couponId,,jdbcType=VARCHAR}
         and UUID in
-        <foreach collection="list.baseCouponList" item="baseCoupon" index="index"
+        <foreach collection="baseCouponList" item="baseCoupon" index="index"
                  open="(" close=")" separator=",">
             #{baseCoupon.stageId}
         </foreach>

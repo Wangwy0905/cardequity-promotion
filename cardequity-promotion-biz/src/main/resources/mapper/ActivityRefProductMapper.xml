@@ -48,7 +48,7 @@
 
     <update id="deleteByBaseActivity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
         DELETE  FROM TB_ACTIVITY_REF_PRODUCT
-        WHERE ACTIVITY_ID=#{baseActivity.activityId,jdbcType=VARCHAR}
+        WHERE ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
     </update>
 
     <select id="findByActivityId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity">

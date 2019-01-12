@@ -147,7 +147,7 @@
            SET IS_ENABLE='0'
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
         AND a.UUID IN
-        <foreach collection="list.baseCouponList" item="baseCoupon" index="index"
+        <foreach collection="baseCouponList" item="baseCoupon" index="index"
                  open="(" close=")" separator=",">
             #{baseCoupon.couponId}
         </foreach>
@@ -157,7 +157,7 @@
         UPDATE TB_PRODUCT_COUPON  a
            SET IS_ENABLE='0'
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
-         AND a.UUID=  #{baseCoupon.couponId,jdbcType=VARCHAR}
+         AND a.UUID=  #{couponId,jdbcType=VARCHAR}
     </update>
 
     <select id="findCouponList" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity"
@@ -299,7 +299,7 @@
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '0'
         and CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY')) IN
-        <foreach collection="list.productList" item="product" index="index"
+        <foreach collection="productList" item="product" index="index"
                  open="(" close=")" separator=",">
             CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY'))
         </foreach>
