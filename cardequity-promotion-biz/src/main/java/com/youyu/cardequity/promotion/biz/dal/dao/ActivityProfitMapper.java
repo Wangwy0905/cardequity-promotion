@@ -95,14 +95,14 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * @param list
      * @return
      */
-    int logicDelByIdList(@Param("list") BatchBaseActivityReq list);
+    int logicDelByIdList(BatchBaseActivityReq list);
 
     /**
      * 逻辑删除
      * @param baseActivity
      * @return
      */
-    int logicDelById(@Param("baseActivity") BaseActivityReq baseActivity);
+    int logicDelById(BaseActivityReq baseActivity);
 
     /**
      * 通用查询
@@ -124,7 +124,7 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * @param commonQry
      * @return
      */
-    List<GatherInfoRsp> findGatherActivityListByCommon(@Param("commonQry") BaseQryActivityReq commonQry);
+    List<GatherInfoRsp> findGatherActivityListByCommon( BaseQryActivityReq commonQry);
 
     /**
      * 通过商品id查询其查询特价活动信息
@@ -138,14 +138,14 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * @param list
      * @return
      */
-    List<GatherInfoRsp> findActivityNumByProducts(@Param("list") BatchBaseProductReq list);
+    List<GatherInfoRsp> findActivityNumByProducts(BatchBaseProductReq list);
 
     /**
      * 通用查询：支持按id、商品id、名称模糊指定
      * @param commonQry 通用信息
      * @return
      */
-    List<ActivityProfitEntity> findActivityList(@Param("commonQry") BaseQryActivityReq commonQry);
+    List<ActivityProfitEntity> findActivityList(BaseQryActivityReq commonQry);
 
 
     /**

@@ -3,7 +3,7 @@ package com.youyu.cardequity.promotion.biz.dal.dao;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityQuotaRuleEntity;
 import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.common.mapper.YyMapper;
-import feign.Param;
+import org.apache.ibatis.annotations.Param;
 
 /**
  *  代码生成器
@@ -25,7 +25,7 @@ public interface ActivityQuotaRuleMapper extends YyMapper<ActivityQuotaRuleEntit
      * @param baseActivity
      * @return
      */
-    int logicDelById(@Param("baseActivity") BaseActivityReq baseActivity);
+    int logicDelById(BaseActivityReq baseActivity);
 }
 
 

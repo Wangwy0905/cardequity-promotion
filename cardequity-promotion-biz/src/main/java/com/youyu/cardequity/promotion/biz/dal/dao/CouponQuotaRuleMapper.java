@@ -2,7 +2,7 @@ package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
 import com.youyu.common.mapper.YyMapper;
-import feign.Param;
+import org.apache.ibatis.annotations.Param;
 
 /**
  *  代码生成器
@@ -24,7 +24,7 @@ public interface CouponQuotaRuleMapper extends YyMapper<CouponQuotaRuleEntity> {
      * @param couponId
      * @return
      */
-    int logicDelByCouponId(@org.apache.ibatis.annotations.Param("couponId") String couponId);
+    int logicDelByCouponId(@Param("couponId") String couponId);
 
 }
 

@@ -299,7 +299,7 @@
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '0'
         and CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY')) IN
-        <foreach collection="productList" item="product" index="index"
+        <foreach collection="list.productList" item="product" index="index"
                  open="(" close=")" separator=",">
             CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY'))
         </foreach>

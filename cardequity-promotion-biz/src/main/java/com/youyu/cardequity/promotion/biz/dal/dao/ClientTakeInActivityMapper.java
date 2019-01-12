@@ -32,7 +32,7 @@ public interface ClientTakeInActivityMapper extends YyMapper<ClientTakeInActivit
      * @param orderinfo
      * @return
      */
-    int modRecoverByOrderinfo(@Param("orderinfo") BaseOrderInPromotionReq orderinfo);
+    int modRecoverByOrderinfo(BaseOrderInPromotionReq orderinfo);
 }
 
 

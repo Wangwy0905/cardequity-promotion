@@ -58,7 +58,7 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
      * @param baseActivity
      * @return
      */
-    int deleteByBaseActivity(@Param("baseActivity") BaseActivityReq baseActivity);
+    int deleteByBaseActivity(BaseActivityReq baseActivity);
 
     /**
      * 通过活动编号获得配置的商品

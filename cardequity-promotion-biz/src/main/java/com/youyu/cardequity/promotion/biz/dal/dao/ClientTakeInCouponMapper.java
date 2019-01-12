@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ClientTakeInCouponMapper extends YyMapper<ClientTakeInCouponEntity> {
 
-    int modRecoverByOrderinfo(@Param("orderinfo")BaseOrderInPromotionReq orderinfo);
+    int modRecoverByOrderinfo(BaseOrderInPromotionReq orderinfo);
 }
 
 

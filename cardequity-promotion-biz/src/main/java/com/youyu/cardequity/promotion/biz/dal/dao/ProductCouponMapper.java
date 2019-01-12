@@ -71,7 +71,7 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      * @param list
      * @return
      */
-    int logicDelByList(@Param("list") BatchBaseCouponReq list);
+    int logicDelByList(BatchBaseCouponReq list);
 
     /**
      * 逻辑删除
