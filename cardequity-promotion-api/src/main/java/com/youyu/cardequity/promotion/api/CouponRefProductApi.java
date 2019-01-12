@@ -56,6 +56,6 @@ public interface CouponRefProductApi {
      * @return 活动数量列表
      */
     @ApiOperation(value = "查询商品的活动数量")
-    @PostMapping(path = "/notcontrol/cardequity/promotion/findProductAboutActivityNum")
+    @PostMapping(path = "/findProductAboutCouponNum")
     Result<List<GatherInfoRsp>> findProductAboutCouponNum(@RequestBody BatchBaseProductReq req);
 }

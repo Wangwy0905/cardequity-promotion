@@ -64,6 +64,6 @@ public interface ActivityRefProductApi {
      * @return 活动数量列表
      */
     @ApiOperation(value = "查询商品的活动数量")
-    @PostMapping(path = "/notcontrol/cardequity/promotion/findProductAboutActivityNum")
+    @PostMapping(path = "/findProductAboutActivityNum")
     Result<List<GatherInfoRsp>> findProductAboutActivityNum(@RequestBody BatchBaseProductReq req);
 }
