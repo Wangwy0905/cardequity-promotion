@@ -58,11 +58,32 @@
     </select>
     <select id="findByExcludeActivityId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity">
         SELECT a.* FROM TB_ACTIVITY_REF_PRODUCT a
-        inner join TB_ACTIVITY_PROFIT b ON b.UUID=a.ACTIVITY_ID AND if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1' = '1'
+        inner join TB_ACTIVITY_PROFIT b ON b.UUID=a.ACTIVITY_ID AND if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and b.ALLOW_USE_BEGIN_DATE &lt;= curdate()
         and b.ALLOW_USE_END_DATE &gt;= curdate()
         <if test="activityId!=null and activityId!=''">
             AND a.ACTIVITY_ID!=#{activityId,jdbcType=VARCHAR}
+        </if>
+
+    </select>
+
+    <select id="findProductInValidActivity" resultType="com.youyu.cardequity.promotion.vo.req.BaseProductReq">
+        SELECT a.PRODUCT_ID as productId,a.SKU_ID as skuId FROM TB_ACTIVITY_REF_PRODUCT a
+        inner join TB_ACTIVITY_PROFIT b ON b.UUID=a.ACTIVITY_ID AND if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        <if test='"0"==status'>
+            and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+        </if>
+        <if test='"1"==status'>
+            and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
+            and a.ALLOW_USE_END_DATE &gt;=curdate()
+        </if>
+        <if test='"2"==status'>
+            and a.ALLOW_USE_END_DATE &lt;curdate()
+        </if>
+        <if test="activityCouponType!=null and activityCouponType!=''">
+            and instr(#{activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;0
         </if>
 
     </select>

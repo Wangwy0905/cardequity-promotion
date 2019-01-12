@@ -110,7 +110,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
     }
 
     /**
-     * 查询已经配置了活动的商品
+     * 查询除指定活动外已经配置了活动的商品
      *
      * @return
      */
@@ -118,6 +118,18 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
     public List<ActivityRefProductDto> findAllProductInValidActivity(BaseActivityReq req) {
         List<ActivityRefProductEntity> entities = activityRefProductMapper.findByExcludeActivityId(req.getActivityId());
         return BeanPropertiesConverter.copyPropertiesOfList(entities, ActivityRefProductDto.class);
+    }
+
+
+    /**
+     * 查询已经配置了活动的商品
+     *
+     * @return
+     */
+    @Override
+    public List<BaseProductReq> findProductInValidActivity(FindProductInValidActivityReq req) {
+        List<BaseProductReq> entities = activityRefProductMapper.findProductInValidActivity(req.getStatus(),req.getActivityCouponType());
+        return entities;
     }
 
     /**

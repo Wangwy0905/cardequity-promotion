@@ -68,11 +68,18 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
     List<ActivityRefProductEntity> findByActivityId(@Param("activityId") String activityId);
 
     /**
-     * 通过活动编号获得配置的商品
+     * 通过排除指定活动编号获得其他配置的商品
      * @param activityId
      * @return
      */
     List<ActivityRefProductEntity> findByExcludeActivityId(@Param("activityId") String activityId);
+
+    /**
+     * 通过活动编号获得配置的商品
+     * @param activityCouponType
+     * @return
+     */
+    List<BaseProductReq> findProductInValidActivity(@Param("status") String status,@Param("activityCouponType") String activityCouponType);
 
 }
 

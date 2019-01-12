@@ -4,10 +4,7 @@ import com.youyu.cardequity.promotion.api.ActivityRefProductApi;
 import com.youyu.cardequity.promotion.biz.service.ActivityRefProductService;
 import com.youyu.cardequity.promotion.dto.ActivityRefProductDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
-import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
-import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
-import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
-import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
+import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.ApiOperation;
@@ -28,12 +25,12 @@ public class ActivityRefProductController implements ActivityRefProductApi {
     public ActivityRefProductService activityRefProductService;
 
     /**
-     * 查询已经配置了活动的商品
+     * 查询指定活动外已经配置了活动的商品
      *
      * @return
      */
     @Override
-    @ApiOperation(value = "查询已经配置了活动的商品")
+    @ApiOperation(value = "【后台】查询指定活动外已经配置了活动的商品")
     @PostMapping(path = "/findAllProductInValidActivity")
     public Result<List<ActivityRefProductDto>> findAllProductInValidActivity(@RequestBody BaseActivityReq req) {
         return Result.ok(activityRefProductService.findAllProductInValidActivity(req));
@@ -72,10 +69,24 @@ public class ActivityRefProductController implements ActivityRefProductApi {
      * @return 活动数量列表
      */
     @Override
-    @ApiOperation(value = "查询商品的活动数量")
+    @ApiOperation(value = "查询正在参与活动的商品")
     @PostMapping(path = "/findProductAboutActivityNum")
     public Result<List<GatherInfoRsp>> findProductAboutActivityNum(@RequestBody BatchBaseProductReq req){
         return Result.ok(activityRefProductService.findProductAboutActivityNum(req));
+
+    }
+
+
+    /**
+     * 查询商品对应的活动数量
+     * @param req 类型和状态
+     * @return 商品列表
+     */
+    @Override
+    @ApiOperation(value = "查询商品的活动数量")
+    @PostMapping(path = "/findProductInValidActivity")
+    public Result<List<BaseProductReq>> findProductInValidActivity(FindProductInValidActivityReq req){
+        return Result.ok(activityRefProductService.findProductInValidActivity(req));
 
     }
 }

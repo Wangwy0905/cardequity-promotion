@@ -4,10 +4,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.ActivityRefProductDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
-import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
-import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
-import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
-import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
+import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.service.IService;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,12 +49,18 @@ public interface ActivityRefProductService extends IService<ActivityRefProductDt
     CommonBoolDto<Integer> batchAddActivityRefProduct(BatchRefProductReq req);
 
     /**
-     * 查询商品对应的活动数量
+     * 查询指定活动外商品对应的活动数量
      * @param req 商品列表
      * @return 商品对应活动数量
      */
     List<GatherInfoRsp> findProductAboutActivityNum(BatchBaseProductReq req);
 
+    /**
+     * 查询商品对应的活动数量
+     * @param req 类型和状态
+     * @return 商品列表
+     */
+    List<BaseProductReq> findProductInValidActivity(FindProductInValidActivityReq req);
 }
 
 
