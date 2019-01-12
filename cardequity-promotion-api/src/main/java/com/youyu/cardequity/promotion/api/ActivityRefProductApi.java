@@ -72,5 +72,5 @@ public interface ActivityRefProductApi {
      */
     @ApiOperation(value = "查询正在参与活动的商品")
     @PostMapping(path = "/findProductInValidActivity")
-     Result<List<BaseProductReq>> findProductInValidActivity(FindProductInValidActivityReq req);
+     Result<List<BaseProductReq>> findProductInValidActivity(@RequestBody FindProductInValidActivityReq req);
 }

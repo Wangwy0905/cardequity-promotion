@@ -505,7 +505,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         batchService.batchDispose(req.getBaseActivityList(), ActivityProfitMapper.class, "logicDelById");
 
         //删除额度信息
-        batchService.batchDispose(req.getBaseActivityList(), ActivityQuotaRuleMapper.class, "logicDelById");
+        //batchService.batchDispose(req.getBaseActivityList(), ActivityQuotaRuleMapper.class, "logicDelById");
 
         // 删除门槛信息
         batchService.batchDispose(req.getBaseActivityList(), ActivityStageCouponMapper.class, "logicDelByBaseActivity");

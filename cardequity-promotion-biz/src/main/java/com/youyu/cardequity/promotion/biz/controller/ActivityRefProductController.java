@@ -85,7 +85,7 @@ public class ActivityRefProductController implements ActivityRefProductApi {
     @Override
     @ApiOperation(value = "查询商品的活动数量")
     @PostMapping(path = "/findProductInValidActivity")
-    public Result<List<BaseProductReq>> findProductInValidActivity(FindProductInValidActivityReq req){
+    public Result<List<BaseProductReq>> findProductInValidActivity(@RequestBody FindProductInValidActivityReq req){
         return Result.ok(activityRefProductService.findProductInValidActivity(req));
 
     }
