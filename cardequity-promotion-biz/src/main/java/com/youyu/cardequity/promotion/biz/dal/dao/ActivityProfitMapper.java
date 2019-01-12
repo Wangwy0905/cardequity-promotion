@@ -155,6 +155,12 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * @return
      */
     List<ActivityProfitEntity> findValidPriceActivityByProduct(@Param("productId") String productId,@Param("skuId") String skuId);
+
+    /**
+     * 获取无产品限制的活动
+     * @return
+     */
+    List<ActivityProfitEntity> findUnlimitedProductActivity();
 }
 
 

@@ -108,7 +108,7 @@ public class CouponViewDto {
         couponDto.setClientTypeSet(CommonConstant.WILDCARD);
         couponDto.setGetStage(UsedStage.Other.getDictValue());
         //默认没有门槛
-        couponDto.setCouponStrategyType(CouponStrategyType.fix.getDictValue());
+        couponDto.setCouponStrategyType(CouponStrategyType.stage.getDictValue());
         //会员专属
         if (CommonDict.FRONDEND_MEMBER.getCode().equals(targetFlag)) {
             couponDto.setClientTypeSet(ClientType.MEMBER.getDictValue());

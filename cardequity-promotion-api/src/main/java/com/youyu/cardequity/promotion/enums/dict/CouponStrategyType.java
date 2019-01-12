@@ -5,9 +5,9 @@ package com.youyu.cardequity.promotion.enums.dict;
  */
 public enum CouponStrategyType {
     discount("0", "折扣券"),
-    stage("1", "门槛优惠券"),
-    fix("2", "无门槛优惠券"),
-    random("3", "随机优惠券"),
+    stage("1", "现金券"),
+    fix("2", "红包券"),
+    random("3", "随机券"),
     equalstage("4", "等阶门槛优惠券"),
     ;
 

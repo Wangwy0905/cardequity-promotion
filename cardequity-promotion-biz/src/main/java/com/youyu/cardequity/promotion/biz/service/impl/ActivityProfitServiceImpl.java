@@ -189,12 +189,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (CommonUtils.isEmptyorNull(profit.getActivityShortDesc()))
                 profit.setActivityShortDesc(profit.getActivityName());
 
-            //如果没有指定商品集合，默认为全部商品
-            if (CommonUtils.isEmptyorNull(profit.getApplyProductFlag())) {
-                if (item.getProductList() != null || item.getProductList().isEmpty()) {
-                    profit.setApplyProductFlag(ApplyProductFlag.ALL.getDictValue());
-                }
+            //如果指定商品集合，默认为自定义配置
+            if (item.getProductList() != null || !item.getProductList().isEmpty()) {
+                profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
             }
+
 
             //检查适用商品是否重复在不同活动配置中
             CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(item.getProductList(), profit);
@@ -232,7 +231,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
             //3.处理限额信息
             ActivityQuotaRuleDto quotaRule = item.getActivityQuotaRule();
-            if (quotaRule!=null) {
+            if (quotaRule != null) {
                 //将编号传出
                 quotaRule.setActivityId(profitEntity.getId());
                 ActivityQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(quotaRule, ActivityQuotaRuleEntity.class);
@@ -337,11 +336,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (CommonUtils.isEmptyorNull(profit.getActivityShortDesc()))
                 profit.setActivityShortDesc(profit.getActivityName());
 
-            //如果没有指定商品集合，默认为全部商品
-            if (CommonUtils.isEmptyorNull(profit.getApplyProductFlag())) {
-                if (item.getProductList() != null || item.getProductList().isEmpty()) {
-                    profit.setApplyProductFlag(ApplyProductFlag.ALL.getDictValue());
-                }
+            //如果指定商品集合，默认为自定义配置
+            if (item.getProductList() != null || !item.getProductList().isEmpty()) {
+                profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
             }
 
             //检查适用商品是否重复在不同活动配置中
@@ -385,7 +382,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             activityList.add(profitEntity);
 
             ActivityQuotaRuleDto quotaRule = item.getActivityQuotaRule();
-            if (quotaRule!=null) {
+            if (quotaRule != null) {
                 //3.处理限额信息
                 ActivityQuotaRuleEntity quotaRuleEntity = activityQuotaRuleMapper.findActivityQuotaRuleById(profitEntity.getId());
                 //如果是新增做插入操作

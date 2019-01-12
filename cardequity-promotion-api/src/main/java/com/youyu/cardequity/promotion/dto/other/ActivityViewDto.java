@@ -53,7 +53,7 @@ public class ActivityViewDto {
     @ApiModelProperty(value = "门槛阶梯信息:传入的activityShortDesc、endValue可以为空")
     private List<ActivityStageCouponDto> stageList;
 
-    @ApiModelProperty(value = "优惠券涉及的商品")
+    @ApiModelProperty(value = "优惠券涉及的商品：")
     private List<BaseProductReq> productList;
 
     @ApiModelProperty(value = "适用类型:0-普通 1-会员专属 2-银行卡专属")

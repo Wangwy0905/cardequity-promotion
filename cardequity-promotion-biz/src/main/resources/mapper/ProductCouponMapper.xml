@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- -->
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper">
+
     <select id="findEnableGetCouponListByCommon"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
         select a.*
@@ -46,7 +47,6 @@
         and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)))
         Order by a.CREATE_TIME desc
     </select>
-
 
     <select id="findEnableGetCouponList"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
@@ -159,7 +159,6 @@
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
          AND a.UUID=  #{baseCoupon.couponId,jdbcType=VARCHAR}
     </update>
-
 
     <select id="findCouponList" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity"
             parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq">
@@ -290,24 +289,30 @@
         group by case when a.CLIENT_TYPE_SET = '11' then '2' when ifnull(a.GET_STAGE, '6') = '3' then '1' else '0' end
     </select>
 
-
-    <select id="findCouPonNumByProducts" resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">
-        select CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY') as gatherItem,
+    <select id="findCouponNumByProducts" resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">
+        select CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY')) as gatherItem,
         count(*) as gatherValue
         from TB_PRODUCT_COUPON a
+        INNER JOIN TB_COUPON_REF_PRODUCT b ON b.COUPON_ID=a.UUID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_USE_END_DATE &gt;= curdate()
-        and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
-        EXISTS (select 1 from
-        TB_COUPON_REF_PRODUCT b
-        where b.COUPON_ID=a.UUID
-        and CONCAT(PRODUCT_ID,if(length(a.SKU_ID),a.SKU_ID,'EMPTY')) IN
+        and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '0'
+        and CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY')) IN
         <foreach collection="list.productList" item="product" index="index"
                  open="(" close=")" separator=",">
             CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY'))
         </foreach>
-        ))
+        group by CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY'))
+    </select>
+
+    <select id="findUnlimitedProductCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
+       select *
+        from TB_PRODUCT_COUPON a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
+        and a.ALLOW_USE_END_DATE &gt;= curdate()
+        and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1'
     </select>
 
 </mapper>

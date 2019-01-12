@@ -277,6 +277,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             return result;
         }
 
+        //如果指定商品集合，默认为自定义配置
+        if (req.getProductList() != null || !req.getProductList().isEmpty()) {
+            dto.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
+        }
         //生成优惠编号
         dto.setId(stageWorker.nextId() + "");
 
@@ -485,6 +489,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             result.setDesc("指定编辑优惠券不存在");
         }
 
+        //如果指定商品集合，默认为自定义配置
+        if (req.getProductList() != null || !req.getProductList().isEmpty()) {
+            dto.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
+        }
 
         //【处理阶梯】
         //先逻辑删除门槛信息

@@ -267,14 +267,14 @@
         <if test="commonQry.activityId!=null and commonQry.activityId!=''">
             and a.UUID=#{commonQry.activityId,jdbcType=VARCHAR}
         </if>
-        <if test="commonQry.status=='0'.toString()">
+        <if test='"0"==commonQry.status'>
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
         </if>
-        <if test="commonQry.status=='1'.toString()">
+        <if test='"1"==commonQry.status'>
             and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
             and a.ALLOW_USE_END_DATE &gt;=curdate()
         </if>
-        <if test="commonQry.status=='2'.toString()">
+        <if test='"2"==commonQry.status'>
             and a.ALLOW_USE_END_DATE &lt;curdate()
         </if>
         <if test="commonQry.activityCouponType!=null and commonQry.activityCouponType!=''">
@@ -344,24 +344,21 @@
 
 
     <select id="findActivityNumByProducts" resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">
-        select CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY') as gatherItem,
+        select CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY')) as gatherItem,
                 count(*) as gatherValue
         from TB_ACTIVITY_PROFIT a
+        inner join TB_ACTIVITY_REF_PRODUCT b on  b.ACTIVITY_ID=a.UUID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_USE_END_DATE &gt;= curdate()
-        and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
-        EXISTS (select 1 from
-            TB_ACTIVITY_REF_PRODUCT b
-          where b.ACTIVITY_ID=a.UUID
-           and CONCAT(PRODUCT_ID,if(length(a.SKU_ID),a.SKU_ID,'EMPTY')) IN
+        and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '0'
+        and CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY')) IN
         <foreach collection="list.productList" item="product" index="index"
                  open="(" close=")" separator=",">
             CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY'))
         </foreach>
-        ))
+        group by CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY'))
     </select>
-
 
     <select id="findActivityList" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity"
             parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq">
@@ -396,6 +393,15 @@
             and instr(#{commonQry.activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;0
         </if>
         Order by a.CREATE_TIME desc
+    </select>
+
+    <select id="findUnlimitedProductActivity" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+        select *
+        from TB_ACTIVITY_PROFIT a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
+        and a.ALLOW_USE_END_DATE &gt;= curdate()
+        and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1'
     </select>
 
 </mapper>

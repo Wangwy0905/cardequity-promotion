@@ -101,7 +101,13 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      * @param list
      * @return
      */
-    List<GatherInfoRsp> findCouPonNumByProducts(@Param("list") BatchBaseProductReq list);
+    List<GatherInfoRsp> findCouponNumByProducts(@Param("list") BatchBaseProductReq list);
+
+    /**
+     * 查询吴产品限制的优惠券
+     * @return
+     */
+    List<ProductCouponEntity>  findUnlimitedProductCoupon();
 
 }
 

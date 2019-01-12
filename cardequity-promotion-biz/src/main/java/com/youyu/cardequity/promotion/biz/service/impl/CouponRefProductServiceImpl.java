@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
+import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.biz.service.CouponRefProductService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
@@ -98,7 +99,31 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
         if (req == null || req.getProductList()==null || req.getProductList().isEmpty())
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定商品"));
 
-        List<GatherInfoRsp> result = productCouponMapper.findCouPonNumByProducts(req);
+        List<GatherInfoRsp> result = productCouponMapper.findCouponNumByProducts(req);
+
+        List<ProductCouponEntity> entities = productCouponMapper.findUnlimitedProductCoupon();
+        if (!entities.isEmpty()){
+            boolean isExist=false;
+            String key="";
+            for (BaseProductReq item:req.getProductList()){
+                isExist=false;
+                key=item.getProductId()+(CommonUtils.isEmptyorNull(item.getSkuId())?"EMPTY":item.getSkuId());
+                for (GatherInfoRsp gather:result){
+                      if (key.equals(gather.getGatherItem())){
+                          gather.setGatherValue(gather.getGatherValue()+entities.size());
+                          isExist=true;
+                          break;
+                      }
+                  }
+                  if (!isExist){
+                      GatherInfoRsp rsp = new GatherInfoRsp();
+                      rsp.setGatherItem(key);
+                      rsp.setGatherValue(entities.size());
+                      result.add(rsp);
+                  }
+            }
+        }
+
         return result;
     }
 
