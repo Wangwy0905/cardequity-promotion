@@ -59,7 +59,7 @@ public class CouponRefProductController implements CouponRefProductApi {
      */
     @Override
     @ApiOperation(value = "查询商品的活动数量")
-    @PostMapping(path = "/findProductAboutActivityNum")
+    @PostMapping(path = "/findProductAboutCouponNum")
     public Result<List<GatherInfoRsp>> findProductAboutCouponNum(@RequestBody BatchBaseProductReq req){
         return Result.ok(couponRefProductService.findProductAboutCouponNum(req));
 
