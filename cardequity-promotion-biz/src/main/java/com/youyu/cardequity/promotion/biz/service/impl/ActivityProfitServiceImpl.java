@@ -90,9 +90,13 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         //获取普通活动列表
         List<ActivityProfitEntity> activityList = null;
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())) {
-            activityList = activityProfitMapper.findEnableGetCommonFirstActivity(req.getProductId(), req.getEntrustWay());
+            activityList = activityProfitMapper.findEnableGetCommonFirstActivity(req.getProductId(),
+                    req.getClinetType(),
+                    req.getEntrustWay());
         } else {
-            activityList = activityProfitMapper.findEnableGetCommonActivity(req.getProductId(), req.getEntrustWay());
+            activityList = activityProfitMapper.findEnableGetCommonActivity(req.getProductId(),
+                    req.getClinetType(),
+                    req.getEntrustWay());
         }
 
         //将其使用门槛阶梯与活动主信息组装后返回
@@ -129,7 +133,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         } else {
 
             //获取普通活动列表
-            activityList = activityProfitMapper.findEnableGetCommonActivity("", req.getEntrustWay());
+            activityList = activityProfitMapper.findEnableGetCommonActivity("", req.getClientType(),req.getEntrustWay());
         }
 
 
@@ -618,6 +622,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     public ActivityDetailDto findActivityById(BaseActivityReq req) {
         ActivityProfitEntity entitie = activityProfitMapper.findById(req.getActivityId());
+        if (entitie==null)
+            return null;
         return combinationActivity(entitie);
     }
 
@@ -746,6 +752,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      */
     private List<ActivityDetailDto> combinationActivity(List<ActivityProfitEntity> activityList) {
 
+        if (activityList==null) return null;
+
         List<ActivityDetailDto> result = new ArrayList<>();
         for (ActivityProfitEntity item : activityList) {
 
@@ -761,7 +769,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * @return 活动详情：含活动信息、门槛阶梯、额度、配置商品
      */
     private ActivityDetailDto combinationActivity(ActivityProfitEntity entity) {
+        if (entity==null)
+            return null;
+
         ActivityDetailDto result = new ActivityDetailDto();
+
 
         //转换为传出参数
         ActivityProfitDto activityProfit = BeanPropertiesUtils.copyProperties(entity, ActivityProfitDto.class);
