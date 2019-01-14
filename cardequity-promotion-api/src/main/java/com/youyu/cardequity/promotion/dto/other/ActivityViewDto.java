@@ -35,8 +35,8 @@ public class ActivityViewDto {
     @ApiModelProperty(value = "门槛短描:如满3件减20")
     private String activityShortDesc;
 
-    @ApiModelProperty(value = "优惠标签id:标签：满返、秒杀、促销等")
-    private String activityLable;
+    //@ApiModelProperty(value = "优惠标签id:标签：满返、秒杀、促销等")
+    //private String activityLable;
 
     @ApiModelProperty(value = "优惠值:如果是阶梯或随机的填0，存折扣、金额")
     private BigDecimal profitValue;
@@ -56,6 +56,9 @@ public class ActivityViewDto {
     @ApiModelProperty(value = "优惠券涉及的商品：")
     private List<BaseProductReq> productList;
 
+    @ApiModelProperty(value = "优惠标签:标签：满返券、促销等")
+    private CouponAndActivityLabelDto labelDto ;
+
     @ApiModelProperty(value = "适用类型:0-普通 1-会员专属 2-银行卡专属")
     private String applyType;
 
@@ -66,8 +69,8 @@ public class ActivityViewDto {
         ActivityDetailDto result=new ActivityDetailDto();
         ActivityProfitDto dto = new ActivityProfitDto();
         BeanUtils.copyProperties(this,dto);
-        dto.setLabelDto(new CouponAndActivityLabelDto());
-        dto.getLabelDto().setId(this.activityLable);
+        dto.setLabelDto(labelDto);
+        //dto.getLabelDto().setId(this.activityLable);
         if (CommonConstant.PROMOTION_APPLYTYPE_MEMBER.equals(applyType)){
             dto.setClientTypeSet(ClientType.MEMBER.getDictValue());
         }

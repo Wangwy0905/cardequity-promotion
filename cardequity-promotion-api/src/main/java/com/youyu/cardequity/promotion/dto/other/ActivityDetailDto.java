@@ -44,12 +44,11 @@ public class ActivityDetailDto {
             if (ClientType.MEMBER.getDictValue().equals(activityProfit.getClientTypeSet())) {
                 result.setApplyType(CommonConstant.PROMOTION_APPLYTYPE_MEMBER);
             }
-            if (activityProfit.getLabelDto() != null)
-                result.setActivityLable(activityProfit.getLabelDto().getId());
+            result.setLabelDto(activityProfit.getLabelDto());
 
             //保护优惠值
-            if (activityProfit.getProfitValue()!=null && activityProfit.getProfitValue().compareTo(BigDecimal.ZERO)>0){
-                if (stageList!=null && !stageList.isEmpty()){
+            if (activityProfit.getProfitValue() != null && activityProfit.getProfitValue().compareTo(BigDecimal.ZERO) > 0) {
+                if (stageList != null && !stageList.isEmpty()) {
                     activityProfit.setProfitValue(stageList.get(0).getProfitValue());
                 }
             }
@@ -58,7 +57,6 @@ public class ActivityDetailDto {
         if (activityQuotaRule != null) {
             result.setMaxCount(activityQuotaRule.getMaxCount());
         }
-
 
 
         result.setStageList(stageList);
