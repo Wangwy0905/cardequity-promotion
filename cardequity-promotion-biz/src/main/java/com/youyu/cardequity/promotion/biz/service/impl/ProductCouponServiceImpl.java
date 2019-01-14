@@ -545,7 +545,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //【处理频率】
-        couponGetOrUseFreqRuleMapper.logicDelByCouponId(dto.getId());
+        couponGetOrUseFreqRuleMapper.deleteByCouponId(dto.getId());
+        //couponGetOrUseFreqRuleMapper.logicDelByCouponId(dto.getId());
         if (req.getFreqRuleList() != null) {
             for (CouponGetOrUseFreqRuleDto item : req.getFreqRuleList()) {
                 item.setValue(1);//默认不支持多频率

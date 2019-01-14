@@ -84,4 +84,9 @@
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND COUPON_ID=#{couponId,jdbcType=VARCHAR}
     </select>
+
+    <update id="deleteByCouponId" parameterType="string">
+        DELETE FROM TB_COUPON_GET_OR_USE_FREQ_RULE a
+        WHERE COUPON_ID=#{couponId,jdbcType=VARCHAR}
+    </update>
 </mapper>
