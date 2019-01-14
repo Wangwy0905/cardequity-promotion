@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @Api(tags = "优惠券关联商品管理：优惠券关联商品相关操作")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/couponRefProductApi")
+@RequestMapping(path = "/couponRefProduct")
 public interface CouponRefProductApi {
 
     /**
