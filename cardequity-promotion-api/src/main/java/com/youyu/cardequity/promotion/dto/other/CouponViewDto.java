@@ -31,9 +31,6 @@ public class CouponViewDto {
     @ApiModelProperty(value = "级别：0-自动义 1-全局")
     private String couponLevel;
 
-    //@ApiModelProperty(value = "优惠标签id:标签：满返券、促销等")
-    //private String couponLable;
-
     @ApiModelProperty(value = "类型:0-消费券 1-运费券")
     private String couponViewType;
 
