@@ -857,7 +857,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 CouponAndActivityLabelDto labelDto = BeanPropertiesUtils.copyProperties(labelEntity, CouponAndActivityLabelDto.class);
                 productCouponDto.setLabelDto(labelDto);
             }
-
         }
         result.setProductCouponDto(productCouponDto);
         //查询限额

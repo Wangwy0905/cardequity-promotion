@@ -40,7 +40,7 @@ public interface CouponRefProductService extends IService<CouponRefProductDto, C
      * @param req 商品列表
      * @return 商品对应活动数量
      */
-    List<GatherInfoRsp> findProductAboutCouponNum(@RequestBody BatchBaseProductReq req);
+    List<GatherInfoRsp> findProductAboutCouponNum(BatchBaseProductReq req);
 }
 
 

@@ -164,6 +164,5 @@ public class ProductCouponController implements ProductCouponApi {
     @PostMapping(path = "/findCouponListByIds")
     public Result<List<CouponDetailDto>> findCouponListByIds(@RequestBody List<String> req){
         return Result.ok(productCouponService.findCouponListByIds(req));
-
     }
 }

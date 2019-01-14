@@ -29,6 +29,7 @@ public class ClientTakeInCouponController implements ClientTakeInCouponApi {
      * @return 订单使用活动及优惠券详情
      */
     @Override
+    @ApiOperation(value = "在订单时候使用活动及优惠券详情:处理优惠券记录，记录使用痕迹")
     @PostMapping(path = "/orderCouponAndActivityDeal")
     public Result<OrderCouponAndActivityRsp> orderCouponAndActivityDeal(@RequestBody PromotionDealReq req){
         return Result.ok(clientTakeInCouponService.orderCouponAndActivityDeal(req));
@@ -40,6 +41,7 @@ public class ClientTakeInCouponController implements ClientTakeInCouponApi {
      * @return 订单使用活动及优惠券详情
      */
     @Override
+    @ApiOperation(value = "在订单预生成时候使用活动及优惠券详情")
     @PostMapping(path = "/preOrderCouponAndActivityDeal")
     public Result<OrderCouponAndActivityRsp> preOrderCouponAndActivityDeal(@RequestBody GetUseEnableCouponReq req){
         return Result.ok(clientTakeInCouponService.preOrderCouponAndActivityDeal(req));
