@@ -22,7 +22,7 @@ where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
 
     <update id="logicDelByList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq">
         UPDATE TB_COUPON_STAGE_RULE a
-          SET IS_ENABLE='0'
+          SET IS_ENABLE='0',a.UPDATE_AUTHOR= #{operator,jdbcType=VARCHAR}
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND COUPON_ID=#{couponId,,jdbcType=VARCHAR}
         and UUID in

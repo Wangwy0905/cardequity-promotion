@@ -177,8 +177,8 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             List<ActivityRefProductEntity> entities = new ArrayList<>();
             for (BaseProductReq item : req.getProductList()) {
                 ActivityRefProductEntity entity = new ActivityRefProductEntity();
-                entity.setCreateAuthor(item.getOperator());
-                entity.setUpdateAuthor(item.getOperator());
+                entity.setCreateAuthor(req.getOperator());
+                entity.setUpdateAuthor(req.getOperator());
                 entity.setProductId(item.getProductId());
                 entity.setActivityId(profitEntity.getId());
                 entity.setId(CommonUtils.getUUID());

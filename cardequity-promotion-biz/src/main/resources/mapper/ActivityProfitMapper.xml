@@ -244,7 +244,7 @@
         UPDATE TB_ACTIVITY_PROFIT a
           SET a.IS_ENABLE='0'
         <if test="operator!=null and operator!=''">
-            ,a.UPDATE_AUTHOR=#{list.operator,jdbcType=VARCHAR}
+            ,a.UPDATE_AUTHOR=#{operator,jdbcType=VARCHAR}
         </if>
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.UUID IN

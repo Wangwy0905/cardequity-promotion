@@ -46,10 +46,10 @@
         WHERE ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
     </delete>
 
-    <update id="deleteByBaseActivity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
+    <delete id="deleteByBaseActivity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
         DELETE  FROM TB_ACTIVITY_REF_PRODUCT
         WHERE ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
-    </update>
+    </delete>
 
     <select id="findByActivityId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity">
          SELECT * FROM TB_ACTIVITY_REF_PRODUCT a

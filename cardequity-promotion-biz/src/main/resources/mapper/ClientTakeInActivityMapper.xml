@@ -34,7 +34,7 @@
         UPDATE TB_CLIENT_TAKE_IN_ACTIVITY a
         SET a.IS_ENABLE='0',
         a.REMARK=CONCAT(ifnull(a.REMARK,''),sysdate(),'撤销使用|'),
-        a.Update_Author=#{operator,jdbcType=VARCHAR}
+        a.UPDATE_AUTHOR=#{operator,jdbcType=VARCHAR}
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.ORDER_ID=#{orderId,jdbcType=VARCHAR}
         <if test="clientId!=null and clientId!=''">

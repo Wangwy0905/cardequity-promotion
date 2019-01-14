@@ -144,7 +144,7 @@
 
     <update id="logicDelByList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq">
         UPDATE TB_PRODUCT_COUPON a
-           SET IS_ENABLE='0'
+           SET IS_ENABLE='0',a.UPDATE_AUTHOR= #{operator,jdbcType=VARCHAR}
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
         AND a.UUID IN
         <foreach collection="baseCouponList" item="baseCoupon" index="index"
@@ -155,7 +155,7 @@
 
     <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq" >
         UPDATE TB_PRODUCT_COUPON  a
-           SET IS_ENABLE='0'
+           SET IS_ENABLE='0',a.UPDATE_AUTHOR= #{operator,jdbcType=VARCHAR}
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
          AND a.UUID=  #{couponId,jdbcType=VARCHAR}
     </update>

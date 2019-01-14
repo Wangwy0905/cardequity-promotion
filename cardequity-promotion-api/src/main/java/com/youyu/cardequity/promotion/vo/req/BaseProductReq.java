@@ -15,7 +15,4 @@ public class BaseProductReq {
 
     @ApiModelProperty(value = "子商品编号:必填", required = true)
     private String skuId;
-
-    @ApiModelProperty(value = "操作者：用于更新产生者或更新者")
-    private String operator;
 }
