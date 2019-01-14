@@ -80,6 +80,9 @@ public class ClientCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "结束值")
     private BigDecimal endValue;
 
+    @ApiModelProperty(value = "适用商品类型:0-自动义商品范围 1-全部")
+    private String applyProductFlag;
+
     @Override
     public String getId() {
         return uuid;

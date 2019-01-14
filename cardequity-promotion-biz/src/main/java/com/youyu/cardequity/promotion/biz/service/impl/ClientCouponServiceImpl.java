@@ -17,10 +17,7 @@ import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
-import com.youyu.cardequity.promotion.vo.req.BaseClientReq;
-import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
-import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
-import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
@@ -181,8 +178,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //如果定义了持有时间，则需要从当前领取日期上加持有时间作为最后有效日
         if (coupon.getValIdTerm() != null && coupon.getValIdTerm().intValue() > 0) {
             validEndDate = entity.getValidStartDate().plusDays(coupon.getValIdTerm());
-        }else if (coupon.getAllowUseEndDate() != null){
-            validEndDate=coupon.getAllowUseEndDate();
+        } else if (coupon.getAllowUseEndDate() != null) {
+            validEndDate = coupon.getAllowUseEndDate();
         }
 
         //如果算法是：有效结束日=min(优惠结束日,(实际领取日+期限))
@@ -208,6 +205,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             entity.setEndValue(CommonConstant.IGNOREVALUE);
         }
 
+        entity.setApplyProductFlag(coupon.getApplyProductFlag());
         entity.setCouponStrategyType(coupon.getCouponStrategyType());
         entity.setCouponShortDesc(coupon.getCouponShortDesc());
         entity.setCouponType(coupon.getCouponType());
@@ -389,7 +387,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         List<UseCouponRsp> rsps = combCouponRefProductDeal(req);
 
         //将相关领券状态变更为使用中，并记录使用情况
-        CommonBoolDto dto = takeInCoupon(req.getOrderId(),req.getOperator(), rsps);
+        CommonBoolDto dto = takeInCoupon(req.getOrderId(), req.getOperator(), rsps);
         if (!dto.getSuccess()) {
             throw new BizException(COUPON_FAIL_USE.getCode(), COUPON_FAIL_USE.getFormatDesc(dto.getDesc()));
         }
@@ -401,9 +399,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     /**
      * 使用优惠券数据库处理：内部服务
      *
-     * @param orderId 订单编号
+     * @param orderId  订单编号
      * @param operator 操作者
-     * @param rsps    优惠券的使用情况
+     * @param rsps     优惠券的使用情况
      * @return 是否处理成功
      */
     @Override
@@ -1042,14 +1040,18 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             return dto;
         }
 
-        //b.商品属性校验，不校验其买入卖出门槛
+        //b.商品属性校验
         if (req.getProductList() != null && req.getProductList().size() > 0) {
             dto.setSuccess(false);
-            for (OrderProductDetailDto item : req.getProductList()) {
-                dto = checkCouponForProduct(coupon, item.getProductId());
-                //该券不适用任何商品，则该券不能用
-                if (dto.getSuccess())
-                    dto.setSuccess(true);
+            if (ApplyProductFlag.ALL.getDictValue().equals(coupon.getApplyProductFlag())) {
+                dto.setSuccess(true);
+            } else {
+                for (OrderProductDetailDto item : req.getProductList()) {
+                    dto = checkCouponForProduct(coupon, item.getProductId());
+                    //该券不适用任何商品，则该券不能用
+                    if (dto.getSuccess())
+                        dto.setSuccess(true);
+                }
             }
             if (!dto.getSuccess()) {
                 dto.setDesc("该券不适用本次选择的任何商品");
@@ -1286,6 +1288,20 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         dto.setStatisticsFlag("1");
 
         return dto;
+    }
+
+    /**
+     * 获取客户当前有效的券
+     *
+     * @param req 客户及商品信息
+     * @return 返回已领取的券
+     * 开发日志
+     */
+    @Override
+    public List<ClientCouponDto> findValidClientCouponForProduct(BaseClientProductReq req) {
+        List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientValidCouponByProduct(req.getClientId(),req.getProductId(),req.getSkuId());
+        return BeanPropertiesConverter.copyPropertiesOfList(clientCouponEnts, ClientCouponDto.class);
+
     }
 
 }

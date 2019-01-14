@@ -133,6 +133,11 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
     @Column(name = "COUPON_LEVEL")
     private String couponLevel;
 
+    /**
+     * 适用商品类型:0-自动义商品范围 1-全部
+     */
+    @Column(name = "APPLY_PRODUCT_FLAG")
+    private String applyProductFlag;
 
     /**
      * 是否有效:

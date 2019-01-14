@@ -73,7 +73,19 @@ public class ClientCouponController implements ClientCouponApi {
         return Result.ok(clientCouponService.combCouponRefProductAndUse(req));
     }
 
-
+    /**
+     * 获取客户当前有效的券
+     *
+     * @param req 客户及商品信息
+     * @return 返回已领取的券
+     * 开发日志
+     */
+    @ApiOperation(value = "获取客户当前有效的券")
+    @PostMapping(path = "/findValidClientCouponForProduct")
+    @Override
+    public Result<List<ClientCouponDto>> findValidClientCouponForProduct(@RequestBody BaseClientProductReq req){
+        return Result.ok(clientCouponService.findValidClientCouponForProduct(req));
+    }
 
 
 

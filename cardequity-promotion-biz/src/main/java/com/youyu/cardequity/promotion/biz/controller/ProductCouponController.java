@@ -151,4 +151,19 @@ public class ProductCouponController implements ProductCouponApi {
     public Result<List<GatherInfoRsp>> findGatherCouponByCommon(@RequestBody BaseQryCouponReq req){
         return Result.ok(productCouponService.findGatherCouponByCommon(req));
     }
+
+
+    /**
+     * 查看指定优惠券id集合对应优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "查看指定优惠券id集合对应优惠券列表")
+    @PostMapping(path = "/findCouponListByIds")
+    public Result<List<CouponDetailDto>> findCouponListByIds(@RequestBody List<String> req){
+        return Result.ok(productCouponService.findCouponListByIds(req));
+
+    }
 }

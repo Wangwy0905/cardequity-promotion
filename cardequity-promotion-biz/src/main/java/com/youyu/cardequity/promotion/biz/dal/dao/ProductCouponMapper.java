@@ -109,6 +109,13 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      */
     List<ProductCouponEntity>  findUnlimitedProductCoupon();
 
+    /**
+     * 通用查询
+     * @param qry 通用信息
+     * @return
+     */
+    List<ProductCouponEntity> findCouponListByIds(List<String> qry);
+
 }
 
 

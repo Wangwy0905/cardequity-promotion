@@ -170,4 +170,26 @@
         </if>
     </update>
 
+    <select id="findClientValidCouponByProduct" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        <if test="productId!=null and productId!=''">
+            and( a.APPLY_PRODUCT_FLAG='1' or
+            exists(select 1 from TB_COUPON_REF_PRODUCT b
+            where b.COUPON_ID = a.UUID
+            and b.PRODUCT_ID =#{productId,jdbcType=VARCHAR}
+            <if test="skuId!=null and skuId!=''">
+                and b.SKU_ID =#{skuId,jdbcType=VARCHAR}
+            </if>
+            )
+            )
+        </if>
+        order by COUPON_AMOUT desc,VALID_END_DATE
+    </select>
+
 </mapper>

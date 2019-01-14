@@ -823,6 +823,25 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
 
     /**
+     * 查看商品对应优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public List<CouponDetailDto> findCouponListByIds(List<String> req) {
+        List<CouponDetailDto> dtoList = new ArrayList<>();
+        if (req == null || req.isEmpty())
+           return dtoList;
+        List<ProductCouponEntity> entities = productCouponMapper.findCouponListByIds(req);
+
+        for (ProductCouponEntity couponEntity : entities) {
+            dtoList.add(combinationCoupon(couponEntity));
+        }
+        return dtoList;
+    }
+
+    /**
      * 拼装优惠券详情
      *
      * @param entity 优惠券主体

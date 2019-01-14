@@ -315,4 +315,15 @@
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1'
     </select>
 
+    <select id="findCouponListByIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
+        select *
+        from TB_PRODUCT_COUPON a
+        where ifnull(a.IS_ENABLE, '1') = '1'
+        and a.UUID IN
+        <foreach collection="list" item="couponId" index="index"
+                 open="(" close=")" separator=",">
+            #{couponId}
+        </foreach>
+    </select>
+
 </mapper>

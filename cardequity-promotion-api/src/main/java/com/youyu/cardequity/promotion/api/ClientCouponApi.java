@@ -95,4 +95,14 @@ public interface ClientCouponApi {
     Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req);
 
 
+    /**
+     * 获取客户当前有效的券
+     *
+     * @param req 客户及商品信息
+     * @return 返回已领取的券
+     * 开发日志
+     */
+    @ApiOperation(value = "获取客户当前有效的券")
+    @PostMapping(path = "/findValidClientCouponForProduct")
+     Result<List<ClientCouponDto>> findValidClientCouponForProduct(@RequestBody BaseClientProductReq req);
 }

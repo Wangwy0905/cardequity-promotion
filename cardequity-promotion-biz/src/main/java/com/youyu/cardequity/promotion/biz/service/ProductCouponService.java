@@ -110,6 +110,15 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      */
     List<GatherInfoRsp> findGatherCouponByCommon(BaseQryCouponReq req);
 
+
+    /**
+     * 查看商品对应优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    List<CouponDetailDto> findCouponListByIds(List<String> req);
+
 }
 
 

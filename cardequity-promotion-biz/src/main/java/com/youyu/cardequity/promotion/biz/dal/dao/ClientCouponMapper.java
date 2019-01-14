@@ -75,6 +75,9 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      */
     List<ClientCouponEntity> findClientValidCoupon(@Param("clientId") String clientId);
 
+
+
+
     /**
      * 获取客户已领的折扣券
      * @param clientId
@@ -123,6 +126,17 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      * @return
      */
     int modRecoverByOrderinfo(@Param("orderinfo") BaseOrderInPromotionReq orderinfo);
+
+    /**
+     * 获取客户已领取有效优惠券：未使用（status=0且有效期内）
+     * @Param clientId:指定客户号，必填
+     * @return 返回已领取的券
+     * 开发日志
+     * 1004246-徐长焕-20181213 新增
+     */
+    List<ClientCouponEntity> findClientValidCouponByProduct(@Param("clientId") String clientId,
+                                                            @Param("productId") String productId,
+                                                            @Param("skuId") String skuId);
 }
 
 

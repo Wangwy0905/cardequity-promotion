@@ -1,14 +1,14 @@
 package com.youyu.cardequity.promotion.vo.req;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Created by caiyi on 2018/12/27.
+ * 商品基本信息
  */
-@Getter
-@Setter
+@Data
 public class BaseProductReq {
     @ApiModelProperty(value = "商品编号:必填", required = true)
     private String productId;
