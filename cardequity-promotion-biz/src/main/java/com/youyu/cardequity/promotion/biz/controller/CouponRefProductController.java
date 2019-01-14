@@ -31,9 +31,9 @@ public class CouponRefProductController implements CouponRefProductApi {
      * @param req
      * @return
      */
+    @Override
     @ApiOperation(value = "添加优惠券关联商品")
     @PostMapping(path = "/addProductRefCoupon")
-    @Override
     public Result<CommonBoolDto<Integer>> addProductRefCoupon(@RequestBody BatchRefProductReq req){
         return Result.ok(couponRefProductService.batchAddCouponRefProduct(req));
     }
@@ -44,9 +44,9 @@ public class CouponRefProductController implements CouponRefProductApi {
      * @param req
      * @return
      */
+    @Override
     @ApiOperation(value = "查询优惠券关联的商品列表")
     @PostMapping(path = "/findJoinProductByCoupon")
-    @Override
     public Result<List<CouponRefProductDto>> findJoinProductByCoupon(@RequestBody BaseCouponReq req){
         return Result.ok(couponRefProductService.findJoinProductByCoupon(req));
     }
