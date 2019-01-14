@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Api(tags = "优惠使用操作")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/clientTakeInCouponApi")
+@RequestMapping(path = "/clientTakeInCoupon")
 public interface ClientTakeInCouponApi {
     /**
      * 【内部服务】在订单时候根据使用活动及优惠券详情处理优惠券记录，记录使用痕迹
