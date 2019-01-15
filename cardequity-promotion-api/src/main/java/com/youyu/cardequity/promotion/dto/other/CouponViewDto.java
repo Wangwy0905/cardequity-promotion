@@ -142,12 +142,13 @@ public class CouponViewDto {
             stage.setCouponShortDesc(this.couponShortDesc);
             stage.setBeginValue(conditionValue);
             stage.setCouponValue(profitValue);
-            stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionValue));
+
             if (perProfitTopValue!=null &&
                     perProfitTopValue.compareTo(BigDecimal.ZERO)>0 &&
                     perProfitTopValue.compareTo(CommonConstant.IGNOREVALUE)<0 &&
                     perProfitTopValue.compareTo(stage.getCouponValue())>0) {
                 couponDto.setCouponStrategyType(CouponStrategyType.equalstage.getDictValue());
+                stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionValue));
             }
             stageList.add(stage);
             dto.setStageList(stageList);

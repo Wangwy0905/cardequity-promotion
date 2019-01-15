@@ -1301,7 +1301,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     @Override
     public List<ClientCouponDto> findValidClientCouponForProduct(BaseClientProductReq req) {
         List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientValidCouponByProduct(req.getClientId(),req.getProductId(),req.getSkuId());
-        return BeanPropertiesConverter.copyPropertiesOfList(clientCouponEnts, ClientCouponDto.class);
+        return BeanPropertiesUtils.copyPropertiesOfList(clientCouponEnts, ClientCouponDto.class);
 
     }
 

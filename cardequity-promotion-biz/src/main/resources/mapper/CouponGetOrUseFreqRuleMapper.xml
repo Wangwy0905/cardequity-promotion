@@ -86,7 +86,7 @@
     </select>
 
     <update id="deleteByCouponId" parameterType="string">
-        DELETE FROM TB_COUPON_GET_OR_USE_FREQ_RULE a
+        DELETE FROM TB_COUPON_GET_OR_USE_FREQ_RULE
         WHERE COUPON_ID=#{couponId,jdbcType=VARCHAR}
     </update>
 </mapper>
