@@ -279,7 +279,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //如果指定商品集合，默认为自定义配置
-        if (req.getProductList() != null || !req.getProductList().isEmpty()) {
+        if (req.getProductList() != null && !req.getProductList().isEmpty()) {
             dto.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
         }
         //生成优惠编号
@@ -492,7 +492,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //如果指定商品集合，默认为自定义配置
-        if (req.getProductList() != null || !req.getProductList().isEmpty()) {
+        if (req.getProductList() != null && !req.getProductList().isEmpty()) {
             dto.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
         }
 
