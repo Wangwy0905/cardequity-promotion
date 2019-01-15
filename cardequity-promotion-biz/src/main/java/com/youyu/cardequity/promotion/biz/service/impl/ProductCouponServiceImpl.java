@@ -84,9 +84,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         if(CommonConstant.EXCLUSIONFLAG_ALL.equals(qryProfitCommonReq.getExclusionFlag()) ) {
             //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
-            productCouponlist = productCouponMapper.findEnableGetCouponList(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClinetType());
+            productCouponlist = productCouponMapper.findEnableGetCouponList(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType());
         }else{
-            productCouponlist = productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClinetType());
+            productCouponlist = productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType());
         }
         List<CouponDetailDto> result = new ArrayList<>();
 
@@ -106,8 +106,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             //获取不满足领取频率的数据
             if(!CommonConstant.EXCLUSIONFLAG_ALL.equals(qryProfitCommonReq.getExclusionFlag()) ) {
                 //查询客户受频率限制的券
-                if (!CommonUtils.isEmptyorNull(qryProfitCommonReq.getClinetId())) {
-                    shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClinetId(), item.getId(), "");
+                if (!CommonUtils.isEmptyorNull(qryProfitCommonReq.getClientId())) {
+                    shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClientId(), item.getId(), "");
                 }
             }
 
@@ -306,9 +306,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 if (!CommonUtils.isGtZeroDecimal(stage.getCouponValue()) && CommonUtils.isGtZeroDecimal(dto.getProfitValue())) {
                     stage.setCouponValue(dto.getProfitValue());
                 }
+                stage.setCouponId(dto.getId());//将先生成的id设置到门槛阶梯
+                if (CommonUtils.isEmptyorNull(stage.getCouponShortDesc())){
+                    stage.setCouponShortDesc(dto.getCouponShortDesc());
+                }
 
                 CouponStageRuleEntity stageRuleEntity = BeanPropertiesUtils.copyProperties(stage, CouponStageRuleEntity.class);
-                stage.setCouponId(dto.getId());//将先生成的id设置到门槛阶梯
+                stageRuleEntity.setCreateAuthor(req.getOperator());
+                stageRuleEntity.setUpdateAuthor(req.getOperator());
                 stageRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
                 //子券id=券id+前补03位
                 //stage.setId(stage.getCouponId() + String.format("%03d", Integer.valueOf(req.getStageList().indexOf(stage))));
@@ -346,9 +351,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         //【处理限额】
         if (req.getQuotaRule() != null) {
-
             req.getQuotaRule().setCouponId(dto.getId());//将先生成的id设置到额度
+
             CouponQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(req.getQuotaRule(), CouponQuotaRuleEntity.class);
+            quotaRuleEntity.setCreateAuthor(req.getOperator());
+            quotaRuleEntity.setUpdateAuthor(req.getOperator());
             quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
             sqlresult = couponQuotaRuleMapper.insert(quotaRuleEntity);
             if (sqlresult <= 0) {
@@ -367,6 +374,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //【基本信息】
         ProductCouponEntity entity = BeanPropertiesUtils.copyProperties(dto, ProductCouponEntity.class);
         entity.setCouponLable(dto.getLabelDto().getId());
+        entity.setUpdateAuthor(req.getOperator());
+        entity.setCreateAuthor(req.getOperator());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
         sqlresult = productCouponMapper.insert(entity);
         if (sqlresult <= 0) {
@@ -523,6 +532,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     stage.setCouponValue(dto.getProfitValue());
                 }
 
+                if (CommonUtils.isEmptyorNull(stage.getCouponShortDesc())){
+                    stage.setCouponShortDesc(dto.getCouponShortDesc());
+                }
+
                 stage.setCouponId(dto.getId());
                 BeanPropertiesUtils.copyProperties(stage, stageRuleEntity);
                 stageRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
@@ -531,11 +544,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     //stage.setId(stage.getCouponId() + String.format("%03d", Integer.valueOf(req.getStageList().indexOf(stage))));
                     stageRuleEntity.setId(CommonUtils.getUUID());
                     stage.setId(stageRuleEntity.getId());
+                    stageRuleEntity.setCreateAuthor(req.getOperator());
+                    stageRuleEntity.setUpdateAuthor(req.getOperator());
                     sqlresult = couponStageRuleMapper.insert(stageRuleEntity);
                     if (sqlresult <= 0) {
                         throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("插入优惠门槛错误，子券id" + stageRuleEntity.getId()));
                     }
                 } else {
+                    stageRuleEntity.setUpdateAuthor(req.getOperator());
                     sqlresult = couponStageRuleMapper.updateByPrimaryKeySelective(stageRuleEntity);
                     if (sqlresult <= 0) {
                         throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("更新优惠门槛错误，子券id" + stageRuleEntity.getId()));
@@ -589,10 +605,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
             req.getQuotaRule().setCouponId(dto.getId());
             CouponQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(req.getQuotaRule(), CouponQuotaRuleEntity.class);
+
             quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+            quotaRuleEntity.setUpdateAuthor(req.getOperator());
             if (sqlresult > 0) {
                 sqlresult = couponQuotaRuleMapper.updateByPrimaryKey(quotaRuleEntity);
             } else {
+                quotaRuleEntity.setCreateAuthor(req.getOperator());
                 sqlresult = couponQuotaRuleMapper.insert(quotaRuleEntity);
             }
             if (sqlresult <= 0) {
@@ -611,6 +630,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         BeanPropertiesUtils.copyProperties(dto, entity);
         entity.setCouponLable(dto.getLabelDto().getId());
+        entity.setUpdateAuthor(req.getOperator());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
 
         sqlresult = productCouponMapper.updateByPrimaryKey(entity);

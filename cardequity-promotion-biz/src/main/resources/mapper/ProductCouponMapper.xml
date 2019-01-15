@@ -153,7 +153,7 @@
         </foreach>
     </update>
 
-    <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq" >
+    <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BaseCouponReq" >
         UPDATE TB_PRODUCT_COUPON  a
            SET IS_ENABLE='0',a.UPDATE_AUTHOR= #{operator,jdbcType=VARCHAR}
         WHERE ifnull(a.IS_ENABLE, '1') = '1'

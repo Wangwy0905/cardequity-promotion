@@ -9,10 +9,10 @@ import lombok.Data;
 @Data
 public class QryProfitCommonReq {
     @ApiModelProperty(value = "客户编号:" , required = true)
-    private String clinetId;
+    private String clientId;
 
     @ApiModelProperty(value = "客户类型:如果传入只有clientid需要在服务层补全")
-    private String clinetType;
+    private String clientType;
 
     @ApiModelProperty(value = "商品id")
     private String productId;
