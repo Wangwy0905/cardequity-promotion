@@ -193,6 +193,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (CommonUtils.isEmptyorNull(profit.getActivityShortDesc()))
                 profit.setActivityShortDesc(profit.getActivityName());
 
+            //默认是自定义适用商品
+            if (CommonUtils.isEmptyorNull(profit.getApplyProductFlag()))
+                profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
             //如果指定商品集合，默认为自定义配置
             if (item.getProductList() != null && !item.getProductList().isEmpty()) {
                 profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
@@ -340,10 +343,14 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (CommonUtils.isEmptyorNull(profit.getActivityShortDesc()))
                 profit.setActivityShortDesc(profit.getActivityName());
 
+            //默认是自定义适用商品
+            if (CommonUtils.isEmptyorNull(profit.getApplyProductFlag()))
+                profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
             //如果指定商品集合，默认为自定义配置
             if (item.getProductList() != null && !item.getProductList().isEmpty()) {
                 profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
             }
+
 
             //检查适用商品是否重复在不同活动配置中
             CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(item.getProductList(), profit);

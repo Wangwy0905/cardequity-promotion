@@ -310,6 +310,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 if (CommonUtils.isEmptyorNull(stage.getCouponShortDesc())){
                     stage.setCouponShortDesc(dto.getCouponShortDesc());
                 }
+                if (CommonUtils.isEmptyorNull(stage.getTriggerByType())) {
+                    stage.setTriggerByType(TriggerByType.CAPITAL.getDictValue());
+                }
 
                 CouponStageRuleEntity stageRuleEntity = BeanPropertiesUtils.copyProperties(stage, CouponStageRuleEntity.class);
                 stageRuleEntity.setCreateAuthor(req.getOperator());
@@ -534,6 +537,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
                 if (CommonUtils.isEmptyorNull(stage.getCouponShortDesc())){
                     stage.setCouponShortDesc(dto.getCouponShortDesc());
+                }
+                if (CommonUtils.isEmptyorNull(stage.getTriggerByType())) {
+                    stage.setTriggerByType(TriggerByType.CAPITAL.getDictValue());
                 }
 
                 stage.setCouponId(dto.getId());
