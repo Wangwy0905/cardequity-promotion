@@ -73,14 +73,13 @@ public class CouponDetailDto {
             for (CouponStageRuleDto stage : stageList) {
                 dto.setConditionValue(stage.getBeginValue());
                 dto.setProfitValue(stage.getCouponValue());
+                dto.setPerProfitTopValue(BigDecimal.ZERO);
                 //如果是等阶的消费券，需要转换计算每人最大优惠额
                 if (CouponStrategyType.equalstage.getDictValue().equals(productCouponDto.getCouponStrategyType()) &&
                         stage.getEndValue()!=null && stage.getEndValue().compareTo(BigDecimal.ZERO)>0 && stage.getEndValue().compareTo(CommonConstant.IGNOREVALUE)<0 &&
                         stage.getBeginValue()!=null && stage.getBeginValue().compareTo(BigDecimal.ZERO)>0) {
                     dto.setPerProfitTopValue(stage.getEndValue().divide(stage.getBeginValue()).multiply(stage.getCouponValue()));
                 }
-
-                dto.setPerProfitTopValue(stage.getEndValue());
                 dto.setStageId(stage.getUuid());
                 break;//首期只有一个阶梯的数据
             }
