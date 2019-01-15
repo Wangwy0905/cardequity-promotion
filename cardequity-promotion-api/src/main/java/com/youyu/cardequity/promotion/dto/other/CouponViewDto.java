@@ -53,10 +53,7 @@ public class CouponViewDto {
     private String stageId;
 
     @ApiModelProperty(value = "使用金额门槛")
-    private BigDecimal conditionFund;
-
-    @ApiModelProperty(value = "使用金额数量")
-    private BigDecimal conditionCount;
+    private BigDecimal conditionValue;
 
     @ApiModelProperty(value = "每张券最大优惠金额")
     private BigDecimal perProfitTopValue;
@@ -91,6 +88,9 @@ public class CouponViewDto {
     @ApiModelProperty(value = "适用商品类型:0-自动义商品范围 1-全部")
     private String applyProductFlag;
 
+    @ApiModelProperty(value = "门槛触发类型:0-按买入金额 1-按买入数量")
+    private String triggerByType;
+
     @ApiModelProperty(value = "优惠券涉及的商品")
     private List<BaseProductReq> productList;
 
@@ -99,16 +99,18 @@ public class CouponViewDto {
 
     public CouponDetailDto switchToModel() {
         CouponDetailDto dto = new CouponDetailDto();
+
+        //********主体信息拷贝*********
         ProductCouponDto couponDto = new ProductCouponDto();
         dto.setProductCouponDto(couponDto);
         BeanUtils.copyProperties(this, couponDto);
         couponDto.setLabelDto(labelDto);
         //couponDto.getLabelDto().setId(this.getCouponLable());
 
+        //********适用对象转义*********
         couponDto.setClientTypeSet(CommonConstant.WILDCARD);
+        //默认不是新注册客户特有
         couponDto.setGetStage(UsedStage.Other.getDictValue());
-        //默认没有门槛
-        couponDto.setCouponStrategyType(CouponStrategyType.stage.getDictValue());
         //会员专属
         if (CommonDict.FRONDEND_MEMBER.getCode().equals(targetFlag)) {
             couponDto.setClientTypeSet(ClientType.MEMBER.getDictValue());
@@ -117,44 +119,41 @@ public class CouponViewDto {
             couponDto.setClientTypeSet(CommonConstant.WILDCARD);
             couponDto.setGetStage(UsedStage.Register.getDictValue());
         }
+
+        //*******券类型转义**********
+        //默认没有门槛
+        couponDto.setCouponStrategyType(CouponStrategyType.stage.getDictValue());
         couponDto.setCouponType(CouponType.COUPON.getDictValue());
         if ("1".equals(couponViewType)) {
             couponDto.setCouponType(CouponType.TRANSFERFARE.getDictValue());
             if (productList==null || productList.isEmpty())
                 couponDto.setCouponLevel(CouponActivityLevel.GLOBAL.getDictValue());
         }
-        if (conditionFund!=null && conditionFund.compareTo(BigDecimal.ZERO)>=0){
-            couponDto.setCouponStrategyType(CouponStrategyType.stage.getDictValue());
-            List<CouponStageRuleDto> stageList=new ArrayList<>();
-            CouponStageRuleDto stage=new CouponStageRuleDto();
-            stage.setCouponId(uuid);
-            stage.setUuid(stageId);
-            stage.setTriggerByType(TriggerByType.CAPITAL.getDictValue());
-            stage.setBeginValue(conditionFund);
-            stage.setCouponValue(profitValue);
-            if (perProfitTopValue!=null && perProfitTopValue.compareTo(BigDecimal.ZERO)>0 && perProfitTopValue.compareTo(CommonConstant.IGNOREVALUE)<0) {
-                couponDto.setCouponStrategyType(CouponStrategyType.equalstage.getDictValue());
-                stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionFund));
-            }
-            stageList.add(stage);
-            dto.setStageList(stageList);
-        } else if (conditionCount!=null && conditionCount.compareTo(BigDecimal.ZERO)>=0){
+
+        //*******门槛转义**********
+        if (conditionValue != null && conditionValue.compareTo(BigDecimal.ZERO) < 0)
+            conditionValue = BigDecimal.ZERO;
+        if (conditionValue.compareTo(BigDecimal.ZERO) > 0) {
             couponDto.setCouponStrategyType(CouponStrategyType.stage.getDictValue());
             List<CouponStageRuleDto> stageList=new ArrayList<>();
             CouponStageRuleDto stage=new CouponStageRuleDto();
             stage.setCouponId(uuid);
             stage.setUuid(stageId);
             stage.setCouponShortDesc(this.couponShortDesc);
+            stage.setBeginValue(conditionValue);
             stage.setCouponValue(profitValue);
-            stage.setTriggerByType(TriggerByType.NUMBER.getDictValue());
-            stage.setBeginValue(conditionCount);
-            if (perProfitTopValue!=null && perProfitTopValue.compareTo(BigDecimal.ZERO)>0 && perProfitTopValue.compareTo(CommonConstant.IGNOREVALUE)<0) {
+            stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionValue));
+            if (perProfitTopValue!=null &&
+                    perProfitTopValue.compareTo(BigDecimal.ZERO)>0 &&
+                    perProfitTopValue.compareTo(CommonConstant.IGNOREVALUE)<0 &&
+                    perProfitTopValue.compareTo(stage.getCouponValue())>0) {
                 couponDto.setCouponStrategyType(CouponStrategyType.equalstage.getDictValue());
-                stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionCount));
             }
             stageList.add(stage);
             dto.setStageList(stageList);
         }
+
+        //*******额度转义**********
         if (maxCount!=null && maxCount.intValue()>=0){
             CouponQuotaRuleDto quotaRuleDto=new CouponQuotaRuleDto();
             quotaRuleDto.setCouponId(uuid);
@@ -162,6 +161,7 @@ public class CouponViewDto {
             dto.setQuotaRule(quotaRuleDto);
         }
 
+        //*******频率转义**********
         if (allowCount!=null && allowCount.intValue()>=0){
             List<CouponGetOrUseFreqRuleDto> freqRuleList=new ArrayList<>();
             CouponGetOrUseFreqRuleDto freqRuleDto = new CouponGetOrUseFreqRuleDto();

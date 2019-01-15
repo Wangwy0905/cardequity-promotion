@@ -659,20 +659,25 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
         //检查是否有效期外优惠券
 
+        List<String> coupons=new ArrayList<>();
+        for (BaseCouponReq baseCoupon:req.getBaseCouponList()){
+            coupons.add(baseCoupon.getCouponId());
+        }
+
         //检查是否有有效的已领取的优惠券
         batchService.batchDispose(req.getBaseCouponList(), ProductCouponMapper.class, "logicDelById");
 
         //逻辑删除门槛
-        batchService.batchDispose(req.getBaseCouponList(), CouponStageRuleMapper.class, "logicDelByCouponId");
+        batchService.batchDispose(coupons, CouponStageRuleMapper.class, "logicDelByCouponId");
 
         //逻辑删除频率
-        batchService.batchDispose(req.getBaseCouponList(), CouponGetOrUseFreqRuleMapper.class, "logicDelByCouponId");
+        batchService.batchDispose(coupons, CouponGetOrUseFreqRuleMapper.class, "logicDelByCouponId");
 
         //逻辑删除适用商品
-        batchService.batchDispose(req.getBaseCouponList(), CouponRefProductMapper.class, "logicDelByCouponId");
+        batchService.batchDispose(coupons, CouponRefProductMapper.class, "logicDelByCouponId");
 
         //逻辑删除额度
-        batchService.batchDispose(req.getBaseCouponList(), CouponQuotaRuleMapper.class, "logicDelByCouponId");
+        batchService.batchDispose(coupons, CouponQuotaRuleMapper.class, "logicDelByCouponId");
 
         return result;
     }

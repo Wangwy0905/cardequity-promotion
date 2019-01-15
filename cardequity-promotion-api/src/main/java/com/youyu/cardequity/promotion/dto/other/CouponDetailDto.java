@@ -42,6 +42,7 @@ public class CouponDetailDto {
         if (productCouponDto != null) {
             BeanUtils.copyProperties(productCouponDto, dto);
             dto.setTargetFlag(CommonDict.FRONDEND_ALL.getCode());
+            dto.setLabelDto(productCouponDto.getLabelDto());
 
             //转义领取对象
             if (productCouponDto.getClientTypeSet() != null) {
@@ -70,11 +71,7 @@ public class CouponDetailDto {
 
         if (stageList != null && stageList.size() > 0) {
             for (CouponStageRuleDto stage : stageList) {
-                if (TriggerByType.NUMBER.getDictValue().equals(stage.getTriggerByType())) {
-                    dto.setConditionFund(stage.getBeginValue());
-                } else {
-                    dto.setConditionCount(stage.getBeginValue());
-                }
+                dto.setConditionValue(stage.getBeginValue());
                 dto.setProfitValue(stage.getCouponValue());
                 //如果是等阶的消费券，需要转换计算每人最大优惠额
                 if (CouponStrategyType.equalstage.getDictValue().equals(productCouponDto.getCouponStrategyType()) &&
