@@ -1155,7 +1155,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     personTotalNum = personTotalNum.add(new BigDecimal(freq.getPersonTotalNum().toString()));
                 }
             }
-            if (CommonUtils.isGtZeroDecimal(personTotalNum) && personTotalNum.compareTo(statisticsQuotaDto.getClientCount()) >= 0) {
+            if (CommonUtils.isGtZeroDecimal(personTotalNum) && personTotalNum.compareTo(statisticsQuotaDto.getClientCount()) <= 0) {
                 dto.setSuccess(false);
                 dto.setDesc(COUPON_FAIL_COUNT_PERACCQUOTA.getFormatDesc(personTotalNum, statisticsQuotaDto.getClientCount(), quota.getCouponId()));
                 return dto;

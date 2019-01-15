@@ -674,7 +674,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         batchService.batchDispose(coupons, CouponGetOrUseFreqRuleMapper.class, "logicDelByCouponId");
 
         //逻辑删除适用商品
-        batchService.batchDispose(coupons, CouponRefProductMapper.class, "logicDelByCouponId");
+        batchService.batchDispose(coupons, CouponRefProductMapper.class, "deleteByCouponId");
 
         //逻辑删除额度
         batchService.batchDispose(coupons, CouponQuotaRuleMapper.class, "logicDelByCouponId");

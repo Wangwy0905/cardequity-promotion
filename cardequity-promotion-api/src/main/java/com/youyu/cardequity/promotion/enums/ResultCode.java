@@ -52,7 +52,7 @@ public enum ResultCode implements CardequityIBaseResultCode {
     COUPON_NOT_ALLOW_PAYTYPE("0023", "该支付方式不能使用此券,PAYTYPE={0}"),
     COUPON_FAIL_COUNT_PERDATEQUOTA("0024", "超过该优惠所有客户当日可领取优惠总数量,券当日可领优惠数量{0},券当日已领优惠数量{1},优惠编号{2}"),
     COUPON_FAIL_COUNT_PERACCANDDATEQUOTA("0006", "超过该优惠每日可领取优惠金额,每日可领优惠金额{0},当日已领优惠金额{1},优惠编号{2}"),
-    COUPON_FAIL_COUNT_PERACCQUOTA("0007", "超过该优惠可领取数量,可领优惠数量{0},已领优惠数量{1},优惠编号{2}"),
+    COUPON_FAIL_COUNT_PERACCQUOTA("0007", "超过该优惠每人可领取数量,可领优惠数量{0},已领优惠数量{1},优惠编号{2}"),
     ;
 
     /**
