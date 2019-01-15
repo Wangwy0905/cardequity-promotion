@@ -91,11 +91,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<ActivityProfitEntity> activityList = null;
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())) {
             activityList = activityProfitMapper.findEnableGetCommonFirstActivity(req.getProductId(),
-                    req.getClinetType(),
+                    req.getClientType(),
                     req.getEntrustWay());
         } else {
             activityList = activityProfitMapper.findEnableGetCommonActivity(req.getProductId(),
-                    req.getClinetType(),
+                    req.getClientType(),
                     req.getEntrustWay());
         }
 
