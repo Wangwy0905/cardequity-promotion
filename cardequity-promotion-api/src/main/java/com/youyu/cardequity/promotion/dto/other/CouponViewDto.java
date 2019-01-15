@@ -132,7 +132,7 @@ public class CouponViewDto {
             stage.setTriggerByType(TriggerByType.CAPITAL.getDictValue());
             stage.setBeginValue(conditionFund);
             stage.setCouponValue(profitValue);
-            if (perProfitTopValue!=null && perProfitTopValue.compareTo(BigDecimal.ZERO)>0) {
+            if (perProfitTopValue!=null && perProfitTopValue.compareTo(BigDecimal.ZERO)>0 && perProfitTopValue.compareTo(CommonConstant.IGNOREVALUE)<0) {
                 couponDto.setCouponStrategyType(CouponStrategyType.equalstage.getDictValue());
                 stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionFund));
             }
@@ -148,7 +148,7 @@ public class CouponViewDto {
             stage.setCouponValue(profitValue);
             stage.setTriggerByType(TriggerByType.NUMBER.getDictValue());
             stage.setBeginValue(conditionCount);
-            if (perProfitTopValue!=null && perProfitTopValue.compareTo(BigDecimal.ZERO)>0) {
+            if (perProfitTopValue!=null && perProfitTopValue.compareTo(BigDecimal.ZERO)>0 && perProfitTopValue.compareTo(CommonConstant.IGNOREVALUE)<0) {
                 couponDto.setCouponStrategyType(CouponStrategyType.equalstage.getDictValue());
                 stage.setEndValue(perProfitTopValue.divide(profitValue).multiply(conditionCount));
             }
