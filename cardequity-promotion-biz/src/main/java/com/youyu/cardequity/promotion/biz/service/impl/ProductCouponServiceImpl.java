@@ -247,6 +247,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         if (CouponType.FREETRANSFERFARE.equals(dto.getCouponType()) || CouponType.TRANSFERFARE.equals(dto.getCouponType())) {
             dto.setCouponLevel(CouponActivityLevel.GLOBAL.getDictValue());
+            dto.setApplyProductFlag(ApplyProductFlag.ALL.getDictValue());
         } else if (dto.getCouponLevel() == null) {
             result.setDesc("优惠券等级参数为空：参数值" + dto.getCouponLevel());
             return result;
@@ -287,13 +288,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         //【处理阶梯】
         if (req.getStageList() != null && req.getStageList().size() <= 0) {
-            if (!CouponType.TRANSFERFARE.getDictValue().equals(dto.getCouponType()) && !CouponType.FREETRANSFERFARE.getDictValue().equals(dto.getCouponType())) {
-                //从普通消费券分化出有门槛和无门槛优惠券
-                if (CouponStrategyType.stage.equals(dto.getCouponStrategyType())) {
-                    dto.setCouponStrategyType(CouponStrategyType.fix.getDictValue());
-                    dto.setCouponType(CouponType.MONEYBAG.getDictValue());
-                }
-            }
+//            if (!CouponType.TRANSFERFARE.getDictValue().equals(dto.getCouponType()) && !CouponType.FREETRANSFERFARE.getDictValue().equals(dto.getCouponType())) {
+//                //从普通消费券分化出有门槛和无门槛优惠券
+//                if (CouponStrategyType.stage.equals(dto.getCouponStrategyType())) {
+//                    dto.setCouponStrategyType(CouponStrategyType.fix.getDictValue());
+//                    dto.setCouponType(CouponType.MONEYBAG.getDictValue());
+//                }
+//            }
         } else {
             //组装子券信息
             for (CouponStageRuleDto stage : req.getStageList()) {
@@ -447,6 +448,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //运费券的登记为全局
         if (CouponType.FREETRANSFERFARE.equals(dto.getCouponType()) || CouponType.TRANSFERFARE.equals(dto.getCouponType())) {
             dto.setCouponLevel(CouponActivityLevel.GLOBAL.getDictValue());
+            dto.setApplyProductFlag(ApplyProductFlag.ALL.getDictValue());
         } else {
             if (dto.getCouponLevel() == null) {
                 result.setDesc("优惠券等级参数为空：参数值" + dto.getCouponLevel());
@@ -500,13 +502,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //先逻辑删除门槛信息
         couponStageRuleMapper.logicDelByCouponId(dto.getId());
         if (req.getStageList() != null && req.getStageList().size() <= 0) {
-            if (!CouponType.TRANSFERFARE.getDictValue().equals(dto.getCouponType()) && !CouponType.FREETRANSFERFARE.getDictValue().equals(dto.getCouponType())) {
-                //从普通消费券分化出有门槛和无门槛优惠券
-                if (CouponStrategyType.stage.equals(dto.getCouponStrategyType())) {
-                    dto.setCouponStrategyType(CouponStrategyType.fix.getDictValue());
-                    dto.setCouponType(CouponType.MONEYBAG.getDictValue());
-                }
-            }
+//            if (!CouponType.TRANSFERFARE.getDictValue().equals(dto.getCouponType()) && !CouponType.FREETRANSFERFARE.getDictValue().equals(dto.getCouponType())) {
+//                //从普通消费券分化出有门槛和无门槛优惠券
+//                if (CouponStrategyType.stage.equals(dto.getCouponStrategyType())) {
+//                    dto.setCouponStrategyType(CouponStrategyType.fix.getDictValue());
+//                    dto.setCouponType(CouponType.MONEYBAG.getDictValue());
+//                }
+//            }
         } else {
             //组装子券信息
             for (CouponStageRuleDto stage : req.getStageList()) {
