@@ -194,7 +194,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 profit.setActivityShortDesc(profit.getActivityName());
 
             //如果指定商品集合，默认为自定义配置
-            if (item.getProductList() != null || !item.getProductList().isEmpty()) {
+            if (item.getProductList() != null && !item.getProductList().isEmpty()) {
                 profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
             }
 
@@ -341,7 +341,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 profit.setActivityShortDesc(profit.getActivityName());
 
             //如果指定商品集合，默认为自定义配置
-            if (item.getProductList() != null || !item.getProductList().isEmpty()) {
+            if (item.getProductList() != null && !item.getProductList().isEmpty()) {
                 profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
             }
 

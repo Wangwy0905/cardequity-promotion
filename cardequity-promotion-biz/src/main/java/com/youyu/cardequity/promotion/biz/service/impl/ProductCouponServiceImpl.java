@@ -879,7 +879,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         CouponDetailDto result = new CouponDetailDto();
 
         ProductCouponDto productCouponDto = BeanPropertiesUtils.copyProperties(entity, ProductCouponDto.class);
-        if (CommonUtils.isEmptyorNull(entity.getCouponLable())) {
+        if (!CommonUtils.isEmptyorNull(entity.getCouponLable())) {
             CouponAndActivityLabelEntity labelEntity = couponAndActivityLabelMapper.findLabelById(entity.getCouponLable());
             if (labelEntity != null) {
                 CouponAndActivityLabelDto labelDto = BeanPropertiesUtils.copyProperties(labelEntity, CouponAndActivityLabelDto.class);

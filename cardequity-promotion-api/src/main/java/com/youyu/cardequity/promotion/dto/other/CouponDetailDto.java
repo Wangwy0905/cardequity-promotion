@@ -62,7 +62,6 @@ public class CouponDetailDto {
             if (CouponType.TRANSFERFARE.getDictValue().equals(productCouponDto.getCouponType()) ||
                     CouponType.FREETRANSFERFARE.getDictValue().equals(productCouponDto.getCouponType()))
                 dto.setCouponViewType("1");
-
         }
 
         if (quotaRule != null) {
