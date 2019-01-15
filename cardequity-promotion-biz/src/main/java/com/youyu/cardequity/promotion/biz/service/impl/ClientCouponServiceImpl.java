@@ -205,6 +205,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             entity.setEndValue(CommonConstant.IGNOREVALUE);
         }
 
+        entity.setBusinDate(LocalDate.now());
         entity.setApplyProductFlag(coupon.getApplyProductFlag());
         entity.setCouponStrategyType(coupon.getCouponStrategyType());
         entity.setCouponShortDesc(coupon.getCouponShortDesc());
