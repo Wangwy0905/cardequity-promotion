@@ -85,6 +85,9 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             }
         }
 
+        if (req==null || req.isEmpty())
+            return result;
+
         int perCount = 100, index = 0;
         List<BaseProductReq> listTemp = null;
         do {
