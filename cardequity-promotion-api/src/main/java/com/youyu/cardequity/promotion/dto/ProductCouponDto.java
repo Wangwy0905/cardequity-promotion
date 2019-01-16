@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiModel;
 @ApiModel
 public class ProductCouponDto implements IBaseDto<String>{
 
-    @ApiModelProperty(value = "优惠券编号:")
+    @ApiModelProperty(value = "领取编号:")
     private String uuid;
 
     @ApiModelProperty(value = "优惠策略类型:0-折扣券 1-现金  3-随机  4-满减现金；")

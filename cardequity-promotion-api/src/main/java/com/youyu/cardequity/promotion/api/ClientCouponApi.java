@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.api;
 
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
@@ -105,4 +106,16 @@ public interface ClientCouponApi {
     @ApiOperation(value = "获取客户当前有效的券")
     @PostMapping(path = "/findValidClientCouponForProduct")
      Result<List<ClientCouponDto>> findValidClientCouponForProduct(@RequestBody BaseClientProductReq req);
+
+
+    /**
+     * 查看订单相关优惠券（可用，不可用）
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "查看订单相关优惠券（可用，不可用）")
+    @PostMapping(path = "/findCouponListByOrderDetail")
+    Result<FindCouponListByOrderDetailRsp> findCouponListByOrderDetail(@RequestBody OrderUseEnableCouponReq req);
+
 }

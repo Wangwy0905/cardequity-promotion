@@ -18,6 +18,8 @@ import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
+import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
@@ -316,6 +318,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             return rsps;
         }
         for (ClientCouponEntity clientCoupon : enableCouponList) {
+            if (!CouponStatus.NORMAL.equals(clientCoupon.getStatus()))
+                continue;
+
             //没有指定运费时运费券或免邮券不能使用
             if (!CommonUtils.isGtZeroDecimal(req.getTransferFare()) &&
                     (clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue()) ||
@@ -698,7 +703,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @param req
      * @return
      */
-    private CommonBoolDto<ProductCouponEntity> checkCouponFrist(ClientCouponEntity item, GetUseEnableCouponReq req, boolean useFlag) {
+    private CommonBoolDto<ProductCouponEntity> checkCouponFrist(ClientCouponEntity item, OrderUseEnableCouponReq req, boolean useFlag) {
 
         //根据券ID获取优惠券信息
         ProductCouponEntity coupon = productCouponMapper.findProductCouponById(item.getCouponId());
@@ -963,8 +968,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //是否在允許使用期間
         if ((coupon.getAllowUseBeginDate() != null && coupon.getAllowUseBeginDate().compareTo(LocalDateTime.now()) > 0) ||
                 (coupon.getAllowUseEndDate() != null && coupon.getAllowUseEndDate().compareTo(LocalDateTime.now()) < 0)) {
-
             dto.setSuccess(false);
+            dto.setCode(COUPON_NOT_ALLOW_DATE.getCode());
             dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowUseBeginDate(), coupon.getAllowUseEndDate()));
             return dto;
         }
@@ -1027,7 +1032,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * 1004258-徐长焕-20181213 新增
      */
     private CommonBoolDto checkCouponBase(ProductCouponEntity coupon,
-                                          GetUseEnableCouponReq req) {
+                                          OrderUseEnableCouponReq req) {
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
 
@@ -1303,6 +1308,69 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientValidCouponByProduct(req.getClientId(),req.getProductId(),req.getSkuId());
         return BeanPropertiesUtils.copyPropertiesOfList(clientCouponEnts, ClientCouponDto.class);
 
+    }
+
+
+    /**
+     * 按订单信息获取可用券
+     *
+     * @param req 本次订单详情
+     * @return 推荐使用券组合及应用对应商品详情
+     */
+    @Override
+    public FindCouponListByOrderDetailRsp findCouponListByOrderDetail(OrderUseEnableCouponReq req) {
+        //返回值
+        FindCouponListByOrderDetailRsp result = new FindCouponListByOrderDetailRsp();
+
+        //临时的券使用情况
+        UseCouponRsp useCouponRsp = null;
+        //优惠券基本信息
+        ProductCouponEntity coupon = null;
+        //临时变量
+        CommonBoolDto dto = new CommonBoolDto();
+        dto.setSuccess(true);
+
+        List<ClientCouponEntity> enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId());
+
+        //空订单或者没有可用优惠券直接返回
+        if (req.getProductList() == null ||
+                enableCouponList == null ||
+                req.getProductList().size() <= 0 ||
+                enableCouponList.size() <= 0) {
+            return result;
+        }
+        for (ClientCouponEntity clientCoupon : enableCouponList) {
+
+            if (!CouponStatus.NORMAL.equals(clientCoupon.getStatus()))
+                continue;
+            //校验基本信息
+            dto = checkCouponFrist(clientCoupon, req, true);
+            if (!dto.getSuccess()) {
+                //不是有效期外的,计入有效但是订单不可用的列表
+                if (clientCoupon.getValidEndDate().toLocalDate().compareTo(LocalDate.now())>=0){
+                    FullClientCouponRsp item=new FullClientCouponRsp();
+                    item.setClientCoupon(BeanPropertiesUtils.copyProperties(clientCoupon,ClientCouponDto.class));
+                    item.setCoupon(useCouponRsp.getClientCoupon().switchSimpleMol());
+                    result.getCouponUnEnableList().add(item);
+                }
+                continue;
+            }
+            coupon = (ProductCouponEntity) dto.getData();
+
+            //根据策略得到该活动是否满足门槛，返回满足活动适用信息
+            String key = CouponStrategy.class.getSimpleName() + clientCoupon.getCouponStrategyType();
+            CouponStrategy executor = (CouponStrategy) CustomHandler.getBeanByName(key);
+            useCouponRsp = executor.applyCoupon(clientCoupon, coupon, req.getProductList());
+            if (useCouponRsp != null) {
+                FullClientCouponRsp item=new FullClientCouponRsp();
+                item.setClientCoupon(BeanPropertiesUtils.copyProperties(clientCoupon,ClientCouponDto.class));
+                item.setCoupon(useCouponRsp.getClientCoupon().switchSimpleMol());
+                result.getCouponEnableList().add(item);
+            }
+
+        }
+
+        return result;
     }
 
 }

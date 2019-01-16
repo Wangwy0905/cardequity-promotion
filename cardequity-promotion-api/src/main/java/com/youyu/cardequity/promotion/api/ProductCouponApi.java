@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
@@ -127,4 +128,6 @@ public interface ProductCouponApi {
     @ApiOperation(value = "查看指定优惠券id集合对应优惠券列表")
     @PostMapping(path = "/findCouponListByIds")
     Result<List<CouponDetailDto>> findCouponListByIds(@RequestBody List<String> req);
+
+
 }

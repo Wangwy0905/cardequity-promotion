@@ -3,7 +3,12 @@ package com.youyu.cardequity.promotion.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
+import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
+import com.youyu.cardequity.promotion.enums.dict.UsedStage;
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -91,6 +96,33 @@ public class ClientCouponDto implements IBaseDto<String>{
     @Override
     public void setId(String id) {
         this.uuid = id;
+    }
+
+    public CouponDetailDto switchSimpleMol(){
+        ProductCouponDto productCouponDto=new ProductCouponDto();
+        BeanPropertiesUtils.copyProperties(this,productCouponDto);
+        productCouponDto.setUuid(couponId);
+        productCouponDto.setProfitValue(couponAmout);
+        productCouponDto.setAllowUseBeginDate(validStartDate);
+        productCouponDto.setAllowUseEndDate(validEndDate);
+        productCouponDto.setAllowGetBeginDate(validStartDate);
+        productCouponDto.setAllowGetEndDate(validEndDate);
+        productCouponDto.setGetStage(UsedStage.Other.getDictValue());
+
+        productCouponDto.setLabelDto(new CouponAndActivityLabelDto());
+        productCouponDto.getLabelDto().setId(couponLable);
+
+        List<CouponStageRuleDto> list=new ArrayList<>();
+        CouponStageRuleDto stage=new CouponStageRuleDto();
+        BeanPropertiesUtils.copyProperties(this,stage);
+        stage.setCouponValue(couponAmout);
+        stage.setUuid(stageId);
+        list.add(stage);
+
+        CouponDetailDto result=new CouponDetailDto();
+        result.setProductCouponDto(productCouponDto);
+        result.setStageList(list);
+        return result;
     }
 }
 

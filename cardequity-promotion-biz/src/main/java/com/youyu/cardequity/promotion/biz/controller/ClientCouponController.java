@@ -4,6 +4,7 @@ package com.youyu.cardequity.promotion.biz.controller;
 import com.youyu.cardequity.promotion.api.ClientCouponApi;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.api.Result;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
@@ -88,5 +89,17 @@ public class ClientCouponController implements ClientCouponApi {
     }
 
 
+    /**
+     * 查看订单相关优惠券（可用，不可用）
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "查看订单相关优惠券（可用，不可用）")
+    @PostMapping(path = "/findCouponListByOrderDetail")
+    public Result<FindCouponListByOrderDetailRsp> findCouponListByOrderDetail(@RequestBody OrderUseEnableCouponReq req){
+        return Result.ok(clientCouponService.findCouponListByOrderDetail(req));
 
+    }
 }

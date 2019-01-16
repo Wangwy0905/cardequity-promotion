@@ -6,6 +6,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
@@ -165,4 +166,5 @@ public class ProductCouponController implements ProductCouponApi {
     public Result<List<CouponDetailDto>> findCouponListByIds(@RequestBody List<String> req){
         return Result.ok(productCouponService.findCouponListByIds(req));
     }
+
 }

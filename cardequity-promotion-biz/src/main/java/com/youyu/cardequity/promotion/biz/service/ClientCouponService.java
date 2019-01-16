@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.service.IService;
 
@@ -91,6 +92,13 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * 开发日志
      */
     List<ClientCouponDto> findValidClientCouponForProduct(BaseClientProductReq req);
+
+    /**
+     * 获取订单可用和不可用的优惠券
+     * @param req
+     * @return
+     */
+    FindCouponListByOrderDetailRsp findCouponListByOrderDetail(OrderUseEnableCouponReq req);
 }
 
 
