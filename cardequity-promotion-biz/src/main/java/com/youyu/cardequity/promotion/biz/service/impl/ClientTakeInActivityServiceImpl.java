@@ -8,7 +8,7 @@ import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
-import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
+import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
 import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
@@ -86,7 +86,7 @@ public class ClientTakeInActivityServiceImpl extends AbstractService<String, Cli
                     takeInActivityEntity.setCreateAuthor(operator);
                     if (useItem.getStage() != null)
                         takeInActivityEntity.setStageId(useItem.getStage().getId());
-                    takeInActivityEntity.setStatus(CouponStatus.USED.getDictValue());
+                    takeInActivityEntity.setStatus(CouponUseStatus.USED.getDictValue());
                     entities.add(takeInActivityEntity);
                 }
             }

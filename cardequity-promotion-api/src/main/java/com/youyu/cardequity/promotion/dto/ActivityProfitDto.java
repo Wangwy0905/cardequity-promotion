@@ -1,9 +1,9 @@
 package com.youyu.cardequity.promotion.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,6 +19,9 @@ import io.swagger.annotations.ApiModel;
 @Data
 @ApiModel
 public class ActivityProfitDto implements IBaseDto<String>{
+    public ActivityProfitDto(){
+        status= CouponStatus.NO.getDictValue();
+    }
 
     @ApiModelProperty(value = "活动编号:")
     private String uuid;
@@ -61,6 +64,9 @@ public class ActivityProfitDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "优惠值:如果是按阶梯进行“现金立减”该值无效，如果是按阶梯进行“折扣”该值无效，如果是阶梯“优惠价”该值无效，如果是阶梯“限额任选”该值无效，是以最终的阶梯中优惠值覆盖；如果ActivityType=1填折扣值(0-1]")
     private BigDecimal profitValue;
+
+    @ApiModelProperty(value = "状态:0-下架 1-上架")
+    private String status;
 
     @ApiModelProperty(value = "备注")
     private String remark;

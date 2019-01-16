@@ -35,8 +35,8 @@ public class ActivityViewDto {
     @ApiModelProperty(value = "门槛短描:如满3件减20")
     private String activityShortDesc;
 
-    //@ApiModelProperty(value = "优惠标签id:标签：满返、秒杀、促销等")
-    //private String activityLable;
+    @ApiModelProperty(value = "状态:0-下架 1-上架")
+    private String status;
 
     @ApiModelProperty(value = "优惠值:如果是阶梯或随机的填0，存折扣、金额")
     private BigDecimal profitValue;

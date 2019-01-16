@@ -76,6 +76,9 @@ public class CouponViewDto {
     @ApiModelProperty(value = "频率id:前台不展示")
     private String freqId;
 
+    @ApiModelProperty(value = "状态:0-下架 1-上架")
+    private String status;
+
     @ApiModelProperty(value = "频率周期类型:0-天 1-周 2-月 3-年 a-有效期内")
     private String unit;
 

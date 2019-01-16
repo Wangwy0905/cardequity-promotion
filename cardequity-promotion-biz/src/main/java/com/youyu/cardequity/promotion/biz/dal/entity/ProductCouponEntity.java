@@ -134,6 +134,12 @@ public class ProductCouponEntity extends com.youyu.common.entity.BaseEntity<Stri
     private BigDecimal profitValue;
 
     /**
+     * 状态：0-上架 1-下架
+     */
+    @Column(name = "STATUS")
+    private String status;
+
+    /**
      * 积分兑换额度:允许兑换该券的积分额度；积分不能兑换填99999999
      */
     @Column(name = "EXCHANGE_BY_POINT_VOL")

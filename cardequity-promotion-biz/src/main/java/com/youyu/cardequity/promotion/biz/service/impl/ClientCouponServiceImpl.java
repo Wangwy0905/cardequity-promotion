@@ -217,7 +217,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         entity.setUpdateAuthor(req.getOperator());
         entity.setCreateAuthor(req.getOperator());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
-        entity.setStatus(CouponStatus.NORMAL.getDictValue());
+        entity.setStatus(CouponUseStatus.NORMAL.getDictValue());
         entity.setJoinOrderId(req.getActivityId());
         int count = clientCouponMapper.insertSelective(entity);
         if (count <= 0) {
@@ -318,7 +318,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             return rsps;
         }
         for (ClientCouponEntity clientCoupon : enableCouponList) {
-            if (!CouponStatus.NORMAL.equals(clientCoupon.getStatus()))
+            if (!CouponUseStatus.NORMAL.equals(clientCoupon.getStatus()))
                 continue;
 
             //没有指定运费时运费券或免邮券不能使用
@@ -426,9 +426,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             clientCoupon.setBusinDate(LocalDate.now());
             clientCoupon.setJoinOrderId(orderId);
             if (CouponUseType.CONFIRM.getDictValue().equals(useType)) {
-                clientCoupon.setStatus(CouponStatus.USING.getDictValue());
+                clientCoupon.setStatus(CouponUseStatus.USING.getDictValue());
             } else {
-                clientCoupon.setStatus(CouponStatus.USED.getDictValue());
+                clientCoupon.setStatus(CouponUseStatus.USED.getDictValue());
             }
             if (clientCouponMapper.updateByPrimaryKeySelective(clientCoupon) <= 0) {
                 boolDto.setSuccess(false);
@@ -715,6 +715,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CommonBoolDto dto = checkCouponBase(coupon, req);
         //校验不通过继续
         if (!dto.getSuccess()) {
+            dto.setData(coupon);
             return dto;
         }
 
@@ -723,21 +724,25 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             dto = checkCouponUseValidDate(coupon);
             //校验不通过继续
             if (!dto.getSuccess()) {
+                dto.setData(coupon);
                 return dto;
             }
             //校验使用频率是否符合
             dto = checkCouponUseFreqLimit(item.getClientId(), item.getCouponId(), item.getStageId());
             if (!dto.getSuccess()) {
+                dto.setData(coupon);
                 return dto;
             }
         } else {
             dto = checkCouponGetValidDate(coupon);
             //校验不通过继续
             if (!dto.getSuccess()) {
+                dto.setData(coupon);
                 return dto;
             }
             dto = checkCouponGetFreqLimit(item.getClientId(), item.getCouponId(), item.getStageId());
             if (!dto.getSuccess()) {
+                dto.setData(coupon);
                 return dto;
             }
         }
@@ -1305,7 +1310,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      */
     @Override
     public List<ClientCouponDto> findValidClientCouponForProduct(BaseClientProductReq req) {
-        List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientValidCouponByProduct(req.getClientId(),req.getProductId(),req.getSkuId());
+        List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientValidCouponByProduct(req.getClientId(), req.getProductId(), req.getSkuId());
         return BeanPropertiesUtils.copyPropertiesOfList(clientCouponEnts, ClientCouponDto.class);
 
     }
@@ -1329,6 +1334,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //临时变量
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
+        ClientCouponDto clientCouponDto = null;
 
         List<ClientCouponEntity> enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId());
 
@@ -1341,30 +1347,38 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         }
         for (ClientCouponEntity clientCoupon : enableCouponList) {
 
-            if (!CouponStatus.NORMAL.equals(clientCoupon.getStatus()))
+            if (!CouponUseStatus.NORMAL.equals(clientCoupon.getStatus()))
                 continue;
             //校验基本信息
             dto = checkCouponFrist(clientCoupon, req, true);
+            coupon = (ProductCouponEntity) dto.getData();
+            clientCouponDto = BeanPropertiesUtils.copyProperties(clientCoupon, ClientCouponDto.class);
+            //如果领取后被删除
+            if (coupon == null) {
+                coupon = BeanPropertiesUtils.copyProperties(clientCouponDto.switchSimpleMol().getProductCouponDto(), ProductCouponEntity.class);
+            }
             if (!dto.getSuccess()) {
                 //不是有效期外的,计入有效但是订单不可用的列表
-                if (clientCoupon.getValidEndDate().toLocalDate().compareTo(LocalDate.now())>=0){
-                    FullClientCouponRsp item=new FullClientCouponRsp();
-                    item.setClientCoupon(BeanPropertiesUtils.copyProperties(clientCoupon,ClientCouponDto.class));
-                    item.setCoupon(useCouponRsp.getClientCoupon().switchSimpleMol());
+                if (clientCoupon.getValidEndDate().toLocalDate().compareTo(LocalDate.now()) >= 0) {
+                    FullClientCouponRsp item = new FullClientCouponRsp();
+                    item.setClientCoupon(clientCouponDto);
+                    item.setCoupon(clientCouponDto.switchSimpleMol());
+                    BeanPropertiesUtils.copyProperties(coupon, useCouponRsp.getClientCoupon());
+
                     result.getCouponUnEnableList().add(item);
                 }
                 continue;
             }
-            coupon = (ProductCouponEntity) dto.getData();
-
             //根据策略得到该活动是否满足门槛，返回满足活动适用信息
             String key = CouponStrategy.class.getSimpleName() + clientCoupon.getCouponStrategyType();
             CouponStrategy executor = (CouponStrategy) CustomHandler.getBeanByName(key);
             useCouponRsp = executor.applyCoupon(clientCoupon, coupon, req.getProductList());
             if (useCouponRsp != null) {
-                FullClientCouponRsp item=new FullClientCouponRsp();
-                item.setClientCoupon(BeanPropertiesUtils.copyProperties(clientCoupon,ClientCouponDto.class));
-                item.setCoupon(useCouponRsp.getClientCoupon().switchSimpleMol());
+                FullClientCouponRsp item = new FullClientCouponRsp();
+                item.setClientCoupon(clientCouponDto);
+                item.setCoupon(clientCouponDto.switchSimpleMol());
+                BeanPropertiesUtils.copyProperties(coupon, useCouponRsp.getClientCoupon());
+
                 result.getCouponEnableList().add(item);
             }
 

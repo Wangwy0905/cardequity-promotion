@@ -3,6 +3,8 @@ package com.youyu.cardequity.promotion.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,6 +20,10 @@ import io.swagger.annotations.ApiModel;
 @Data
 @ApiModel
 public class ProductCouponDto implements IBaseDto<String>{
+
+    public ProductCouponDto(){
+        status= CouponStatus.NO.getDictValue();
+    }
 
     @ApiModelProperty(value = "领取编号:")
     private String uuid;
@@ -78,6 +84,10 @@ public class ProductCouponDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "优惠值:如果是阶梯或随机的填0，存折扣、金额")
     private BigDecimal profitValue;
+
+    @ApiModelProperty(value = "状态:0-下架 1-上架")
+    private String status;
+
 
     @ApiModelProperty(value = "积分兑换额度:允许兑换该券的积分额度；积分不能兑换填99999999")
     private BigDecimal exchangeByPointVol;

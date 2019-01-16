@@ -99,6 +99,12 @@ public class ActivityProfitEntity extends com.youyu.common.entity.BaseEntity<Str
     private BigDecimal profitValue;
 
     /**
+     * 状态：0-上架 1-下架
+     */
+    @Column(name = "STATUS")
+    private String status;
+
+    /**
      * 备注
      */
     @Column(name = "REMARK")
