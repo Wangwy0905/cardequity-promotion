@@ -44,7 +44,7 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @return
      * 1004258-徐长焕-20181226 新建
      */
-    ActivityDetailDto findActivityPrice(BaseProductReq req);
+    List<ActivityDetailDto> findActivityPrice(BaseProductReq req);
 
     /**
      * 批量添加活动

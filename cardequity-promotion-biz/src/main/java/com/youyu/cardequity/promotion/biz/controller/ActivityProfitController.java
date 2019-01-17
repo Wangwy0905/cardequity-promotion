@@ -70,7 +70,7 @@ public class ActivityProfitController implements ActivityProfitApi {
     @Override
     @ApiOperation(value = "【后台】获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
-    public Result<ActivityDetailDto> findActivityPrice(@RequestBody BaseProductReq req){
+    public Result<List<ActivityDetailDto>> findActivityPrice(@RequestBody BaseProductReq req){
         return Result.ok(activityProfitService.findActivityPrice(req));
     }
 

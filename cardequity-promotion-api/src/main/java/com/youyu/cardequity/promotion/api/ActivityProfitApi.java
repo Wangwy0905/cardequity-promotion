@@ -64,7 +64,7 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "【后台】获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
-    Result<ActivityDetailDto> findActivityPrice(@RequestBody BaseProductReq req);
+    Result<List<ActivityDetailDto>> findActivityPrice(@RequestBody BaseProductReq req);
 
     /**
      * 【后台】批量添加活动

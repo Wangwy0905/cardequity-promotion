@@ -596,13 +596,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * 1004258-徐长焕-20181226 新建
      */
     @Override
-    public ActivityDetailDto findActivityPrice(BaseProductReq req) {
+    public List<ActivityDetailDto> findActivityPrice(BaseProductReq req) {
 
         List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductId(req.getProductId(), req.getSkuId());
         if (entities.isEmpty())
             return null;
+        List<ActivityDetailDto> result=new ArrayList<>();
         //多个特价活动以最新的为准
-        ActivityDetailDto result = combinationActivity(entities.get(0));
+        for (ActivityProfitEntity entity:entities) {
+            result.add(combinationActivity(entity));
+        }
         return result;
     }
 
