@@ -1365,7 +1365,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             if (useCouponRsp != null) {
                 FullClientCouponRsp item = CombClientFullObtainCouponOne(clientCoupon);
                 result.getCouponEnableList().add(item);
-            }else {
+            } else {
                 FullClientCouponRsp item = CombClientFullObtainCouponOne(clientCoupon);
                 result.getCouponUnEnableList().add(item);
             }

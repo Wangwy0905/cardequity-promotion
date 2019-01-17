@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 import com.youyu.cardequity.promotion.api.ClientCouponApi;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
@@ -36,7 +37,7 @@ public class ClientCouponController implements ClientCouponApi {
     @Override
     @ApiOperation(value = "查询已经领取的优惠券")
     @PostMapping(path = "/findClientCoupon")
-    public Result<List<ClientCouponDto>> findClientCoupon(@RequestBody BaseClientReq req) {
+    public Result<List<ObtainCouponViewDto>> findClientCoupon(@RequestBody BaseClientReq req) {
         return  Result.ok(clientCouponService.findClientCoupon(req));
     }
 
@@ -51,7 +52,7 @@ public class ClientCouponController implements ClientCouponApi {
     @Override
     @ApiOperation(value = "查询可领取优惠券")
     @PostMapping(path = "/findEnableUseCoupon")
-    public Result<List<ClientCouponDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req) {
+    public Result<List<ObtainCouponViewDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req) {
         return Result.ok(clientCouponService.findEnableUseCoupon(req));
     }
 
@@ -84,7 +85,7 @@ public class ClientCouponController implements ClientCouponApi {
     @ApiOperation(value = "获取客户当前有效的券")
     @PostMapping(path = "/findValidClientCouponForProduct")
     @Override
-    public Result<List<ClientCouponDto>> findValidClientCouponForProduct(@RequestBody BaseClientProductReq req){
+    public Result<List<ObtainCouponViewDto>> findValidClientCouponForProduct(@RequestBody BaseClientProductReq req){
         return Result.ok(clientCouponService.findValidClientCouponForProduct(req));
     }
 
