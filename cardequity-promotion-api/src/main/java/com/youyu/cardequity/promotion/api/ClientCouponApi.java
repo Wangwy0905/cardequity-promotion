@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.api;
 
 
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
@@ -43,7 +44,7 @@ public interface ClientCouponApi {
      */
     @ApiOperation(value = "获取客户已领取的券")
     @PostMapping(path = "/findClientCoupon")
-    Result<List<ClientCouponDto>> findClientCoupon(@RequestBody BaseClientReq req);
+    Result<List<ObtainCouponViewDto>> findClientCoupon(@RequestBody BaseClientReq req);
 
     /**
      * 领取优惠券
@@ -68,7 +69,7 @@ public interface ClientCouponApi {
      */
     @ApiOperation(value = "根据客户指定商品获取可用的优惠券:1.指定商品填充与参数List中；2.获取的券中没有计算冲突关系；3.列表中含运费券")
     @PostMapping(path = "/findEnableUseCoupon")
-    Result<List<ClientCouponDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req);
+    Result<List<ObtainCouponViewDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req);
 
     /**
      * 【内部服务】按策略得到优惠券使用组合:不含运费券
@@ -105,7 +106,7 @@ public interface ClientCouponApi {
      */
     @ApiOperation(value = "获取客户当前有效的券")
     @PostMapping(path = "/findValidClientCouponForProduct")
-     Result<List<ClientCouponDto>> findValidClientCouponForProduct(@RequestBody BaseClientProductReq req);
+     Result<List<ObtainCouponViewDto>> findValidClientCouponForProduct(@RequestBody BaseClientProductReq req);
 
 
     /**

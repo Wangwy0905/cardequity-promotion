@@ -3,8 +3,10 @@ package com.youyu.cardequity.promotion.biz.service;
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
+import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
+import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.service.IService;
 
@@ -27,7 +29,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 返回已领取的券
      * @Param req 指定客户号，必填
      */
-    List<ClientCouponDto>  findClientCoupon(BaseClientReq req);
+    List<ObtainCouponViewDto>  findClientCoupon(BaseClientReq req);
 
     /**
      * 领取优惠券
@@ -46,7 +48,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 开发日志
      * 1004246-徐长焕-20181213 新增
      */
-    List<ClientCouponDto> findEnableUseCoupon(GetUseEnableCouponReq req);
+    List<ObtainCouponViewDto> findEnableUseCoupon(GetUseEnableCouponReq req);
 
     /**
      * 按策略获取可用券的组合:含运费券
@@ -91,7 +93,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 返回已领取的券
      * 开发日志
      */
-    List<ClientCouponDto> findValidClientCouponForProduct(BaseClientProductReq req);
+    List<ObtainCouponViewDto> findValidClientCouponForProduct(BaseClientProductReq req);
 
     /**
      * 获取订单可用和不可用的优惠券
@@ -99,6 +101,34 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return
      */
     FindCouponListByOrderDetailRsp findCouponListByOrderDetail(OrderUseEnableCouponReq req);
+
+    /**
+     * 组合对象
+     * @param clientCouponEnts
+     * @return
+     */
+    List<ObtainCouponViewDto> CombClientObtainCouponList(List<ClientCouponEntity> clientCouponEnts);
+
+    /**
+     * 组合对象
+     * @param item
+     * @return
+     */
+    ObtainCouponViewDto CombClientObtainCouponOne(ClientCouponEntity item);
+
+    /**
+     * 组合详情列表
+     * @param clientCouponEnts
+     * @return
+     */
+    List<FullClientCouponRsp> CombClientFullObtainCouponList(List<ClientCouponEntity> clientCouponEnts);
+
+    /**
+     * 组合详情
+     * @param clientCoupon
+     * @return
+     */
+    FullClientCouponRsp CombClientFullObtainCouponOne(ClientCouponEntity clientCoupon);
 }
 
 

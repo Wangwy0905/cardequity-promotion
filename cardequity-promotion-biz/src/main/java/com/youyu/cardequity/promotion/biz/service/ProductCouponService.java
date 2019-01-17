@@ -120,6 +120,13 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      */
     List<CouponDetailDto> findCouponListByIds(List<String> req);
 
+    /**
+     * 拼装优惠券详情数据
+     * @param entity
+     * @return
+     */
+    CouponDetailDto combinationCoupon(ProductCouponEntity entity);
+
 }
 
 

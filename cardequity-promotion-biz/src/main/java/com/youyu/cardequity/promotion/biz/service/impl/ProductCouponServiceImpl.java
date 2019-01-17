@@ -892,7 +892,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      * @param entity 优惠券主体
      * @return 优惠券详情：含限额、频率、子券信息
      */
-    private CouponDetailDto combinationCoupon(ProductCouponEntity entity) {
+    @Override
+    public CouponDetailDto combinationCoupon(ProductCouponEntity entity) {
         CouponDetailDto result = new CouponDetailDto();
 
         ProductCouponDto productCouponDto = BeanPropertiesUtils.copyProperties(entity, ProductCouponDto.class);
