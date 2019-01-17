@@ -589,7 +589,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
 
     /**
-     * 获取商品活动优惠价
+     *  【后台】获取商品活动优惠价
      *
      * @param req
      * @return 开发日志
@@ -608,7 +608,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
 
     /**
-     * 查询商品相关的活动
+     * 【App+后台】查询商品相关的活动
      *
      * @param req 商品基本信息
      * @return 活动详情列表

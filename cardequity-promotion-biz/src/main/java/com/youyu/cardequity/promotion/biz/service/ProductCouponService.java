@@ -26,7 +26,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
 
     /**
      * 1004259-徐长焕-20181210 新增
-     * 功能：查询指定商品可领取的优惠券
+     * 功能：查询【有效期内、上架的】指定商品可领取的优惠券
      * @return
      */
      List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq);

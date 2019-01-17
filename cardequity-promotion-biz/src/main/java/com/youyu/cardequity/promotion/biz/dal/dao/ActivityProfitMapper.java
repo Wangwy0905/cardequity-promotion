@@ -23,7 +23,7 @@ import java.util.List;
 public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
 
     /**
-     * 获取可参与普通活动(非银行卡相关和会员相关)根据订单及商品属性
+     * 【App】获取【有效期内、上架的、有额度的】可参与普通活动(非银行卡相关和会员相关)根据订单及商品属性
      * @param productId：商品编号
      * @return
      * 开发日志
@@ -34,7 +34,7 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
                                                            @Param("entrustWay") String entrustWay);
 
     /**
-     * 获取可参与（粗粒度校验）普通活动(非银行卡相关和会员相关)根据订单及商品属性
+     * 【App】获取【有效期内、上架的】可参与（粗粒度校验）普通活动(非银行卡相关和会员相关)根据订单及商品属性
      * @param productId：商品编号
      * @return
      * 开发日志
@@ -46,7 +46,7 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
 
 
     /**
-     * 获取可参与会员活动(非银行卡相关和会员相关)根据订单及商品属性
+     * 【App】获取【有效期内、上架的、有额度的】可参与会员活动(非银行卡相关和会员相关)根据订单及商品属性
      * @param productId：商品编号，为空表示查询不指定相关商品的活动
      * @return
      * 开发日志
@@ -58,7 +58,7 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
 
 
     /**
-     * 获取可参与（粗粒度校验）会员活动(非银行卡相关和会员相关)根据订单及商品属性
+     * 【App】获取【有效期内、上架的】可参与（粗粒度校验）会员活动(非银行卡相关和会员相关)根据订单及商品属性
      * @param productId：商品编号，为空表示查询不指定相关商品的活动
      * @return
      * 开发日志
@@ -68,90 +68,16 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
                                                            @Param("entrustWay") String entrustWay,
                                                            @Param("clientType") String clientType);
 
-
     /**
-     * 根据活动id查询活动详情
-     * @param id
-     * @return
-     */
-    ActivityProfitEntity findById(@Param("id") String id);
-
-    /**
-     * 通过商品id查询其查询特价活动信息
-     * @param productId
-     * @return
-     */
-    List<ActivityProfitEntity> findPriceActivityByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
-
-    /**
-     * 【生效的】查询商品的特价基础信息
+     * 【App】【有效期内、上架的】查询商品的特价基础信息
      * @param productId
      * @param skuId
      * @return
      */
     List<BasePriceActivityRsp> findBasePriceByProduct(@Param("productId") String productId, @Param("skuId") String skuId);
 
-
     /**
-     * 逻辑删除
-     * @param list
-     * @return
-     */
-    int logicDelByIdList(BatchBaseActivityReq list);
-
-    /**
-     * 逻辑删除
-     * @param baseActivity
-     * @return
-     */
-    int logicDelById(BaseActivityReq baseActivity);
-
-    /**
-     * 通用查询
-     * @param commonQry 通用信息
-     * @return
-     */
-    List<ActivityProfitEntity> findActivityListByCommon(@Param("commonQry") BaseQryActivityReq commonQry);
-
-
-    /**
-     * 通过活动id列表查询活动基本信息
-     * @param list
-     * @return
-     */
-    List<ActivityProfitEntity> findActivityByIds(@Param("list") BatchBaseActivityReq list);
-
-    /**
-     * 汇总信息查询
-     * @param commonQry
-     * @return
-     */
-    List<GatherInfoRsp> findGatherActivityListByCommon( BaseQryActivityReq commonQry);
-
-    /**
-     * 通过商品id查询其查询特价活动信息
-     * @param productId
-     * @return
-     */
-    List<ActivityProfitEntity> findActivityByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
-
-    /**
-     * 查询商品对应活动数量
-     * @param list
-     * @return
-     */
-    List<GatherInfoRsp> findActivityNumByProducts(BatchBaseProductReq list);
-
-    /**
-     * 通用查询：支持按id、商品id、名称模糊指定
-     * @param commonQry 通用信息
-     * @return
-     */
-    List<ActivityProfitEntity> findActivityList(BaseQryActivityReq commonQry);
-
-
-    /**
-     * 查询有效的特价活动：去除已经达到额度的活动
+     * 【App】查询【有效期内、上架的、有剩余额度】特价活动：去除已经达到额度的活动
      * @param productId
      * @param skuId
      * @return
@@ -159,7 +85,83 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
     List<ActivityProfitEntity> findValidPriceActivityByProduct(@Param("productId") String productId,@Param("skuId") String skuId);
 
     /**
-     * 获取无产品限制的活动
+     * 【后台+App】根据活动id查询活动详情
+     * @param id
+     * @return
+     */
+    ActivityProfitEntity findById(@Param("id") String id);
+
+
+    /**
+     * 【后台+App】通过活动id列表查询活动基本信息
+     * @param list
+     * @return
+     */
+    List<ActivityProfitEntity> findActivityByIds(@Param("list") BatchBaseActivityReq list);
+
+
+    /**
+     * 【后台+App】查询【有效期内、上架的】特价活动信息通过商品id
+     * @param productId
+     * @return
+     */
+    List<ActivityProfitEntity> findActivityByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
+
+
+
+    /**
+     * **************************************************************************
+     * 【后台】批量逻辑删除
+     * @param list
+     * @return
+     */
+    int logicDelByIdList(BatchBaseActivityReq list);
+
+    /**
+     * 【后台】逻辑删除
+     * @param baseActivity
+     * @return
+     */
+    int logicDelById(BaseActivityReq baseActivity);
+
+    /**
+     * 【后台】通过商品id查询其查询特价活动信息
+     * @param productId
+     * @return
+     */
+    List<ActivityProfitEntity> findPriceActivityByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
+
+    /**
+     * 【后台】通用查询
+     * @param commonQry 通用信息
+     * @return
+     */
+    List<ActivityProfitEntity> findActivityListByCommon(@Param("commonQry") BaseQryActivityReq commonQry);
+
+    /**
+     * 【后台】汇总信息查询
+     * @param commonQry
+     * @return
+     */
+    List<GatherInfoRsp> findGatherActivityListByCommon( BaseQryActivityReq commonQry);
+
+
+    /**
+     * 【后台】通用查询：支持按id、商品id、名称模糊指定
+     * @param commonQry 通用信息
+     * @return
+     */
+    List<ActivityProfitEntity> findActivityList(BaseQryActivityReq commonQry);
+
+    /**
+     * 【后台】查询【有效期内、上架的】商品对应活动数量
+     * @param list
+     * @return
+     */
+    List<GatherInfoRsp> findActivityNumByProducts(BatchBaseProductReq list);
+
+    /**
+     * 【后台】【有效期内、上架的】获取无产品限制的活动
      * @return
      */
     List<ActivityProfitEntity> findUnlimitedProductActivity();

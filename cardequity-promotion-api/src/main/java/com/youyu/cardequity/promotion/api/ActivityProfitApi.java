@@ -31,141 +31,141 @@ import java.util.List;
 public interface ActivityProfitApi {
 
     /**
-     * 根据客户指定商品获取可参加的活动
+     * 【App】根据客户指定商品获取可参加的活动
      *
      * @param req：里面的clientType-客户类型如果为空，需要在网关层调用客户信息查询接口，同理groupId-商品组信息
      * @return 活动详情列表
      * 开发日志
      * 1004244-徐长焕-20181207 新建
      */
-    @ApiOperation(value = "根据客户指定商品获取可参加的活动")
+    @ApiOperation(value = "【App】根据客户指定商品获取可参加的活动")
     @PostMapping(path = "/findEnableGetActivity")
     Result<List<ActivityDetailDto>> findEnableGetActivity(@RequestBody QryProfitCommonReq req);
 
     /**
-     * 【内部服务】订单信息能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额
+     * 【内部】订单信息能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额
      *已过期
      * @param req 预生成的订单信息
      * @return 返回活动使用详情
      * 开发日志
      * 1004258-徐长焕-20181226 新建
      */
-    @ApiOperation(value = "订单能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额")
+    @ApiOperation(value = "【内部】订单能参与的活动详情：某某活动，及其对应适用商品和数量、优惠金额")
     @PostMapping(path = "/combActivityRefProductDeal")
     Result<List<UseActivityRsp>> combActivityRefProductDeal(@RequestBody GetUseEnableCouponReq req);
 
     /**
-     * 【内部服务】获取商品活动优惠价：
+     * 【后台】获取商品活动优惠价：
      *
      * @param req 商品
      * @return 活动详情列表
      * 开发日志
      * 1004258-徐长焕-20181226 新建
      */
-    @ApiOperation(value = "获取商品特价活动")
+    @ApiOperation(value = "【后台】获取商品活动优惠价")
     @PostMapping(path = "/findActivityPrice")
     Result<ActivityDetailDto> findActivityPrice(@RequestBody BaseProductReq req);
 
     /**
-     * 批量添加活动
+     * 【后台】批量添加活动
      *
      * @param req 批量活动详情
      * @return 成功后的批量活动详情
      */
-    @ApiOperation(value = "批量添加活动")
+    @ApiOperation(value = "【后台】批量添加活动")
     @PostMapping(path = "/batchAddActivity")
     Result<CommonBoolDto<BatchActivityDetailDto>> batchAddActivity(@RequestBody BatchActivityDetailDto req);
 
     /**
-     * 批量编辑活动
+     * 【后台】批量编辑活动
      *
      * @param req 批量活动详情
      * @return 成功后的批量活动详情
      */
-    @ApiOperation(value = "批量添加活动")
+    @ApiOperation(value = "【后台】批量添加活动")
     @PostMapping(path = "/batchEditActivity")
     Result<CommonBoolDto<BatchActivityDetailDto>> batchEditActivity(@RequestBody BatchActivityDetailDto req);
 
     /**
-     * 批量删除活动
+     * 【后台】批量删除活动
      *
      * @param req 批量活动
      * @return 成功条数
      */
-    @ApiOperation(value = "批量删除活动")
+    @ApiOperation(value = "【后台】批量删除活动")
     @PostMapping(path = "/batchDelActivity")
     Result<CommonBoolDto<Integer>> batchDelActivity(@RequestBody BatchBaseActivityReq req);
 
     /**
-     * 查找活动
+     * 【后台】查找活动
      *
      * @param req 通用查询请求
      * @return 活动详情列表
      */
-    @ApiOperation(value = "查找活动")
+    @ApiOperation(value = "【后台】查找活动")
     @PostMapping(path = "/findActivityByCommon")
     Result<PageData<ActivityDetailDto>> findActivityByCommon(@RequestBody BaseQryActivityReq req);
 
     /**
-     * 查询活动汇总信息
+     * 【后台】查询活动汇总信息
      *
      * @param req 普通查询活动请求体
      * @return 活动汇总列表
      */
-    @ApiOperation(value = "查找活动")
+    @ApiOperation(value = "【后台】查询活动汇总信息")
     @PostMapping(path = "/findGatherActivityByCommon")
     Result<List<GatherInfoRsp>> findGatherActivityByCommon(@RequestBody BaseQryActivityReq req);
 
 
     /**
-     * 查询商品的活动
+     * 【App】【有效期内、已上架、有额度的】查询商品的活动
      * @param req 商品基本信息
      * @return 活动详情列表
      */
-    @ApiOperation(value = "查找活动")
+    @ApiOperation(value = "【App】【有效期内、已上架、有额度的】查询商品的活动")
     @PostMapping(path = "/findProductAboutActivity")
     Result<List<ActivityDetailDto>> findProductAboutActivity(@RequestBody BaseProductReq req);
 
     /**
-     * 查询指定活动
+     * 【App+内部+后台】查询指定活动
      * @param req 活动基本信息
      * @return 活动详情列表
      */
-    @ApiOperation(value = "查找活动")
+    @ApiOperation(value = "【App+内部+后台】查询指定活动")
     @PostMapping(path = "/findActivityById")
     Result<ActivityDetailDto> findActivityById(@RequestBody BaseActivityReq req);
 
 
     /**
-     * 查找活动
+     * 【后台】模糊指定关键字查找活动
      * @param req
      * @return
      */
-    @ApiOperation(value = "查找活动列表：模糊指定id、商品编号、名称匹配其中之一进行查询")
+    @ApiOperation(value = "【后台】模糊指定关键字查找活动：模糊指定id、商品编号、名称匹配其中之一进行查询")
     @PostMapping(path = "/findActivityList")
     Result<PageData<ActivityDetailDto>> findActivityList(@RequestBody BaseQryActivityReq req);
 
 
     /**
-     * 【内部服务】获取商品活动优惠价：
+     * 【内部】【暂停维护】获取商品活动优惠价：
      *
      * @param req 商品
      * @return 活动详情列表
      * 开发日志
      * 1004258-徐长焕-20181226 新建
      */
-    @ApiOperation(value = "获取商品活动优惠价")
+    @ApiOperation(value = "【内部】【暂停维护】获取商品活动优惠价")
     @PostMapping(path = "/findActivityPriceValue")
     Result<List<BasePriceActivityRsp>> findActivityPriceValue(@RequestBody BaseProductReq req);
 
 
     /**
-     * 获取商品有效的优惠价活动（排除了已达额度的活动）
+     * 【App+内部】【有效期内、已上架、有额度的】获取商品有效的优惠价活动（排除了已达额度的活动）
      * @param req
      * @return
      *
      */
-    @ApiOperation(value = "获取商品有效的优惠价活动（排除了已达额度的活动）")
+    @ApiOperation(value = "【App+内部】【有效期内、已上架、有额度的】获取商品有效的优惠价活动（排除了已达额度的活动）")
     @PostMapping(path = "/findValidActivityPrice")
     Result<List<ActivityDetailDto>> findValidActivityPrice(@RequestBody BaseProductReq req);
 }

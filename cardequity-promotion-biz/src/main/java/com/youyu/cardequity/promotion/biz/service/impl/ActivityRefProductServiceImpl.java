@@ -47,7 +47,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
 
 
     /**
-     * 指定活动的商品配置范围和其他活动是否冲突,考虑分页的问题
+     * 【后台】指定活动的商品配置范围和其他活动是否冲突,考虑分页的问题
      *
      * @param req
      * @param activity

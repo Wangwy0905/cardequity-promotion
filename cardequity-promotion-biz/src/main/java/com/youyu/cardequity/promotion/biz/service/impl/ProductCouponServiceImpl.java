@@ -689,7 +689,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     }
 
     /**
-     * 开始发放优惠券
+     *上架优惠券
      *
      * @param req
      * @return
@@ -700,8 +700,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         CommonBoolDto<ProductCouponDto> result = new CommonBoolDto<ProductCouponDto>(false);
         ProductCouponEntity productCouponById = productCouponMapper.findProductCouponById(req.getCouponId());
         if (productCouponById != null) {
-            productCouponById.setAllowGetBeginDate(LocalDateTime.now().minusSeconds(1));
-            productCouponById.setRemark("开始发放优惠券");
+            if (CouponStatus.YES.getDictValue().equals(productCouponById.getStatus())){
+                result.setDesc("状态已上架，无需处理");
+                result.setSuccess(true);
+                return result;
+            }
+            productCouponById.setStatus(CouponStatus.YES.getDictValue());
+            productCouponById.setRemark("上架优惠券");
             ProductCouponDto dto = new ProductCouponDto();
             int updateresult = productCouponMapper.updateByPrimaryKey(productCouponById);
             if (updateresult > 0) {
@@ -719,7 +724,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     }
 
     /**
-     * 停止发放优惠券
+     * 下架优惠券
      *
      * @param req
      * @return
@@ -730,14 +735,20 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         CommonBoolDto<ProductCouponDto> result = new CommonBoolDto<ProductCouponDto>(false);
         ProductCouponEntity productCouponById = productCouponMapper.findProductCouponById(req.getCouponId());
         if (productCouponById != null) {
-            productCouponById.setAllowGetEndDate(LocalDateTime.now().minusSeconds(1));
-            productCouponById.setRemark("停止发放优惠券");
+            if (!CouponStatus.YES.getDictValue().equals(productCouponById.getStatus())){
+                result.setDesc("状态已下架，无需处理");
+                result.setSuccess(true);
+                return result;
+            }
+            productCouponById.setStatus(CouponStatus.NO.getDictValue());
+            productCouponById.setRemark("下架优惠券");
             ProductCouponDto dto = new ProductCouponDto();
             int updateresult = productCouponMapper.updateByPrimaryKey(productCouponById);
             if (updateresult > 0) {
                 result.setSuccess(true);
                 result.setData(dto);
             } else {
+                result.setSuccess(false);
                 result.setDesc("更新数据失败");
                 return result;
             }

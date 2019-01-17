@@ -11,21 +11,20 @@
         from TB_PRODUCT_COUPON a
         left join TB_COUPON_QUOTA_RULE b on a.UUID = b.COUPON_ID and IFNULL(b.IS_ENABLE, '1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+          and a.STATUS='1'
         <if test="productId != null and productId!=''">
             and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
             EXISTS (select 1 from TB_COUPON_REF_PRODUCT b where b.COUPON_ID=a.UUID and
             b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
         </if>
         <if test="entrustWay != null and entrustWay!=''">
-
             and (if(length(a.ENTRUST_WAY_SET),a.ENTRUST_WAY_SET,'*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="clientType != null and clientType!=''">
-
             and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
-        and a.ALLOW_GET_BEGIN_DATE &lt;= sysdate()
-        and a.ALLOW_GET_END_DATE &gt;= sysdate()
+        and a.ALLOW_GET_BEGIN_DATE &lt;= curdate()
+        and a.ALLOW_GET_END_DATE &gt;= curdate()
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select sum(ifnull(d.COUPON_AMOUT, 0))
         from TB_CLIENT_COUPON d
@@ -54,6 +53,7 @@
         from TB_PRODUCT_COUPON a
         left join TB_COUPON_QUOTA_RULE b on a.UUID = b.COUPON_ID and IFNULL(b.IS_ENABLE, '1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.STATUS='1'
         <if test="productId != null and productId!=''">
             and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
             EXISTS (select 1 from TB_COUPON_REF_PRODUCT b where b.COUPON_ID=a.UUID and
@@ -67,8 +67,8 @@
 
             and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
-        and a.ALLOW_GET_BEGIN_DATE &lt;= sysdate()
-        and a.ALLOW_GET_END_DATE &gt;= sysdate()
+        and a.ALLOW_GET_BEGIN_DATE &lt;= curdate()
+        and a.ALLOW_GET_END_DATE &gt;= curdate()
         Order by a.CREATE_TIME desc
     </select>
 
@@ -290,26 +290,28 @@
     </select>
 
     <select id="findCouponNumByProducts" resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">
-        select CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY')) as gatherItem,
+        select CONCAT(PRODUCT_ID,'|',if(length(SKU_ID),SKU_ID,'EMPTY')) as gatherItem,
         count(*) as gatherValue
         from TB_PRODUCT_COUPON a
         INNER JOIN TB_COUPON_REF_PRODUCT b ON b.COUPON_ID=a.UUID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.STATUS='1'
         and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '0'
-        and CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY')) IN
+        and CONCAT(PRODUCT_ID,'|',if(length(SKU_ID),SKU_ID,'EMPTY')) IN
         <foreach collection="list.productList" item="product" index="index"
                  open="(" close=")" separator=",">
-            CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'EMPTY'))
+            CONCAT(#{product.productId},'|',if(length(#{product.skuId}),#{product.skuId},'EMPTY'))
         </foreach>
-        group by CONCAT(PRODUCT_ID,if(length(SKU_ID),SKU_ID,'EMPTY'))
+        group by CONCAT(PRODUCT_ID,'|',if(length(SKU_ID),SKU_ID,'EMPTY'))
     </select>
 
     <select id="findUnlimitedProductCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
        select *
         from TB_PRODUCT_COUPON a
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.STATUS='1'
         and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1'

@@ -22,7 +22,7 @@ import java.util.List;
 public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
 
     /**
-     * 通过常用参数查询可领取优惠券列表
+     * 【有效期内、上架的】通过常用参数查询可领取优惠券列表
      * @param productId 产品ID
      * @param clientType 客户类型
      * @param entrustWay 委托方式
@@ -36,7 +36,7 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
 
 
     /**
-     * 通过常用参数查询可领取优惠券列表,不排除限额不满足的优惠券
+     * 【有效期内、上架的】通过常用参数查询可领取优惠券列表,不排除限额不满足的优惠券
      * @param productId 产品ID
      * @param clientType 客户类型
      * @param entrustWay 委托方式
@@ -47,7 +47,6 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
     List<ProductCouponEntity> findEnableGetCouponList(@Param("productId") String productId,
                                                               @Param("entrustWay") String entrustWay,
                                                               @Param("clientType") String clientType);
-
 
     /**
      * 根据指定券，获取到券的基本信息
@@ -60,21 +59,30 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
 
 
     /**
-     * 通用查询
+     * 查询指定的优惠券列表
+     * @param qry 通用信息
+     * @return
+     */
+    List<ProductCouponEntity> findCouponListByIds(List<String> qry);
+
+
+    /**
+     * ******************************************后台功能********************************
+     * 【后台】通用查询
      * @param commonQry 通用信息
      * @return
      */
     List<ProductCouponEntity> findCouponListByCommon(@Param("commonQry") BaseQryCouponReq commonQry);
 
     /**
-     * 批量逻辑删除
+     * 【后台】批量逻辑删除
      * @param list
      * @return
      */
     int logicDelByList(BatchBaseCouponReq list);
 
     /**
-     * 逻辑删除
+     * 【后台】逻辑删除
      * @param baseCoupon
      * @return
      */
@@ -82,7 +90,7 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
 
 
     /**
-     * 通用查询
+     * 【后台】模糊指定关键字通用查询
      * @param commonQry 通用信息
      * @return
      */
@@ -90,31 +98,25 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
 
 
     /**
-     * 汇总统计查询
+     * 【后台】模糊指定关键字汇总统计查询，与findCouponList对应
      * @param commonQry
      * @return
      */
     List<GatherInfoRsp> findGatherCouponList(@Param("commonQry") BaseQryCouponReq commonQry);
 
     /**
-     *查询商品相关优惠数量
+     * 【后台】查询【有效期内、上架的】商品相关优惠数量
      * @param list
      * @return
      */
     List<GatherInfoRsp> findCouponNumByProducts(@Param("list") BatchBaseProductReq list);
 
     /**
-     * 查询吴产品限制的优惠券
+     * 【后台】查询【有效期内、上架的】无产品限制的优惠券
      * @return
      */
     List<ProductCouponEntity>  findUnlimitedProductCoupon();
 
-    /**
-     * 通用查询
-     * @param qry 通用信息
-     * @return
-     */
-    List<ProductCouponEntity> findCouponListByIds(List<String> qry);
 
 }
 
