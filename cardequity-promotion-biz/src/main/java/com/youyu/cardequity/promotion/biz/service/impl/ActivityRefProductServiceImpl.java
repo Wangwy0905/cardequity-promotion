@@ -11,6 +11,7 @@ import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
+import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.exception.BizException;
@@ -55,11 +56,17 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
      */
     @Override
     public CommonBoolDto<List<ActivityRefProductEntity>> checkProductReUse(List<BaseProductReq> req, ActivityProfitDto activity) {
+
         CommonBoolDto<List<ActivityRefProductEntity>> result = new CommonBoolDto(true);
+        //下架活动无需校验
+        if (!CouponStatus.YES.getDictValue().equals(activity.getStatus())) {
+            return result;
+        }
+
         List<ActivityProfitEntity> unlimitedProductActivity = activityProfitMapper.findUnlimitedProductActivity();
-        if (unlimitedProductActivity.size()>0){
-            for (ActivityProfitEntity item:unlimitedProductActivity) {
-                if (!(item.getAllowUseBeginDate().compareTo(activity.getAllowUseEndDate())>0 || item.getAllowUseEndDate().compareTo(activity.getAllowUseBeginDate())<0)) {
+        if (unlimitedProductActivity.size() > 0) {
+            for (ActivityProfitEntity item : unlimitedProductActivity) {
+                if (!(item.getAllowUseBeginDate().compareTo(activity.getAllowUseEndDate()) > 0 || item.getAllowUseEndDate().compareTo(activity.getAllowUseBeginDate()) < 0)) {
                     result.setSuccess(false);
                     result.setDesc("存在商品已经参与了其他活动,该活动允许所有商品,其中冲突活动编号=" + unlimitedProductActivity.get(0).getId());
                     return result;
@@ -67,16 +74,16 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             }
         }
 
-        if (ApplyProductFlag.ALL.getDictValue().equals(activity.getApplyProductFlag())){
-            BaseQryActivityReq innerreq=new BaseQryActivityReq();
+        if (ApplyProductFlag.ALL.getDictValue().equals(activity.getApplyProductFlag())) {
+            BaseQryActivityReq innerreq = new BaseQryActivityReq();
             List<ActivityProfitEntity> activityListByCommon = activityProfitMapper.findActivityListByCommon(innerreq);
-            if (activityListByCommon.size()>1){
-                for (ActivityProfitEntity item:activityListByCommon) {
+            if (activityListByCommon.size() > 1) {
+                for (ActivityProfitEntity item : activityListByCommon) {
                     //如果是编辑活动时校验，会出现下面条件
-                    if (item.getId().equals(activity.getId())){
+                    if (item.getId().equals(activity.getId())) {
                         continue;
                     }
-                    if (!(item.getAllowUseBeginDate().compareTo(activity.getAllowUseEndDate())>0 || item.getAllowUseEndDate().compareTo(activity.getAllowUseBeginDate())<0)) {
+                    if (!(item.getAllowUseBeginDate().compareTo(activity.getAllowUseEndDate()) > 0 || item.getAllowUseEndDate().compareTo(activity.getAllowUseBeginDate()) < 0)) {
                         result.setSuccess(false);
                         result.setDesc("该活动是允许所有商品参与，存在冲突,其中冲突活动编号=" + unlimitedProductActivity.get(0).getId());
                         return result;
@@ -85,7 +92,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             }
         }
 
-        if (req==null || req.isEmpty())
+        if (req == null || req.isEmpty())
             return result;
 
         int perCount = 100, index = 0;
@@ -131,7 +138,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
      */
     @Override
     public List<BaseProductReq> findProductInValidActivity(FindProductInValidActivityReq req) {
-        List<BaseProductReq> entities = activityRefProductMapper.findProductInValidActivity(req.getStatus(),req.getActivityCouponType());
+        List<BaseProductReq> entities = activityRefProductMapper.findProductInValidActivity(req.getStatus(), req.getActivityCouponType());
         return entities;
     }
 
@@ -174,7 +181,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
         if (req.getProductList() != null && !req.getProductList().isEmpty()) {
 
             CommonBoolDto<List<ActivityRefProductEntity>> boolDto = checkProductReUse(req.getProductList(), BeanPropertiesUtils.copyProperties(profitEntity, ActivityProfitDto.class));
-            if (!boolDto.getSuccess()){
+            if (!boolDto.getSuccess()) {
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
             }
             List<ActivityRefProductEntity> entities = new ArrayList<>();
@@ -198,43 +205,44 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
 
     /**
      * 查询商品对应的活动数量
+     *
      * @param req 商品列表
      * @return 商品对应活动数量
      */
     @Override
-    public List<GatherInfoRsp> findProductAboutActivityNum(BatchBaseProductReq req){
-        if (req == null || req.getProductList()==null || req.getProductList().isEmpty())
+    public List<GatherInfoRsp> findProductAboutActivityNum(BatchBaseProductReq req) {
+        if (req == null || req.getProductList() == null || req.getProductList().isEmpty())
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定商品"));
 
         List<GatherInfoRsp> firstresult = activityProfitMapper.findActivityNumByProducts(req);
 
         List<ActivityProfitEntity> entities = activityProfitMapper.findUnlimitedProductActivity();
-        List<GatherInfoRsp> result =new ArrayList<>();
-        if (!entities.isEmpty()){
-            boolean isExist=false;
-            String key="";
-            for (BaseProductReq item:req.getProductList()){
-                isExist=false;
-                key=item.getProductId()+(CommonUtils.isEmptyorNull(item.getSkuId())?"EMPTY":item.getSkuId());
+        List<GatherInfoRsp> result = new ArrayList<>();
+        if (!entities.isEmpty()) {
+            boolean isExist = false;
+            String key = "";
+            for (BaseProductReq item : req.getProductList()) {
+                isExist = false;
+                key = item.getProductId() + (CommonUtils.isEmptyorNull(item.getSkuId()) ? "EMPTY" : item.getSkuId());
 
-                for (GatherInfoRsp gather:firstresult){
-                    if (key.equals(gather.getGatherItem())){
-                        gather.setGatherValue(gather.getGatherValue()+entities.size());
-                        isExist=true;
+                for (GatherInfoRsp gather : firstresult) {
+                    if (key.equals(gather.getGatherItem())) {
+                        gather.setGatherValue(gather.getGatherValue() + entities.size());
+                        isExist = true;
                         result.add(gather);
                         firstresult.remove(gather);
                         break;
                     }
                 }
-                if (!isExist){
+                if (!isExist) {
                     GatherInfoRsp rsp = new GatherInfoRsp();
                     rsp.setGatherItem(key);
                     rsp.setGatherValue(entities.size());
                     result.add(rsp);
                 }
             }
-        }else{
-            result=firstresult;
+        } else {
+            result = firstresult;
         }
         return result;
     }
