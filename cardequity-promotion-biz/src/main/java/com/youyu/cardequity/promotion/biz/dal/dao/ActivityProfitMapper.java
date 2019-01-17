@@ -84,7 +84,7 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
     List<ActivityProfitEntity> findPriceActivityByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
 
     /**
-     * 查询商品的特价基础信息
+     * 【生效的】查询商品的特价基础信息
      * @param productId
      * @param skuId
      * @return

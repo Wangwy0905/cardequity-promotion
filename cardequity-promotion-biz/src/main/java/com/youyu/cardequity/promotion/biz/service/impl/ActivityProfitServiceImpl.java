@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -64,9 +63,6 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
     @Autowired
     private ActivityRefProductService activityRefProductService;
-
-    @Autowired
-    private ClientTakeInActivityMapper clientTakeInActivityMapper;
 
     @Autowired
     private BatchService batchService;
@@ -122,6 +118,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             return rsps;
         }
 
+        CommonBoolDto boolDto = new CommonBoolDto(true);
         List<ActivityProfitEntity> activityList = new ArrayList<>();
         //获取所有可以参与的活动：按初始条件，有效日期内
         if (req.getActivityList() != null) {
@@ -143,7 +140,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         //循环活动进行计算优惠金额，优先顺序为：任选->折扣->满减
         for (ActivityProfitEntity item : activityList) {
             //校验基本信息：有效期的、商品属性、订单属性、支付属性
-            checkActivityBase(item, req);
+            boolDto=checkActivityBase(item, req);
+            if (!boolDto.getSuccess()){
+                continue;
+            }
 
             //根据策略得到该活动是否满足门槛，返回满足活动适用信息
             String key = ActivityStrategy.class.getSimpleName() + item.getActivityCouponType();
@@ -706,7 +706,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             return dto;
         }
 
-        //该支付类型是否允许领取该券
+        //该支付类型是否允许使用该活动
         if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(activity.getPayTypeSet(),
                 req.getPayType())) {
             dto.setSuccess(false);
@@ -720,6 +720,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
             dto.setSuccess(false);
             dto.setDesc(ACTIVITY_NOT_ALLOW_DATE.getFormatDesc(activity.getAllowUseBeginDate(), activity.getAllowUseEndDate()));
+            return dto;
+        }
+
+        //是否上架状态
+        if (!CouponStatus.YES.getDictValue().equals(activity.getStatus())){
+            dto.setSuccess(false);
             return dto;
         }
         return dto;

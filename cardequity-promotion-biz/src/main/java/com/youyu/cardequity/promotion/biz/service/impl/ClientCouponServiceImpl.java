@@ -318,7 +318,12 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             return rsps;
         }
         for (ClientCouponEntity clientCoupon : enableCouponList) {
+            //优惠券已使用的不处理
             if (!CouponUseStatus.NORMAL.equals(clientCoupon.getStatus()))
+                continue;
+
+            //优惠券过期的不处理
+            if (!(clientCoupon.getValidStartDate().toLocalDate().compareTo(LocalDate.now())<=0 && clientCoupon.getValidEndDate().toLocalDate().compareTo(LocalDate.now())>=0))
                 continue;
 
             //没有指定运费时运费券或免邮券不能使用
@@ -721,12 +726,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         //校验使用时间窗口
         if (useFlag) {
-            dto = checkCouponUseValidDate(coupon);
-            //校验不通过继续
-            if (!dto.getSuccess()) {
-                dto.setData(coupon);
-                return dto;
-            }
             //校验使用频率是否符合
             dto = checkCouponUseFreqLimit(item.getClientId(), item.getCouponId(), item.getStageId());
             if (!dto.getSuccess()) {
@@ -734,6 +733,12 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 return dto;
             }
         } else {
+            //校验上下架状态,默认为下架状态
+            if (!CouponStatus.YES.getDictValue().equals(coupon.getStatus())){
+                dto.setData(coupon);
+                return dto;
+            }
+
             dto = checkCouponGetValidDate(coupon);
             //校验不通过继续
             if (!dto.getSuccess()) {
@@ -746,19 +751,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 return dto;
             }
         }
-
-        //和指定活動是否存在冲突
-//        if (!CommonUtils.isEmptyorNull(req.getActivityId())) {
-//            ActivityProfitEntity activeEntity = activityProfitMapper.findById(req.getActivityId());
-//            if (activeEntity == null) {
-//                throw new BizException(ACTIVE_NOT_EXIST.getCode(), ACTIVE_NOT_EXIST.getFormatDesc("找不到指定活动ActivityId="+req.getActivityId()));
-//            }
-//
-//            dto = checkReUseLimit(coupon, activeEntity);
-//            if (!dto.getSuccess()) {
-//                return dto;
-//            }
-//        }
 
         dto.setData(coupon);
         return dto;
