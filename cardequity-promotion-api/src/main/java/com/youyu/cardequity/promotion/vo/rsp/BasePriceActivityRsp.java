@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * Created by caiyi on 2019/1/11.
@@ -17,6 +18,12 @@ public class BasePriceActivityRsp {
     @ApiModelProperty(value = "子商品编号:必填")
     private String skuId;
 
-    @ApiModelProperty(value = "活动详情视图")
+    @ApiModelProperty(value = "特价")
     private BigDecimal price;
+
+    @ApiModelProperty(value = "状态:0-下架 1-上架")
+    private String status;
+
+    @ApiModelProperty(value = "优惠商品数量:特价活动一般需要设置")
+    private BigDecimal maxCount;
 }
