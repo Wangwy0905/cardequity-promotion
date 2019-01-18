@@ -111,7 +111,7 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
             String key="";
             for (BaseProductReq item:req.getProductList()){
                 isExist=false;
-                key=item.getProductId()+(CommonUtils.isEmptyorNull(item.getSkuId())?"EMPTY":item.getSkuId());
+                key=item.getProductId()+(CommonUtils.isEmptyorNull(item.getSkuId())?"|EMPTY":item.getSkuId());
                 for (GatherInfoRsp gather:result){
                       if (key.equals(gather.getGatherItem())){
                           gather.setGatherValue(gather.getGatherValue()+entities.size());

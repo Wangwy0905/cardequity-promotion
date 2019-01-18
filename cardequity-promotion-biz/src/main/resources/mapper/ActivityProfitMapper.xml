@@ -236,9 +236,22 @@
         select *
         from TB_ACTIVITY_PROFIT a
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-        AND a.STATUS='1'
-        and a.ALLOW_USE_BEGIN_DATE &lt;= sysdate()
-        and a.ALLOW_USE_END_DATE &gt;= sysdate()
+        <if test='""!=status and status!=null'>
+            AND a.STATUS=#{status,jdbcType=VARCHAR}
+        </if>
+        <if test='"0"==termStatus'>
+            and a.ALLOW_USE_BEGIN_DATE &gt;sysdate()
+        </if>
+        <if test='"1"==termStatus'>
+            and a.ALLOW_USE_BEGIN_DATE &lt;=sysdate()
+            and a.ALLOW_USE_END_DATE &gt;=sysdate()
+        </if>
+        <if test='"2"==termStatus'>
+            and a.ALLOW_USE_END_DATE &lt;sysdate()
+        </if>
+        <if test='"3"==termStatus'>
+            and a.ALLOW_USE_END_DATE &gt;sysdate()
+        </if>
         and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
         EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
         b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}

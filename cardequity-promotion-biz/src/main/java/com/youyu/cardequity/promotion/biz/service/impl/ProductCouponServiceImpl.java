@@ -25,6 +25,7 @@ import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import com.youyu.common.utils.YyAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -760,20 +761,23 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     }
 
     /**
-     * 查看商品对应优惠券列表
+     * 【上架且有效期内的】查看商品对应优惠券列表
      *
      * @param req
      * @return
      */
     @Override
     public List<CouponDetailDto> findCouponListByProduct(BaseProductReq req) {
-        BaseQryCouponReq qryReq = new BaseQryCouponReq();
-        if (req != null)
-            BeanPropertiesUtils.copyProperties(req, qryReq);
-        List<ProductCouponEntity> entities = productCouponMapper.findCouponListByCommon(qryReq);
+        if (req==null || CommonUtils.isEmptyorNull(req.getProductId()))
+            throw  new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("商品编号未指定"));
+        //查询有效期内的上架的消费券
+        List<ProductCouponEntity> entities = productCouponMapper.findCouponListByProduct("1","1",req.getProductId(),req.getSkuId(),"01");
         List<CouponDetailDto> dtoList = new ArrayList<>();
         for (ProductCouponEntity couponEntity : entities) {
-            dtoList.add(combinationCoupon(couponEntity));
+            //剔除没有上架的
+            if (CouponStatus.YES.getDictValue().equals(couponEntity.getStatus())) {
+                dtoList.add(combinationCoupon(couponEntity));
+            }
         }
         return dtoList;
     }

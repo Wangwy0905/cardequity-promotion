@@ -223,7 +223,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             String key = "";
             for (BaseProductReq item : req.getProductList()) {
                 isExist = false;
-                key = item.getProductId() + (CommonUtils.isEmptyorNull(item.getSkuId()) ? "EMPTY" : item.getSkuId());
+                key = item.getProductId() + (CommonUtils.isEmptyorNull(item.getSkuId()) ? "|EMPTY" : item.getSkuId());
 
                 for (GatherInfoRsp gather : firstresult) {
                     if (key.equals(gather.getGatherItem())) {

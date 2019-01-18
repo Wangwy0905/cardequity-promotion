@@ -118,6 +118,17 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
     List<ProductCouponEntity>  findUnlimitedProductCoupon();
 
 
+    /**
+     * 【后台】查询商品相关的优惠券
+     * @return
+     */
+    List<ProductCouponEntity>  findCouponListByProduct(@Param("status") String status,
+                                                       @Param("couponStatus") String couponStatus,
+                                                       @Param("productId") String productId,
+                                                       @Param("skuId") String skuId,
+                                                       @Param("couponType") String couponType);
+
+
 }
 
 

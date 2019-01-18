@@ -71,7 +71,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     private ActivityQuotaRuleMapper activityQuotaRuleMapper;
 
     /**
-     * 获取可参与的活动列表
+     * 获取可参与的活动列表:
+     * 查询满足客户条件的，有效期内
      *
      * @param req 查询优惠活动请求体
      * @return 活动详情列表
@@ -618,7 +619,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      */
     @Override
     public List<ActivityDetailDto> findProductAboutActivity(BaseProductReq req) {
-        List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByProductId(req.getProductId(), req.getSkuId());
+        //查询已上架和有效的
+        List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByProductId(req.getProductId(), req.getSkuId(),"1","1");
         return combinationActivity(entities);
     }
 

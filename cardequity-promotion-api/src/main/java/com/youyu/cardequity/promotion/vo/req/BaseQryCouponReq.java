@@ -11,7 +11,7 @@ public class BaseQryCouponReq {
     @ApiModelProperty(value = "指定优惠券id")
     private String couponId;
 
-    @ApiModelProperty(value = "券状态:0-未开始 1-有效中 2-已过期")
+    @ApiModelProperty(value = "券状态:0-未开始 1-有效中 2-已过期 3-未过期")
     private String couponStatus;
 
     @ApiModelProperty(value = "优惠券名称：可模糊")
