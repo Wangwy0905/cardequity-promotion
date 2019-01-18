@@ -168,4 +168,14 @@ public interface ActivityProfitApi {
     @ApiOperation(value = "【App+内部】【有效期内、已上架、有额度的】获取商品有效的优惠价活动（排除了已达额度的活动）")
     @PostMapping(path = "/findValidActivityPrice")
     Result<List<ActivityDetailDto>> findValidActivityPrice(@RequestBody BaseProductReq req);
+
+    /**
+     * 【后台】查询所有活动列表
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【后台】查询所有(不分页)活动列表")
+    @PostMapping(path = "/findAllActivityByCommon")
+    Result<List<ActivityDetailDto>> findAllActivityByCommon(@RequestBody BaseQryActivityReq req);
 }

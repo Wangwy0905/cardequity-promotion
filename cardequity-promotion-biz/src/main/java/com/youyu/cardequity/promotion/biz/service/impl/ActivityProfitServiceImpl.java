@@ -832,6 +832,27 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     public List<BasePriceActivityRsp> findActivityPriceValue(BaseProductReq req) {
         return activityProfitMapper.findBasePriceByProduct(req.getProductId(), req.getSkuId());
     }
+
+    /**
+     * 查找所有活动，不分页
+     *
+     * @param req 普通查询特价活动请求体
+     * @return 活动详情列表列表
+     */
+    @Override
+    public List<ActivityDetailDto> findAllActivityByCommon(BaseQryActivityReq req) {
+        if (req == null)
+            req = new BaseQryActivityReq();
+
+      List<ActivityProfitEntity> entities=activityProfitMapper.findActivityListByCommon(req);
+        List<ActivityDetailDto> result = new ArrayList<>();
+        for (ActivityProfitEntity item :entities) {
+            ActivityDetailDto dto = combinationActivity(item);
+            result.add(dto);
+        }
+        return result;
+    }
+
 }
 
 

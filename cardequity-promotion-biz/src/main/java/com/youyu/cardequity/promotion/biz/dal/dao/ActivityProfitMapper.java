@@ -165,6 +165,7 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * @return
      */
     List<ActivityProfitEntity> findUnlimitedProductActivity();
+
 }
 
 
