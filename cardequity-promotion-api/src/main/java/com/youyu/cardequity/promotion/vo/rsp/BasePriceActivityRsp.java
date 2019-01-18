@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 public class BasePriceActivityRsp {
     @ApiModelProperty(value = "商品编号:必填", required = true)
-    private String ProductId;
+    private String productId;
 
     @ApiModelProperty(value = "子商品编号:必填")
     private String skuId;
@@ -24,6 +24,9 @@ public class BasePriceActivityRsp {
     @ApiModelProperty(value = "状态:0-下架 1-上架")
     private String status;
 
-    @ApiModelProperty(value = "优惠商品数量:特价活动一般需要设置")
+    @ApiModelProperty(value = "优惠商品数量")
     private BigDecimal maxCount;
+
+    @ApiModelProperty(value = "活动编号")
+    private String id;
 }
