@@ -23,7 +23,7 @@
 
     <select id="findReProductBylist"  resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">
         SELECT CONCAT(PRODUCT_ID,'|',if(length(a.SKU_ID),a.SKU_ID,'EMPTY')) as gatherItem,
-        COUNT(*) as gatherValue
+        1 as gatherValue
         FROM TB_ACTIVITY_REF_PRODUCT a
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.ACTIVITY_ID!=#{activity.uuid,jdbcType=VARCHAR}

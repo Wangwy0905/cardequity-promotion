@@ -140,7 +140,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         //循环活动进行计算优惠金额，优先顺序为：任选->折扣->满减
         for (ActivityProfitEntity item : activityList) {
-            //校验基本信息：有效期的、商品属性、订单属性、支付属性
+            //校验基本信息：有效期的、商品属性、订单属性、支付属性、上架状态
             boolDto=checkActivityBase(item, req);
             if (!boolDto.getSuccess()){
                 continue;

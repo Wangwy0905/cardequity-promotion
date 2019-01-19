@@ -172,7 +172,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         //3.增加客户已领优惠券
         entity.setId(CommonUtils.getUUID());
-        if (coupon.getAllowUseBeginDate() != null || LocalDateTime.now().compareTo(coupon.getAllowUseBeginDate()) < 0) {
+        if (coupon.getAllowUseBeginDate() != null && LocalDate.now().compareTo(coupon.getAllowUseBeginDate().toLocalDate()) < 0) {
             entity.setValidStartDate(coupon.getAllowUseBeginDate());
         } else {
             entity.setValidStartDate(LocalDateTime.now());
@@ -306,7 +306,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             }
         } else {
             //获取已领取的有效优惠券：排除过期，已使用、使用中的券，按优惠金额已排序后的
-            //等阶券无法参与排序
             enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId());
         }
 
@@ -985,11 +984,11 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
         //是否在允許領取期間
-        if ((coupon.getAllowGetBeginDate() != null && coupon.getAllowGetBeginDate().compareTo(LocalDateTime.now()) > 0) ||
-                (coupon.getAllowGetEndDate() != null && coupon.getAllowGetEndDate().compareTo(LocalDateTime.now()) < 0)) {
+        if ((coupon.getAllowGetBeginDate() != null && coupon.getAllowGetBeginDate().toLocalDate().compareTo(LocalDate.now()) > 0) ||
+                (coupon.getAllowGetEndDate() != null && coupon.getAllowGetEndDate().toLocalDate().compareTo(LocalDate.now()) < 0)) {
 
             dto.setSuccess(false);
-            dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowGetBeginDate(), coupon.getAllowGetEndDate()));
+            dto.setDesc(COUPON_NOT_ALLOW_DATE.getFormatDesc(coupon.getAllowGetBeginDate().toLocalDate(), coupon.getAllowGetEndDate().toLocalDate()));
             return dto;
         }
         return dto;
@@ -1341,6 +1340,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         for (ClientCouponEntity clientCoupon : enableCouponList) {
 
             if (!CouponUseStatus.NORMAL.equals(clientCoupon.getStatus()))
+                continue;
+            if (LocalDate.now().compareTo(clientCoupon.getValidEndDate().toLocalDate())>0 || LocalDate.now().compareTo(clientCoupon.getValidStartDate().toLocalDate())<0)
                 continue;
             //校验基本信息
             dto = checkCouponFrist(clientCoupon, req, true);
