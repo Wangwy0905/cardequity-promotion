@@ -28,13 +28,13 @@ public class ClientTakeInActivityController implements ClientTakeInActivityApi {
     private ClientTakeInActivityService clientTakeInActivityService;
 
     /**
-     * 通过选购信息进行参加活动处理
+     * 【App】通过选购信息进行参加活动处理
      *
      * @param req
      * @return
      */
     @Override
-    @ApiOperation(value = "通过选购信息进行参加活动处理")
+    @ApiOperation(value = "【App】通过选购信息进行参加活动处理")
     @PostMapping(path = "/takeInActivityByOrder")
     public Result<List<UseActivityRsp>> takeInActivityByOrder(@RequestBody GetUseEnableCouponReq req) {
         return Result.ok(clientTakeInActivityService.takeInActivityByOrder(req));

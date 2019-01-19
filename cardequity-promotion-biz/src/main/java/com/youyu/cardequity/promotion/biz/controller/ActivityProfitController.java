@@ -166,7 +166,7 @@ public class ActivityProfitController implements ActivityProfitApi {
      * @return 活动详情列表
      */
     @Override
-    @ApiOperation(value = "【App+内部+后台】查询指定活动")
+    @ApiOperation(value = "【通用】查询指定活动")
     @PostMapping(path = "/findActivityById")
     public Result<ActivityDetailDto> findActivityById(@RequestBody BaseActivityReq req) {
         return Result.ok(activityProfitService.findActivityById(req));
@@ -197,7 +197,7 @@ public class ActivityProfitController implements ActivityProfitApi {
      * 1004258-徐长焕-20190111 新建
      */
     @Override
-    @ApiOperation(value = "【内部】获取商品活动优惠价")
+    @ApiOperation(value = "【内部-已过期】获取商品活动优惠价")
     @PostMapping(path = "/findActivityPriceValue")
     public Result<List<BasePriceActivityRsp>> findActivityPriceValue(@RequestBody BaseProductReq req) {
         return Result.ok(activityProfitService.findActivityPriceValue(req));

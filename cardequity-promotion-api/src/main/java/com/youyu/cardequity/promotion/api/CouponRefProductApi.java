@@ -31,31 +31,35 @@ import java.util.Map;
 public interface CouponRefProductApi {
 
     /**
+     * *********************************【后台接口】************************
      * 添加优惠券关联商品
      *
      * @param req
      * @return
      */
-    @ApiOperation(value = "添加优惠券关联商品")
+    @ApiOperation(value = "【后台】添加优惠券关联商品")
     @PostMapping(path = "/addProductRefCoupon")
     Result<CommonBoolDto<Integer>> addProductRefCoupon(@RequestBody BatchRefProductReq req);
-
-    /**
-     * 查询优惠券关联的商品列表
-     *
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "查询优惠券关联的商品列表")
-    @PostMapping(path = "/findJoinProductByCoupon")
-    Result<List<CouponRefProductDto>> findJoinProductByCoupon(@RequestBody BaseCouponReq req);
 
     /**
      * 查询商品的活动数量
      * @param req 商品基本信息
      * @return 活动数量列表
      */
-    @ApiOperation(value = "查询商品的活动数量")
+    @ApiOperation(value = "【后台-有效期-上架】查询商品的活动数量")
     @PostMapping(path = "/findProductAboutCouponNum")
     Result<List<GatherInfoRsp>> findProductAboutCouponNum(@RequestBody BatchBaseProductReq req);
+
+
+    /**
+     * *********************************【通用接口】************************
+     * 查询优惠券关联的商品列表
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【通用】查询优惠券关联的商品列表")
+    @PostMapping(path = "/findJoinProductByCoupon")
+    Result<List<CouponRefProductDto>> findJoinProductByCoupon(@RequestBody BaseCouponReq req);
+
 }

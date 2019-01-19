@@ -34,12 +34,13 @@ public class ProductCouponController implements ProductCouponApi {
     private ProductCouponService productCouponService;
 
     /**
-     * 获取可以领取的优惠券
+     * *********************************【App接口】************************
+     * 【App】获取可以领取的优惠券
      * @param req
      * @return
      */
     @Override
-    @ApiOperation(value = "获取可以领取的优惠券")
+    @ApiOperation(value = "【App-有效期内-上架-有额度】获取可以领取的优惠券")
     @PostMapping(path = "/findEnableGetCoupon")
     public Result<List<CouponDetailDto>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req) {
         List<CouponDetailDto> rspList = productCouponService.findEnableGetCoupon(req);
@@ -47,13 +48,53 @@ public class ProductCouponController implements ProductCouponApi {
     }
 
     /**
-     * 添加优惠券
+     * *********************************【通用接口】************************
+     * 【通用-有效期-上架】查看商品对应优惠券列表
      *
      * @param req
      * @return
      */
     @Override
-    @ApiOperation(value = "添加优惠券：添加基本信息、领取频率、使用门槛、关联商品等")
+    @ApiOperation(value = "【通用-有效期-上架】查看商品对应优惠券列表")
+    @PostMapping(path = "/findCouponListByProduct")
+    public Result<List<CouponDetailDto>> findCouponListByProduct(@RequestBody BaseProductReq req){
+        return Result.ok(productCouponService.findCouponListByProduct(req));
+    }
+
+    /**
+     * 查询指定优惠券详情
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【通用】查询指定优惠券详情")
+    @PostMapping(path = "/findCouponById")
+    public Result<CouponDetailDto> findCouponById(@RequestBody BaseCouponReq req){
+        return Result.ok(productCouponService.findCouponById(req));
+    }
+
+    /**
+     * 【通用】查看指定优惠券id集合对应优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【通用】查看指定优惠券id集合对应优惠券列表")
+    @PostMapping(path = "/findCouponListByIds")
+    public Result<List<CouponDetailDto>> findCouponListByIds(@RequestBody List<String> req){
+        return Result.ok(productCouponService.findCouponListByIds(req));
+    }
+
+    /**
+     * *********************************【后台接口】************************
+     * 【后台】添加优惠券
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【后台】添加优惠券：添加基本信息、领取频率、使用门槛、关联商品等")
     @PostMapping(path = "/addCoupon")
     public Result<CommonBoolDto<CouponDetailDto> > addCoupon(@RequestBody CouponDetailDto req)
     {
@@ -62,13 +103,13 @@ public class ProductCouponController implements ProductCouponApi {
 
 
     /**
-     * 编辑优惠券
+     * 【后台】编辑优惠券
      *
      * @param req
      * @return
      */
     @Override
-    @ApiOperation(value = "编辑优惠券：编辑基本信息、领取频率、使用门槛、关联商品等")
+    @ApiOperation(value = "【后台】编辑优惠券：编辑基本信息、领取频率、使用门槛、关联商品等")
     @PostMapping(path = "/editCoupon")
     public Result<CommonBoolDto<CouponDetailDto>> editCoupon(@RequestBody CouponDetailDto req)
     {
@@ -76,37 +117,25 @@ public class ProductCouponController implements ProductCouponApi {
     }
 
     /**
-     * 批量删除优惠券：逻辑删除基本信息、额度值、频率规则、门槛；物理删除商品对应关系
+     * 【后台】批量删除优惠券：逻辑删除基本信息、额度值、频率规则、门槛；物理删除商品对应关系
      * @param req
      * @return
      */
     @Override
-    @ApiOperation(value = "批量删除优惠券：商品对应关系、额度值、频率规则、门槛")
+    @ApiOperation(value = "【后台】批量删除优惠券：商品对应关系、额度值、频率规则、门槛")
     @PostMapping(path = "/batchDelCoupon")
     public Result<CommonBoolDto<Integer>> batchDelCoupon(@RequestBody BatchBaseCouponReq req){
         return Result.ok(productCouponService.batchDelCoupon(req));
     }
-    /**
-     * 查看商品对应优惠券列表
-     *
-     * @param req
-     * @return
-     */
-    @Override
-    @ApiOperation(value = "查看商品对应优惠券列表")
-    @PostMapping(path = "/findCouponListByProduct")
-    public Result<List<CouponDetailDto>> findCouponListByProduct(@RequestBody BaseProductReq req){
-        return Result.ok(productCouponService.findCouponListByProduct(req));
-    }
 
     /**
-     * 查询所有优惠券列表
+     * 【后台-分页】查询所有优惠券列表
      *
      * @param req
      * @return
      */
     @Override
-    @ApiOperation(value = "查询所有优惠券列表")
+    @ApiOperation(value = "【后台-分页-汇总】查询所有优惠券列表")
     @PostMapping(path = "/findCouponListByCommon")
     public Result<CouponPageQryRsp> findCouponListByCommon(@RequestBody BaseQryCouponReq req){
         return Result.ok(productCouponService.findCouponListByCommon(req));
@@ -120,24 +149,14 @@ public class ProductCouponController implements ProductCouponApi {
      * @return
      */
     @Override
-    @ApiOperation(value = "模糊查询所有优惠券列表")
+    @ApiOperation(value = "【后台-分页-汇总】模糊指定的关键词查询所有优惠券列表")
     @PostMapping(path = "/findCouponList")
     public Result<CouponPageQryRsp> findCouponList(@RequestBody BaseQryCouponReq req){
         return Result.ok(productCouponService.findCouponList(req));
 
     }
 
-    /**
-     * 查询指定优惠券详情
-     * @param req
-     * @return
-     */
-    @Override
-    @ApiOperation(value = "查询指定优惠券详情")
-    @PostMapping(path = "/findCouponById")
-    public Result<CouponDetailDto> findCouponById(@RequestBody BaseCouponReq req){
-        return Result.ok(productCouponService.findCouponById(req));
-    }
+
 
 
     /**
@@ -154,17 +173,6 @@ public class ProductCouponController implements ProductCouponApi {
     }
 
 
-    /**
-     * 查看指定优惠券id集合对应优惠券列表
-     *
-     * @param req
-     * @return
-     */
-    @Override
-    @ApiOperation(value = "查看指定优惠券id集合对应优惠券列表")
-    @PostMapping(path = "/findCouponListByIds")
-    public Result<List<CouponDetailDto>> findCouponListByIds(@RequestBody List<String> req){
-        return Result.ok(productCouponService.findCouponListByIds(req));
-    }
+
 
 }

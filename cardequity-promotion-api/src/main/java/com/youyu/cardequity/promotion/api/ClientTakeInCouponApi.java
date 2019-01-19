@@ -26,33 +26,34 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "/clientTakeInCoupon")
 public interface ClientTakeInCouponApi {
     /**
-     * 【内部服务】在订单时候根据使用活动及优惠券详情处理优惠券记录，记录使用痕迹
+     * *********************************【内部接口】************************
+     * 【内部】在订单时候根据使用活动及优惠券详情处理优惠券记录，记录使用痕迹
      *
      * @param req 订单及其权益使用信息
      * @return
      */
-    @ApiOperation(value = "在订单时候使用活动及优惠券详情:处理优惠券记录，记录使用痕迹")
+    @ApiOperation(value = "【内部】在订单时候使用活动及优惠券详情:处理优惠券记录，记录使用痕迹")
     @PostMapping(path = "/orderCouponAndActivityDeal")
      Result<OrderCouponAndActivityRsp> orderCouponAndActivityDeal(@RequestBody  PromotionDealReq req);
 
 
     /**
-     * 【内部服务】在订单预生成时候使用活动及优惠券详情
+     * 【内部】在订单预生成时候使用活动及优惠券详情
      * 考虑了幂等性
      * @param req
      * @return
      */
-    @ApiOperation(value = "在订单预生成时候使用活动及优惠券详情")
+    @ApiOperation(value = "【内部】在订单预生成时候使用活动及优惠券详情")
     @PostMapping(path = "/preOrderCouponAndActivityDeal")
      Result<OrderCouponAndActivityRsp> preOrderCouponAndActivityDeal(@RequestBody GetUseEnableCouponReq  req);
 
     /**
-     * 【内部服务】取消订单预使用活动及优惠券详情
+     * 【内部】取消订单预使用活动及优惠券详情
      * 考虑了幂等性
      * @param req
      * @return
      */
-    @ApiOperation(value = "取消订单预使用活动及优惠券详情")
+    @ApiOperation(value = "【内部】取消订单预使用活动及优惠券详情")
     @PostMapping(path = "/cancelOrderCouponAndActivityDeal")
     Result<CommonBoolDto> cancelOrderCouponAndActivityDeal(@RequestBody BaseOrderInPromotionReq req);
 }

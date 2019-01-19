@@ -28,30 +28,32 @@ import java.util.Map;
 public interface ActivityRefProductApi {
 
     /**
+     * *********************************【通用接口】************************
+     * 【通用】查询活动配置的商品
+     * @param req 活动基本信息
+     * @return 商品基本信息
+     */
+    @ApiOperation(value = "【通用】查询活动配置的商品")
+    @PostMapping(path = "/findActivityProducts")
+    Result<List<BaseProductReq>> findActivityProducts(@RequestBody BaseActivityReq req);
+
+
+    /**
+     * *********************************【后台接口】************************
      * 查询已经配置了活动的商品
      *
      * @return
      */
-    @ApiOperation(value = "查询已经配置了活动的商品")
+    @ApiOperation(value = "【后台】查询已经配置了活动的商品")
     @PostMapping(path = "/findAllProductInValidActivity")
     Result<List<ActivityRefProductDto>> findAllProductInValidActivity(@RequestBody BaseActivityReq req);
-
-    /**
-     * 查询活动配置的商品
-     * @param req 活动基本信息
-     * @return 商品基本信息
-     */
-    @ApiOperation(value = "查询活动配置的商品")
-    @PostMapping(path = "/findActivityProducts")
-    Result<List<BaseProductReq>> findActivityProducts(@RequestBody BaseActivityReq req);
-
 
     /**
      * 配置优惠的适用商品范围
      * @param req
      * @return
      */
-    @ApiOperation(value = "配置优惠的适用商品范围")
+    @ApiOperation(value = "【后台】配置优惠的适用商品范围")
     @PostMapping(path = "/batchAddActivityRefProduct")
     Result<CommonBoolDto<Integer>> batchAddActivityRefProduct(@RequestBody BatchRefProductReq req);
 
@@ -60,17 +62,17 @@ public interface ActivityRefProductApi {
      * @param req 商品基本信息
      * @return 活动数量列表
      */
-    @ApiOperation(value = "查询商品的活动数量")
+    @ApiOperation(value = "【后台】查询商品的活动数量")
     @PostMapping(path = "/findProductAboutActivityNum")
     Result<List<GatherInfoRsp>> findProductAboutActivityNum(@RequestBody BatchBaseProductReq req);
 
 
     /**
-     * 查询正在参与活动的商品
+     * 【后台-有效期内-上架的】查询正在参与活动的商品
      * @param req 类型和状态
      * @return 商品列表
      */
-    @ApiOperation(value = "查询正在参与活动的商品")
+    @ApiOperation(value = "【后台-有效期内-上架的】查询正在参与活动的商品")
     @PostMapping(path = "/findProductInValidActivity")
      Result<List<BaseProductReq>> findProductInValidActivity(@RequestBody FindProductInValidActivityReq req);
 }

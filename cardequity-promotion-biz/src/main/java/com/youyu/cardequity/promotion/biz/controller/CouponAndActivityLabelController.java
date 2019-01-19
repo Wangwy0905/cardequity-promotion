@@ -26,63 +26,64 @@ public class CouponAndActivityLabelController implements CouponAndActivityLabelA
     private CouponAndActivityLabelService couponAndActivityLabelService;
 
     /**
-     * 添加标签
+     * *********************************【后台接口】************************
+     * 【后台】添加标签
      *
      * @param req 标签详情
      * @return 处理后的标签详情
      */
     @Override
-    @ApiOperation(value = "添加标签")
+    @ApiOperation(value = "【后台】添加标签")
     @PostMapping(path = "/addCouponAndActivityLabel")
     public Result<CouponAndActivityLabelDto> add(@RequestBody CouponAndActivityLabelDto req) {
         return Result.ok(couponAndActivityLabelService.add(req));
     }
 
     /**
-     * 编辑标签
+     * 【后台】编辑标签
      *
      * @param req 标签详情
      * @return 处理后的标签详情
      */
     @Override
-    @ApiOperation(value = "编辑标签")
+    @ApiOperation(value = "【后台】编辑标签")
     @PostMapping(path = "/editCouponAndActivityLabel")
     public Result<CouponAndActivityLabelDto> edit(@RequestBody CouponAndActivityLabelDto req) {
         return Result.ok(couponAndActivityLabelService.edit(req));
     }
 
     /**
-     * 编辑标签
+     * 【后台】删除标签
      *
      * @param req 标签基本数据
      * @return 处理成功数量
      */
     @Override
-    @ApiOperation(value = "删除标签")
+    @ApiOperation(value = "【后台】删除标签")
     @PostMapping(path = "/deleteCouponAndActivityLabel")
     public Result<Integer> delete(@RequestBody BatchBaseLabelReq req) {
         return Result.ok(couponAndActivityLabelService.delete(req));
     }
 
     /**
-     * 查询标签
+     * 【后台】查询标签
      *
      * @param req 标签基本查询请求体
      * @return 标签详情列表
      */
     @Override
-    @ApiOperation(value = "查询标签")
+    @ApiOperation(value = "【后台】查询标签")
     @PostMapping(path = "/findCouponAndActivityLabelByCommon")
     public Result<List<CouponAndActivityLabelDto>> findByCommon(@RequestBody BaseQryLabelReq req) {
         return Result.ok(couponAndActivityLabelService.findByCommon(req));
     }
 
     /**
-     * [分页]查询标签
+     * 【后台】[分页]查询标签
      * @param req 标签基本查询请求体
      * @return 标签详情列表
      */
-    @ApiOperation(value = "[分页]查询标签")
+    @ApiOperation(value = "【后台-分页】查询标签")
     @PostMapping(path = "/findPageCouponAndActivityLabelByCommon")
     public Result<PageData<CouponAndActivityLabelDto>> findPageByCommon(@RequestBody BasePageQryLabelReq req){
         return Result.ok(couponAndActivityLabelService.findPageByCommon(req));

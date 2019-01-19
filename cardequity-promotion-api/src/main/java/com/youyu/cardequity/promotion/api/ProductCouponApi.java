@@ -29,23 +29,58 @@ import java.util.List;
 public interface ProductCouponApi {
 
     /**
+     * *********************************【App接口】************************
      * 获取可领取的优惠券
      *
      * @param req：里面的clientType-客户类型如果为空，需要在网关层调用客户信息查询接口，同理groupId-商品组信息
      * @return 开发日志
      * 1004244-徐长焕-20181207 新建
      */
-    @ApiOperation(value = "获取可以领取的优惠券")
+    @ApiOperation(value = "【App-有效期内-上架-有额度】获取可以领取的优惠券")
     @PostMapping(path = "/findEnableGetCoupon")
     Result<List<CouponDetailDto>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req);
 
+
+
     /**
+     * *********************************【通用接口】************************
+     * 查看商品对应优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【通用-有效期-上架】查看商品对应优惠券列表")
+    @PostMapping(path = "/findCouponListByProduct")
+    Result<List<CouponDetailDto>> findCouponListByProduct(@RequestBody BaseProductReq req);
+
+
+    /**
+     * 查询指定优惠券详情
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【通用】查询指定优惠券详情")
+    @PostMapping(path = "/findCouponById")
+    Result<CouponDetailDto> findCouponById(@RequestBody BaseCouponReq req);
+
+    /**
+     * 查看指定优惠券id集合对应优惠券列表
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【通用】查看指定优惠券id集合对应优惠券列表")
+    @PostMapping(path = "/findCouponListByIds")
+    Result<List<CouponDetailDto>> findCouponListByIds(@RequestBody List<String> req);
+
+    /**
+     * *********************************【后台接口】************************
      * 添加优惠券
      *
      * @param req
      * @return
      */
-    @ApiOperation(value = "添加优惠券：添加基本信息、领取频率、使用门槛、关联商品等")
+    @ApiOperation(value = "【后台】添加优惠券：添加基本信息、领取频率、使用门槛、关联商品等")
     @PostMapping(path = "/addCoupon")
     Result<CommonBoolDto<CouponDetailDto>> addCoupon(@RequestBody CouponDetailDto req);
 
@@ -55,7 +90,7 @@ public interface ProductCouponApi {
      * @param req
      * @return
      */
-    @ApiOperation(value = "编辑优惠券：编辑基本信息、领取频率、使用门槛、关联商品等")
+    @ApiOperation(value = "【后台】编辑优惠券：编辑基本信息、领取频率、使用门槛、关联商品等")
     @PostMapping(path = "/editCoupon")
     Result<CommonBoolDto<CouponDetailDto>> editCoupon(@RequestBody CouponDetailDto req);
 
@@ -65,19 +100,9 @@ public interface ProductCouponApi {
      * @param req
      * @return
      */
-    @ApiOperation(value = "批量删除优惠券：商品对应关系、额度值、频率规则、门槛")
+    @ApiOperation(value = "【后台】批量删除优惠券：商品对应关系、额度值、频率规则、门槛")
     @PostMapping(path = "/batchDelCoupon")
     Result<CommonBoolDto<Integer>> batchDelCoupon(@RequestBody BatchBaseCouponReq req);
-
-    /**
-     * 查看商品对应优惠券列表
-     *
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "查看商品对应优惠券列表")
-    @PostMapping(path = "/findCouponListByProduct")
-    Result<List<CouponDetailDto>> findCouponListByProduct(@RequestBody BaseProductReq req);
 
     /**
      * 查询所有优惠券列表
@@ -85,7 +110,7 @@ public interface ProductCouponApi {
      * @param req
      * @return
      */
-    @ApiOperation(value = "查询所有优惠券列表")
+    @ApiOperation(value = "【后台-分页】查询所有优惠券列表")
     @PostMapping(path = "/findCouponListByCommon")
     Result<CouponPageQryRsp> findCouponListByCommon(@RequestBody BaseQryCouponReq req);
 
@@ -96,18 +121,9 @@ public interface ProductCouponApi {
      * @param req
      * @return
      */
-    @ApiOperation(value = "模糊查询所有优惠券列表")
+    @ApiOperation(value = "【后台-分页】模糊查询所有优惠券列表")
     @PostMapping(path = "/findCouponList")
     Result<CouponPageQryRsp> findCouponList(@RequestBody BaseQryCouponReq req);
-
-    /**
-     * 查询指定优惠券详情
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "查询指定优惠券详情")
-    @PostMapping(path = "/findCouponById")
-    Result<CouponDetailDto> findCouponById(@RequestBody BaseCouponReq req);
 
     /**
      * 查询活动汇总信息
@@ -115,19 +131,10 @@ public interface ProductCouponApi {
      * @param req 普通查询活动请求体
      * @return 活动汇总列表
      */
-    @ApiOperation(value = "查找活动")
+    @ApiOperation(value = "【后台】查询活动或者信息")
     @PostMapping(path = "/findGatherCouponByCommon")
     Result<List<GatherInfoRsp>> findGatherCouponByCommon(@RequestBody BaseQryCouponReq req);
 
-    /**
-     * 查看指定优惠券id集合对应优惠券列表
-     *
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "查看指定优惠券id集合对应优惠券列表")
-    @PostMapping(path = "/findCouponListByIds")
-    Result<List<CouponDetailDto>> findCouponListByIds(@RequestBody List<String> req);
 
 
 }

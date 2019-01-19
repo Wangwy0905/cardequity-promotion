@@ -26,11 +26,12 @@ import java.util.List;
 public interface ClientTakeInActivityApi {
 
     /**
-     * 【内部服务】通过选购信息进行参加活动处理
+     * *********************************【内部接口】************************
+     * 【内部】通过选购信息进行参加活动处理
      * @param req
      * @return
      */
-    @ApiOperation(value = "通过选购信息进行参加活动处理")
+    @ApiOperation(value = "【内部】通过选购信息进行参加活动处理")
     @PostMapping(path = "/takeInActivityByOrder")
     Result<List<UseActivityRsp>> takeInActivityByOrder(@RequestBody GetUseEnableCouponReq req);
 }

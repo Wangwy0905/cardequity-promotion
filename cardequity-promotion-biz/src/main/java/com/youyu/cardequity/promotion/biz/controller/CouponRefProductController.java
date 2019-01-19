@@ -26,42 +26,46 @@ public class CouponRefProductController implements CouponRefProductApi {
     private CouponRefProductService couponRefProductService;
 
     /**
+     * *********************************【后台接口】************************
      * 添加优惠券关联商品
      *
      * @param req
      * @return
      */
     @Override
-    @ApiOperation(value = "添加优惠券关联商品")
+    @ApiOperation(value = "【后台】添加优惠券关联商品")
     @PostMapping(path = "/addProductRefCoupon")
     public Result<CommonBoolDto<Integer>> addProductRefCoupon(@RequestBody BatchRefProductReq req){
         return Result.ok(couponRefProductService.batchAddCouponRefProduct(req));
     }
 
+
     /**
-     * 查询优惠券关联的商品列表
+     * 【后台-有效期-上架】查询商品的活动数量
+     * @param req 商品基本信息
+     * @return 活动数量列表
+     */
+    @Override
+    @ApiOperation(value = "【后台-有效期-上架】查询商品的活动数量")
+    @PostMapping(path = "/findProductAboutCouponNum")
+    public Result<List<GatherInfoRsp>> findProductAboutCouponNum(@RequestBody BatchBaseProductReq req){
+        return Result.ok(couponRefProductService.findProductAboutCouponNum(req));
+
+    }
+
+    /**
+     * *********************************【内部接口】************************
+     * 【通用】查询优惠券关联的商品列表
      *
      * @param req
      * @return
      */
     @Override
-    @ApiOperation(value = "查询优惠券关联的商品列表")
+    @ApiOperation(value = "【通用】查询优惠券关联的商品列表")
     @PostMapping(path = "/findJoinProductByCoupon")
     public Result<List<CouponRefProductDto>> findJoinProductByCoupon(@RequestBody BaseCouponReq req){
         return Result.ok(couponRefProductService.findJoinProductByCoupon(req));
     }
 
 
-    /**
-     * 查询商品的活动数量
-     * @param req 商品基本信息
-     * @return 活动数量列表
-     */
-    @Override
-    @ApiOperation(value = "查询商品的活动数量")
-    @PostMapping(path = "/findProductAboutCouponNum")
-    public Result<List<GatherInfoRsp>> findProductAboutCouponNum(@RequestBody BatchBaseProductReq req){
-        return Result.ok(couponRefProductService.findProductAboutCouponNum(req));
-
-    }
 }

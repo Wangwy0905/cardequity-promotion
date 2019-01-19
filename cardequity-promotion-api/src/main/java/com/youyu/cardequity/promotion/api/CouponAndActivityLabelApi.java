@@ -31,6 +31,7 @@ import java.util.List;
 public interface CouponAndActivityLabelApi {
 
     /**
+     * *********************************【后台接口】************************
      * 添加标签
      * @param req 标签详情
      * @return 处理后的标签详情

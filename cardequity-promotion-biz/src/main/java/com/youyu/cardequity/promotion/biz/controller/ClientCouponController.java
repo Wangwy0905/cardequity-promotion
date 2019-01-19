@@ -35,14 +35,14 @@ public class ClientCouponController implements ClientCouponApi {
 
 
     @Override
-    @ApiOperation(value = "查询已经领取的优惠券")
+    @ApiOperation(value = "【App】获取客户已领取的券")
     @PostMapping(path = "/findClientCoupon")
     public Result<List<ObtainCouponViewDto>> findClientCoupon(@RequestBody BaseClientReq req) {
         return  Result.ok(clientCouponService.findClientCoupon(req));
     }
 
     @Override
-    @ApiOperation(value = "领取优惠券")
+    @ApiOperation(value = "【App】客户领取优惠券")
     @PostMapping(path = "/obtainCoupon")
     public Result<CommonBoolDto> obtainCoupon(@RequestBody ClientObtainCouponReq req) {
 
@@ -50,14 +50,14 @@ public class ClientCouponController implements ClientCouponApi {
     }
 
     @Override
-    @ApiOperation(value = "查询可领取优惠券")
+    @ApiOperation(value = "【App-已过期】在“不校验使用门槛”前提计算可领取优惠券")
     @PostMapping(path = "/findEnableUseCoupon")
     public Result<List<ObtainCouponViewDto>> findEnableUseCoupon(@RequestBody GetUseEnableCouponReq req) {
         return Result.ok(clientCouponService.findEnableUseCoupon(req));
     }
 
     @Override
-    @ApiOperation(value = "订单预生成时优惠券使用情况")
+    @ApiOperation(value = "【App】计算订单“预”生成时优惠券使用情况")
     @PostMapping(path = "/combCouponRefProductDeal")
     public Result<List<UseCouponRsp>> combCouponRefProductDeal(@RequestBody GetUseEnableCouponReq req){
         return Result.ok(clientCouponService.combCouponRefProductDeal(req));
@@ -69,7 +69,7 @@ public class ClientCouponController implements ClientCouponApi {
      * @return
      */
     @Override
-    @ApiOperation(value = "订单生成时优惠券使用情况，并变动其状态和使用记录")
+    @ApiOperation(value = "【App】计算订单生成时优惠券使用情况，并变动其状态和使用记录")
     @PostMapping(path = "/combCouponRefProductAndUse")
     public Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req){
         return Result.ok(clientCouponService.combCouponRefProductAndUse(req));
@@ -82,7 +82,7 @@ public class ClientCouponController implements ClientCouponApi {
      * @return 返回已领取的券
      * 开发日志
      */
-    @ApiOperation(value = "获取客户当前有效的券")
+    @ApiOperation(value = "【App】获取客户当前有效期内满足指定商品条件的券")
     @PostMapping(path = "/findValidClientCouponForProduct")
     @Override
     public Result<List<ObtainCouponViewDto>> findValidClientCouponForProduct(@RequestBody BaseClientProductReq req){
@@ -91,13 +91,13 @@ public class ClientCouponController implements ClientCouponApi {
 
 
     /**
-     * 查看订单相关优惠券（可用，不可用）
+     * 【App】根据订单计算优惠券状态（可用，不可用）情况
      *
      * @param req
      * @return
      */
     @Override
-    @ApiOperation(value = "查看订单相关优惠券（可用，不可用）")
+    @ApiOperation(value = "【App】根据订单计算优惠券状态（可用，不可用）情况")
     @PostMapping(path = "/findCouponListByOrderDetail")
     public Result<FindCouponListByOrderDetailRsp> findCouponListByOrderDetail(@RequestBody OrderUseEnableCouponReq req){
         return Result.ok(clientCouponService.findCouponListByOrderDetail(req));
