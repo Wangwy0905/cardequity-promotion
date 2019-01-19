@@ -225,6 +225,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             }
 
+            //校验特价活动必须指定商品
+            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType()) &&
+                    (item.getProductList()==null || item.getProductList().isEmpty() || CommonUtils.isEmptyorNull(item.getProductList().get(0).getProductId())))
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("特价活动必须指定商品，活动编号" + profit.getId()));
+
             //2.处理基本信息
             profit.setId(stageWorker.nextId() + "");
 
@@ -376,8 +381,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             }
 
-            //校验活动是否存在
-
+            //校验特价活动必须指定商品
+            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType()) &&
+                    (item.getProductList()==null || item.getProductList().isEmpty() || CommonUtils.isEmptyorNull(item.getProductList().get(0).getProductId())))
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("特价活动必须指定商品，活动编号" + profit.getId()));
 
             //2.处理基本信息
             activityIds.add(profit.getId());
