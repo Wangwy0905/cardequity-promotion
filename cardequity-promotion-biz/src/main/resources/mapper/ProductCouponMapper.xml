@@ -11,17 +11,19 @@
         from TB_PRODUCT_COUPON a
         left join TB_COUPON_QUOTA_RULE b on a.UUID = b.COUPON_ID and IFNULL(b.IS_ENABLE, '1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-          and a.STATUS='1'
+        and a.STATUS='1'
         <if test="productId != null and productId!=''">
             and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
             EXISTS (select 1 from TB_COUPON_REF_PRODUCT b where b.COUPON_ID=a.UUID and
             b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
         </if>
         <if test="entrustWay != null and entrustWay!=''">
-            and (if(length(a.ENTRUST_WAY_SET),a.ENTRUST_WAY_SET,'*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+            and (if(length(a.ENTRUST_WAY_SET),a.ENTRUST_WAY_SET,'*') = '*' or instr(ENTRUST_WAY_SET,
+            #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="clientType != null and clientType!=''">
-            and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
+            and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
+            #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
         and a.ALLOW_GET_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_GET_END_DATE &gt;= curdate()
@@ -61,11 +63,13 @@
         </if>
         <if test="entrustWay != null and entrustWay!=''">
 
-            and (if(length(a.ENTRUST_WAY_SET),a.ENTRUST_WAY_SET,'*') = '*' or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+            and (if(length(a.ENTRUST_WAY_SET),a.ENTRUST_WAY_SET,'*') = '*' or instr(ENTRUST_WAY_SET,
+            #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="clientType != null and clientType!=''">
 
-            and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
+            and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
+            #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
         and a.ALLOW_GET_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_GET_END_DATE &gt;= curdate()
@@ -110,7 +114,7 @@
         <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='0'.toString()">
             and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*')='*' or
             (instr(a.CLIENT_TYPE_SET,'10') &gt;0 and instr(a.CLIENT_TYPE_SET,'11')&gt;0 ))
-            and  if(length(a.GET_STAGE),a.GET_STAGE,'6')!='3'
+            and if(length(a.GET_STAGE),a.GET_STAGE,'6')!='3'
         </if>
         <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='1'.toString()">
             and a.GET_STAGE='3'
@@ -144,7 +148,7 @@
 
     <update id="logicDelByList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq">
         UPDATE TB_PRODUCT_COUPON a
-           SET IS_ENABLE='0',a.UPDATE_AUTHOR= #{operator,jdbcType=VARCHAR}
+        SET IS_ENABLE='0',a.UPDATE_AUTHOR= #{operator,jdbcType=VARCHAR}
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
         AND a.UUID IN
         <foreach collection="baseCouponList" item="baseCoupon" index="index"
@@ -153,7 +157,7 @@
         </foreach>
     </update>
 
-    <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BaseCouponReq" >
+    <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BaseCouponReq">
         UPDATE TB_PRODUCT_COUPON  a
            SET IS_ENABLE='0'
         WHERE ifnull(a.IS_ENABLE, '1') = '1'
@@ -188,7 +192,7 @@
         <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='0'.toString()">
             and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*')='*' or
             (instr(a.CLIENT_TYPE_SET,'10') &gt;0 and instr(a.CLIENT_TYPE_SET,'11')&gt;0 ))
-            and  if(length(a.GET_STAGE),a.GET_STAGE,'6')!='3'
+            and if(length(a.GET_STAGE),a.GET_STAGE,'6')!='3'
         </if>
         <if test="commonQry.targetFlag!=null and commonQry.targetFlag=='1'.toString()">
             and a.GET_STAGE='3'
@@ -221,8 +225,8 @@
     </select>
 
     <resultMap id="gatherInfoRsp" type="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">
-        <result column="gatherItem" property="gatherItem" jdbcType="VARCHAR" />
-        <result column="gatherValue" property="gatherValue" jdbcType="INTEGER" />
+        <result column="gatherItem" property="gatherItem" jdbcType="VARCHAR"/>
+        <result column="gatherValue" property="gatherValue" jdbcType="INTEGER"/>
     </resultMap>
 
     <select id="findGatherCouponList" resultMap="gatherInfoRsp"
@@ -231,7 +235,7 @@
         when a.CLIENT_TYPE_SET = '11' then '2'
         when ifnull(a.GET_STAGE, '6') = '3' then '1'
         else '0' end) as gatherItem,
-        count(1)         as gatherValue
+        count(1) as gatherValue
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
@@ -257,7 +261,7 @@
         <if test='commonQry.targetFlag!=null and commonQry.targetFlag=="0"'>
             and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*')='*' or
             (instr(a.CLIENT_TYPE_SET,'10') &gt;0 and instr(a.CLIENT_TYPE_SET,'11')&gt;0 ))
-            and  if(length(a.GET_STAGE),a.GET_STAGE,'6')!='3'
+            and if(length(a.GET_STAGE),a.GET_STAGE,'6')!='3'
         </if>
         <if test='commonQry.targetFlag!=null and commonQry.targetFlag=="1"'>
             and a.GET_STAGE='3'
@@ -308,7 +312,8 @@
         group by CONCAT(PRODUCT_ID,'|',if(length(SKU_ID),SKU_ID,'EMPTY'))
     </select>
 
-    <select id="findUnlimitedProductCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
+    <select id="findUnlimitedProductCoupon"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
        select *
         from TB_PRODUCT_COUPON a
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
@@ -355,9 +360,10 @@
             exists(select 1 from TB_COUPON_REF_PRODUCT b
             where b.COUPON_ID = a.UUID
             and b.PRODUCT_ID =#{productId,jdbcType=VARCHAR}
-        <if test="skuId!=null and skuId!=''">
-            and b.SKU_ID =#{skuId,jdbcType=VARCHAR})
-        </if>
+            <if test="skuId!=null and skuId!=''">
+                and b.SKU_ID =#{skuId,jdbcType=VARCHAR}
+            </if>
+                )
             )
         </if>
         <if test="couponType!=null and couponType!=''">
