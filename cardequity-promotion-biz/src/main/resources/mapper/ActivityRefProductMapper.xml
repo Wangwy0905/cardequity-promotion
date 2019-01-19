@@ -21,8 +21,9 @@
         and a.SKU_ID=#{productId,jdbcType=VARCHAR}
     </select>
 
-    <select id="findReProductBylist"  resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity">
-        SELECT *
+    <select id="findReProductBylist"  resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">
+        SELECT CONCAT(PRODUCT_ID,'|',if(length(a.SKU_ID),a.SKU_ID,'EMPTY')) as gatherItem,
+        COUNT(*) as gatherValue
         FROM TB_ACTIVITY_REF_PRODUCT a
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.ACTIVITY_ID!=#{activity.uuid,jdbcType=VARCHAR}
@@ -34,10 +35,10 @@
               and NOT (b.ALLOW_USE_END_DATE &lt; #{activity.allowUseBeginDate,jdbcType=DATE}
                   OR b.ALLOW_USE_BEGIN_DATE &gt; #{activity.allowUseEndDate,jdbcType=DATE})
         )
-        AND CONCAT(PRODUCT_ID,if(length(a.SKU_ID),a.SKU_ID,'UNKNOW')) IN
+        AND PRODUCT_ID IN
         <foreach collection="list" item="product" index="index"
                  open="(" close=")" separator=",">
-                CONCAT(#{product.productId},if(length(#{product.skuId}),#{product.skuId},'UNKNOW'))
+                #{product.productId}
         </foreach>
     </select>
 

@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -38,13 +39,13 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
                                       @Param("skuId") String skuId);
 
     /**
-     * 查询商品在其他活动中配置信息：用于检查是否一个商品配置了两个活动
+     * 查询商品在其他活动中配置信息：用于检查是否一个商品配置了两个活动,不维护了，改用其他方式判断
      * @param list
      * @param activity
      * @return
      */
-    List<ActivityRefProductEntity> findReProductBylist(@Param("list") List<BaseProductReq> list,
-                                                 @Param("activity") ActivityProfitDto activity);
+    List<GatherInfoRsp> findReProductBylist(@Param("list") List<BaseProductReq> list,
+                                            @Param("activity") ActivityProfitDto activity);
 
     /**
      * 通过活动编号物理删除适用商品

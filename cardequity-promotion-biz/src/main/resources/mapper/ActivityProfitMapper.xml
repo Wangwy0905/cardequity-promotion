@@ -375,10 +375,10 @@
         and a.ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '0'
-        and CONCAT(PRODUCT_ID,'|',if(length(SKU_ID),SKU_ID,'EMPTY')) IN
+        and PRODUCT_ID IN
         <foreach collection="productList" item="product" index="index"
                  open="(" close=")" separator=",">
-            CONCAT(#{product.productId},'|',if(length(#{product.skuId}),#{product.skuId},'EMPTY'))
+            #{product.productId}
         </foreach>
         group by CONCAT(PRODUCT_ID,'|',if(length(SKU_ID),SKU_ID,'EMPTY'))
     </select>
