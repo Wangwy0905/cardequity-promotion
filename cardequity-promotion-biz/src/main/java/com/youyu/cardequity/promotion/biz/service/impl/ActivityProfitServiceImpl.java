@@ -42,9 +42,7 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 
 /**
  * 代码生成器
- *
- * @author 技术平台
- * @date 2018-12-07
+ * <p>
  * 开发日志
  * V1.0-V1 1004244-徐长焕-20181207 新建，实现可参与活动列表
  */
@@ -87,19 +85,20 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<ActivityDetailDto> result = new ArrayList<>();
 
         //获取普通活动列表
-        List<ActivityProfitEntity> activityList = null;
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())) {
-            activityList = activityProfitMapper.findEnableGetCommonFirstActivity(req.getProductId(),
+            List<ActivityProfitEntity> activityList = activityProfitMapper.findEnableGetCommonFirstActivity(req.getProductId(),
                     req.getClientType(),
                     req.getEntrustWay());
+            //将其使用门槛阶梯与活动主信息组装后返回
+            result.addAll(combinationActivity(activityList));
         } else {
-            activityList = activityProfitMapper.findEnableGetCommonActivity(req.getProductId(),
+            List<ActivityProfitEntity> activityList = activityProfitMapper.findEnableGetCommonActivity(req.getProductId(),
                     req.getClientType(),
                     req.getEntrustWay());
+            //将其使用门槛阶梯与活动主信息组装后返回
+            result.addAll(combinationActivity(activityList));
         }
 
-        //将其使用门槛阶梯与活动主信息组装后返回
-        result.addAll(combinationActivity(activityList));
 
         return result;
     }
@@ -107,8 +106,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     /**
      * 订单预生成时使用活动详情
      *
-     * @param req
-     * @return
+     * @param req 请求体
+     * @return  使用详情
      */
     @Override
     public List<UseActivityRsp> combActivityRefProductDeal(GetUseEnableCouponReq req) {
@@ -165,8 +164,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     /**
      * 新增活动
      *
-     * @param req
-     * @return
+     * @param req 批量活动详情
+     * @return 批量活动详情
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -522,7 +521,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> batchDelActivity(BatchBaseActivityReq req) {
-        CommonBoolDto<Integer> result = new CommonBoolDto<Integer>(true);
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
         if (req == null || req.getBaseActivityList() == null || req.getBaseActivityList().isEmpty()) {
             result.setSuccess(false);
             result.setData(0);
@@ -615,8 +614,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     /**
      * 【后台】获取商品活动优惠价
      *
-     * @param req
-     * @return 开发日志
+     * @param req 商品编号
+     * @return 活动详情
+     * 开发日志
      * 1004258-徐长焕-20181226 新建
      */
     @Override
@@ -666,17 +666,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     /**
      * 获取商品有效的优惠价活动（排除了已达额度的活动）
      *
-     * @param req
-     * @return 开发日志
+     * @param req 商品编号
+     * @return 活动详情
+     * 开发日志
      * 1004258-徐长焕-20181226 新建
      */
     @Override
     public List<ActivityDetailDto> findValidActivityPrice(BaseProductReq req) {
 
         List<ActivityProfitEntity> entities = activityProfitMapper.findValidPriceActivityByProduct(req.getProductId(), req.getSkuId());
-
-        List<ActivityDetailDto> result = combinationActivity(entities);
-        return result;
+        return combinationActivity(entities);
     }
 
     /**
@@ -796,7 +795,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         if (activityList == null || activityList.isEmpty()) return new ArrayList<>();
 
         Map<String, ActivityDetailDto> result = new HashedMap();
-        List<String> labelIdList =new ArrayList<>();
+        List<String> labelIdList = new ArrayList<>();
         for (ActivityProfitEntity item : activityList) {
             ActivityDetailDto detailDto = new ActivityDetailDto();
 
@@ -804,7 +803,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             ActivityProfitDto activityProfit = BeanPropertiesUtils.copyProperties(item, ActivityProfitDto.class);
             detailDto.setActivityProfit(activityProfit);
 
-            if (!StringUtil.isEmpty(item.getActivityLable())){
+            if (!StringUtil.isEmpty(item.getActivityLable())) {
                 activityProfit.setLabelDto(new CouponAndActivityLabelDto());
                 activityProfit.getLabelDto().setId(item.getActivityLable());
                 labelIdList.add(item.getActivityLable());
@@ -816,9 +815,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         //获取指定活动的使用门槛阶梯
         List<ActivityStageCouponEntity> stageList = activityStageCouponMapper.findActivityProfitDetailByIds(idList);
         for (ActivityStageCouponEntity item : stageList) {
-            if (result.containsKey(item.getActivityId())){
-                ActivityDetailDto detailDto =result.get(item.getActivityId());
-                if (detailDto.getStageList()==null){
+            if (result.containsKey(item.getActivityId())) {
+                ActivityDetailDto detailDto = result.get(item.getActivityId());
+                if (detailDto.getStageList() == null) {
                     detailDto.setStageList(new ArrayList<>());
                 }
                 detailDto.getStageList().add(BeanPropertiesUtils.copyProperties(item, ActivityStageCouponDto.class));
@@ -827,7 +826,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         //获取额度
         List<ActivityQuotaRuleEntity> quotaRuleEntityList = activityQuotaRuleMapper.findActivityQuotaRuleByIds(idList);
-        for (ActivityQuotaRuleEntity item:quotaRuleEntityList){
+        for (ActivityQuotaRuleEntity item : quotaRuleEntityList) {
 
             ActivityQuotaRuleDto quotaRuleDto = BeanPropertiesUtils.copyProperties(item, ActivityQuotaRuleDto.class);
             if (result.containsKey(item.getActivityId())) {
@@ -838,9 +837,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         //获取标签
         if (!labelIdList.isEmpty()) {
             List<CouponAndActivityLabelEntity> labelEntityList = couponAndActivityLabelMapper.findLabelByIds(labelIdList);
-            for (CouponAndActivityLabelEntity item:labelEntityList) {
-                for (ActivityDetailDto dto:result.values()){
-                    if (dto.getActivityProfit().getLabelDto()!=null && item.getId().equals(dto.getActivityProfit().getLabelDto().getId())){
+            for (CouponAndActivityLabelEntity item : labelEntityList) {
+                for (ActivityDetailDto dto : result.values()) {
+                    if (dto.getActivityProfit().getLabelDto() != null && item.getId().equals(dto.getActivityProfit().getLabelDto().getId())) {
                         dto.getActivityProfit().setLabelDto(BeanPropertiesUtils.copyProperties(item, CouponAndActivityLabelDto.class));
                     }
                 }
@@ -850,7 +849,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         //获取适用商品
         List<ActivityRefProductEntity> refProductEntities = activityRefProductMapper.findByActivityIds(idList);
-        for (ActivityRefProductEntity item:refProductEntities) {
+        for (ActivityRefProductEntity item : refProductEntities) {
             if (result.containsKey(item.getActivityId())) {
                 ActivityDetailDto detailDto = result.get(item.getActivityId());
                 if (detailDto.getProductList() == null) {
@@ -909,8 +908,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     /**
      * 查询活动特价
      *
-     * @param req
-     * @return
+     * @param req 商品编号
+     * @return 特价基础信息列表
      */
     @Override
     public List<BasePriceActivityRsp> findActivityPriceValue(BaseProductReq req) {
@@ -939,10 +938,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
 
     /**
-     *上架活动
+     * 上架活动
      *
-     * @param req
-     * @return
+     * @param req 批量活动编号
+     * @return 执行数量
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -951,32 +950,32 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         result.setData(0);
         result.setDesc("");
 
-        if (req==null || req.getBaseActivityList()!=null || req.getBaseActivityList().isEmpty()){
-            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("必须指定一个活动"));
+        if (req == null || req.getBaseActivityList() != null || req.getBaseActivityList().isEmpty()) {
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("必须指定一个活动"));
         }
 
         List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByIds(req);
-        List<ActivityProfitEntity> dealList=new ArrayList<>();
-        for (ActivityProfitEntity item:entities){
-            if (CouponStatus.YES.getDictValue().equals(item.getStatus())){
-                result.setDesc(result.getDesc()+item.getId()+"状态已上架，无需处理|");
+        List<ActivityProfitEntity> dealList = new ArrayList<>();
+        for (ActivityProfitEntity item : entities) {
+            if (CouponStatus.YES.getDictValue().equals(item.getStatus())) {
+                result.setDesc(result.getDesc() + item.getId() + "状态已上架，无需处理|");
                 continue;
             }
             item.setStatus(CouponStatus.YES.getDictValue());
             item.setUpdateAuthor(req.getOperator());
             item.setRemark("上架活动");
-            result.setData(result.getData()+1);
+            result.setData(result.getData() + 1);
         }
 
-        batchService.batchDispose(dealList,ActivityProfitMapper.class,"updateByPrimaryKeySelective");
+        batchService.batchDispose(dealList, ActivityProfitMapper.class, "updateByPrimaryKeySelective");
         return result;
     }
 
     /**
      * 下架活动
      *
-     * @param req
-     * @return
+     * @param req 批量活动编号
+     * @return 执行数量
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -985,24 +984,24 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         result.setData(0);
         result.setDesc("");
 
-        if (req==null || req.getBaseActivityList()!=null || req.getBaseActivityList().isEmpty()){
-            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("必须指定一个活动"));
+        if (req == null || req.getBaseActivityList() != null || req.getBaseActivityList().isEmpty()) {
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("必须指定一个活动"));
         }
 
         List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByIds(req);
-        List<ActivityProfitEntity> dealList=new ArrayList<>();
-        for (ActivityProfitEntity item:entities){
-            if (!CouponStatus.YES.getDictValue().equals(item.getStatus())){
-                result.setDesc(result.getDesc()+item.getId()+"状态已下架，无需处理|");
+        List<ActivityProfitEntity> dealList = new ArrayList<>();
+        for (ActivityProfitEntity item : entities) {
+            if (!CouponStatus.YES.getDictValue().equals(item.getStatus())) {
+                result.setDesc(result.getDesc() + item.getId() + "状态已下架，无需处理|");
                 continue;
             }
             item.setStatus(CouponStatus.NO.getDictValue());
             item.setUpdateAuthor(req.getOperator());
             item.setRemark("下架活动");
-            result.setData(result.getData()+1);
+            result.setData(result.getData() + 1);
         }
 
-        batchService.batchDispose(dealList,ActivityProfitMapper.class,"updateByPrimaryKeySelective");
+        batchService.batchDispose(dealList, ActivityProfitMapper.class, "updateByPrimaryKeySelective");
         return result;
 
     }

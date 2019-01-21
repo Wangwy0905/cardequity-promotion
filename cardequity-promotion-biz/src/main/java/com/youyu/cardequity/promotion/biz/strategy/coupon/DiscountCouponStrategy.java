@@ -25,8 +25,6 @@ import java.util.List;
 @Component
 public class DiscountCouponStrategy extends CouponStrategy {
 
-    @Autowired
-    private CouponRefProductMapper couponRefProductMapper;
 
     @Override
     public UseCouponRsp applyCoupon(ClientCouponEntity clientCoupon, ProductCouponEntity coupon, List<OrderProductDetailDto> productList) {

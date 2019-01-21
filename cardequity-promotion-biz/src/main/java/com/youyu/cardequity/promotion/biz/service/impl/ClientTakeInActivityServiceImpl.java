@@ -104,7 +104,7 @@ public class ClientTakeInActivityServiceImpl extends AbstractService<String, Cli
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> cancelTakeInActivity(BaseOrderInPromotionReq req) {
-        CommonBoolDto<Integer> result = new CommonBoolDto(true);
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
         int i = clientTakeInActivityMapper.modRecoverByOrderinfo(req);
         result.setData(i);
         return result;

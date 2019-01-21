@@ -247,7 +247,7 @@ public class DiscountStrategy extends ActivityStrategy {
                 //本次计算满足门槛数量
                 product.setProfitCount(BigDecimal.ZERO);
                 applyNum = product.getAppCount();
-                oldApplyNum = applyNum;
+                //oldApplyNum = applyNum;
                 applyNum = GetFinalEnableQuota(quota,
                         clientQuotaDto,
                         allQuotaDto,
@@ -301,7 +301,7 @@ public class DiscountStrategy extends ActivityStrategy {
      * @param stage           适用的阶段
      * @param rsp             需要更新的活动适用总体详情
      * @param temproductLsit  需要更新的适用商品列表
-     * @return
+     * @return 订单商品详情
      */
     private List<OrderProductDetailDto> calculationProfitAmount(OrderProductDetailDto product,
                                                                 BigDecimal applyNum,
@@ -348,7 +348,7 @@ public class DiscountStrategy extends ActivityStrategy {
      * @param amountCondition 达到该买入金额的条件，此活动才生效，计算时需要转换为对应优惠金额和限额比较
      * @param applyNum        适用数量初始值：需校验的值
      * @param discount        折扣值
-     * @return
+     * @return 适用数量
      */
     private BigDecimal GetFinalEnableQuota(ActivityQuotaRuleEntity quota,
                                            ClientCoupStatisticsQuotaDto clientQuotaDto,

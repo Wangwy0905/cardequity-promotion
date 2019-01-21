@@ -128,7 +128,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     for (ShortCouponDetailDto shortItem : shortStageList) {
                         if (stageItem.getUuid().equals(shortItem.getStageId())) {
                             isExsit = true;
-                            shortStageList.remove(stageItem);//线程安全
+                            shortStageList.remove(shortItem);//线程安全
                             break;
                         }
                     }
@@ -175,8 +175,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     /**
      * 添加优惠券
      *
-     * @param req
-     * @return
+     * @param req 优惠券详情
+     * @return 执行数量
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -252,7 +252,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             return result;
         }
 
-        if (CouponType.FREETRANSFERFARE.equals(dto.getCouponType()) || CouponType.TRANSFERFARE.equals(dto.getCouponType())) {
+        if (CouponType.FREETRANSFERFARE.getDictValue().equals(dto.getCouponType()) || CouponType.TRANSFERFARE.getDictValue().equals(dto.getCouponType())) {
             dto.setCouponLevel(CouponActivityLevel.GLOBAL.getDictValue());
             dto.setApplyProductFlag(ApplyProductFlag.ALL.getDictValue());
         } else if (dto.getCouponLevel() == null) {
@@ -265,7 +265,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             return result;
         }
 
-        if (CouponStrategyType.discount.equals(dto.getCouponStrategyType())) {
+        if (CouponStrategyType.discount.getDictValue().equals(dto.getCouponStrategyType())) {
             if (BigDecimal.ONE.compareTo(dto.getProfitValue()) <= 0) {
                 result.setDesc("折扣优惠券优惠折扣不能高于1，参数值" + dto.getProfitValue());
                 return result;
@@ -294,15 +294,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         dto.setId(stageWorker.nextId() + "");
 
         //【处理阶梯】
-        if (req.getStageList() != null && req.getStageList().size() <= 0) {
-//            if (!CouponType.TRANSFERFARE.getDictValue().equals(dto.getCouponType()) && !CouponType.FREETRANSFERFARE.getDictValue().equals(dto.getCouponType())) {
-//                //从普通消费券分化出有门槛和无门槛优惠券
-//                if (CouponStrategyType.stage.equals(dto.getCouponStrategyType())) {
-//                    dto.setCouponStrategyType(CouponStrategyType.fix.getDictValue());
-//                    dto.setCouponType(CouponType.MONEYBAG.getDictValue());
-//                }
-//            }
-        } else {
+        if (req.getStageList() != null && !req.getStageList().isEmpty()) {
+
             //组装子券信息
             for (CouponStageRuleDto stage : req.getStageList()) {
                 if (stage.getBeginValue() == null)
@@ -401,8 +394,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     /**
      * 编辑优惠券
      *
-     * @param req
-     * @return
+     * @param req 优惠券详情
+     * @return 执行数量
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -465,7 +458,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //运费券的登记为全局
-        if (CouponType.FREETRANSFERFARE.equals(dto.getCouponType()) || CouponType.TRANSFERFARE.equals(dto.getCouponType())) {
+        if (CouponType.FREETRANSFERFARE.getDictValue().equals(dto.getCouponType()) || CouponType.TRANSFERFARE.getDictValue().equals(dto.getCouponType())) {
             dto.setCouponLevel(CouponActivityLevel.GLOBAL.getDictValue());
             dto.setApplyProductFlag(ApplyProductFlag.ALL.getDictValue());
         } else {
@@ -482,7 +475,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //折扣的值必须在(0,1)之间
-        if (CouponStrategyType.discount.equals(dto.getCouponStrategyType())) {
+        if (CouponStrategyType.discount.getDictValue().equals(dto.getCouponStrategyType())) {
             if (BigDecimal.ONE.compareTo(dto.getProfitValue()) <= 0) {
                 result.setDesc("折扣优惠券优惠折扣不能高于1，参数值" + dto.getProfitValue());
                 return result;
@@ -520,15 +513,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //【处理阶梯】
         //先逻辑删除门槛信息
         couponStageRuleMapper.logicDelByCouponId(dto.getId());
-        if (req.getStageList() != null && req.getStageList().size() <= 0) {
-//            if (!CouponType.TRANSFERFARE.getDictValue().equals(dto.getCouponType()) && !CouponType.FREETRANSFERFARE.getDictValue().equals(dto.getCouponType())) {
-//                //从普通消费券分化出有门槛和无门槛优惠券
-//                if (CouponStrategyType.stage.equals(dto.getCouponStrategyType())) {
-//                    dto.setCouponStrategyType(CouponStrategyType.fix.getDictValue());
-//                    dto.setCouponType(CouponType.MONEYBAG.getDictValue());
-//                }
-//            }
-        } else {
+        if (req.getStageList() != null && !req.getStageList().isEmpty()) {
             //组装子券信息
             for (CouponStageRuleDto stage : req.getStageList()) {
                 CouponStageRuleEntity stageRuleEntity = new CouponStageRuleEntity();
@@ -659,13 +644,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     /**
      * 批量删除优惠券
      *
-     * @param req
-     * @return
+     * @param req 批量优惠券编号
+     * @return 执行情况
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> batchDelCoupon(BatchBaseCouponReq req) {
-        CommonBoolDto<Integer> result = new CommonBoolDto<Integer>(false);
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
         if (req.getBaseCouponList() == null || req.getBaseCouponList().size() <= 0) {
             result.setDesc("没有指定删除的优惠券");
             return result;
@@ -703,8 +688,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     /**
      *上架优惠券
      *
-     * @param req
-     * @return
+     * @param req 批量优惠券编号
+     * @return 执行情况
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -741,8 +726,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     /**
      * 下架优惠券
      *
-     * @param req
-     * @return
+     * @param req 批量优惠券编号
+     * @return 执行情况
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -782,8 +767,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     /**
      * 【上架且有效期内的】查看商品对应优惠券列表
      *
-     * @param req
-     * @return
+     * @param req 商品编号
+     * @return 优惠券详情列表
      */
     @Override
     public List<CouponDetailDto> findCouponListByProduct(BaseProductReq req) {
@@ -798,15 +783,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 couponList.add(couponEntity);
             }
         }
-        List<CouponDetailDto> dtoList = combinationCoupon(couponList);
-        return dtoList;
+        return combinationCoupon(couponList);
     }
 
     /**
      * 查询所有优惠券列表
      *
-     * @param req
-     * @return
+     * @param req 请求体
+     * @return 分页优惠券详情
      */
     @Override
     public CouponPageQryRsp findCouponListByCommon(BaseQryCouponReq req) {

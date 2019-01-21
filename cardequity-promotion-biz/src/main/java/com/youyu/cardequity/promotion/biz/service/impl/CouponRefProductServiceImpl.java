@@ -56,7 +56,7 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
         }
 
 
-        CommonBoolDto<Integer> dto = new CommonBoolDto(true);
+        CommonBoolDto<Integer> dto = new CommonBoolDto<>(true);
         List<CouponRefProductEntity> productList = new ArrayList<>();
         //【配置适用商品】:传入了代表着需要更新配置
         if (req.getProductList() != null) {
@@ -107,11 +107,9 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
 
         List<ProductCouponEntity> entities = productCouponMapper.findUnlimitedProductCoupon();
         if (!entities.isEmpty()){
-            boolean isExist=false;
-            String key="";
             for (BaseProductReq item:req.getProductList()){
-                isExist=false;
-                key=item.getProductId()+(CommonUtils.isEmptyorNull(item.getSkuId())?"|EMPTY":"|"+item.getSkuId());
+                boolean isExist=false;
+                String key=item.getProductId()+(CommonUtils.isEmptyorNull(item.getSkuId())?"|EMPTY":"|"+item.getSkuId());
                 for (GatherInfoRsp gather:result){
                      //如果有统计数量的加上无产品限制的数量
                       if (key.equals(gather.getGatherItem())){

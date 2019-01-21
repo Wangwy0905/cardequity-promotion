@@ -75,7 +75,7 @@ public abstract class CouponStrategy {
      */
     public boolean checkCouponForProduct(ProductCouponEntity coupon, String productId) {
         // ApplyProductFlag空值做保护
-        if (!ApplyProductFlag.ALL.equals(coupon.getApplyProductFlag())) {
+        if (!ApplyProductFlag.ALL.getDictValue().equals(coupon.getApplyProductFlag())) {
             //该商品属性是否允许领取该券
             CouponRefProductEntity entity = couponRefProductMapper.findByBothId(coupon.getId(), productId);
             if (entity == null) {

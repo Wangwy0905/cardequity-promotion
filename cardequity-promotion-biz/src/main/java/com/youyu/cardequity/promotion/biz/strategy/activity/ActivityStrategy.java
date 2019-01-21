@@ -154,7 +154,7 @@ public abstract class ActivityStrategy {
      */
     CommonBoolDto<ClientCoupStatisticsQuotaDto> checkActivityPersonQuota(ActivityQuotaRuleEntity quota,
                                                                          String clientId) {
-        CommonBoolDto dto = new CommonBoolDto(true);
+        CommonBoolDto<ClientCoupStatisticsQuotaDto> dto = new CommonBoolDto<>(true);
         //存在规则才进行校验
         /**
          * 每客每天最大优惠额
@@ -251,7 +251,7 @@ public abstract class ActivityStrategy {
      * 1004258-徐长焕-20181213 新增
      */
     CommonBoolDto<ClientCoupStatisticsQuotaDto> checkActivityAllQuota(ActivityQuotaRuleEntity quota) {
-        CommonBoolDto dto = new CommonBoolDto(true);
+        CommonBoolDto<ClientCoupStatisticsQuotaDto> dto = new CommonBoolDto<>(true);
 
         if (quota != null) {
                 ClientCoupStatisticsQuotaDto  statisticsQuotaDto = statisticsCouponQuota("", quota.getActivityId(), "");

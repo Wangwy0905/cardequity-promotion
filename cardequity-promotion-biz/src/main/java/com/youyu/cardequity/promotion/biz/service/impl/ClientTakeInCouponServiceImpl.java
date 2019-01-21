@@ -127,7 +127,7 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto cancelOrderCouponAndActivityDeal(BaseOrderInPromotionReq req) {
-        CommonBoolDto result = new CommonBoolDto(true);
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
         if (req == null || CommonUtils.isEmptyorNull(req.getOrderId()))
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("参数为空"));
 
@@ -135,10 +135,10 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
         Integer i = clientCouponService.cancelTakeInCoupon(req).getData();
 
         //撤销优惠券使用记录
-        i = i.intValue() + clientTakeInCouponMapper.modRecoverByOrderinfo(req);
+        i = i + clientTakeInCouponMapper.modRecoverByOrderinfo(req);
 
         //撤销活动使用记录
-        i = i.intValue() + clientTakeInActivityService.cancelTakeInActivity(req).getData();
+        i = i + clientTakeInActivityService.cancelTakeInActivity(req).getData();
         result.setData(i);
         return result;
     }

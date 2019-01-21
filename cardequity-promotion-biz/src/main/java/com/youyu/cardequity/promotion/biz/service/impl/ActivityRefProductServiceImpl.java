@@ -25,7 +25,6 @@ import com.youyu.cardequity.promotion.biz.dal.dao.ActivityRefProductMapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 
@@ -51,14 +50,14 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
     /**
      * 【后台】指定活动的商品配置范围和其他活动是否冲突,考虑分页的问题
      *
-     * @param req
-     * @param activity
-     * @return
+     * @param req 商品编号类别
+     * @param activity 活动详情
+     * @return 关联基础信息列表
      */
     @Override
     public CommonBoolDto<List<ActivityRefProductEntity>> checkProductReUse(List<BaseProductReq> req, ActivityProfitDto activity) {
 
-        CommonBoolDto<List<ActivityRefProductEntity>> result = new CommonBoolDto(true);
+        CommonBoolDto<List<ActivityRefProductEntity>> result = new CommonBoolDto<>(true);
         //下架活动无需校验
         if (!CouponStatus.YES.getDictValue().equals(activity.getStatus())) {
             return result;
@@ -137,7 +136,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
     /**
      * 查询除指定活动外已经配置了活动的商品
      *
-     * @return
+     * @return 基础关联信息
      */
     @Override
     public List<ActivityRefProductDto> findAllProductInValidActivity(BaseActivityReq req) {
@@ -149,12 +148,11 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
     /**
      * 查询已经配置了活动的商品
      *
-     * @return
+     * @return 商品编号
      */
     @Override
     public List<BaseProductReq> findProductInValidActivity(FindProductInValidActivityReq req) {
-        List<BaseProductReq> entities = activityRefProductMapper.findProductInValidActivity(req.getStatus(), req.getActivityCouponType());
-        return entities;
+        return activityRefProductMapper.findProductInValidActivity(req.getStatus(), req.getActivityCouponType());
     }
 
     /**
@@ -169,15 +167,14 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定活动"));
 
         List<ActivityRefProductEntity> refProductEntities = activityRefProductMapper.findByActivityId(req.getActivityId());
-        List<BaseProductReq> result = BeanPropertiesConverter.copyPropertiesOfList(refProductEntities, BaseProductReq.class);
-        return result;
+        return BeanPropertiesConverter.copyPropertiesOfList(refProductEntities, BaseProductReq.class);
     }
 
     /**
      * 配置活动的商品信息
      *
-     * @param req
-     * @return
+     * @param req 批量商品编号
+     * @return 执行数量
      */
     @Override
     public CommonBoolDto<Integer> batchAddActivityRefProduct(BatchRefProductReq req) {
@@ -234,11 +231,10 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
         List<ActivityProfitEntity> entities = activityProfitMapper.findUnlimitedProductActivity();
         List<GatherInfoRsp> result = new ArrayList<>();
         if (!entities.isEmpty()) {
-            boolean isExist = false;
-            String key = "";
+
             for (BaseProductReq item : req.getProductList()) {
-                isExist = false;
-                key = item.getProductId() + (CommonUtils.isEmptyorNull(item.getSkuId()) ? "|EMPTY" : "|"+item.getSkuId());
+                boolean isExist = false;
+                String key = item.getProductId() + (CommonUtils.isEmptyorNull(item.getSkuId()) ? "|EMPTY" : "|"+item.getSkuId());
 
                 for (GatherInfoRsp gather : firstresult) {
                     if (key.equals(gather.getGatherItem())) {

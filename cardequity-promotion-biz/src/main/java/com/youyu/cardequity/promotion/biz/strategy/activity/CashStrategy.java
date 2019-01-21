@@ -254,7 +254,7 @@ public class CashStrategy extends ActivityStrategy {
      * @param stage          适用阶梯
      * @param rsp            适用总体详情
      * @param temproductLsit 适用商品明细情况
-     * @return
+     * @return 订单商品详情
      */
     private List<OrderProductDetailDto> calculationProfitAmount(OrderProductDetailDto product,
                                                                 BigDecimal applyNum,
@@ -296,7 +296,7 @@ public class CashStrategy extends ActivityStrategy {
      * @param countCondition 达到该数量条件，此活动才生效
      * @param applyNum       适用数量初始值：需校验的值
      * @param profitAmount   本活动满减值
-     * @return
+     * @return 可以适用的数量
      */
     private BigDecimal GetFinalEnableQuota(ActivityQuotaRuleEntity quota,
                                            ClientCoupStatisticsQuotaDto clientQuotaDto,
