@@ -128,6 +128,20 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @return
      */
     List<ActivityDetailDto> findAllActivityByCommon(BaseQryActivityReq req);
+
+    /**
+     * 上架活动
+     * @param req
+     * @return
+     */
+    CommonBoolDto<ActivityProfitDto> upActivity(BaseActivityReq req);
+
+    /**
+     * 下架活动
+     * @param req
+     * @return
+     */
+    CommonBoolDto<ActivityProfitDto> downActivity(BaseActivityReq req);
 }
 
 

@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 
 import com.youyu.cardequity.promotion.api.ActivityProfitApi;
+import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
@@ -228,6 +229,31 @@ public class ActivityProfitController implements ActivityProfitApi {
     @PostMapping(path = "/findAllActivityByCommon")
     public Result<List<ActivityDetailDto>> findAllActivityByCommon(@RequestBody BaseQryActivityReq req) {
         return Result.ok(activityProfitService.findAllActivityByCommon(req));
+    }
+
+    /**
+     * 上架活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【后台】上架活动")
+    @PostMapping(path = "/upActivity")
+    public Result<CommonBoolDto<ActivityProfitDto>> upActivity(@RequestBody BaseActivityReq req){
+        return Result.ok(activityProfitService.upActivity(req));
+    }
+
+    /**
+     * 下架活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【后台】下架活动")
+    @PostMapping(path = "/downActivity")
+    public Result<CommonBoolDto<ActivityProfitDto>> downActivity(@RequestBody BaseActivityReq req){
+        return Result.ok(activityProfitService.downActivity(req));
+
     }
 
 }

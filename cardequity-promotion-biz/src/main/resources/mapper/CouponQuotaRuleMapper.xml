@@ -3,12 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponQuotaRuleMapper">
+
     <select id="findCouponQuotaRuleById"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity">
-select *
-from TB_COUPON_QUOTA_RULE a
-where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-and a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
+        select *
+        from TB_COUPON_QUOTA_RULE a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
     </select>
 
     <update id="logicDelByCouponId" parameterType="string">
@@ -17,4 +18,16 @@ and a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND COUPON_ID=#{couponId,jdbcType=VARCHAR}
     </update>
+
+    <select id="findCouponQuotaRuleByIds"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity">
+        select *
+        from TB_COUPON_QUOTA_RULE a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.COUPON_ID IN
+        <foreach collection="idList" item="idstr" index="index"
+                 open="(" close=")" separator=",">
+            #{idstr}
+        </foreach>
+    </select>
 </mapper>

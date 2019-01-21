@@ -47,6 +47,15 @@ public interface CouponGetOrUseFreqRuleMapper extends YyMapper<CouponGetOrUseFre
      */
     int deleteByCouponId(@Param("couponId") String couponId);
 
+
+    /**
+     * 查询频率使用规则
+     * @param idList
+     * @return
+     */
+    List<CouponGetOrUseFreqRuleEntity> findByCouponIds(@Param("idList") List<String> idList);
+
+
 }
 
 

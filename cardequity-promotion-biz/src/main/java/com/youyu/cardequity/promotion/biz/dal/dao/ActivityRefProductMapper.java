@@ -82,6 +82,13 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
      */
     List<BaseProductReq> findProductInValidActivity(@Param("status") String status,@Param("activityCouponType") String activityCouponType);
 
+    /**
+     * 通过活动编号获得配置的商品
+     * @param idList
+     * @return
+     */
+    List<ActivityRefProductEntity> findByActivityIds(@Param("idList") List<String> idList);
+
 }
 
 

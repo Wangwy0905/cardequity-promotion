@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.api;
 
 
+import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
@@ -184,4 +185,22 @@ public interface ActivityProfitApi {
     @ApiOperation(value = "【后台】通用查询（不分页）活动列表")
     @PostMapping(path = "/findAllActivityByCommon")
     Result<List<ActivityDetailDto>> findAllActivityByCommon(@RequestBody BaseQryActivityReq req);
+
+    /**
+     * 上架活动
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【后台】上架活动")
+    @PostMapping(path = "/upActivity")
+     Result<CommonBoolDto<ActivityProfitDto>> upActivity(@RequestBody BaseActivityReq req);
+
+    /**
+     * 下架活动
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【后台】下架活动")
+    @PostMapping(path = "/downActivity")
+    Result<CommonBoolDto<ActivityProfitDto>> downActivity(@RequestBody BaseActivityReq req);
 }

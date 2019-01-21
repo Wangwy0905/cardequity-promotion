@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.api;
 
 
+import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
@@ -135,6 +136,23 @@ public interface ProductCouponApi {
     @PostMapping(path = "/findGatherCouponByCommon")
     Result<List<GatherInfoRsp>> findGatherCouponByCommon(@RequestBody BaseQryCouponReq req);
 
+    /**
+     * 【后台】上架优惠券
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【后台】上架优惠券")
+    @PostMapping(path = "/upCoupon")
+     Result<CommonBoolDto<ProductCouponDto>> upCoupon(@RequestBody BaseCouponReq req);
 
+
+    /**
+     * 【后台】下架优惠券
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【后台】下架优惠券")
+    @PostMapping(path = "/downCoupon")
+     Result<CommonBoolDto<ProductCouponDto>> downCoupon(@RequestBody BaseCouponReq req);
 
 }

@@ -89,4 +89,14 @@
 
     </select>
 
+    <select id="findByActivityIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityRefProductEntity">
+        SELECT * FROM TB_ACTIVITY_REF_PRODUCT a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.ACTIVITY_ID IN
+        <foreach collection="idList" item="idstr" index="index"
+                 open="(" close=")" separator=",">
+            #{idstr}
+        </foreach>
+    </select>
+
 </mapper>

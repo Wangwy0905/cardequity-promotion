@@ -89,4 +89,14 @@
         DELETE FROM TB_COUPON_GET_OR_USE_FREQ_RULE
         WHERE COUPON_ID=#{couponId,jdbcType=VARCHAR}
     </update>
+
+    <select id="findByCouponIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponGetOrUseFreqRuleEntity">
+        SELECT * FROM TB_COUPON_GET_OR_USE_FREQ_RULE a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND COUPON_ID IN
+        <foreach collection="idList" item="idstr" index="index"
+                 open="(" close=")" separator=",">
+            #{idstr}
+        </foreach>
+    </select>
 </mapper>

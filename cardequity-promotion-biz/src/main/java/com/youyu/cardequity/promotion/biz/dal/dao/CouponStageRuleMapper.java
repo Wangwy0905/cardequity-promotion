@@ -25,6 +25,15 @@ public interface CouponStageRuleMapper extends YyMapper<CouponStageRuleEntity> {
 
 
     /**
+     * 通过优惠券id查询优惠券详细阶梯信息列表
+     *
+     * @param idList 优惠券ID集合
+     * @return
+     */
+    List<CouponStageRuleEntity> findStageByCouponIds(@Param("idList") List<String> idList);
+
+
+    /**
      * 根据指定券的阶梯Id，获取到券的阶梯信息
      *
      * @param stageId  优惠券阶梯id，必传

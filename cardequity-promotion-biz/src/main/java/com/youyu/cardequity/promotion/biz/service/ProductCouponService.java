@@ -63,14 +63,14 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param req
      * @return
      */
-    CommonBoolDto<ProductCouponDto> startGetCoupon(BaseCouponReq req);
+    CommonBoolDto<ProductCouponDto> upCoupon(BaseCouponReq req);
 
     /**
-     * 结束发放
+     * 下架
      * @param req
      * @return
      */
-    CommonBoolDto<ProductCouponDto> stopGetCoupon(BaseCouponReq req);
+    CommonBoolDto<ProductCouponDto> downCoupon(BaseCouponReq req);
 
     /**
      * 查看商品对应优惠券列表
@@ -119,6 +119,14 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @return
      */
     List<CouponDetailDto> findCouponListByIds(List<String> req);
+
+    /**
+     * 拼装优惠券详情
+     *
+     * @param entities 优惠券主体列表
+     * @return 优惠券详情：含限额、频率、子券信息
+     */
+    List<CouponDetailDto> combinationCoupon(List<ProductCouponEntity> entities);
 
     /**
      * 拼装优惠券详情数据

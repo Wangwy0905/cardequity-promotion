@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.controller;
 
 
 import com.youyu.cardequity.promotion.api.ProductCouponApi;
+import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.*;
@@ -172,7 +173,30 @@ public class ProductCouponController implements ProductCouponApi {
         return Result.ok(productCouponService.findGatherCouponByCommon(req));
     }
 
+    /**
+     * 【后台】上架优惠券
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【后台】上架优惠券")
+    @PostMapping(path = "/upCoupon")
+    public Result<CommonBoolDto<ProductCouponDto>> upCoupon(@RequestBody BaseCouponReq req){
+        return Result.ok(productCouponService.upCoupon(req));
 
+    }
+
+    /**
+     * 【后台】下架优惠券
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【后台】下架优惠券")
+    @PostMapping(path = "/downCoupon")
+    public Result<CommonBoolDto<ProductCouponDto>> downCoupon(@RequestBody BaseCouponReq req){
+        return Result.ok(productCouponService.downCoupon(req));
+    }
 
 
 }

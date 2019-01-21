@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
+import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
@@ -27,6 +28,7 @@ import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,7 +133,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         } else {
 
             //获取普通活动列表
-            activityList = activityProfitMapper.findEnableGetCommonActivity("", req.getClientType(),req.getEntrustWay());
+            activityList = activityProfitMapper.findEnableGetCommonActivity("", req.getClientType(), req.getEntrustWay());
         }
 
 
@@ -141,8 +143,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         //循环活动进行计算优惠金额，优先顺序为：任选->折扣->满减
         for (ActivityProfitEntity item : activityList) {
             //校验基本信息：有效期的、商品属性、订单属性、支付属性、上架状态
-            boolDto=checkActivityBase(item, req);
-            if (!boolDto.getSuccess()){
+            boolDto = checkActivityBase(item, req);
+            if (!boolDto.getSuccess()) {
                 continue;
             }
 
@@ -226,14 +228,14 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             }
 
             //校验特价活动必须指定商品
-            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType()) ) {
+            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
                 if (item.getProductList() == null || item.getProductList().isEmpty() || CommonUtils.isEmptyorNull(item.getProductList().get(0).getProductId())) {
                     throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("特价活动必须指定商品，活动编号" + profit.getId()));
                 }
-                if (item.getProductList().size()>1){
+                if (item.getProductList().size() > 1) {
                     throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("特价活动只能指定一个商品，活动编号" + profit.getId()));
                 }
-                if (CommonUtils.isEmptyorNull(item.getProductList().get(0).getSkuId())){
+                if (CommonUtils.isEmptyorNull(item.getProductList().get(0).getSkuId())) {
                     profit.setStatus(CouponStatus.NO.getDictValue());
                 }
             }
@@ -389,14 +391,14 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             }
 
             //校验特价活动必须指定商品
-            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType()) ) {
+            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
                 if (item.getProductList() == null || item.getProductList().isEmpty() || CommonUtils.isEmptyorNull(item.getProductList().get(0).getProductId())) {
                     throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("特价活动必须指定商品，活动编号" + profit.getId()));
                 }
-                if (item.getProductList().size()>1){
+                if (item.getProductList().size() > 1) {
                     throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("特价活动只能指定一个商品，活动编号" + profit.getId()));
                 }
-                if (CommonUtils.isEmptyorNull(item.getProductList().get(0).getSkuId())){
+                if (CommonUtils.isEmptyorNull(item.getProductList().get(0).getSkuId())) {
                     profit.setStatus(CouponStatus.NO.getDictValue());
                 }
             }
@@ -611,7 +613,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
 
     /**
-     *  【后台】获取商品活动优惠价
+     * 【后台】获取商品活动优惠价
      *
      * @param req
      * @return 开发日志
@@ -623,9 +625,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductId(req.getProductId(), req.getSkuId());
         if (entities.isEmpty())
             return null;
-        List<ActivityDetailDto> result=new ArrayList<>();
+        List<ActivityDetailDto> result = new ArrayList<>();
         //多个特价活动以最新的为准
-        for (ActivityProfitEntity entity:entities) {
+        for (ActivityProfitEntity entity : entities) {
             result.add(combinationActivity(entity));
         }
         return result;
@@ -641,7 +643,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     public List<ActivityDetailDto> findProductAboutActivity(BaseProductReq req) {
         //查询已上架和有效的
-        List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByProductId(req.getProductId(), req.getSkuId(),"1","1");
+        List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByProductId(req.getProductId(), req.getSkuId(), "1", "1");
         return combinationActivity(entities);
     }
 
@@ -655,7 +657,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     public ActivityDetailDto findActivityById(BaseActivityReq req) {
         ActivityProfitEntity entitie = activityProfitMapper.findById(req.getActivityId());
-        if (entitie==null)
+        if (entitie == null)
             return null;
         return combinationActivity(entitie);
     }
@@ -750,7 +752,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
 
         //是否上架状态
-        if (!CouponStatus.YES.getDictValue().equals(activity.getStatus())){
+        if (!CouponStatus.YES.getDictValue().equals(activity.getStatus())) {
             dto.setSuccess(false);
             return dto;
         }
@@ -782,7 +784,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     }
 
     /**
-     * 组装活动信息（活动主信息+阶梯信息)
+     * 组装活动信息列表（活动主信息+阶梯信息)，避免多次查询
      *
      * @param activityList 活动实体列表
      * @return 活动详情列表：含活动信息、门槛阶梯、额度、配置商品
@@ -791,14 +793,74 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      */
     private List<ActivityDetailDto> combinationActivity(List<ActivityProfitEntity> activityList) {
 
-        if (activityList==null) return null;
+        if (activityList == null || activityList.isEmpty()) return new ArrayList<>();
 
-        List<ActivityDetailDto> result = new ArrayList<>();
+        Map<String, ActivityDetailDto> result = new HashedMap();
+        List<String> labelIdList =new ArrayList<>();
         for (ActivityProfitEntity item : activityList) {
+            ActivityDetailDto detailDto = new ActivityDetailDto();
 
-            result.add(combinationActivity(item));
+            //基本信息转换为传出参数
+            ActivityProfitDto activityProfit = BeanPropertiesUtils.copyProperties(item, ActivityProfitDto.class);
+            detailDto.setActivityProfit(activityProfit);
+
+            if (!StringUtil.isEmpty(item.getActivityLable())){
+                activityProfit.setLabelDto(new CouponAndActivityLabelDto());
+                activityProfit.getLabelDto().setId(item.getActivityLable());
+                labelIdList.add(item.getActivityLable());
+            }
+            result.put(item.getId(), detailDto);
         }
-        return result;
+
+        List<String> idList = new ArrayList<>(result.keySet());
+        //获取指定活动的使用门槛阶梯
+        List<ActivityStageCouponEntity> stageList = activityStageCouponMapper.findActivityProfitDetailByIds(idList);
+        for (ActivityStageCouponEntity item : stageList) {
+            if (result.containsKey(item.getActivityId())){
+                ActivityDetailDto detailDto =result.get(item.getActivityId());
+                if (detailDto.getStageList()==null){
+                    detailDto.setStageList(new ArrayList<>());
+                }
+                detailDto.getStageList().add(BeanPropertiesUtils.copyProperties(item, ActivityStageCouponDto.class));
+            }
+        }
+
+        //获取额度
+        List<ActivityQuotaRuleEntity> quotaRuleEntityList = activityQuotaRuleMapper.findActivityQuotaRuleByIds(idList);
+        for (ActivityQuotaRuleEntity item:quotaRuleEntityList){
+
+            ActivityQuotaRuleDto quotaRuleDto = BeanPropertiesUtils.copyProperties(item, ActivityQuotaRuleDto.class);
+            if (result.containsKey(item.getActivityId())) {
+                result.get(item.getActivityId()).setActivityQuotaRule(quotaRuleDto);
+            }
+        }
+
+        //获取标签
+        if (!labelIdList.isEmpty()) {
+            List<CouponAndActivityLabelEntity> labelEntityList = couponAndActivityLabelMapper.findLabelByIds(labelIdList);
+            for (CouponAndActivityLabelEntity item:labelEntityList) {
+                for (ActivityDetailDto dto:result.values()){
+                    if (dto.getActivityProfit().getLabelDto()!=null && item.getId().equals(dto.getActivityProfit().getLabelDto().getId())){
+                        dto.getActivityProfit().setLabelDto(BeanPropertiesUtils.copyProperties(item, CouponAndActivityLabelDto.class));
+                    }
+                }
+            }
+        }
+
+
+        //获取适用商品
+        List<ActivityRefProductEntity> refProductEntities = activityRefProductMapper.findByActivityIds(idList);
+        for (ActivityRefProductEntity item:refProductEntities) {
+            if (result.containsKey(item.getActivityId())) {
+                ActivityDetailDto detailDto = result.get(item.getActivityId());
+                if (detailDto.getProductList() == null) {
+                    detailDto.setProductList(new ArrayList<>());
+                }
+                detailDto.getProductList().add(BeanPropertiesUtils.copyProperties(item, BaseProductReq.class));
+
+            }
+        }
+        return new ArrayList<>(result.values());
     }
 
     /**
@@ -808,11 +870,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * @return 活动详情：含活动信息、门槛阶梯、额度、配置商品
      */
     private ActivityDetailDto combinationActivity(ActivityProfitEntity entity) {
-        if (entity==null)
+        if (entity == null)
             return null;
 
         ActivityDetailDto result = new ActivityDetailDto();
-
 
         //转换为传出参数
         ActivityProfitDto activityProfit = BeanPropertiesUtils.copyProperties(entity, ActivityProfitDto.class);
@@ -832,7 +893,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
 
         //获取标签
-        if (CommonUtils.isEmptyorNull(entity.getActivityLable())) {
+        if (!CommonUtils.isEmptyorNull(entity.getActivityLable())) {
             CouponAndActivityLabelEntity labelEntity = couponAndActivityLabelMapper.findLabelById(entity.getActivityLable());
             activityProfit.setLabelDto(BeanPropertiesUtils.copyProperties(labelEntity, CouponAndActivityLabelDto.class));
         }
@@ -867,11 +928,85 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         if (req == null)
             req = new BaseQryActivityReq();
 
-      List<ActivityProfitEntity> entities=activityProfitMapper.findActivityListByCommon(req);
+        List<ActivityProfitEntity> entities = activityProfitMapper.findActivityListByCommon(req);
         List<ActivityDetailDto> result = new ArrayList<>();
-        for (ActivityProfitEntity item :entities) {
+        for (ActivityProfitEntity item : entities) {
             ActivityDetailDto dto = combinationActivity(item);
             result.add(dto);
+        }
+        return result;
+    }
+
+
+    /**
+     *上架活动
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonBoolDto<ActivityProfitDto> upActivity(BaseActivityReq req) {
+        CommonBoolDto<ActivityProfitDto> result = new CommonBoolDto<>(false);
+        ActivityProfitEntity entity = activityProfitMapper.findById(req.getActivityId());
+        if (entity != null) {
+            if (CouponStatus.YES.getDictValue().equals(entity.getStatus())){
+                result.setDesc("状态已上架，无需处理");
+                result.setSuccess(true);
+                return result;
+            }
+            entity.setStatus(CouponStatus.YES.getDictValue());
+            entity.setRemark("上架活动");
+            ActivityProfitDto dto = new ActivityProfitDto();
+            int updateresult = activityProfitMapper.updateByPrimaryKeySelective(entity);
+            if (updateresult > 0) {
+                result.setSuccess(true);
+                result.setData(dto);
+            } else {
+                result.setDesc("更新数据失败");
+                return result;
+            }
+        } else {
+            result.setDesc("找不到该活动");
+            return result;
+        }
+        return result;
+    }
+
+    /**
+     * 下架活动
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonBoolDto<ActivityProfitDto> downActivity(BaseActivityReq req) {
+        CommonBoolDto<ActivityProfitDto> result = new CommonBoolDto<>(false);
+        ActivityProfitEntity entity = activityProfitMapper.findById(req.getActivityId());
+        if (entity != null) {
+
+            if (!CouponStatus.YES.getDictValue().equals(entity.getStatus())){
+                result.setDesc("状态已下架，无需处理");
+                result.setSuccess(true);
+                return result;
+            }
+
+            entity.setStatus(CouponStatus.NO.getDictValue());
+            entity.setRemark("下架活动");
+            ActivityProfitDto dto = new ActivityProfitDto();
+            int updateresult = activityProfitMapper.updateByPrimaryKeySelective(entity);
+            if (updateresult > 0) {
+                result.setSuccess(true);
+                result.setData(dto);
+            } else {
+                result.setSuccess(false);
+                result.setDesc("更新数据失败");
+                return result;
+            }
+        } else {
+            result.setDesc("找不到该优惠券");
+            return result;
         }
         return result;
     }

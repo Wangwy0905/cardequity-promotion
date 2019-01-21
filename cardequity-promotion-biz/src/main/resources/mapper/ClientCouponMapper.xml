@@ -192,4 +192,13 @@
         order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
 
+
+    <select id="findAllClientValidCouponCount" resultType="int" >
+        SELECT count(*) FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.status IN ('0','1')
+        AND a.VALID_END_DATE &gt;= curdate()
+    </select>
+
 </mapper>

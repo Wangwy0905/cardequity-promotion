@@ -8,6 +8,17 @@
      WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
      AND a.UUID=#{id,jdbcType=VARCHAR}
     </select>
+
+    <select id="findLabelByIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity">
+        SELECT * FROM TB_COUPON_AND_ACTIVITY_LABEL a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.UUID IN
+        <foreach collection="idList" item="idstr" index="index"
+                 open="(" close=")" separator=",">
+            #{idstr}
+        </foreach>
+    </select>
+
     <select id="findLabelByCommon"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponAndActivityLabelEntity">
         SELECT * FROM TB_COUPON_AND_ACTIVITY_LABEL a

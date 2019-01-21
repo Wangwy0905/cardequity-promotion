@@ -10,6 +10,17 @@
         and a.ACTIVITY_ID=#{id,jdbcType=VARCHAR}
     </select>
 
+    <select id="findActivityQuotaRuleByIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityQuotaRuleEntity">
+        select *
+        from TB_ACTIVITY_QUOTA_RULE a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.ACTIVITY_ID IN
+        <foreach collection="idList" item="idstr" index="index"
+                                      open="(" close=")" separator=",">
+               #{idstr}
+        </foreach>
+    </select>
+
     <update id="logicDelById" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
         UPDATE TB_ACTIVITY_QUOTA_RULE a SET a.IS_ENABLE='0'
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'

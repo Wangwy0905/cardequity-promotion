@@ -24,6 +24,13 @@ public interface  CouponAndActivityLabelMapper extends YyMapper<CouponAndActivit
     CouponAndActivityLabelEntity findLabelById(@Param("id") String id);
 
     /**
+     * 查询指定标签
+     * @param id
+     * @return
+     */
+    List<CouponAndActivityLabelEntity> findLabelByIds(@Param("idList") List<String> idList);
+
+    /**
      * 通用查询
      * @param qryInfo
      * @return

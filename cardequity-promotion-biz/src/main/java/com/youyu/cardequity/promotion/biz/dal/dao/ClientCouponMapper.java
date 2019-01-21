@@ -137,6 +137,12 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
     List<ClientCouponEntity> findClientValidCouponByProduct(@Param("clientId") String clientId,
                                                             @Param("productId") String productId,
                                                             @Param("skuId") String skuId);
+
+    /**
+     * 查询有效的已领取优惠券数量
+     * @return
+     */
+    int findAllClientValidCouponCount();
 }
 
 
