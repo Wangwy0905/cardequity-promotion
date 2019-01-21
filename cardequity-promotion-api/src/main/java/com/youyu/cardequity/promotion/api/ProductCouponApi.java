@@ -143,7 +143,7 @@ public interface ProductCouponApi {
      */
     @ApiOperation(value = "【后台】上架优惠券")
     @PostMapping(path = "/upCoupon")
-     Result<CommonBoolDto<ProductCouponDto>> upCoupon(@RequestBody BaseCouponReq req);
+     Result<CommonBoolDto<Integer>> upCoupon(@RequestBody BatchBaseCouponReq req);
 
 
     /**
@@ -153,6 +153,6 @@ public interface ProductCouponApi {
      */
     @ApiOperation(value = "【后台】下架优惠券")
     @PostMapping(path = "/downCoupon")
-     Result<CommonBoolDto<ProductCouponDto>> downCoupon(@RequestBody BaseCouponReq req);
+     Result<CommonBoolDto<Integer>> downCoupon(@RequestBody BatchBaseCouponReq req);
 
 }

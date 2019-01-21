@@ -239,7 +239,7 @@ public class ActivityProfitController implements ActivityProfitApi {
     @Override
     @ApiOperation(value = "【后台】上架活动")
     @PostMapping(path = "/upActivity")
-    public Result<CommonBoolDto<ActivityProfitDto>> upActivity(@RequestBody BaseActivityReq req){
+    public Result<CommonBoolDto<Integer>> upActivity(@RequestBody BatchBaseActivityReq req){
         return Result.ok(activityProfitService.upActivity(req));
     }
 
@@ -251,7 +251,7 @@ public class ActivityProfitController implements ActivityProfitApi {
     @Override
     @ApiOperation(value = "【后台】下架活动")
     @PostMapping(path = "/downActivity")
-    public Result<CommonBoolDto<ActivityProfitDto>> downActivity(@RequestBody BaseActivityReq req){
+    public Result<CommonBoolDto<Integer>> downActivity(@RequestBody BatchBaseActivityReq req){
         return Result.ok(activityProfitService.downActivity(req));
 
     }

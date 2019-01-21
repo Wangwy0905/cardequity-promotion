@@ -134,14 +134,14 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @param req
      * @return
      */
-    CommonBoolDto<ActivityProfitDto> upActivity(BaseActivityReq req);
+    CommonBoolDto<Integer> upActivity(BatchBaseActivityReq req);
 
     /**
      * 下架活动
      * @param req
      * @return
      */
-    CommonBoolDto<ActivityProfitDto> downActivity(BaseActivityReq req);
+    CommonBoolDto<Integer> downActivity(BatchBaseActivityReq req);
 }
 
 

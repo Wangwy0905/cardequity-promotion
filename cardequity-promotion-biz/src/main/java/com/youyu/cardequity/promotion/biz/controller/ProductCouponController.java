@@ -181,7 +181,7 @@ public class ProductCouponController implements ProductCouponApi {
     @Override
     @ApiOperation(value = "【后台】上架优惠券")
     @PostMapping(path = "/upCoupon")
-    public Result<CommonBoolDto<ProductCouponDto>> upCoupon(@RequestBody BaseCouponReq req){
+    public Result<CommonBoolDto<Integer>> upCoupon(@RequestBody BatchBaseCouponReq req){
         return Result.ok(productCouponService.upCoupon(req));
 
     }
@@ -194,7 +194,7 @@ public class ProductCouponController implements ProductCouponApi {
     @Override
     @ApiOperation(value = "【后台】下架优惠券")
     @PostMapping(path = "/downCoupon")
-    public Result<CommonBoolDto<ProductCouponDto>> downCoupon(@RequestBody BaseCouponReq req){
+    public Result<CommonBoolDto<Integer>> downCoupon(@RequestBody BatchBaseCouponReq req){
         return Result.ok(productCouponService.downCoupon(req));
     }
 

@@ -708,30 +708,33 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CommonBoolDto<ProductCouponDto> upCoupon(BaseCouponReq req) {
-        CommonBoolDto<ProductCouponDto> result = new CommonBoolDto<ProductCouponDto>(false);
-        ProductCouponEntity productCouponById = productCouponMapper.findProductCouponById(req.getCouponId());
-        if (productCouponById != null) {
-            if (CouponStatus.YES.getDictValue().equals(productCouponById.getStatus())){
-                result.setDesc("状态已上架，无需处理");
-                result.setSuccess(true);
-                return result;
-            }
-            productCouponById.setStatus(CouponStatus.YES.getDictValue());
-            productCouponById.setRemark("上架优惠券");
-            ProductCouponDto dto = new ProductCouponDto();
-            int updateresult = productCouponMapper.updateByPrimaryKeySelective(productCouponById);
-            if (updateresult > 0) {
-                result.setSuccess(true);
-                result.setData(dto);
-            } else {
-                result.setDesc("更新数据失败");
-                return result;
-            }
-        } else {
-            result.setDesc("找不到该优惠券");
-            return result;
+    public CommonBoolDto<Integer> upCoupon(BatchBaseCouponReq req) {
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
+        result.setData(0);
+        result.setDesc("");
+
+        if (req==null || req.getBaseCouponList()!=null || req.getBaseCouponList().isEmpty()){
+            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("必须指定一个优惠券"));
         }
+        List<String> ids=new ArrayList<>();
+        for (BaseCouponReq item:req.getBaseCouponList()){
+            ids.add(item.getCouponId());
+        }
+        List<ProductCouponEntity> entities = productCouponMapper.findCouponListByIds(ids);
+        List<ProductCouponEntity> dealList=new ArrayList<>();
+        for (ProductCouponEntity item:entities){
+            if (CouponStatus.YES.getDictValue().equals(item.getStatus())){
+                result.setDesc(result.getDesc()+item.getId()+"状态已上架，无需处理|");
+                continue;
+            }
+            item.setStatus(CouponStatus.YES.getDictValue());
+            item.setRemark("上架优惠券");
+            item.setUpdateAuthor(req.getOperator());
+            result.setData(result.getData()+1);
+            dealList.add(item);
+        }
+        batchService.batchDispose(dealList,ProductCouponMapper.class,"updateByPrimaryKeySelective");
+
         return result;
     }
 
@@ -743,33 +746,37 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CommonBoolDto<ProductCouponDto> downCoupon(BaseCouponReq req) {
-        CommonBoolDto<ProductCouponDto> result = new CommonBoolDto<ProductCouponDto>(false);
-        ProductCouponEntity productCouponById = productCouponMapper.findProductCouponById(req.getCouponId());
-        if (productCouponById != null) {
-            if (!CouponStatus.YES.getDictValue().equals(productCouponById.getStatus())){
-                result.setDesc("状态已下架，无需处理");
-                result.setSuccess(true);
-                return result;
-            }
+    public CommonBoolDto<Integer> downCoupon(BatchBaseCouponReq req) {
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
+        result.setData(0);
+        result.setDesc("");
 
-            productCouponById.setStatus(CouponStatus.NO.getDictValue());
-            productCouponById.setRemark("下架优惠券");
-            ProductCouponDto dto = new ProductCouponDto();
-            int updateresult = productCouponMapper.updateByPrimaryKeySelective(productCouponById);
-            if (updateresult > 0) {
-                result.setSuccess(true);
-                result.setData(dto);
-            } else {
-                result.setSuccess(false);
-                result.setDesc("更新数据失败");
-                return result;
-            }
-        } else {
-            result.setDesc("找不到该优惠券");
-            return result;
+        if (req==null || req.getBaseCouponList()!=null || req.getBaseCouponList().isEmpty()){
+            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("必须指定一个优惠券"));
         }
+        List<String> ids=new ArrayList<>();
+        for (BaseCouponReq item:req.getBaseCouponList()){
+            ids.add(item.getCouponId());
+        }
+
+        List<ProductCouponEntity> entities = productCouponMapper.findCouponListByIds(ids);
+        List<ProductCouponEntity> dealList=new ArrayList<>();
+        for (ProductCouponEntity item:entities){
+            if (!CouponStatus.YES.getDictValue().equals(item.getStatus())){
+                result.setDesc(result.getDesc()+item.getId()+"状态已下架，无需处理|");
+                continue;
+            }
+            item.setStatus(CouponStatus.NO.getDictValue());
+            item.setRemark("下架优惠券");
+            item.setUpdateAuthor(req.getOperator());
+            result.setData(result.getData()+1);
+            dealList.add(item);
+        }
+        batchService.batchDispose(dealList,ProductCouponMapper.class,"updateByPrimaryKeySelective");
+
         return result;
+
+
     }
 
     /**

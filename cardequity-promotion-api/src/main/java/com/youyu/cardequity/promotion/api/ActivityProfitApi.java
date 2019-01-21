@@ -193,7 +193,7 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "【后台】上架活动")
     @PostMapping(path = "/upActivity")
-     Result<CommonBoolDto<ActivityProfitDto>> upActivity(@RequestBody BaseActivityReq req);
+     Result<CommonBoolDto<Integer>> upActivity(@RequestBody BatchBaseActivityReq req);
 
     /**
      * 下架活动
@@ -202,5 +202,5 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "【后台】下架活动")
     @PostMapping(path = "/downActivity")
-    Result<CommonBoolDto<ActivityProfitDto>> downActivity(@RequestBody BaseActivityReq req);
+    Result<CommonBoolDto<Integer>> downActivity(@RequestBody BatchBaseActivityReq req);
 }

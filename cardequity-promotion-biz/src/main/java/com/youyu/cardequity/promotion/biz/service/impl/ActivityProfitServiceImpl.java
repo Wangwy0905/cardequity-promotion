@@ -946,30 +946,29 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CommonBoolDto<ActivityProfitDto> upActivity(BaseActivityReq req) {
-        CommonBoolDto<ActivityProfitDto> result = new CommonBoolDto<>(false);
-        ActivityProfitEntity entity = activityProfitMapper.findById(req.getActivityId());
-        if (entity != null) {
-            if (CouponStatus.YES.getDictValue().equals(entity.getStatus())){
-                result.setDesc("状态已上架，无需处理");
-                result.setSuccess(true);
-                return result;
-            }
-            entity.setStatus(CouponStatus.YES.getDictValue());
-            entity.setRemark("上架活动");
-            ActivityProfitDto dto = new ActivityProfitDto();
-            int updateresult = activityProfitMapper.updateByPrimaryKeySelective(entity);
-            if (updateresult > 0) {
-                result.setSuccess(true);
-                result.setData(dto);
-            } else {
-                result.setDesc("更新数据失败");
-                return result;
-            }
-        } else {
-            result.setDesc("找不到该活动");
-            return result;
+    public CommonBoolDto<Integer> upActivity(BatchBaseActivityReq req) {
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
+        result.setData(0);
+        result.setDesc("");
+
+        if (req==null || req.getBaseActivityList()!=null || req.getBaseActivityList().isEmpty()){
+            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("必须指定一个活动"));
         }
+
+        List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByIds(req);
+        List<ActivityProfitEntity> dealList=new ArrayList<>();
+        for (ActivityProfitEntity item:entities){
+            if (CouponStatus.YES.getDictValue().equals(item.getStatus())){
+                result.setDesc(result.getDesc()+item.getId()+"状态已上架，无需处理|");
+                continue;
+            }
+            item.setStatus(CouponStatus.YES.getDictValue());
+            item.setUpdateAuthor(req.getOperator());
+            item.setRemark("上架活动");
+            result.setData(result.getData()+1);
+        }
+
+        batchService.batchDispose(dealList,ActivityProfitMapper.class,"updateByPrimaryKeySelective");
         return result;
     }
 
@@ -981,34 +980,31 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CommonBoolDto<ActivityProfitDto> downActivity(BaseActivityReq req) {
-        CommonBoolDto<ActivityProfitDto> result = new CommonBoolDto<>(false);
-        ActivityProfitEntity entity = activityProfitMapper.findById(req.getActivityId());
-        if (entity != null) {
+    public CommonBoolDto<Integer> downActivity(BatchBaseActivityReq req) {
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
+        result.setData(0);
+        result.setDesc("");
 
-            if (!CouponStatus.YES.getDictValue().equals(entity.getStatus())){
-                result.setDesc("状态已下架，无需处理");
-                result.setSuccess(true);
-                return result;
-            }
-
-            entity.setStatus(CouponStatus.NO.getDictValue());
-            entity.setRemark("下架活动");
-            ActivityProfitDto dto = new ActivityProfitDto();
-            int updateresult = activityProfitMapper.updateByPrimaryKeySelective(entity);
-            if (updateresult > 0) {
-                result.setSuccess(true);
-                result.setData(dto);
-            } else {
-                result.setSuccess(false);
-                result.setDesc("更新数据失败");
-                return result;
-            }
-        } else {
-            result.setDesc("找不到该优惠券");
-            return result;
+        if (req==null || req.getBaseActivityList()!=null || req.getBaseActivityList().isEmpty()){
+            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("必须指定一个活动"));
         }
+
+        List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByIds(req);
+        List<ActivityProfitEntity> dealList=new ArrayList<>();
+        for (ActivityProfitEntity item:entities){
+            if (!CouponStatus.YES.getDictValue().equals(item.getStatus())){
+                result.setDesc(result.getDesc()+item.getId()+"状态已下架，无需处理|");
+                continue;
+            }
+            item.setStatus(CouponStatus.NO.getDictValue());
+            item.setUpdateAuthor(req.getOperator());
+            item.setRemark("下架活动");
+            result.setData(result.getData()+1);
+        }
+
+        batchService.batchDispose(dealList,ActivityProfitMapper.class,"updateByPrimaryKeySelective");
         return result;
+
     }
 
 }

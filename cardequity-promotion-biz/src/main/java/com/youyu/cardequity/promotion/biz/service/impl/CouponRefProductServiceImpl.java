@@ -113,12 +113,14 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
                 isExist=false;
                 key=item.getProductId()+(CommonUtils.isEmptyorNull(item.getSkuId())?"|EMPTY":"|"+item.getSkuId());
                 for (GatherInfoRsp gather:result){
+                     //如果有统计数量的加上无产品限制的数量
                       if (key.equals(gather.getGatherItem())){
                           gather.setGatherValue(gather.getGatherValue()+entities.size());
                           isExist=true;
                           break;
                       }
                   }
+                  //如果找到统计数据，该没有产品限制的数量即为其统计数量
                   if (!isExist){
                       GatherInfoRsp rsp = new GatherInfoRsp();
                       rsp.setGatherItem(key);

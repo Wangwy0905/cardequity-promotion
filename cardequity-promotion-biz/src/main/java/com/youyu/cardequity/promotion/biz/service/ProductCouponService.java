@@ -59,18 +59,18 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      CommonBoolDto<Integer> batchDelCoupon( BatchBaseCouponReq req);
 
     /**
-     * 开始发放
+     * 上架优惠券
      * @param req
      * @return
      */
-    CommonBoolDto<ProductCouponDto> upCoupon(BaseCouponReq req);
+    CommonBoolDto<Integer> upCoupon(BatchBaseCouponReq req);
 
     /**
      * 下架
      * @param req
      * @return
      */
-    CommonBoolDto<ProductCouponDto> downCoupon(BaseCouponReq req);
+    CommonBoolDto<Integer> downCoupon(BatchBaseCouponReq req);
 
     /**
      * 查看商品对应优惠券列表
