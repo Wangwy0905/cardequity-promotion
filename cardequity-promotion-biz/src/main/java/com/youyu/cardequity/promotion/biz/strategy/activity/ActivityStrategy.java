@@ -136,7 +136,7 @@ public abstract class ActivityStrategy {
 
          }
 
-        return null;
+        return diffInfo;
 
     }
 
