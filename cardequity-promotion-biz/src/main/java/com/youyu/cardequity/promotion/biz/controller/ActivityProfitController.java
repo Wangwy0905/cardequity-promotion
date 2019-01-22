@@ -51,6 +51,18 @@ public class ActivityProfitController implements ActivityProfitApi {
     }
 
     /**
+     * 【APP】查询抢购特价活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【APP】查询抢购特价活动")
+    @PostMapping(path = "/findFlashSalePriceActivity")
+    public Result<List<ActivityDetailDto>> findFlashSalePriceActivity(OperatQryReq req){
+        return Result.ok(activityProfitService.findFlashSalePriceActivity(req));
+    }
+
+    /**
      * 【内部】订单预处理活动详情：处理对应适用商品及其优惠值
      *
      * @param req
@@ -256,15 +268,5 @@ public class ActivityProfitController implements ActivityProfitApi {
 
     }
 
-    /**
-     * 查询抢购特价活动
-     * @param req
-     * @return
-     */
-    @Override
-    @ApiOperation(value = "【后台】下架优惠券")
-    @PostMapping(path = "/findFlashSalePriceActivity")
-    public Result<List<ActivityDetailDto>> findFlashSalePriceActivity(OperatQryReq req){
-        return Result.ok(activityProfitService.findFlashSalePriceActivity(req));
-    }
+
 }

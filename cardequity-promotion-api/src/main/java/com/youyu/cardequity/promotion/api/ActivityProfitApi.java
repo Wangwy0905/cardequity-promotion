@@ -66,6 +66,14 @@ public interface ActivityProfitApi {
     @PostMapping(path = "/findValidActivityPrice")
     Result<List<ActivityDetailDto>> findValidActivityPrice(@RequestBody BaseProductReq req);
 
+    /**
+     * 查询抢购特价活动
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【APP】查询抢购特价活动")
+    @PostMapping(path = "/findFlashSalePriceActivity")
+    Result<List<ActivityDetailDto>> findFlashSalePriceActivity(OperatQryReq req);
 
     /**
      * *********************************【通用接口】************************
@@ -204,12 +212,5 @@ public interface ActivityProfitApi {
     @PostMapping(path = "/downActivity")
     Result<CommonBoolDto<Integer>> downActivity(@RequestBody BatchBaseActivityReq req);
 
-    /**
-     * 查询抢购特价活动
-     * @param req
-     * @return
-     */
-    @ApiOperation(value = "【后台】下架优惠券")
-    @PostMapping(path = "/findFlashSalePriceActivity")
-    Result<List<ActivityDetailDto>> findFlashSalePriceActivity(OperatQryReq req);
+
 }
