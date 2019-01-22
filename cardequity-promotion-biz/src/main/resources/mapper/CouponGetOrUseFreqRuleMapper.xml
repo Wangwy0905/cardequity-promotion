@@ -20,7 +20,7 @@
             and a.STAGE_ID = #{stageId,jdbcType=VARCHAR}
         </if>
         and (a.ALLOW_COUNT = 0 or 1 &lt;=
-        (select count(d.UUID)
+        (select ifnull(count(d.UUID),0)
         from TB_CLIENT_COUPON d
         where if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.COUPON_ID = a.COUPON_ID
@@ -29,14 +29,14 @@
         and (d.STATUS in ('0', '1') or
         curdate() &lt;= d.VALID_END_DATE)))
         and (ifnull(a.Person_Total_Num,999999999)>=999999 or a.Person_Total_Num &lt;=
-        (select count(d.UUID) #有效期内
+        (select ifnull(count(d.UUID),0) #有效期内
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.COUPON_ID
         and ifnull(d.STAGE_ID, '0') = ifnull(a.STAGE_ID, '0')
         and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}))
         and (a.UNIT = '0' or a.ALLOW_COUNT &lt;=
-        (select count(d.UUID) #每天领一次
+        (select ifnull(count(d.UUID),0) #每天领一次
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID
@@ -44,7 +44,7 @@
         and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
         and d.CREATE_TIME &gt;= curdate()))
         and (a.UNIT = '1' or a.ALLOW_COUNT &lt;=
-        (select count(d.UUID)
+        (select ifnull(count(d.UUID),0)
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID
@@ -54,7 +54,7 @@
         and d.CREATE_TIME &lt;=
         date_sub(curdate(), INTERVAL WEEKDAY(curdate()) - 5 DAY)))
         and (a.UNIT = '2' or a.ALLOW_COUNT &lt;=
-        (select count(d.UUID)
+        (select ifnull(count(d.UUID),0)
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID
@@ -63,7 +63,7 @@
         and concat(date_format(LAST_DAY(now()), '%Y-%m-'), '01') &lt;= d.CREATE_TIME
         and LAST_DAY(now()) &gt;= d.CREATE_TIME))
         and (a.UNIT = '3' or a.ALLOW_COUNT &lt;=
-        (select count(d.UUID)
+        (select ifnull(count(d.UUID),0)
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID

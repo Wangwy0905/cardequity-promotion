@@ -37,7 +37,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 是否领取成功
      * @Param req:有参数clientId-客户号（必填），couponId-领取的券Id（必填）
      */
-    CommonBoolDto obtainCoupon(ClientObtainCouponReq req);
+    CommonBoolDto<ObtainCouponViewDto> obtainCoupon(ClientObtainCouponReq req);
 
     /**
      * 获取可用的优惠券:
@@ -107,28 +107,28 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @param clientCouponEnts
      * @return
      */
-    List<ObtainCouponViewDto> CombClientObtainCouponList(List<ClientCouponEntity> clientCouponEnts);
+    List<ObtainCouponViewDto> combClientObtainCouponList(List<ClientCouponEntity> clientCouponEnts);
 
     /**
      * 组合对象
      * @param item
      * @return
      */
-    ObtainCouponViewDto CombClientObtainCouponOne(ClientCouponEntity item);
+    ObtainCouponViewDto combClientObtainCouponOne(ClientCouponEntity item);
 
     /**
      * 组合详情列表
      * @param clientCouponEnts
      * @return
      */
-    List<FullClientCouponRsp> CombClientFullObtainCouponList(List<ClientCouponEntity> clientCouponEnts);
+    List<FullClientCouponRsp> combClientFullObtainCouponList(List<ClientCouponEntity> clientCouponEnts);
 
     /**
      * 组合详情
      * @param clientCoupon
      * @return
      */
-    FullClientCouponRsp CombClientFullObtainCouponOne(ClientCouponEntity clientCoupon);
+    FullClientCouponRsp combClientFullObtainCouponOne(ClientCouponEntity clientCoupon);
 }
 
 

@@ -57,7 +57,7 @@ public interface ClientCouponApi {
      */
     @ApiOperation(value = "【App】客户领取优惠券：唯一确定领取优惠券是'券id+阶梯id'，其中阶梯id可为空")
     @PostMapping(path = "/obtainCoupon")
-    Result<CommonBoolDto> obtainCoupon(@RequestBody ClientObtainCouponReq req);
+    Result<CommonBoolDto<ObtainCouponViewDto>> obtainCoupon(@RequestBody ClientObtainCouponReq req);
 
 
     /**

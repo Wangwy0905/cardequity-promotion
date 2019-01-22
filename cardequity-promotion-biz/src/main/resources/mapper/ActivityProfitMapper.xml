@@ -30,24 +30,24 @@
         and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
-        (select sum(ifnull(c.Profit_Value, 0))
+        (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Amount,999999999)>=999999999 or b.Max_Amount &gt;
-        (select sum(ifnull(c.Profit_Value, 0))
+        (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
         and (ifnull(b.Per_Date_Max_Count,999999999)>=999999999 or b.Per_Date_Max_Count &gt;
-        (select sum(ifnull(c.Product_Count, 0))
+        (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Count,999999999)>=999999999 or b.Max_Count &gt;
-        (select sum(ifnull(c.Product_Count, 0))
+        (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
@@ -106,24 +106,24 @@
         and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
-        (select sum(ifnull(c.Profit_Value, 0))
+        (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Amount,999999999)>=999999999 or b.Max_Amount &gt;
-        (select sum(ifnull(c.Profit_Value, 0))
+        (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
         and (ifnull(b.Per_Date_Max_Count,999999999)>=999999999 or b.Per_Date_Max_Count &gt;
-        (select sum(ifnull(c.Product_Count, 0))
+        (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Count,999999999)>=999999999 or b.Max_Count &gt;
-        (select sum(ifnull(c.Product_Count, 0))
+        (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
@@ -200,24 +200,24 @@
         )
         )
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
-        (select sum(ifnull(c.Profit_Value, 0))
+        (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Amount,999999999)>=999999999 or b.Max_Amount &gt;
-        (select sum(ifnull(c.Profit_Value, 0))
+        (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
         and (ifnull(b.Per_Date_Max_Count,999999999)>=999999999 or b.Per_Date_Max_Count &gt;
-        (select sum(ifnull(c.Product_Count, 0))
+        (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Count,999999999)>=999999999 or b.Max_Count &gt;
-        (select sum(ifnull(c.Product_Count, 0))
+        (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
@@ -302,6 +302,9 @@
             parameterType="com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq">
         SELECT * FROM TB_ACTIVITY_PROFIT a
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        <if test='""!=commonQry.upAndDownStatus and commonQry.upAndDownStatus!=null'>
+            AND if(length(a.STATUS),a.STATUS,'1')=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
+        </if>
         <if test="commonQry.activityId!=null and commonQry.activityId!=''">
             and a.UUID=#{commonQry.activityId,jdbcType=VARCHAR}
         </if>
@@ -351,6 +354,9 @@
         count(1) as gatherValue
         FROM TB_ACTIVITY_PROFIT a
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        <if test='""!=upAndDownStatus and upAndDownStatus!=null'>
+            AND if(length(a.STATUS),a.STATUS,'1')=#{upAndDownStatus,jdbcType=VARCHAR}
+        </if>
         <if test="activityId!=null and activityId!=''">
             and a.UUID=#{activityId,jdbcType=VARCHAR}
         </if>
@@ -446,6 +452,97 @@
         and a.ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1'
+    </select>
+
+
+    <select id="findLeastPriceProductActivity"
+            resultType="com.youyu.cardequity.promotion.dto.other.GroupProductDto" parameterType="com.youyu.cardequity.promotion.vo.req.OperatQryReq">
+        select b.PRODUCT_ID as productId,max(a.UPDATE_TIME) as lastTime
+        from TB_ACTIVITY_PROFIT a
+        left join TB_ACTIVITY_REF_PRODUCT b on a.UUID = b.ACTIVITY_ID AND if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
+        left join TB_ACTIVITY_QUOTA_RULE c on a.UUID = c.ACTIVITY_ID and if(length(c.IS_ENABLE), c.IS_ENABLE,'1')= '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.STATUS='1'
+        AND a.ACTIVITY_COUPON_TYPE='2'
+        and a.ALLOW_USE_BEGIN_DATE &lt;= sysdate()
+        and a.ALLOW_USE_END_DATE &gt;= sysdate()
+        <if test="entrustWay != null and entrustWay!=''">
+            and (if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*') = '*'
+            or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="clientType != null and clientType!=''">
+            and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*' or
+            or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="bankCode != null and bankCode!=''">
+            and (if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*' or
+            or instr(BANK_CODE_SET, #{bankCode,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="payType != null and payType!=''">
+            and (if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*' or
+            or instr(PAY_TYPE_SET, #{payType,jdbcType=VARCHAR})&gt;0)
+        </if>
+        and (ifnull(c.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or c.PER_DATE_MAX_AMOUNT &gt;
+        (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
+        from TB_CLIENT_TAKE_IN_ACTIVITY d
+        where BUSIN_CODE = '5003'
+        and d.ACTIVITY_ID = a.UUID
+        and d.create_time &gt;= curdate()))
+        and (ifnull(c.Max_Amount,999999999)>=999999999 or c.Max_Amount &gt;
+        (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
+        from TB_CLIENT_TAKE_IN_ACTIVITY d
+        where BUSIN_CODE = '5003'
+        and d.ACTIVITY_ID = a.UUID))
+        and (ifnull(c.Per_Date_Max_Count,999999999)>=999999999 or c.Per_Date_Max_Count &gt;
+        (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
+        from TB_CLIENT_TAKE_IN_ACTIVITY d
+        where BUSIN_CODE = '5003'
+        and d.ACTIVITY_ID = a.UUID
+        and d.create_time &gt;= curdate()))
+        and (ifnull(c.Max_Count,999999999)>=999999999 or c.Max_Count  &gt;
+        (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
+        from TB_CLIENT_TAKE_IN_ACTIVITY d
+        where BUSIN_CODE = '5003'
+        and d.ACTIVITY_ID = a.UUID))
+        group by b.PRODUCT_ID
+        order by max(a.UPDATE_TIME) desc
+        limit #{qryNum,jdbcType=INTEGER}
+
+    </select>
+
+    <select id="findPriceActivityByProductIds"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+        select *
+        from TB_ACTIVITY_PROFIT a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.ACTIVITY_COUPON_TYPE='2'
+        <if test='""!=status and status!=null'>
+            AND a.STATUS=#{status,jdbcType=VARCHAR}
+        </if>
+        <if test='"0"==termStatus'>
+            and a.ALLOW_USE_BEGIN_DATE &gt;sysdate()
+        </if>
+        <if test='"1"==termStatus'>
+            and a.ALLOW_USE_BEGIN_DATE &lt;=sysdate()
+            and a.ALLOW_USE_END_DATE &gt;=sysdate()
+        </if>
+        <if test='"2"==termStatus'>
+            and a.ALLOW_USE_END_DATE &lt;sysdate()
+        </if>
+        <if test='"3"==termStatus'>
+            and a.ALLOW_USE_END_DATE &gt;sysdate()
+        </if>
+        and
+        EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
+        b.ACTIVITY_ID=a.UUID
+        and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
+        and b.PRODUCT_ID in
+        <foreach collection="idList" item="idstr" index="index"
+                 open="(" close=")" separator=",">
+            #{idstr}
+        </foreach>
+        )
+        Order by a.CREATE_TIME desc
     </select>
 
 </mapper>

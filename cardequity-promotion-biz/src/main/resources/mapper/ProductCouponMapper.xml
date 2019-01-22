@@ -28,20 +28,20 @@
         and a.ALLOW_GET_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_GET_END_DATE &gt;= curdate()
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
-        (select sum(ifnull(d.COUPON_AMOUT, 0))
+        (select ifnull(sum(ifnull(d.COUPON_AMOUT, 0)),0)
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID
         and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)
         and d.CREATE_TIME &gt;= curdate()))
         and (ifnull(b.MAX_AMOUNT,999999999)>=999999999 or b.MAX_AMOUNT &gt;
-        (select sum(ifnull(d.COUPON_AMOUT, 0))
+        (select ifnull(sum(ifnull(d.COUPON_AMOUT, 0)),0)
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID
         and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)))
         and (ifnull(b.MAX_COUNT,999999999)>=999999999 or b.MAX_COUNT &gt;
-        (select count(ifnull(d.UUID, 0))
+        (select ifnull(count(ifnull(d.UUID, 0)),0)
         from TB_CLIENT_COUPON d
         where ifnull(d.IS_ENABLE, '1') = '1'
         and d.COUPON_ID = a.UUID

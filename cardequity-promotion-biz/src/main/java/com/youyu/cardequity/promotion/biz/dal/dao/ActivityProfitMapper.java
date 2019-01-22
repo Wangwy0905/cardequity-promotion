@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
+import com.youyu.cardequity.promotion.dto.other.GroupProductDto;
 import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseActivityReq;
@@ -180,6 +181,23 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * @return
      */
     List<ActivityProfitEntity> findUnlimitedProductActivity();
+
+    /**
+     * 查询最新设置特价活动的商品
+     * @param qryNum
+     * @return
+     */
+    List<GroupProductDto> findLeastPriceProductActivity(@Param("qryNum") Integer qryNum);
+
+    /**
+     * 【后台+App】查询【有效期内、上架的】特价活动信息通过商品id
+     *
+     * @param idList 商品id集合
+     * @return
+     */
+    List<ActivityProfitEntity> findPriceActivityByProductIds(@Param("idList") List<String> idList,
+                                                       @Param("termStatus") String termStatus,
+                                                       @Param("status") String status);
 
 }
 

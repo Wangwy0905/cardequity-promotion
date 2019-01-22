@@ -142,6 +142,14 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @return
      */
     CommonBoolDto<Integer> downActivity(BatchBaseActivityReq req);
+
+
+    /**
+     * 查询抢购特价活动
+     * @param req
+     * @return
+     */
+    List<ActivityDetailDto> findFlashSalePriceActivity(OperatQryReq req);
 }
 
 

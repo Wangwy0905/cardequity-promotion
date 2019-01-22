@@ -11,6 +11,9 @@ public class BaseQryActivityReq {
     @ApiModelProperty(value = "指定活动id")
     private String activityId;
 
+    @ApiModelProperty(value = "上下架状态:0-下架 1-上架")
+    private String upAndDownStatus;
+
     @ApiModelProperty(value = "促销状态:0-未开始 1-活动中 2-已结束")
     private String status;
 

@@ -44,7 +44,7 @@ public class ClientCouponController implements ClientCouponApi {
     @Override
     @ApiOperation(value = "【App】客户领取优惠券")
     @PostMapping(path = "/obtainCoupon")
-    public Result<CommonBoolDto> obtainCoupon(@RequestBody ClientObtainCouponReq req) {
+    public Result<CommonBoolDto<ObtainCouponViewDto>> obtainCoupon(@RequestBody ClientObtainCouponReq req) {
 
         return Result.ok(clientCouponService.obtainCoupon(req));
     }

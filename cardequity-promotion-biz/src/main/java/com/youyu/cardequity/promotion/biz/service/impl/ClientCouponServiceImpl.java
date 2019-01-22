@@ -91,7 +91,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     public List<ObtainCouponViewDto> findClientCoupon(BaseClientReq req) {
 
         List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientCoupon(req.getClientId());
-        return CombClientObtainCouponList(clientCouponEnts);
+        return combClientObtainCouponList(clientCouponEnts);
     }
 
     /**
@@ -104,8 +104,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CommonBoolDto<ClientCouponDto> obtainCoupon(ClientObtainCouponReq req) {
-        CommonBoolDto<ClientCouponDto> dto = new CommonBoolDto<>();
+    public CommonBoolDto<ObtainCouponViewDto> obtainCoupon(ClientObtainCouponReq req) {
+        CommonBoolDto<ObtainCouponViewDto> dto = new CommonBoolDto<>();
         dto.setSuccess(true);
 
         //领取后存储的信息
@@ -221,8 +221,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             throw new BizException(COUPON_FAIL_OBTAIN.getCode(), COUPON_FAIL_OBTAIN.getFormatDesc("增加数据失败"));
         }
 
-        ClientCouponDto rsp = BeanPropertiesUtils.copyProperties(entity, ClientCouponDto.class);
-        dto.setData(rsp);
+        ObtainCouponViewDto result = combClientObtainCouponOne(entity);
+        dto.setData(result);
 
         return dto;
     }
@@ -257,7 +257,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             }
             rsp.add(item);
         }
-        return CombClientObtainCouponList(rsp);
+        return combClientObtainCouponList(rsp);
     }
 
 
@@ -964,7 +964,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     @Override
     public List<ObtainCouponViewDto> findValidClientCouponForProduct(BaseClientProductReq req) {
         List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientValidCouponByProduct(req.getClientId(), req.getProductId(), req.getSkuId());
-        return CombClientObtainCouponList(clientCouponEnts);
+        return combClientObtainCouponList(clientCouponEnts);
     }
 
 
@@ -1009,7 +1009,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             if (!dto.getSuccess()) {
                 //不是有效期外的,计入有效但是订单不可用的列表
                 if (clientCoupon.getValidEndDate().toLocalDate().compareTo(LocalDate.now()) >= 0) {
-                    FullClientCouponRsp item = CombClientFullObtainCouponOne(clientCoupon);
+                    FullClientCouponRsp item = combClientFullObtainCouponOne(clientCoupon);
                     result.getCouponUnEnableList().add(item);
                 }
                 continue;
@@ -1019,10 +1019,10 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             CouponStrategy executor = (CouponStrategy) CustomHandler.getBeanByName(key);
             UseCouponRsp useCouponRsp = executor.applyCoupon(clientCoupon, coupon, req.getProductList());
             if (useCouponRsp != null) {
-                FullClientCouponRsp item = CombClientFullObtainCouponOne(clientCoupon);
+                FullClientCouponRsp item = combClientFullObtainCouponOne(clientCoupon);
                 result.getCouponEnableList().add(item);
             } else {
-                FullClientCouponRsp item = CombClientFullObtainCouponOne(clientCoupon);
+                FullClientCouponRsp item = combClientFullObtainCouponOne(clientCoupon);
                 result.getCouponUnEnableList().add(item);
             }
 
@@ -1039,7 +1039,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 领取券视图集合
      */
     @Override
-    public List<ObtainCouponViewDto> CombClientObtainCouponList(List<ClientCouponEntity> clientCouponEnts) {
+    public List<ObtainCouponViewDto> combClientObtainCouponList(List<ClientCouponEntity> clientCouponEnts) {
         List<ObtainCouponViewDto> result = new ArrayList<>();
         if (clientCouponEnts == null || clientCouponEnts.isEmpty())
             return result;
@@ -1075,7 +1075,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 领取券视图
      */
     @Override
-    public ObtainCouponViewDto CombClientObtainCouponOne(ClientCouponEntity item) {
+    public ObtainCouponViewDto combClientObtainCouponOne(ClientCouponEntity item) {
         if (item == null)
             return null;
 
@@ -1100,7 +1100,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 领取券视图集合
      */
     @Override
-    public List<FullClientCouponRsp> CombClientFullObtainCouponList(List<ClientCouponEntity> clientCouponEnts) {
+    public List<FullClientCouponRsp> combClientFullObtainCouponList(List<ClientCouponEntity> clientCouponEnts) {
         List<FullClientCouponRsp> result = new ArrayList<>();
         if (clientCouponEnts == null || clientCouponEnts.isEmpty())
             return result;
@@ -1136,7 +1136,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 领取券视图
      */
     @Override
-    public FullClientCouponRsp CombClientFullObtainCouponOne(ClientCouponEntity item) {
+    public FullClientCouponRsp combClientFullObtainCouponOne(ClientCouponEntity item) {
         if (item == null)
             return null;
 

@@ -18,6 +18,7 @@ import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.GroupProductDto;
 import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
@@ -1004,6 +1005,28 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         batchService.batchDispose(dealList, ActivityProfitMapper.class, "updateByPrimaryKeySelective");
         return result;
 
+    }
+
+
+    /**
+     * 查询抢购特价活动
+     * @param req 查询请求体
+     * @return
+     */
+    @Override
+    public List<ActivityDetailDto> findFlashSalePriceActivity(OperatQryReq req){
+          //先按商品分组，最近更新的前N条
+        List<GroupProductDto> dtos = activityProfitMapper.findLeastPriceProductActivity(req.getPageSize() <= 0 ? 3 : req.getPageSize());
+        if (!dtos.isEmpty()) {
+            List<String> ids=new ArrayList<>();
+            for (GroupProductDto item:dtos){
+                ids.add(item.getProductId());
+            }
+
+            List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductIds(ids, "1", "1");
+            return combinationActivity(entities);
+        }
+        return new ArrayList<>();
     }
 
 }
