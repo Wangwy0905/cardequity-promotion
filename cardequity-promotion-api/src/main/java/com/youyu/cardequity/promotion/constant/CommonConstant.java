@@ -42,4 +42,11 @@ public interface CommonConstant {
     String USENEWREGISTER_NO="0";
     String USENEWREGISTER_YES="1";
 
+    /**
+     * 领取状态:0-未领取 1-已领取 2-失效
+     */
+    String OBTAIN_STATE_NO = "0";
+    String OBTAIN_STATE_YES = "1";
+    String OBTAIN_STATE_ABATE = "2";
+
 }

@@ -1049,6 +1049,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item, ObtainCouponViewDto.class);
             viewDto.setUuid(item.getUuid());
             viewDto.setStageId(item.getStageId());
+            viewDto.setObtainState(CommonConstant.OBTAIN_STATE_YES);
+            if (item.getValidStartDate().compareTo(LocalDateTime.now()) > 0 ||
+                    item.getValidEndDate().compareTo(LocalDateTime.now()) < 0 ||
+                    CouponUseStatus.USED.getDictValue().equals(item.getStatus()) ||
+                    CouponUseStatus.USING.getDictValue().equals(item.getStatus())) {
+                viewDto.setObtainState(CommonConstant.OBTAIN_STATE_ABATE);
+            }
             result.add(viewDto);
         }
 
@@ -1082,6 +1089,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         ObtainCouponViewDto result = BeanPropertiesUtils.copyProperties(item, ObtainCouponViewDto.class);
         result.setUuid(item.getUuid());
         result.setStageId(item.getStageId());
+        result.setObtainState(CommonConstant.OBTAIN_STATE_YES);
+        if (item.getValidStartDate().compareTo(LocalDateTime.now()) > 0 ||
+                item.getValidEndDate().compareTo(LocalDateTime.now()) < 0 ||
+                CouponUseStatus.USED.getDictValue().equals(item.getStatus()) ||
+                CouponUseStatus.USING.getDictValue().equals(item.getStatus())) {
+            result.setObtainState(CommonConstant.OBTAIN_STATE_ABATE);
+        }
 
         BaseCouponReq req = new BaseCouponReq();
         req.setCouponId(item.getCouponId());
