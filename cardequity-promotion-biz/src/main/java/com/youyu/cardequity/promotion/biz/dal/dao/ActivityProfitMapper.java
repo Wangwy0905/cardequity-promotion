@@ -2,10 +2,7 @@ package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
 import com.youyu.cardequity.promotion.dto.other.GroupProductDto;
-import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
-import com.youyu.cardequity.promotion.vo.req.BaseQryActivityReq;
-import com.youyu.cardequity.promotion.vo.req.BatchBaseActivityReq;
-import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
+import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.BasePriceActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.mapper.YyMapper;
@@ -184,10 +181,10 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
 
     /**
      * 查询最新设置特价活动的商品
-     * @param qryNum
+     * @param req 查询参数
      * @return
      */
-    List<GroupProductDto> findLeastPriceProductActivity(@Param("qryNum") Integer qryNum);
+    List<GroupProductDto> findLeastPriceProductActivity(OperatQryReq req);
 
     /**
      * 【后台+App】查询【有效期内、上架的】特价活动信息通过商品id

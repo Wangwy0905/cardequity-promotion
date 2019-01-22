@@ -1016,7 +1016,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     public List<ActivityDetailDto> findFlashSalePriceActivity(OperatQryReq req){
           //先按商品分组，最近更新的前N条
-        List<GroupProductDto> dtos = activityProfitMapper.findLeastPriceProductActivity(req.getPageSize() <= 0 ? 3 : req.getPageSize());
+        if (req.getPageSize()<=0)
+            req.setPageSize(3);
+        List<GroupProductDto> dtos = activityProfitMapper.findLeastPriceProductActivity(req);
         if (!dtos.isEmpty()) {
             List<String> ids=new ArrayList<>();
             for (GroupProductDto item:dtos){

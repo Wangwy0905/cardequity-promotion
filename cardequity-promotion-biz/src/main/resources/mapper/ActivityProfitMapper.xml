@@ -506,7 +506,7 @@
         and d.ACTIVITY_ID = a.UUID))
         group by b.PRODUCT_ID
         order by max(a.UPDATE_TIME) desc
-        limit #{qryNum,jdbcType=INTEGER}
+        limit #{pageSize,jdbcType=INTEGER}
 
     </select>
 
