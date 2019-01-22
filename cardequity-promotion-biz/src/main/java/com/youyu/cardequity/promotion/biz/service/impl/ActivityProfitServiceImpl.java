@@ -966,6 +966,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             item.setUpdateAuthor(req.getOperator());
             item.setRemark("上架活动");
             result.setData(result.getData() + 1);
+            dealList.add(item);
         }
 
         batchService.batchDispose(dealList, ActivityProfitMapper.class, "updateByPrimaryKeySelective");
@@ -1000,6 +1001,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             item.setUpdateAuthor(req.getOperator());
             item.setRemark("下架活动");
             result.setData(result.getData() + 1);
+            dealList.add(item);
         }
 
         batchService.batchDispose(dealList, ActivityProfitMapper.class, "updateByPrimaryKeySelective");
