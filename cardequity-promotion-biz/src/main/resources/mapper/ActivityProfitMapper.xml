@@ -22,7 +22,7 @@
             or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="clientType != null and clientType!=''">
-            and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*' or
+            and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*'
             or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
         and if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
@@ -72,7 +72,7 @@
             or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="clientType != null and clientType!=''">
-            and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*' or
+            and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*'
             or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
         and if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
@@ -134,8 +134,7 @@
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
         select *
         from TB_ACTIVITY_PROFIT a
-        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1' =
-        '1'
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.STATUS='1'
         <if test="productId != null and productId!=''">
@@ -184,8 +183,7 @@
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
         select *
         from TB_ACTIVITY_PROFIT a
-        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1' =
-        '1'
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.STATUS='1'
         and a.ALLOW_USE_BEGIN_DATE &lt;= sysdate()
@@ -471,15 +469,15 @@
             or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="clientType != null and clientType!=''">
-            and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*' or
+            and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*'
             or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="bankCode != null and bankCode!=''">
-            and (if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*' or
+            and (if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
             or instr(BANK_CODE_SET, #{bankCode,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="payType != null and payType!=''">
-            and (if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*' or
+            and (if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
             or instr(PAY_TYPE_SET, #{payType,jdbcType=VARCHAR})&gt;0)
         </if>
         and (ifnull(c.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or c.PER_DATE_MAX_AMOUNT &gt;

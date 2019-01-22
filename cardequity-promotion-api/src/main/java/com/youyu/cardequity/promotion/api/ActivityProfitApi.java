@@ -73,7 +73,7 @@ public interface ActivityProfitApi {
      */
     @ApiOperation(value = "【APP】查询抢购特价活动")
     @PostMapping(path = "/findFlashSalePriceActivity")
-    Result<List<ActivityDetailDto>> findFlashSalePriceActivity(OperatQryReq req);
+    Result<List<ActivityDetailDto>> findFlashSalePriceActivity(@RequestBody OperatQryReq req);
 
     /**
      * *********************************【通用接口】************************

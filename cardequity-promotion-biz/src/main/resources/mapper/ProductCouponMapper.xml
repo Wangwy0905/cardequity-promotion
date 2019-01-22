@@ -364,7 +364,7 @@
             <if test="skuId!=null and skuId!=''">
                 and b.SKU_ID =#{skuId,jdbcType=VARCHAR}
             </if>
-                )
+            )
             )
         </if>
         <if test="couponType!=null and couponType!=''">

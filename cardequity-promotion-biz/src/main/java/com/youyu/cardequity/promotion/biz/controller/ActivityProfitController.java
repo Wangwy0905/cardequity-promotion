@@ -58,7 +58,7 @@ public class ActivityProfitController implements ActivityProfitApi {
     @Override
     @ApiOperation(value = "【APP】查询抢购特价活动")
     @PostMapping(path = "/findFlashSalePriceActivity")
-    public Result<List<ActivityDetailDto>> findFlashSalePriceActivity(OperatQryReq req){
+    public Result<List<ActivityDetailDto>> findFlashSalePriceActivity(@RequestBody OperatQryReq req){
         return Result.ok(activityProfitService.findFlashSalePriceActivity(req));
     }
 
