@@ -21,7 +21,7 @@
         <if test="clientId != null and clientId !=''">
             and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
         </if>
-        <if test="couponId != null and couponId !=''">
+        <if test="activityId != null and activityId !=''">
             and a.ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
         </if>
         <if test="stageId != null and stageId !=''">
