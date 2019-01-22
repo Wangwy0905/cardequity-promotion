@@ -167,7 +167,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         //3.增加客户已领优惠券
         entity.setId(CommonUtils.getUUID());
-        if (coupon.getAllowUseBeginDate() != null && LocalDate.now().compareTo(coupon.getAllowUseBeginDate().toLocalDate()) < 0) {
+        if (coupon.getAllowUseBeginDate() != null && LocalDate.now().isBefore(coupon.getAllowUseBeginDate().toLocalDate()) ) {
             entity.setValidStartDate(coupon.getAllowUseBeginDate());
         } else {
             entity.setValidStartDate(LocalDateTime.now());
@@ -301,8 +301,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //空订单或者没有可用优惠券直接返回
         if (req.getProductList() == null ||
                 enableCouponList == null ||
-                req.getProductList().size() <= 0 ||
-                enableCouponList.size() <= 0) {
+                req.getProductList().isEmpty() ||
+                enableCouponList.isEmpty()) {
             return rsps;
         }
         for (ClientCouponEntity clientCoupon : enableCouponList) {
@@ -316,8 +316,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
             //没有指定运费时运费券或免邮券不能使用
             if (!CommonUtils.isGtZeroDecimal(req.getTransferFare()) &&
-                    (clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue()) ||
-                            clientCoupon.getCouponType().equals(CouponType.FREETRANSFERFARE.getDictValue()))) {
+                    (CouponType.TRANSFERFARE.getDictValue().equals(clientCoupon.getCouponType()) ||
+                            CouponType.FREETRANSFERFARE.getDictValue().equals(clientCoupon.getCouponType()))) {
                 continue;
             }
 
@@ -596,7 +596,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 ShortCouponDetailDto item = (ShortCouponDetailDto) object;
                 if (item.getCouponId().equals(couponId) &&
                         ((!CommonUtils.isEmptyorNull(item.getStageId()) && item.getStageId().equals(stageId)) ||
-                                CommonUtils.isEmptyorNull(item.getStageId()) && CommonUtils.isEmptyorNull(stageId))
+                                (CommonUtils.isEmptyorNull(item.getStageId()) && CommonUtils.isEmptyorNull(stageId)))
                         )
                     return true;
                 return false;
@@ -702,7 +702,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         }
 
         //b.商品属性校验
-        if (req.getProductList() != null && req.getProductList().size() > 0) {
+        if (req.getProductList() != null && !req.getProductList().isEmpty()) {
             dto.setSuccess(false);
             if (ApplyProductFlag.ALL.getDictValue().equals(coupon.getApplyProductFlag())) {
                 dto.setSuccess(true);

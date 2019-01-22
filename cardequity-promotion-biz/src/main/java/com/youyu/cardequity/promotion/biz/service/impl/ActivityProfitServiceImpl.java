@@ -116,7 +116,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         //空订单或者没有可用活动直接返回
         if (req.getProductList() == null ||
-                req.getProductList().size() <= 0) {
+                req.getProductList().isEmpty()) {
             return rsps;
         }
 
@@ -408,7 +408,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("指定活动不存在，活动编号" + profit.getId()));
             }
             BeanPropertiesUtils.copyProperties(profit, profitEntity);
-            if (profit.getLabelDto() != null && CommonUtils.isEmptyorNull(profit.getLabelDto().getId())) {
+            if (profit.getLabelDto() != null && !CommonUtils.isEmptyorNull(profit.getLabelDto().getId())) {
                 profitEntity.setActivityLable(profit.getLabelDto().getId());
             }
             profitEntity.setUpdateAuthor(req.getOperator());
@@ -700,7 +700,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
 
         //b.商品属性校验，不校验其买入卖出门槛
-        if (req.getProductList() != null && req.getProductList().size() > 0) {
+        if (req.getProductList() != null && !req.getProductList().isEmpty()) {
             dto.setSuccess(false);
             for (OrderProductDetailDto item : req.getProductList()) {
                 dto = checkRefProduct(activity, item.getProductId());
@@ -950,7 +950,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         result.setData(0);
         result.setDesc("");
 
-        if (req == null || req.getBaseActivityList() != null || req.getBaseActivityList().isEmpty()) {
+        if (req == null || req.getBaseActivityList() == null || req.getBaseActivityList().isEmpty()) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("必须指定一个活动"));
         }
 
@@ -984,7 +984,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         result.setData(0);
         result.setDesc("");
 
-        if (req == null || req.getBaseActivityList() != null || req.getBaseActivityList().isEmpty()) {
+        if (req == null || req.getBaseActivityList() == null || req.getBaseActivityList().isEmpty()) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("必须指定一个活动"));
         }
 

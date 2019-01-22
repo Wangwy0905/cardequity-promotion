@@ -523,7 +523,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     stage.setEndValue(CommonConstant.IGNOREVALUE);
                 }
 
-                if (!CommonUtils.isGtZeroDecimal(stage.getCouponValue()) || CommonUtils.isGtZeroDecimal(dto.getProfitValue())) {
+                if (!CommonUtils.isGtZeroDecimal(stage.getCouponValue()) && CommonUtils.isGtZeroDecimal(dto.getProfitValue())) {
                     stage.setCouponValue(dto.getProfitValue());
                 }
 
@@ -651,7 +651,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> batchDelCoupon(BatchBaseCouponReq req) {
         CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
-        if (req.getBaseCouponList() == null || req.getBaseCouponList().size() <= 0) {
+        if (req.getBaseCouponList() == null || req.getBaseCouponList().isEmpty()) {
             result.setDesc("没有指定删除的优惠券");
             return result;
         }
@@ -698,7 +698,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         result.setData(0);
         result.setDesc("");
 
-        if (req==null || req.getBaseCouponList()!=null || req.getBaseCouponList().isEmpty()){
+        if (req==null || req.getBaseCouponList()==null || req.getBaseCouponList().isEmpty()){
             throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("必须指定一个优惠券"));
         }
         List<String> ids=new ArrayList<>();
@@ -736,7 +736,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         result.setData(0);
         result.setDesc("");
 
-        if (req==null || req.getBaseCouponList()!=null || req.getBaseCouponList().isEmpty()){
+        if (req==null || req.getBaseCouponList()==null || req.getBaseCouponList().isEmpty()){
             throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("必须指定一个优惠券"));
         }
         List<String> ids=new ArrayList<>();

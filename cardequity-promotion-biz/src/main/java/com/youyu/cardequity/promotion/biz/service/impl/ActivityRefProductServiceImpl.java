@@ -8,6 +8,7 @@ import com.youyu.cardequity.promotion.biz.dal.dao.ActivityProfitMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
 import com.youyu.cardequity.promotion.biz.service.ActivityRefProductService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
