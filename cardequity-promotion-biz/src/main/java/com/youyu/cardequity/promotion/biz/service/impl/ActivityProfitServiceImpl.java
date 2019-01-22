@@ -235,6 +235,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 if (item.getProductList().size() > 1) {
                     throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("特价活动只能指定一个商品，活动编号" + profit.getId()));
                 }
+                //需要检查该商品是否已经存在下架的一个活动
+                List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByProductId(item.getProductList().get(0).getProductId(), item.getProductList().get(0).getSkuId(), "", "");
+                if (!entities.isEmpty())
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(String.format("该商品已存在其他活动，活动数量{0}，商品编号{1}，sku编号{2}",entities.size(),item.getProductList().get(0).getProductId(),item.getProductList().get(0).getSkuId()) ));
+                profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
                 if (CommonUtils.isEmptyorNull(item.getProductList().get(0).getSkuId())) {
                     profit.setStatus(CouponStatus.NO.getDictValue());
                 }
@@ -624,9 +629,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     public List<ActivityDetailDto> findActivityPrice(BaseProductReq req) {
 
         List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductId(req.getProductId(), req.getSkuId());
-        if (entities.isEmpty())
-            return null;
         List<ActivityDetailDto> result = new ArrayList<>();
+
         //多个特价活动以最新的为准
         for (ActivityProfitEntity entity : entities) {
             result.add(combinationActivity(entity));
