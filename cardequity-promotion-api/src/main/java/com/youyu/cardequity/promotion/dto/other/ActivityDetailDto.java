@@ -4,12 +4,14 @@ package com.youyu.cardequity.promotion.dto.other;
  * 活动详情
  */
 
+import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.ActivityQuotaRuleDto;
 import com.youyu.cardequity.promotion.dto.ActivityStageCouponDto;
 import com.youyu.cardequity.promotion.enums.dict.ClientType;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import com.youyu.cardequity.promotion.vo.rsp.BasePriceActivityRsp;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -62,5 +64,19 @@ public class ActivityDetailDto {
         result.setStageList(stageList);
         result.setProductList(productList);
         return result;
+    }
+
+    public BasePriceActivityRsp switchDetailToBasePrice() {
+        if (productList== null || productList.isEmpty() || productList.get(0) == null || StringUtil.isEmpty(productList.get(0).getSkuId()))
+            return null;
+        BasePriceActivityRsp priceItem = new BasePriceActivityRsp();
+        priceItem.setId(activityProfit.getId());
+        if (activityQuotaRule != null)
+            priceItem.setMaxCount(activityQuotaRule.getMaxCount());
+        priceItem.setPrice(activityProfit.getProfitValue());
+        priceItem.setStatus(activityProfit.getStatus());
+        priceItem.setProductId(productList.get(0).getProductId());
+        priceItem.setSkuId(productList.get(0).getSkuId());
+        return priceItem;
     }
 }
