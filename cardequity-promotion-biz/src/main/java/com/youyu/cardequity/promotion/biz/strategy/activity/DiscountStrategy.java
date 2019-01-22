@@ -47,6 +47,8 @@ public class DiscountStrategy extends ActivityStrategy {
     @Override
     public UseActivityRsp applyActivity(ActivityProfitEntity item, List<OrderProductDetailDto> productList) {
         String discountApplyStage = CouponApplyProductStage.ALL.getDictValue();
+
+        log.info("进入折扣活动处理策略，策略编号为{}",item.getId());
         //应获取于配置开关
         // TODO: 2018/12/26
         //装箱返回数据

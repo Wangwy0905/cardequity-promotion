@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
@@ -29,6 +30,7 @@ import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,7 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.*;
  * 开发日志
  * V1.0-V1 1004244-徐长焕-20181207 新建，实现可参与活动列表
  */
+@Slf4j
 @Service
 public class ActivityProfitServiceImpl extends AbstractService<String, ActivityProfitDto, ActivityProfitEntity, ActivityProfitMapper> implements ActivityProfitService {
 
@@ -150,6 +153,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
             //根据策略得到该活动是否满足门槛，返回满足活动适用信息
             String key = ActivityStrategy.class.getSimpleName() + item.getActivityCouponType();
+            log.info("获取活动策略key:{}",key);
             ActivityStrategy executor = (ActivityStrategy) CustomHandler.getBeanByName(key);
             UseActivityRsp rsp = executor.applyActivity(item, req.getProductList());
             if (rsp != null) {

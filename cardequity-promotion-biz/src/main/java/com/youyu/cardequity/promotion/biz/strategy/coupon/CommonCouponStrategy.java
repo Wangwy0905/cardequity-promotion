@@ -28,6 +28,7 @@ public class CommonCouponStrategy extends CouponStrategy {
 
     @Override
     public UseCouponRsp applyCoupon(ClientCouponEntity clientCoupon, ProductCouponEntity coupon, List<OrderProductDetailDto> productList) {
+        log.info("进入普通满减优惠券处理策略，领取编号{}，优惠券编号为{}",clientCoupon.getId(),coupon.getId());
         //装箱返回数据
         UseCouponRsp rsp = new UseCouponRsp();
         ClientCouponDto clientCouponDto = new ClientCouponDto();

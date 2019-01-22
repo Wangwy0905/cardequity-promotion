@@ -46,6 +46,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
     @Override
     public UseActivityRsp applyActivity(ActivityProfitEntity item, List<OrderProductDetailDto> productList) {
 
+        log.info("进入任选限额活动处理策略，策略编号为{}",item.getId());
         //校验基本信息：有效期的、商品属性、订单属性、支付属性
         //util.checkActivityBase(item, req);
 

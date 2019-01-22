@@ -39,6 +39,7 @@ public class PriceStrategy extends ActivityStrategy {
     @Override
     public UseActivityRsp applyActivity(ActivityProfitEntity item, List<OrderProductDetailDto> productList) {
 
+        log.info("进入特价活动处理策略，策略编号为{}",item.getId());
         //装箱返回数据
         UseActivityRsp rsp = new UseActivityRsp();
         ActivityProfitDto dto = new ActivityProfitDto();
