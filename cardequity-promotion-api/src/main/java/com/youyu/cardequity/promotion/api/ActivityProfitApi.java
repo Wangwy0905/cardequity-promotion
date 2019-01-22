@@ -203,4 +203,13 @@ public interface ActivityProfitApi {
     @ApiOperation(value = "【后台】下架活动")
     @PostMapping(path = "/downActivity")
     Result<CommonBoolDto<Integer>> downActivity(@RequestBody BatchBaseActivityReq req);
+
+    /**
+     * 查询抢购特价活动
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【后台】下架优惠券")
+    @PostMapping(path = "/findFlashSalePriceActivity")
+    Result<List<ActivityDetailDto>> findFlashSalePriceActivity(OperatQryReq req);
 }

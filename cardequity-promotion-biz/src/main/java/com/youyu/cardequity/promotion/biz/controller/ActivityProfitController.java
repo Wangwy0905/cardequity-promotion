@@ -256,4 +256,15 @@ public class ActivityProfitController implements ActivityProfitApi {
 
     }
 
+    /**
+     * 查询抢购特价活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【后台】下架优惠券")
+    @PostMapping(path = "/findFlashSalePriceActivity")
+    public Result<List<ActivityDetailDto>> findFlashSalePriceActivity(OperatQryReq req){
+        return Result.ok(activityProfitService.findFlashSalePriceActivity(req));
+    }
 }
