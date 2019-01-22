@@ -148,6 +148,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //校验基本信息：有效期的、商品属性、订单属性、支付属性、上架状态
             boolDto = checkActivityBase(item, req);
             if (!boolDto.getSuccess()) {
+                log.info("该活动不适用于，活动编号{}，原因:{}",item.getId(),boolDto.getDesc());
                 continue;
             }
 
@@ -712,7 +713,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         if (req.getProductList() != null && !req.getProductList().isEmpty()) {
             dto.setSuccess(false);
             for (OrderProductDetailDto item : req.getProductList()) {
-                dto = checkRefProduct(activity, item.getProductId());
+                dto = checkRefProduct(activity, item.getProductId(),item.getSkuId());
                 if (dto.getSuccess()) {
                     break;
                 }
@@ -774,12 +775,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * @param productId 商品编号
      * @return 返回是否校验成功
      */
-    private CommonBoolDto checkRefProduct(ActivityProfitEntity activity, String productId) {
+    private CommonBoolDto checkRefProduct(ActivityProfitEntity activity, String productId,String skuId) {
         CommonBoolDto dto = new CommonBoolDto(false);
         // ApplyProductFlag空值做保护
         if (!ApplyProductFlag.ALL.getDictValue().equals(activity.getApplyProductFlag())) {
             //该商品属性是否允许参与活动
-            ActivityRefProductEntity entity = activityRefProductMapper.findByBothId(activity.getId(), productId);
+            ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(activity.getId(), productId,skuId);
             if (entity != null) {
                 dto.setSuccess(true);
                 return dto;

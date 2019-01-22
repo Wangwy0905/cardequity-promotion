@@ -77,6 +77,7 @@ public class DiscountStrategy extends ActivityStrategy {
         CommonBoolDto<ClientCoupStatisticsQuotaDto> boolDto = checkActivityPersonQuota(quota, item.getId());
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
+            log.info("客户本人使用额度受限，详情：{}",boolDto.getDesc());
             return null;
         }
         //客户活动优惠统计信息
@@ -86,6 +87,7 @@ public class DiscountStrategy extends ActivityStrategy {
         boolDto = checkActivityAllQuota(quota);
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
+            log.info("所有客户使用额度受限，详情：{}",boolDto.getDesc());
             return null;
         }
         ClientCoupStatisticsQuotaDto allQuotaDto = boolDto.getData();
@@ -104,7 +106,7 @@ public class DiscountStrategy extends ActivityStrategy {
             //1.该商品是否适用于此活动
             if (!ApplyProductFlag.ALL.getDictValue().equals(item.getApplyProductFlag())) {
                 //该商品属性是否允许参与活动
-                ActivityRefProductEntity entity = activityRefProductMapper.findByBothId(item.getId(), productItem.getProductId());
+                ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(item.getId(), productItem.getProductId(),productItem.getSkuId());
                 if (entity == null) {
                     log.info("该商品不能参与该活动;活动编号：" + item.getId() + ";商品编号" + productItem.getProductId() + ";子商品编号" + productItem.getSkuId());
 

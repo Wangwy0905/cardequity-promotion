@@ -20,6 +20,7 @@ import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.map.HashedMap;
@@ -49,6 +50,7 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.*;
  * V1.1-V1 1004258-徐长焕-20181213 修改，获取已领取优惠券功能开发
  * V1.0-V1 1004247-徐长焕-20181207 新增，领取优惠券功能开发
  */
+@Slf4j
 @Service
 public class ClientCouponServiceImpl extends AbstractService<String, ClientCouponDto, ClientCouponEntity, ClientCouponMapper> implements ClientCouponService {
 
@@ -324,6 +326,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             //校验基本信息
             dto = checkCouponFrist(clientCoupon, req, true);
             if (!dto.getSuccess()) {
+                log.info("该优惠券校验不通过，领取编号{}，优惠券编号{}，原因:{}",clientCoupon.getId(),clientCoupon.getCouponId(),dto.getDesc());
                 continue;
             }
             ProductCouponEntity coupon = (ProductCouponEntity) dto.getData();

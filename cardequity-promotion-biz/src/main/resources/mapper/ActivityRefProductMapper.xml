@@ -15,10 +15,8 @@
         SELECT * FROM TB_ACTIVITY_REF_PRODUCT a
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
-        <if test="productId!=null and productId!=''">
-            and a.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
-        </if>
-        and a.SKU_ID=#{productId,jdbcType=VARCHAR}
+        and a.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+        and (a.SKU_ID=#{skuId,jdbcType=VARCHAR} or if(length(a.SKU_ID),a.SKU_ID,'EMPTY')='EMPTY')
     </select>
 
     <select id="findReProductBylist"  resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">

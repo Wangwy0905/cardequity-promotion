@@ -47,11 +47,6 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
     public UseActivityRsp applyActivity(ActivityProfitEntity item, List<OrderProductDetailDto> productList) {
 
         log.info("进入任选限额活动处理策略，策略编号为{}",item.getId());
-        //校验基本信息：有效期的、商品属性、订单属性、支付属性
-        //util.checkActivityBase(item, req);
-
-        //查询冲突的券已适用的商品列表，在本券映射适用商品列表时需要排除掉
-        //orderProductDetailDtoMap = checkAndMutexProducts(rsps, item);
 
         //装箱返回数据
         UseActivityRsp rsp = new UseActivityRsp();
@@ -80,6 +75,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
         CommonBoolDto<ClientCoupStatisticsQuotaDto> boolDto = checkActivityPersonQuota(quota, item.getId());
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
+            log.info("客户本人使用额度受限，详情：{}",boolDto.getDesc());
             return null;
         }
         //客户活动优惠统计信息
@@ -89,6 +85,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
         boolDto = checkActivityAllQuota(quota);
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
+            log.info("所有客户使用额度受限，详情：{}",boolDto.getDesc());
             return null;
         }
         ClientCoupStatisticsQuotaDto allQuotaDto = boolDto.getData();
@@ -104,7 +101,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
         for (OrderProductDetailDto productItem : productList) {
             if (!ApplyProductFlag.ALL.getDictValue().equals(item.getApplyProductFlag())) {
                 //该商品属性是否允许参与活动
-                ActivityRefProductEntity entity = activityRefProductMapper.findByBothId(item.getId(), productItem.getProductId());
+                ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(item.getId(), productItem.getProductId(),productItem.getSkuId());
                 if (entity == null) {
                     continue;
                 }

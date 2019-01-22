@@ -57,6 +57,7 @@ public class PriceStrategy extends ActivityStrategy {
         CommonBoolDto<ClientCoupStatisticsQuotaDto> boolDto = checkActivityPersonQuota(quota, item.getId());
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
+            log.info("客户本人使用额度受限，详情：{}",boolDto.getDesc());
             return null;
         }
         //客户活动优惠统计信息
@@ -66,6 +67,7 @@ public class PriceStrategy extends ActivityStrategy {
         boolDto = checkActivityAllQuota(quota);
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
+            log.info("所有客户使用额度受限，详情：{}",boolDto.getDesc());
             return null;
         }
         ClientCoupStatisticsQuotaDto allQuotaDto = boolDto.getData();
