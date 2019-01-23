@@ -29,7 +29,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 返回已领取的券
      * @Param req 指定客户号，必填
      */
-    List<ObtainCouponViewDto>  findClientCoupon(BaseClientReq req);
+    List<ObtainCouponViewDto>  findClientCoupon(QryComonClientCouponReq req);
 
     /**
      * 领取优惠券

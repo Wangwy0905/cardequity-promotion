@@ -27,7 +27,8 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      * 开发日志
      * 1004247-徐长焕-20181207 新增
      */
-    List<ClientCouponEntity> findClientCoupon(@Param("clientId") String clientId);
+    List<ClientCouponEntity> findClientCoupon(@Param("clientId") String clientId,
+                                              @Param("obtainState") String obtainState);
 
     /**
      * 获取客户已领取指定券

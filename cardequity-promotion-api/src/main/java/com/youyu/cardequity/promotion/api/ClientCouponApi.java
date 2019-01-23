@@ -45,7 +45,7 @@ public interface ClientCouponApi {
      */
     @ApiOperation(value = "【App】获取客户已领取的券")
     @PostMapping(path = "/findClientCoupon")
-    Result<List<ObtainCouponViewDto>> findClientCoupon(@RequestBody BaseClientReq req);
+    Result<List<ObtainCouponViewDto>> findClientCoupon(@RequestBody QryComonClientCouponReq req);
 
     /**
      * 领取优惠券

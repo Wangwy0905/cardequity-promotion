@@ -37,7 +37,7 @@ public class ClientCouponController implements ClientCouponApi {
     @Override
     @ApiOperation(value = "【App】获取客户已领取的券")
     @PostMapping(path = "/findClientCoupon")
-    public Result<List<ObtainCouponViewDto>> findClientCoupon(@RequestBody BaseClientReq req) {
+    public Result<List<ObtainCouponViewDto>> findClientCoupon(@RequestBody QryComonClientCouponReq req) {
         return  Result.ok(clientCouponService.findClientCoupon(req));
     }
 

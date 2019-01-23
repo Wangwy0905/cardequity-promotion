@@ -90,8 +90,8 @@ public class CommonUtils {
     /**
      * 计算适用的数量
      * @param maxValue 实际允许最大额度
-     * @param applyvalue 条件值
-     * @param valueCondition  指定校验适用数量
+     * @param applyvalue 想要申请适用的数量
+     * @param valueCondition  最低满足条件：不满足该条件则整个活动不适用
      * @return
      */
     public static BigDecimal  GetEnableUseQuota(BigDecimal valueCondition,
@@ -100,7 +100,7 @@ public class CommonUtils {
         BigDecimal realUsevalue=applyvalue;
         //对参数保护
         if (CommonDict.CONTINUEVALID.getCode().equals(CommonUtils.isQuotaValueNeedValidFlag(maxValue))) {
-            //限额<门槛数量
+            //最大限额<门槛数量
             if (maxValue.compareTo(valueCondition) < 0) {
                 //log.info("该优惠子编号{}中该客户选购中可参加活动商品数量限制最多为{}", stage.getId(), personDiffInfo.getClientDiffCount());
                 return BigDecimal.ZERO;

@@ -25,8 +25,8 @@ public class QuotaIndexDiffInfo {
     @ApiModelProperty(value = "指定统计的客户")
     private String clientId;
 
-    @ApiModelProperty(value = "指定统计的券")
-    private String couponId;
+    @ApiModelProperty(value = "指定统计活动或优惠券编号")
+    private String id;
 
     @ApiModelProperty(value = "客户当日优惠券额度")
     private BigDecimal clientDiffPerDateAmount;
@@ -40,10 +40,10 @@ public class QuotaIndexDiffInfo {
     @ApiModelProperty(value = "客户优惠券总数量")
     private BigDecimal clientDiffCount;
 
-    @ApiModelProperty(value = "客户允许最大数量")
+    @ApiModelProperty(value = "二次汇总结果值：最终允许最大数量，以上数量之间取小而得")
     private BigDecimal clientMinDiffCount;
 
-    @ApiModelProperty(value = "客户允许最大金额")
+    @ApiModelProperty(value = "二次汇总结果值：最终允许最大金额，以上金额之间取小而得")
     private BigDecimal clientMinDiffAmount;
 
 

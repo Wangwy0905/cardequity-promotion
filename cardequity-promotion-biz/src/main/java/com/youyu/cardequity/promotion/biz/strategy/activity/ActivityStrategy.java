@@ -46,29 +46,29 @@ public abstract class ActivityStrategy {
 
          //指定客户的统计
          if (!CommonUtils.isEmptyorNull(statisticsQuotaDto.getClientId())) {
-             //1.个人活动金额最大限额差值
+             //1.每人活动优惠金额PersonMaxAmount最大限额差值到ClientDiffAmount
              String flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPersonMaxAmount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffAmount(quota.getPersonMaxAmount().subtract(statisticsQuotaDto.getClientAmount()));
              } else if (CommonDict.FAILVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffAmount(BigDecimal.ZERO);
              }
-             //保存最小的值
+             //ClientMinDiffAmount始终保存PersonMaxAmount、PerDateAndAccMaxAmount之间的最小值
              if (diffInfo.getClientDiffAmount().compareTo(diffInfo.getClientMinDiffAmount()) < 0)
                  diffInfo.setClientMinDiffAmount(diffInfo.getClientDiffAmount());
 
-
+            //2.每日每人活动优惠金额PerDateAndAccMaxAmount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateAndAccMaxAmount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffPerDateAmount(quota.getPerDateAndAccMaxAmount().subtract(statisticsQuotaDto.getClientPerDateAmount()));
              } else if (CommonDict.FAILVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffPerDateAmount(BigDecimal.ZERO);
              }
-             //保存最小的值
+             //ClientMinDiffAmount始终保存PersonMaxAmount、PerDateAndAccMaxAmount之间的最小值
              if (diffInfo.getClientDiffPerDateAmount().compareTo(diffInfo.getClientMinDiffAmount()) < 0)
                  diffInfo.setClientMinDiffAmount(diffInfo.getClientMinDiffAmount());
 
-             //3.个人活动参与商品数量最大限额差值
+             //3.每人活动参与优惠商品数量PersonMaxCount最大限额差值
               flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPersonMaxCount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientMinDiffCount(quota.getPersonMaxCount().subtract(statisticsQuotaDto.getClientCount()));
@@ -79,7 +79,7 @@ public abstract class ActivityStrategy {
              if (diffInfo.getClientDiffCount().compareTo(diffInfo.getClientMinDiffCount()) < 0)
                  diffInfo.setClientMinDiffCount(diffInfo.getClientDiffCount());
 
-
+             //4.每日每人活动参与优惠商品数量PerDateAndAccMaxCount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateAndAccMaxCount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffPerDateCount(quota.getPerDateAndAccMaxCount().subtract(statisticsQuotaDto.getClientPerDateCount()));
@@ -90,7 +90,7 @@ public abstract class ActivityStrategy {
              if (diffInfo.getClientDiffPerDateCount().compareTo(diffInfo.getClientMinDiffCount()) < 0)
                  diffInfo.setClientMinDiffCount(diffInfo.getClientMinDiffCount());
          }else{
-             //1.活动金额最大限额差值
+             //1.活动优惠金额MaxAmount最大限额差值
              String flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getMaxAmount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffAmount(quota.getMaxAmount().subtract(statisticsQuotaDto.getClientAmount()));
@@ -101,7 +101,7 @@ public abstract class ActivityStrategy {
              if (diffInfo.getClientDiffAmount().compareTo(diffInfo.getClientMinDiffAmount()) < 0)
                  diffInfo.setClientMinDiffAmount(diffInfo.getClientDiffAmount());
 
-
+             //每日活动优惠金额PerDateMaxAmount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateMaxAmount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffPerDateAmount(quota.getPerDateMaxAmount().subtract(statisticsQuotaDto.getClientPerDateAmount()));
@@ -112,7 +112,7 @@ public abstract class ActivityStrategy {
              if (diffInfo.getClientDiffPerDateAmount().compareTo(diffInfo.getClientMinDiffAmount()) < 0)
                  diffInfo.setClientMinDiffAmount(diffInfo.getClientMinDiffAmount());
 
-             //3.个人活动参与商品数量最大限额差值
+             //3.活动参与商品数量MaxCount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getMaxCount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientMinDiffCount(quota.getMaxCount().subtract(statisticsQuotaDto.getClientCount()));
@@ -123,7 +123,7 @@ public abstract class ActivityStrategy {
              if (diffInfo.getClientDiffCount().compareTo(diffInfo.getClientMinDiffCount()) < 0)
                  diffInfo.setClientMinDiffCount(diffInfo.getClientDiffCount());
 
-
+             //3.每天活动参与商品数量PerDateMaxCount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateMaxCount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffPerDateCount(quota.getPerDateMaxCount().subtract(statisticsQuotaDto.getClientPerDateCount()));
@@ -181,7 +181,7 @@ public abstract class ActivityStrategy {
 
             } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getFormatDesc(BigDecimal.ZERO, "忽略", clientId));
+                dto.setDesc(COUPON_FAIL_PERACCANDDATEQUOTA.getFormatDesc(BigDecimal.ZERO, "无效参数", clientId));
                 return dto;
             }
 
@@ -196,7 +196,7 @@ public abstract class ActivityStrategy {
                 }
             } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(BigDecimal.ZERO, "忽略", clientId));
+                dto.setDesc(COUPON_FAIL_PERACCQUOTA.getFormatDesc(BigDecimal.ZERO, "无效参数", clientId));
                 return dto;
             }
 
@@ -215,7 +215,7 @@ public abstract class ActivityStrategy {
                 }
             } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_COUNT_PERACCANDDATEQUOTA.getFormatDesc(BigDecimal.ZERO, "忽略", clientId));
+                dto.setDesc(COUPON_FAIL_COUNT_PERACCANDDATEQUOTA.getFormatDesc(BigDecimal.ZERO, "无效参数", clientId));
                 return dto;
             }
 
@@ -234,7 +234,7 @@ public abstract class ActivityStrategy {
                 }
             } else if (CommonDict.FAILVALID.getCode().equals(validflag)) {
                 dto.setSuccess(false);
-                dto.setDesc(COUPON_FAIL_COUNT_PERACCQUOTA.getFormatDesc(BigDecimal.ZERO, "忽略", clientId));
+                dto.setDesc(COUPON_FAIL_COUNT_PERACCQUOTA.getFormatDesc(BigDecimal.ZERO, "无效参数", clientId));
                 return dto;
             }
         }

@@ -46,16 +46,16 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
     @Override
     public UseActivityRsp applyActivity(ActivityProfitEntity item, List<OrderProductDetailDto> productList) {
 
-        log.info("进入任选限额活动处理策略，策略编号为{}",item.getId());
+        log.info("进入任选限额活动处理策略，策略编号为{}", item.getId());
 
-        //装箱返回数据
+        //1.装箱返回数据
         UseActivityRsp rsp = new UseActivityRsp();
         ActivityProfitDto dto = new ActivityProfitDto();
         BeanUtils.copyProperties(item, dto);
         rsp.setActivity(dto);
         rsp.setProfitAmount(item.getProfitValue());
 
-        //获取活动阶梯
+        //2.获取活动阶梯
         List<ActivityStageCouponEntity> activityProfitDetail = activityStageCouponMapper.findActivityProfitDetail(item.getId());
         //任选N件最多M元一定要设置门槛
         if (activityProfitDetail.size() <= 0) {
@@ -75,20 +75,18 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
         CommonBoolDto<ClientCoupStatisticsQuotaDto> boolDto = checkActivityPersonQuota(quota, item.getId());
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
-            log.info("客户本人使用额度受限，详情：{}",boolDto.getDesc());
+            log.info("客户本人使用额度受限，详情：{}", boolDto.getDesc());
             return null;
         }
-        //客户活动优惠统计信息
-        ClientCoupStatisticsQuotaDto clientQuotaDto = boolDto.getData();
 
         //检查所有客户领取额度情况
         boolDto = checkActivityAllQuota(quota);
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
-            log.info("所有客户使用额度受限，详情：{}",boolDto.getDesc());
+            log.info("所有客户使用额度受限，详情：{}", boolDto.getDesc());
             return null;
         }
-        ClientCoupStatisticsQuotaDto allQuotaDto = boolDto.getData();
+
 
         BigDecimal countCondition = BigDecimal.ZERO;
         BigDecimal amountCondition = BigDecimal.ZERO;
@@ -97,11 +95,11 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
         BigDecimal profitAmount = BigDecimal.ZERO;
         List<OrderProductDetailDto> temproductLsit = new ArrayList<>();
         OrderProductDetailDto cyproduct = null;
-        //所有活动在定义适用商品时都不会重叠
+        //3.检验门槛值：所有活动在定义适用商品时都不会重叠
         for (OrderProductDetailDto productItem : productList) {
             if (!ApplyProductFlag.ALL.getDictValue().equals(item.getApplyProductFlag())) {
                 //该商品属性是否允许参与活动
-                ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(item.getId(), productItem.getProductId(),productItem.getSkuId());
+                ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(item.getId(), productItem.getProductId(), productItem.getSkuId());
                 if (entity == null) {
                     continue;
                 }
@@ -112,7 +110,6 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
             BeanUtils.copyProperties(productItem, product);
             product.setTotalAmount(product.getAppCount().multiply(product.getPrice()));
 
-            //任选3件99元，哪怕有6个商品满足也只使用一次,即前3件会使用
             for (ActivityStageCouponEntity stage : activityProfitDetail) {
                 //1.优惠力度比当前还小的抛弃，任选策略同一个活动ProfitValue值越小的阶梯优惠额度越大
                 if (rsp.getStage() != null &&
@@ -130,7 +127,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
                 if (TriggerByType.CAPITAL.getDictValue().equals(stage.getTriggerByType())) {
                     continue;
                 }
-                //按数量统计门槛
+                //门槛差值
                 diff = stage.getBeginValue().subtract(countCondition);
                 //已经适配过的不再处理：理论上不会出现该情况，
                 if (diff.compareTo(BigDecimal.ZERO) <= 0)
@@ -157,7 +154,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
                         temproductLsit.clear();
                         temproductLsit.addAll(rsp.getProductLsit());
                         temproductLsit.add(cyproduct);
-                        log.info("任选限额券满足使用条件处理;活动编号：" + item.getId() +";门槛编号："+stage.getId()+ ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
+                        log.info("任选限额券满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                     }
                 }
             }
@@ -171,7 +168,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
         if (rsp.getStage() != null) {
             rsp.setProductLsit(temproductLsit);
             BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-            if (totalRealAmount.compareTo(BigDecimal.ZERO)>0) {
+            if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
                 //每种商品优惠的金额是按适用金额比例来的
                 for (OrderProductDetailDto product : rsp.getProductLsit()) {
                     product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
@@ -182,4 +179,5 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
 
         return null;
     }
+
 }

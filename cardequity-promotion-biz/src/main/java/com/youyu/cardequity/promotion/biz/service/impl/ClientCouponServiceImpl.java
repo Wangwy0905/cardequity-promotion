@@ -90,9 +90,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * 1004247-徐长焕-20181213 新增
      */
     @Override
-    public List<ObtainCouponViewDto> findClientCoupon(BaseClientReq req) {
+    public List<ObtainCouponViewDto> findClientCoupon(QryComonClientCouponReq req) {
 
-        List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientCoupon(req.getClientId());
+        List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientCoupon(req.getClientId(),req.getObtainState());
         return combClientObtainCouponList(clientCouponEnts);
     }
 
@@ -297,7 +297,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             }
         } else {
             //获取已领取的有效优惠券：排除过期，已使用、使用中的券，按优惠金额已排序后的
-            enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId());
+            enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId(),"1");
         }
 
         //空订单或者没有可用优惠券直接返回
@@ -986,7 +986,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
 
-        List<ClientCouponEntity> enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId());
+        List<ClientCouponEntity> enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId(),"1");
 
         //空订单或者没有可用优惠券直接返回
         if (req.getProductList() == null ||
