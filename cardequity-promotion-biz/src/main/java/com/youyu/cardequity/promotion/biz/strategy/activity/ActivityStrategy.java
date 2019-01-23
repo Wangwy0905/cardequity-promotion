@@ -44,18 +44,30 @@ public abstract class ActivityStrategy {
              return diffInfo;
          }
 
+        String flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerMaxAmount());
+        if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
+            diffInfo.setPerMaxAmount(quota.getPerMaxAmount());
+            diffInfo.setMinDiffAmount(diffInfo.getMinDiffAmount().min(diffInfo.getPerMaxAmount()));
+        }
+
+        flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerMaxCount());
+        if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
+            diffInfo.setPerMaxCount(quota.getPerMaxCount());
+            diffInfo.setMinDiffCount(diffInfo.getMinDiffCount().min(diffInfo.getPerMaxCount()));
+        }
+
          //指定客户的统计
          if (!CommonUtils.isEmptyorNull(statisticsQuotaDto.getClientId())) {
              //1.每人活动优惠金额PersonMaxAmount最大限额差值到ClientDiffAmount
-             String flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPersonMaxAmount());
+              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPersonMaxAmount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffAmount(quota.getPersonMaxAmount().subtract(statisticsQuotaDto.getClientAmount()));
              } else if (CommonDict.FAILVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffAmount(BigDecimal.ZERO);
              }
-             //ClientMinDiffAmount始终保存PersonMaxAmount、PerDateAndAccMaxAmount之间的最小值
-             if (diffInfo.getClientDiffAmount().compareTo(diffInfo.getClientMinDiffAmount()) < 0)
-                 diffInfo.setClientMinDiffAmount(diffInfo.getClientDiffAmount());
+             //minDiffAmount始终保存PersonMaxAmount、PerDateAndAccMaxAmount之间的最小值
+             diffInfo.setMinDiffAmount(diffInfo.getMinDiffAmount().min(diffInfo.getClientDiffAmount()));
+
 
             //2.每日每人活动优惠金额PerDateAndAccMaxAmount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateAndAccMaxAmount());
@@ -64,20 +76,18 @@ public abstract class ActivityStrategy {
              } else if (CommonDict.FAILVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffPerDateAmount(BigDecimal.ZERO);
              }
-             //ClientMinDiffAmount始终保存PersonMaxAmount、PerDateAndAccMaxAmount之间的最小值
-             if (diffInfo.getClientDiffPerDateAmount().compareTo(diffInfo.getClientMinDiffAmount()) < 0)
-                 diffInfo.setClientMinDiffAmount(diffInfo.getClientMinDiffAmount());
+             //MinDiffAmount始终保存PersonMaxAmount、PerDateAndAccMaxAmount之间的最小值
+             diffInfo.setMinDiffAmount(diffInfo.getMinDiffAmount().min(diffInfo.getClientDiffPerDateAmount()));
 
              //3.每人活动参与优惠商品数量PersonMaxCount最大限额差值
               flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPersonMaxCount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
-                 diffInfo.setClientMinDiffCount(quota.getPersonMaxCount().subtract(statisticsQuotaDto.getClientCount()));
+                 diffInfo.setClientDiffCount(quota.getPersonMaxCount().subtract(statisticsQuotaDto.getClientCount()));
              } else if (CommonDict.FAILVALID.getCode().equals(flag)) {
-                 diffInfo.setClientMinDiffCount(BigDecimal.ZERO);
+                 diffInfo.setClientDiffCount(BigDecimal.ZERO);
              }
              //保存最小的值
-             if (diffInfo.getClientDiffCount().compareTo(diffInfo.getClientMinDiffCount()) < 0)
-                 diffInfo.setClientMinDiffCount(diffInfo.getClientDiffCount());
+             diffInfo.setMinDiffCount(diffInfo.getMinDiffCount().min(diffInfo.getClientDiffCount()));
 
              //4.每日每人活动参与优惠商品数量PerDateAndAccMaxCount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateAndAccMaxCount());
@@ -87,19 +97,18 @@ public abstract class ActivityStrategy {
                  diffInfo.setClientDiffPerDateCount(BigDecimal.ZERO);
              }
              //保存最小的值
-             if (diffInfo.getClientDiffPerDateCount().compareTo(diffInfo.getClientMinDiffCount()) < 0)
-                 diffInfo.setClientMinDiffCount(diffInfo.getClientMinDiffCount());
+             diffInfo.setMinDiffCount(diffInfo.getMinDiffCount().min(diffInfo.getClientDiffPerDateCount()));
+
          }else{
              //1.活动优惠金额MaxAmount最大限额差值
-             String flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getMaxAmount());
+              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getMaxAmount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffAmount(quota.getMaxAmount().subtract(statisticsQuotaDto.getClientAmount()));
              } else if (CommonDict.FAILVALID.getCode().equals(flag)) {
                  diffInfo.setClientDiffAmount(BigDecimal.ZERO);
              }
              //保存最小的值
-             if (diffInfo.getClientDiffAmount().compareTo(diffInfo.getClientMinDiffAmount()) < 0)
-                 diffInfo.setClientMinDiffAmount(diffInfo.getClientDiffAmount());
+             diffInfo.setMinDiffAmount(diffInfo.getMinDiffAmount().min(diffInfo.getClientDiffAmount()));
 
              //每日活动优惠金额PerDateMaxAmount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateMaxAmount());
@@ -109,19 +118,17 @@ public abstract class ActivityStrategy {
                  diffInfo.setClientDiffPerDateAmount(BigDecimal.ZERO);
              }
              //保存最小的值
-             if (diffInfo.getClientDiffPerDateAmount().compareTo(diffInfo.getClientMinDiffAmount()) < 0)
-                 diffInfo.setClientMinDiffAmount(diffInfo.getClientMinDiffAmount());
+             diffInfo.setMinDiffAmount(diffInfo.getMinDiffAmount().min(diffInfo.getClientDiffPerDateAmount()));
 
              //3.活动参与商品数量MaxCount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getMaxCount());
              if (CommonDict.CONTINUEVALID.getCode().equals(flag)) {
-                 diffInfo.setClientMinDiffCount(quota.getMaxCount().subtract(statisticsQuotaDto.getClientCount()));
+                 diffInfo.setClientDiffCount(quota.getMaxCount().subtract(statisticsQuotaDto.getClientCount()));
              } else if (CommonDict.FAILVALID.getCode().equals(flag)) {
-                 diffInfo.setClientMinDiffCount(BigDecimal.ZERO);
+                 diffInfo.setClientDiffCount(BigDecimal.ZERO);
              }
              //保存最小的值
-             if (diffInfo.getClientDiffCount().compareTo(diffInfo.getClientMinDiffCount()) < 0)
-                 diffInfo.setClientMinDiffCount(diffInfo.getClientDiffCount());
+             diffInfo.setMinDiffCount(diffInfo.getMinDiffCount().min(diffInfo.getClientDiffCount()));
 
              //3.每天活动参与商品数量PerDateMaxCount最大限额差值
              flag = CommonUtils.isQuotaValueNeedValidFlag(quota.getPerDateMaxCount());
@@ -131,8 +138,7 @@ public abstract class ActivityStrategy {
                  diffInfo.setClientDiffPerDateCount(BigDecimal.ZERO);
              }
              //保存最小的值
-             if (diffInfo.getClientDiffPerDateCount().compareTo(diffInfo.getClientMinDiffCount()) < 0)
-                 diffInfo.setClientMinDiffCount(diffInfo.getClientMinDiffCount());
+             diffInfo.setMinDiffCount(diffInfo.getMinDiffCount().min(diffInfo.getClientDiffPerDateCount()));
 
          }
 
@@ -354,4 +360,145 @@ public abstract class ActivityStrategy {
         return dto;
     }
 
+
+    /**
+     * 获取“按笔”限额最终允许参与活动数量
+     *
+     * @param quota           额度限制配置
+     * @param conditionFlag   0-vauleCondition标识数量 1-标识金额
+     * @param vauleCondition  满足优惠活动条件的时最低优惠数量
+     * @param applyNum        适用数量初始值：需校验的值
+     * @param profitPerAmount 单个商品优惠金额
+     * @return 活动是否禁止参与，及当前允许额度
+     */
+     CommonBoolDto<BigDecimal> checkPerFinalEnableQuota(ActivityQuotaRuleEntity quota,
+                                                               BigDecimal vauleCondition,
+                                                               String conditionFlag,
+                                                               BigDecimal applyNum,
+                                                               BigDecimal profitPerAmount) {
+        CommonBoolDto<BigDecimal> result = new CommonBoolDto<BigDecimal>(true);
+        result.setData(applyNum);
+        if (!CommonUtils.isGtZeroDecimal(profitPerAmount)) {
+            result.setSuccess(false);
+            result.setDesc("每个单位优惠金额必须大于0");
+            result.setData(BigDecimal.ZERO);
+            return result;
+        }
+        if (!CommonUtils.isGtZeroDecimal(applyNum)) {
+            return result;
+        }
+        //校验限额
+        if (quota != null) {
+            //满足优惠活动条件的时最低优惠数量
+            BigDecimal countCondition = BigDecimal.ZERO;
+            //满足优惠活动条件的时最低优惠金额
+            BigDecimal fundCondition = BigDecimal.ZERO;
+            if (CommonUtils.isGtZeroDecimal(vauleCondition)) {
+                if (CommonDict.IF_YES.getCode().equals(conditionFlag)) {
+                    fundCondition = vauleCondition;
+                    countCondition = vauleCondition.divide(profitPerAmount);
+                } else {
+                    fundCondition = vauleCondition.multiply(profitPerAmount);
+                    countCondition = vauleCondition;
+                }
+            }
+
+            //1.校验【每笔最大优惠“数量”】
+            applyNum = CommonUtils.GetEnableUseQuota(countCondition, applyNum, quota.getPerMaxCount());
+            if (applyNum.compareTo(BigDecimal.ZERO) <= 0) {
+                result.setSuccess(false);
+                result.setDesc(String.format("每笔最大优惠“数量”校验不通过最少需要满足数量{0}，申请优惠数量{1}，实际剩余数量{2}", countCondition, applyNum, quota.getPerMaxCount()));
+                result.setData(BigDecimal.ZERO);
+                return result;
+            }
+            //申请优惠总额
+            BigDecimal profitApplyAmount = profitPerAmount.multiply(applyNum);
+
+            //2.校验【每笔最大优惠“金额”】
+            BigDecimal enableProfitAmount = CommonUtils.GetEnableUseQuota(fundCondition, profitApplyAmount, quota.getPerMaxAmount());
+            if (applyNum.compareTo(BigDecimal.ZERO) <= 0) {
+                result.setSuccess(false);
+                result.setDesc(String.format("每笔最大优惠“金额”校验不通过最少需要满足优惠金额{0}，申请优惠金额{1}，实际剩余优惠金额额度{2}", fundCondition, applyNum, quota.getPerMaxCount()));
+                result.setData(BigDecimal.ZERO);
+                return result;
+            }
+            //最终能优惠的金额转换为可优惠的数量
+            applyNum = enableProfitAmount.divide(profitPerAmount).setScale(0, BigDecimal.ROUND_DOWN);//重量类商品也是按1单位数量参与活动
+
+        }
+        result.setData(applyNum);
+        return result;
+    }
+
+
+
+    /**
+     * 获取“按用户”或按“所有用户”限额最终允许参与活动数量
+     *
+     * @param diffInfo        实际额度与额度限制配置差值情况
+     * @param conditionFlag   0-vauleCondition标识数量 1-标识金额
+     * @param vauleCondition  满足优惠活动条件的时最低优惠数量
+     * @param applyNum        适用数量初始值：需校验的值
+     * @param profitPerAmount 单个商品优惠金额
+     * @return 活动是否禁止参与，及当前允许额度
+     */
+    CommonBoolDto<BigDecimal> checkTotalFinalEnableQuota(QuotaIndexDiffInfo diffInfo,
+                                                         BigDecimal vauleCondition,
+                                                         String conditionFlag,
+                                                         BigDecimal applyNum,
+                                                         BigDecimal profitPerAmount) {
+        CommonBoolDto<BigDecimal> result = new CommonBoolDto<>(true);
+        result.setData(applyNum);
+        if (!CommonUtils.isGtZeroDecimal(profitPerAmount)) {
+            result.setSuccess(false);
+            result.setDesc("每个单位数量优惠金额必须大于0");
+            result.setData(BigDecimal.ZERO);
+            return result;
+        }
+
+        if (!CommonUtils.isGtZeroDecimal(applyNum)) {
+            return result;
+        }
+        //校验限额
+        if (diffInfo != null) {
+            //满足优惠活动条件的时最低优惠数量
+            BigDecimal countCondition = BigDecimal.ZERO;
+            //满足优惠活动条件的时最低优惠金额
+            BigDecimal fundCondition = BigDecimal.ZERO;
+            if (CommonUtils.isGtZeroDecimal(vauleCondition)) {
+                if (CommonDict.IF_YES.getCode().equals(conditionFlag)) {
+                    fundCondition = vauleCondition;
+                    countCondition = vauleCondition.divide(profitPerAmount);
+                } else {
+                    fundCondition = vauleCondition.multiply(profitPerAmount);
+                    countCondition = vauleCondition;
+                }
+            }
+
+            //1.校验【最大优惠“数量”】
+            applyNum = CommonUtils.GetEnableUseQuota(countCondition, applyNum, diffInfo.getMinDiffCount());
+            if (applyNum.compareTo(BigDecimal.ZERO) <= 0) {
+                result.setSuccess(false);
+                result.setDesc(String.format("最大优惠“数量”校验不通过最少需要满足数量{0}，申请优惠数量{1}，实际剩余数量{2}", countCondition, applyNum, diffInfo.getMinDiffCount()));
+                result.setData(BigDecimal.ZERO);
+                return result;
+            }
+            //申请优惠总额
+            BigDecimal profitApplyAmount = profitPerAmount.multiply(applyNum);
+
+            //2.校验【每笔最大优惠“金额”】
+            BigDecimal enableProfitAmount = CommonUtils.GetEnableUseQuota(fundCondition, profitApplyAmount, diffInfo.getMinDiffAmount());
+            if (applyNum.compareTo(BigDecimal.ZERO) <= 0) {
+                result.setSuccess(false);
+                result.setDesc(String.format("最大优惠“金额”校验不通过最少需要满足优惠金额{0}，申请优惠金额{1}，实际剩余优惠金额额度{2}", fundCondition, applyNum, diffInfo.getMinDiffAmount()));
+                result.setData(BigDecimal.ZERO);
+                return result;
+            }
+            //最终能优惠的金额转换为可优惠的数量
+            applyNum = enableProfitAmount.divide(profitPerAmount).setScale(0, BigDecimal.ROUND_DOWN);//重量类商品也是按1单位数量参与活动
+
+        }
+        result.setData(applyNum);
+        return result;
+    }
 }

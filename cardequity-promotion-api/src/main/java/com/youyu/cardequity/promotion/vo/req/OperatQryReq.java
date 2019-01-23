@@ -10,4 +10,7 @@ import lombok.Data;
 public class OperatQryReq extends OperatReq {
     @ApiModelProperty(value = "显示数量：从1开始")
     private int pageSize;
+
+    @ApiModelProperty(value = "显示页数")
+    private int pageNo;
 }

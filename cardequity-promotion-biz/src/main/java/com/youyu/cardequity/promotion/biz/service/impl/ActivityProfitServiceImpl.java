@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
@@ -111,7 +112,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * 订单预生成时使用活动详情
      *
      * @param req 请求体
-     * @return  使用详情
+     * @return 使用详情
      */
     @Override
     public List<UseActivityRsp> combActivityRefProductDeal(GetUseEnableCouponReq req) {
@@ -148,13 +149,13 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //校验基本信息：有效期的、商品属性、订单属性、支付属性、上架状态
             boolDto = checkActivityBase(item, req);
             if (!boolDto.getSuccess()) {
-                log.info("该活动不适用于，活动编号{}，原因:{}",item.getId(),boolDto.getDesc());
+                log.info("该活动不适用于，活动编号{}，原因:{}", item.getId(), boolDto.getDesc());
                 continue;
             }
 
             //根据策略得到该活动是否满足门槛，返回满足活动适用信息
             String key = ActivityStrategy.class.getSimpleName() + item.getActivityCouponType();
-            log.info("获取活动策略key:{}",key);
+            log.info("获取活动策略key:{}", key);
             ActivityStrategy executor = (ActivityStrategy) CustomHandler.getBeanByName(key);
             UseActivityRsp rsp = executor.applyActivity(item, req.getProductList());
             if (rsp != null) {
@@ -243,7 +244,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 //需要检查该商品是否已经存在下架的一个活动
                 List<ActivityProfitEntity> entities = activityProfitMapper.findActivityByProductId(item.getProductList().get(0).getProductId(), item.getProductList().get(0).getSkuId(), "", "");
                 if (!entities.isEmpty())
-                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(String.format("该商品已存在其他活动，活动数量{0}，商品编号{1}，sku编号{2}",entities.size(),item.getProductList().get(0).getProductId(),item.getProductList().get(0).getSkuId()) ));
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(String.format("该商品已存在其他活动，活动数量{0}，商品编号{1}，sku编号{2}", entities.size(), item.getProductList().get(0).getProductId(), item.getProductList().get(0).getSkuId())));
                 profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
                 if (CommonUtils.isEmptyorNull(item.getProductList().get(0).getSkuId())) {
                     profit.setStatus(CouponStatus.NO.getDictValue());
@@ -713,7 +714,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         if (req.getProductList() != null && !req.getProductList().isEmpty()) {
             dto.setSuccess(false);
             for (OrderProductDetailDto item : req.getProductList()) {
-                dto = checkRefProduct(activity, item.getProductId(),item.getSkuId());
+                dto = checkRefProduct(activity, item.getProductId(), item.getSkuId());
                 if (dto.getSuccess()) {
                     break;
                 }
@@ -775,12 +776,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * @param productId 商品编号
      * @return 返回是否校验成功
      */
-    private CommonBoolDto checkRefProduct(ActivityProfitEntity activity, String productId,String skuId) {
+    private CommonBoolDto checkRefProduct(ActivityProfitEntity activity, String productId, String skuId) {
         CommonBoolDto dto = new CommonBoolDto(false);
         // ApplyProductFlag空值做保护
         if (!ApplyProductFlag.ALL.getDictValue().equals(activity.getApplyProductFlag())) {
             //该商品属性是否允许参与活动
-            ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(activity.getId(), productId,skuId);
+            ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(activity.getId(), productId, skuId);
             if (entity != null) {
                 dto.setSuccess(true);
                 return dto;
@@ -1021,18 +1022,19 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
     /**
      * 查询抢购特价活动
+     *
      * @param req 查询请求体
      * @return
      */
     @Override
-    public List<ActivityDetailDto> findFlashSalePriceActivity(OperatQryReq req){
-          //先按商品分组，最近更新的前N条
-        if (req.getPageSize()<=0)
+    public List<ActivityDetailDto> findFlashSalePriceActivity(OperatQryReq req) {
+        //先按商品分组，最近更新的前N条
+        if (req.getPageSize() <= 0)
             req.setPageSize(3);
         List<GroupProductDto> dtos = activityProfitMapper.findLeastPriceProductActivity(req);
         if (!dtos.isEmpty()) {
-            List<String> ids=new ArrayList<>();
-            for (GroupProductDto item:dtos){
+            List<String> ids = new ArrayList<>();
+            for (GroupProductDto item : dtos) {
                 ids.add(item.getProductId());
             }
 
@@ -1041,6 +1043,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
         return new ArrayList<>();
     }
+
+
 
 }
 

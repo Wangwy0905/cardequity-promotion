@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.strategy.activity;
 
 import com.youyu.cardequity.common.base.annotation.StatusAndStrategyNum;
+import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.promotion.biz.dal.dao.ActivityQuotaRuleMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.ActivityRefProductMapper;
@@ -14,6 +15,7 @@ import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.ClientCoupStatisticsQuotaDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
 import com.youyu.cardequity.promotion.enums.dict.CouponApplyProductStage;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
@@ -48,7 +50,7 @@ public class DiscountStrategy extends ActivityStrategy {
     public UseActivityRsp applyActivity(ActivityProfitEntity item, List<OrderProductDetailDto> productList) {
         String discountApplyStage = CouponApplyProductStage.ALL.getDictValue();
 
-        log.info("进入折扣活动处理策略，策略编号为{}",item.getId());
+        log.info("进入折扣活动处理策略，策略编号为{}", item.getId());
         //应获取于配置开关
         // TODO: 2018/12/26
         //装箱返回数据
@@ -60,13 +62,14 @@ public class DiscountStrategy extends ActivityStrategy {
         //获取活动阶梯
         List<ActivityStageCouponEntity> orgStageList = activityStageCouponMapper.findActivityProfitDetail(item.getId());
         List<ActivityStageCouponEntity> activityProfitDetail = new ArrayList<>();
-
+        //只获取有效的阶梯
         for (ActivityStageCouponEntity stage : orgStageList) {
             if (CommonUtils.isGtZeroDecimal(stage.getProfitValue()) && stage.getProfitValue().compareTo(BigDecimal.ONE) < 0) {
                 activityProfitDetail.add(stage);
             }
         }
 
+        //无门槛活动参数校验
         if (activityProfitDetail.size() == 0)
             if (!CommonUtils.isGtZeroDecimal(item.getProfitValue()) || item.getProfitValue().compareTo(BigDecimal.ONE) >= 0)
                 return null;
@@ -77,7 +80,7 @@ public class DiscountStrategy extends ActivityStrategy {
         CommonBoolDto<ClientCoupStatisticsQuotaDto> boolDto = checkActivityPersonQuota(quota, item.getId());
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
-            log.info("客户本人使用额度受限，详情：{}",boolDto.getDesc());
+            log.info("客户本人使用额度受限，详情：{}", boolDto.getDesc());
             return null;
         }
         //客户活动优惠统计信息
@@ -87,7 +90,7 @@ public class DiscountStrategy extends ActivityStrategy {
         boolDto = checkActivityAllQuota(quota);
         //校验不通过直接返回
         if (!boolDto.getSuccess()) {
-            log.info("所有客户使用额度受限，详情：{}",boolDto.getDesc());
+            log.info("所有客户使用额度受限，详情：{}", boolDto.getDesc());
             return null;
         }
         ClientCoupStatisticsQuotaDto allQuotaDto = boolDto.getData();
@@ -96,201 +99,121 @@ public class DiscountStrategy extends ActivityStrategy {
         BigDecimal amountCondition = BigDecimal.ZERO;
         BigDecimal diff = BigDecimal.ZERO;
         BigDecimal applyNum = BigDecimal.ZERO;
-        BigDecimal oldApplyNum = BigDecimal.ZERO;
-        boolean isApplyFlag = true;//最新的优惠活动是否达到限额最大
         BigDecimal profitCount = BigDecimal.ZERO;
         List<OrderProductDetailDto> temproductLsit = new ArrayList<>();
 
-        //所有活动在定义适用商品时都不会重叠
-        for (OrderProductDetailDto productItem : productList) {
-            //1.该商品是否适用于此活动
-            if (!ApplyProductFlag.ALL.getDictValue().equals(item.getApplyProductFlag())) {
-                //该商品属性是否允许参与活动
-                ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(item.getId(), productItem.getProductId(),productItem.getSkuId());
-                if (entity == null) {
-                    log.info("该商品不能参与该活动;活动编号：" + item.getId() + ";商品编号" + productItem.getProductId() + ";子商品编号" + productItem.getSkuId());
-
+        //3.有门槛的活动处理
+        if (activityProfitDetail.size() > 0) {
+            for (ActivityStageCouponEntity stage : activityProfitDetail) {
+                //3-1.折扣活动只取优惠力度最大的,同一个活动ProfitValue值越小的阶梯优惠额度越大
+                if (rsp.getStage() != null &&
+                        rsp.getStage().getProfitValue().compareTo(stage.getProfitValue()) <= 0) {
                     continue;
                 }
-            }
-            //2.后续会多次设置product对象相关值，需要拷贝出来避免污染
-            OrderProductDetailDto product = new OrderProductDetailDto();
-            BeanUtils.copyProperties(productItem, product);
-            //统计值保护清0
-            product.setProfitCount(BigDecimal.ZERO);
-            product.setProfitAmount(BigDecimal.ZERO);
-            //总额做保护
-            product.setTotalAmount(product.getAppCount().multiply(product.getPrice()));
-
-            //3.有门槛的活动处理
-            if (activityProfitDetail.size() > 0) {
-                for (ActivityStageCouponEntity stage : activityProfitDetail) {
-                    //3-1.折扣活动只取优惠力度最大的,同一个活动ProfitValue值越小的阶梯优惠额度越大
-                    if (rsp.getStage() != null &&
-                            rsp.getStage().getProfitValue().compareTo(stage.getProfitValue()) < 0)
-                        continue;
-
-                    //3-2.如果折扣活动只适用于满足条件的个数和商品，则后面商品都不算入该阶梯适用商品
-                    if (rsp.getStage() != null &&
-                            CouponApplyProductStage.CONDITION.getDictValue().equals(discountApplyStage) &&
-                            rsp.getStage().getId().equals(stage.getId())) {
-                        continue;
-                    }
-
-                    applyNum = product.getAppCount();
-                    //3-3.该活动已经验证满足门槛了，只需要将后续商品继续加入适配列表中即可
-                    if (rsp.getStage() != null && rsp.getStage().getId().equals(stage.getId())) {
-                        //设置达标门槛数量
-                        product.setProfitCount(BigDecimal.ZERO);
-                        //计算限额后的适用数量
-                        applyNum = GetFinalEnableQuota(quota,
-                                clientQuotaDto,
-                                allQuotaDto,
-                                product,
-                                countCondition,
-                                amountCondition,
-                                applyNum,
-                                stage.getProfitValue());
-                        log.info("已满足折扣活动门槛继续处理后续商品;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
-
-                        //所有校验全通关
-                        if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
-                            temproductLsit = calculationProfitAmount(product, applyNum, amountCondition, stage, rsp, temproductLsit);
-                            log.info("已满足折扣活动门槛继续处理后续商品时额度交易通过;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
+                temproductLsit.clear();
+                //所有活动在定义适用商品时都不会重叠
+                for (OrderProductDetailDto productItem : productList) {
+                    //1.该商品是否适用于此活动
+                    if (!ApplyProductFlag.ALL.getDictValue().equals(item.getApplyProductFlag())) {
+                        //该商品属性是否允许参与活动
+                        ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(item.getId(), productItem.getProductId(), productItem.getSkuId());
+                        if (entity == null) {
+                            log.info("该商品不能参与该活动;活动编号：" + item.getId() + ";商品编号" + productItem.getProductId() + ";子商品编号" + productItem.getSkuId());
+                            continue;
                         }
-                    } else {
-                        //暂时没有达到门槛时，全额数量作为下一次计算门槛进行累计计算
-                        product.setProfitCount(product.getAppCount());
-                        //3-4.按金额统计门槛
-                        if (TriggerByType.CAPITAL.getDictValue().equals(stage.getTriggerByType())) {
-                            diff = stage.getBeginValue().subtract(amountCondition);
-                            //isApplyFlag = true;
-                            //满足门槛条件情况下：将原适用详情temproductLsit替换为最新满足的活动的
-                            if (product.getTotalAmount().compareTo(diff) >= 0) {
+                    }
+                    //2.后续会多次设置product对象相关值，需要拷贝出来避免污染
+                    OrderProductDetailDto product = new OrderProductDetailDto();
+                    BeanUtils.copyProperties(productItem, product);
+                    applyNum = product.getAppCount();
+                    profitCount = product.getAppCount();
 
+                    //3-4.按金额统计门槛
+                    if (TriggerByType.CAPITAL.getDictValue().equals(stage.getTriggerByType())) {
+                        diff = stage.getBeginValue().subtract(amountCondition);
+                        if (CommonUtils.isGtZeroDecimal(diff)) {
+                            //满足门槛条件情况下
+                            if (product.getTotalAmount().compareTo(diff) >= 0) {
                                 //设置达标门槛数量：可能为负数，表示循环上一个商品时就已经满足门槛值了
                                 profitCount = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
-                                if (CommonUtils.isGtZeroDecimal(profitCount))
-                                    product.setProfitCount(profitCount);
 
+                                rsp.setStage(BeanPropertiesUtils.copyProperties(stage, ActivityStageCouponDto.class));
+                                log.info("金额门槛折扣活动满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                                 if (CouponApplyProductStage.CONDITION.getDictValue().equals(discountApplyStage)) {
-                                    //适用范围=向上取整(门槛差额/价格)，后续循环会被3-2限制住
-                                    applyNum = profitCount;
+                                    product.setProfitCount(profitCount);
+                                    temproductLsit.add(product);
+                                    break;
                                 }
-                                //保存未校验限额前的适用数量
-                                //oldApplyNum = applyNum;
-
-                                applyNum = GetFinalEnableQuota(quota,
-                                        clientQuotaDto,
-                                        allQuotaDto,
-                                        product,
-                                        countCondition,
-                                        amountCondition,
-                                        applyNum,
-                                        stage.getProfitValue());
-
-                                //所有校验全通关
-                                if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
-                                    //该子券第一次满足门槛，重新生成对应该子券商品列表
-                                    temproductLsit.clear();
-                                    temproductLsit = calculationProfitAmount(product, applyNum, amountCondition, stage, rsp, temproductLsit);
-                                    log.info("金额门槛折扣活动满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
-                                }
-                                //if (oldApplyNum != applyNum)
-                                //   isApplyFlag=false;
-
                             }
-
-                        } else {//按数量统计门槛
-                            diff = stage.getBeginValue().subtract(countCondition);
-                            //isApplyFlag = true;
-                            //满足门槛条件情况下：将原适用详情temproductLsit替换为最新满足的活动的
+                        }
+                    } else {//按数量统计门槛
+                        diff = stage.getBeginValue().subtract(countCondition);
+                        if (CommonUtils.isGtZeroDecimal(diff)) {
+                            //满足门槛条件情况下
                             if (product.getAppCount().subtract(diff).compareTo(BigDecimal.ZERO) >= 0) {
                                 profitCount = diff;
-                                //设置达标门槛数量
-                                if (CommonUtils.isGtZeroDecimal(profitCount))
-                                    product.setProfitCount(profitCount);
-
-
-                                //算入门槛内的才进行打折，否则全部都要打折
-                                if (CouponApplyProductStage.CONDITION.getDictValue().equals(discountApplyStage)) {
-                                    applyNum = profitCount;
-                                }
-
-                                //保存未校验限额前的适用数量，如果applyNum有变化则stage对后续商品无需在循环
-                                //oldApplyNum = applyNum;
-
-                                applyNum = GetFinalEnableQuota(quota,
-                                        clientQuotaDto,
-                                        allQuotaDto,
-                                        product,
-                                        countCondition,
-                                        amountCondition,
-                                        applyNum,
-                                        stage.getProfitValue());
 
                                 //所有校验全通关
-                                if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
-                                    temproductLsit.clear();
-                                    temproductLsit = calculationProfitAmount(product, applyNum, amountCondition, stage, rsp, temproductLsit);
-                                    log.info("数量门槛折扣活动满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
+                                rsp.setStage(BeanPropertiesUtils.copyProperties(stage, ActivityStageCouponDto.class));
+                                log.info("数量门槛折扣活动满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
+                                //算入门槛内的才进行打折，否则全部都要打折
+                                if (CouponApplyProductStage.CONDITION.getDictValue().equals(discountApplyStage)) {
+                                    product.setProfitCount(profitCount);
+                                    temproductLsit.add(product);
+                                    break;
                                 }
-                                //已达到限额最大，后续不需要再处理
-                                //if (oldApplyNum != applyNum)
-                                //   isApplyFlag=false;
-
                             }
-
                         }
-
                     }
-
+                    product.setProfitCount(profitCount);
+                    temproductLsit.add(product);
+                    countCondition = countCondition.add(product.getAppCount());
+                    amountCondition = amountCondition.add(product.getTotalAmount());
                 }
-                //无门槛
-            } else {
-                //本次计算满足门槛数量
+                //找到最优惠的折扣
+                if (rsp.getStage() != null && rsp.getStage().getId().equals(stage.getId())) {
+                    rsp.setProductLsit(BeanPropertiesConverter.copyPropertiesOfList(temproductLsit, OrderProductDetailDto.class));
+                }
+            }
+        } else {
+            //所有活动在定义适用商品时都不会重叠
+            for (OrderProductDetailDto productItem : productList) {
+                //1.该商品是否适用于此活动
+                if (!ApplyProductFlag.ALL.getDictValue().equals(item.getApplyProductFlag())) {
+                    //该商品属性是否允许参与活动
+                    ActivityRefProductEntity entity = activityRefProductMapper.findByActivityAndSkuId(item.getId(), productItem.getProductId(), productItem.getSkuId());
+                    if (entity == null) {
+                        log.info("该商品不能参与该活动;活动编号：" + item.getId() + ";商品编号" + productItem.getProductId() + ";子商品编号" + productItem.getSkuId());
+                        continue;
+                    }
+                }
+                //2.后续会多次设置product对象相关值，需要拷贝出来避免污染
+                OrderProductDetailDto product = new OrderProductDetailDto();
+                BeanUtils.copyProperties(productItem, product);
+
+                //优惠门槛数量为0
                 product.setProfitCount(BigDecimal.ZERO);
+                profitCount = product.getAppCount();
                 applyNum = product.getAppCount();
-                //oldApplyNum = applyNum;
-                applyNum = GetFinalEnableQuota(quota,
-                        clientQuotaDto,
-                        allQuotaDto,
-                        product,
-                        countCondition,
-                        amountCondition,
-                        applyNum,
-                        item.getProfitValue());
+
                 if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
-                    product.setProfitCount(applyNum);
-                    product.setProfitAmount(product.getPrice().multiply(applyNum).multiply(BigDecimal.ONE.subtract(item.getProfitValue())));
-                    //优惠金额=涉及适用的总金额-指定限制的总额
-                    BigDecimal profitAmount = amountCondition.add(product.getPrice().multiply(applyNum)).multiply(BigDecimal.ONE.subtract(item.getProfitValue()));
-                    rsp.setProfitAmount(profitAmount);
+                    product.setProfitCount(profitCount);
+                    rsp.getProductLsit().add(product);
                     temproductLsit.add(product);
                     log.info("无门槛折扣活动满足使用条件处理;活动编号：" + item.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                 }
-                //最后符合数量和初始值不一致，说明已经触发了限额
-                //if (oldApplyNum != applyNum)
-                //    break;
+
             }
-            //记录活动适用的商品，但是没有计算对应优惠值，对应优惠值是在满足门槛后再calculationProfitAmount中计算
-            rsp.getProductLsit().add(product);
-            countCondition = countCondition.add(applyNum);
-            amountCondition = amountCondition.add(applyNum.multiply(product.getPrice()));
         }
 
         //找到最终适用的阶梯后，将对应最终适用商品情况赋值
-        if (activityProfitDetail.size() > 0) {
-            if (rsp.getStage() != null) {
-                rsp.setProductLsit(temproductLsit);
-                //对于适用商品明细优惠值进行计算
-                for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    product.setProfitAmount(product.getTotalAmount().multiply(BigDecimal.ONE.subtract(rsp.getStage().getProfitValue())));
-                }
-                return rsp;
+        if (!rsp.getProductLsit().isEmpty()) {
+            rsp.setProfitAmount(BigDecimal.ZERO);
+            //对于适用商品明细优惠值进行计算
+            for (OrderProductDetailDto product : rsp.getProductLsit()) {
+                product.setProfitAmount(product.getTotalAmount().multiply(BigDecimal.ONE.subtract(rsp.getStage() == null ? item.getProfitValue() : rsp.getStage().getProfitValue())));
+                rsp.setProfitAmount(rsp.getProfitAmount().add(product.getProfitAmount()));
             }
-        } else {
-            rsp.setProductLsit(temproductLsit);
             return rsp;
         }
         return null;

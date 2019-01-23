@@ -13,6 +13,7 @@ import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.ClientCoupStatisticsQuotaDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
@@ -66,6 +67,10 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
         if (CommonUtils.isGtZeroDecimal(stage.getEndValue()) && stage.getEndValue().compareTo(stage.getBeginValue())<0){
             return null;
         }
+        //优惠金额不大于0是废数据
+        if (!CommonUtils.isGtZeroDecimal(stage.getProfitValue())){
+            return null;
+        }
 
         //2.校验券的额度限制是否满足:只校验参与活动前是否有剩余额度，最终额度再和封顶值配合控制
         //检查指定客户的额度信息
@@ -109,32 +114,32 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
             //记录活动适用的商品，但是没有计算对应优惠值，对应优惠值是在满足门槛后再calculationProfitAmount中计算
             rsp.getProductLsit().add(product);
             countCondition = countCondition.add(product.getAppCount());
-            amountCondition = amountCondition.add(product.getAppCount().multiply(product.getPrice()));
+            amountCondition = amountCondition.add(product.getTotalAmount());
         }
 
         BigDecimal applyNum =BigDecimal.ZERO;
-        //计算参与活动总金额
-        BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        //计算参与活动总数量
-        BigDecimal totalRealCount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getAppCount).reduce(BigDecimal.ZERO, BigDecimal::add);
         if (TriggerByType.NUMBER.getDictValue().equals(stage.getTriggerByType())) {
+            //没有满足条件
             if (countCondition.compareTo(stage.getBeginValue())<0)
                 return null;
             //不能超过封顶值
-            if (CommonUtils.isGtZeroDecimal(stage.getEndValue()) && stage.getEndValue().compareTo(totalRealAmount) < 0) {
+            if (CommonDict.CONTINUEVALID.getCode().equals(CommonUtils.isQuotaValueNeedValidFlag(stage.getEndValue())) &&
+                    stage.getEndValue().compareTo(amountCondition) < 0){
                 applyNum = stage.getEndValue().divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
             } else {
-                applyNum = totalRealAmount.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                applyNum = amountCondition.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
             }
         }else {
+            //没有满足条件
             if (amountCondition.compareTo(stage.getBeginValue())<0)
                 return null;
 
             //不能超过封顶值
-            if (CommonUtils.isGtZeroDecimal(stage.getEndValue()) && stage.getEndValue().compareTo(totalRealCount) < 0) {
+            if (CommonDict.CONTINUEVALID.getCode().equals(CommonUtils.isQuotaValueNeedValidFlag(stage.getEndValue())) &&
+                    stage.getEndValue().compareTo(countCondition) < 0) {
                 applyNum = stage.getEndValue().divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
             } else {
-                applyNum = totalRealCount.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                applyNum = countCondition.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
             }
         }
 
@@ -149,9 +154,9 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
             rsp.setProfitAmount(totalProfitAmount);
 
             //每种商品优惠的金额是按适用金额比例来的
-            if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
+            if (amountCondition.compareTo(BigDecimal.ZERO) > 0) {
                 for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
+                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(amountCondition)));
                 }
             }
             log.info("等阶立减券满足使用条件处理;活动编号：" + item.getId() +";门槛编号："+stage.getId());

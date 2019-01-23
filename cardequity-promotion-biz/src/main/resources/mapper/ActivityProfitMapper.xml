@@ -189,14 +189,16 @@
         and a.ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
         AND ACTIVITY_COUPON_TYPE='2'
-        and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
-        EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
-        b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
-        <if test="skuId!=null and skuId!=''">
-            and b.SKU_ID=#{skuId,jdbcType=VARCHAR}
+        <if test="productId!=null and productId!=''">
+           and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
+              EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
+                       b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+                    <if test="skuId!=null and skuId!=''">
+                       and b.SKU_ID=#{skuId,jdbcType=VARCHAR}
+                    </if>
+                   )
+              )
         </if>
-        )
-        )
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
