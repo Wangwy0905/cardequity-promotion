@@ -46,7 +46,6 @@ public class PriceStrategy extends ActivityStrategy {
         ActivityProfitDto dto = new ActivityProfitDto();
         BeanUtils.copyProperties(item, dto);
         rsp.setActivity(dto);
-        rsp.setProfitAmount(item.getProfitValue());
 
         //如果特价价格小于等于0直接返回空
         if (!CommonUtils.isGtZeroDecimal(item.getProfitValue())) {
@@ -104,6 +103,10 @@ public class PriceStrategy extends ActivityStrategy {
                         applyNum,
                         product.getPrice().subtract(item.getProfitValue()));
                 applyNum = enableQuota.getData();
+                if (!enableQuota.getSuccess()){
+                    log.info(enableQuota.getDesc());
+                    continue;
+                }
 
                 //统计每人的额度
                 enableQuota = checkTotalFinalEnableQuota(statisticsQuotaIndexMinDiff(quota, clientQuotaDto),
@@ -112,6 +115,10 @@ public class PriceStrategy extends ActivityStrategy {
                         applyNum,
                         product.getPrice().subtract(item.getProfitValue()));
                 applyNum = enableQuota.getData();
+                if (!enableQuota.getSuccess()){
+                    log.info(enableQuota.getDesc());
+                    continue;
+                }
 
                 //统计所有人的额度
                 enableQuota = checkTotalFinalEnableQuota(statisticsQuotaIndexMinDiff(quota, clientQuotaDto),
@@ -120,7 +127,10 @@ public class PriceStrategy extends ActivityStrategy {
                         applyNum,
                         product.getPrice().subtract(item.getProfitValue()));
                 applyNum = enableQuota.getData();
-
+                if (!enableQuota.getSuccess()){
+                    log.info(enableQuota.getDesc());
+                    continue;
+                }
 
             }
 
@@ -136,6 +146,8 @@ public class PriceStrategy extends ActivityStrategy {
             }
 
         }
+        if (rsp.getProductLsit()==null || rsp.getProductLsit().isEmpty())
+            return null;
         return rsp;
     }
 
