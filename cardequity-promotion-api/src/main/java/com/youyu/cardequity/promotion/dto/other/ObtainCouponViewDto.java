@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  */
 @Data
 public class ObtainCouponViewDto extends CouponViewDto{
-    @ApiModelProperty(value = "领取状态：0-未领取 1-已领取且有效 2-曾经领取")
+    @ApiModelProperty(value = "领取状态：0-未领取 1-已领取 2-已使用 3-过期未使用 4-未开始")
     private String obtainState;
 
     @ApiModelProperty(value = "领取编号")

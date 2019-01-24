@@ -57,5 +57,12 @@ public interface CommonConstant {
     String VIEW_COUPONTYPE_COMMON = "0";
     String VIEW_COUPONTYPE_TRANSFER = "1";
 
+    /**
+     * 活动状态 0-正常 1-额度已抢完 2-已过期 3-未开始
+     */
+    String VIEW_ACTIVITYSTATUS_COMMON = "0";
+    String VIEW_ACTIVITYSTATUS_NOT_QUOTA = "1";
+    String VIEW_ACTIVITYSTATUS_OVERDUE = "2";
+    String VIEW_ACTIVITYSTATUSE_UNSTART = "3";
 
 }

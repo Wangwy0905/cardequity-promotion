@@ -29,4 +29,7 @@ public class BasePriceActivityRsp {
 
     @ApiModelProperty(value = "活动编号")
     private String id;
+
+    @ApiModelProperty(value = "活动状态 0-正常 1-额度已抢完 2-已过期 3-未开始")
+    private String activityStatus;
 }

@@ -52,7 +52,7 @@ public class CouponViewDto {
     @ApiModelProperty(value = "门槛id:前台不展示")
     private String stageId;
 
-    @ApiModelProperty(value = "使用金额门槛")
+    @ApiModelProperty(value = "使用门槛")
     private BigDecimal conditionValue;
 
     @ApiModelProperty(value = "每张券最大优惠金额")

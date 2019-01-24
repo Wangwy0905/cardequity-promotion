@@ -18,10 +18,7 @@ import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.biz.utils.SnowflakeIdWorker;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.*;
-import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
-import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
-import com.youyu.cardequity.promotion.dto.other.GroupProductDto;
-import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.dto.other.*;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
@@ -1028,21 +1025,119 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      */
     @Override
     public List<ActivityDetailDto> findFlashSalePriceActivity(OperatQryReq req) {
+        List<ActivityDetailDto> result = new ArrayList<>();
         //先按商品分组，最近更新的前N条
-        if (req.getPageSize() <= 0)
-            req.setPageSize(3);
-        List<GroupProductDto> dtos = activityProfitMapper.findLeastPriceProductActivity(req);
-        if (!dtos.isEmpty()) {
-            List<String> ids = new ArrayList<>();
-            for (GroupProductDto item : dtos) {
-                ids.add(item.getProductId());
+        if (req.getPageSize() > 0) {
+            //先获取有效的
+            List<GroupProductDto> dtos = activityProfitMapper.findLeastPriceProductActivity(req);
+            if (!dtos.isEmpty()) {
+                List<String> ids = new ArrayList<>();
+                for (GroupProductDto item : dtos) {
+                    ids.add(item.getProductId());
+                }
+
+                List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductIds(ids, "1", "1");
+                result.addAll(combinationActivity(entities));
             }
 
-            List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductIds(ids, "1", "1");
-            return combinationActivity(entities);
+            if (result.size() == req.getPageSize())
+                return result;
+            BaseQryActivityReq innerReq = new BaseQryActivityReq();
+            innerReq.setUpAndDownStatus(CouponStatus.YES.getDictValue());
+            innerReq.setActivityCouponType(ActivityCouponType.PRICE.getDictValue());
+            List<ActivityProfitEntity> listByCommon = activityProfitMapper.findActivityListByCommon(innerReq);
+            //有效期无额度的>未到期的>过期的
+            Collections.sort(listByCommon, new Comparator<ActivityProfitEntity>() {
+                @Override
+                public int compare(ActivityProfitEntity entity1, ActivityProfitEntity entity2) {
+                    //有效期内排最前
+                    if (entity1.getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
+                            entity1.getAllowUseEndDate().isAfter(LocalDateTime.now())) {
+                        return 1;
+                    }
+                    if (entity1.getAllowUseEndDate().isBefore(LocalDateTime.now()))
+                        return -1;
+                    return 0;
+                }
+            });
+
+            List<ActivityProfitEntity> filterList = new ArrayList<>();
+            for (ActivityProfitEntity item : listByCommon) {
+                //过滤已查询的有效的
+                for (ActivityDetailDto dtoitem : result) {
+                    if (item.getId().equals(dtoitem.getActivityProfit().getId())) {
+                        dtoitem.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_COMMON);
+                        continue;
+                    }
+                }
+                filterList.add(item);
+            }
+            if (filterList.size() >= req.getPageSize() - result.size())
+                filterList = filterList.subList(0, req.getPageSize() - result.size());
+
+            result.addAll(combinationActivity(filterList));
+
+        //全部查询时
+        } else {
+            //先获取有效的
+            List<ActivityProfitEntity> entities = activityProfitMapper.findValidPriceActivityByProduct("", "");
+
+            BaseQryActivityReq innerReq = new BaseQryActivityReq();
+            innerReq.setUpAndDownStatus(CouponStatus.YES.getDictValue());
+            innerReq.setActivityCouponType(ActivityCouponType.PRICE.getDictValue());
+            List<ActivityProfitEntity> listByCommon = activityProfitMapper.findActivityListByCommon(innerReq);
+            //有效期无额度的>未到期的>过期的
+            Collections.sort(listByCommon, new Comparator<ActivityProfitEntity>() {
+                @Override
+                public int compare(ActivityProfitEntity entity1, ActivityProfitEntity entity2) {
+                    //有效期内排最前
+                    if (entity1.getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
+                            entity1.getAllowUseEndDate().isAfter(LocalDateTime.now())) {
+                        return 1;
+                    }
+                    if (entity1.getAllowUseEndDate().isBefore(LocalDateTime.now()))
+                        return -1;
+                    return 0;
+                }
+            });
+
+            List<ActivityProfitEntity> filterList = new ArrayList<>();
+            for (ActivityProfitEntity item : listByCommon) {
+                //过滤已查询的有效的
+                for (ActivityProfitEntity dtoitem : entities) {
+                    if (item.getId().equals(dtoitem.getId())) {
+                        continue;
+                    }
+                }
+                filterList.add(item);
+            }
+
+            filterList.addAll(entities);
+            result.addAll(combinationActivity(filterList));
+            for (ActivityDetailDto item:result){
+                for (ActivityProfitEntity dtoitem : entities) {
+                    if (item.getActivityProfit().getId().equals(dtoitem.getId())) {
+                        item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_COMMON);
+                        continue;
+                    }
+                }
+                item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
+
+                if (item.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
+                        item.getActivityProfit().getAllowUseEndDate().isAfter(LocalDateTime.now())) {
+                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
+
+                }else  if (item.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())){
+                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
+
+                }
+            }
         }
-        return new ArrayList<>();
+
+        return result;
     }
+
+
 
 }
 

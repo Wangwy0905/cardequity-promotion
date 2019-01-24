@@ -1036,8 +1036,18 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
         List<ObtainCouponViewDto> clientCoupon = clientCouponService.findClientCoupon(innerReq);
+        List<ObtainCouponViewDto> resultDto=new ArrayList<>();
+        for (ObtainCouponViewDto item:clientCoupon){
+            if (CommonConstant.OBTAIN_STATE_OVERDUE.equals(item.getObtainState()) ||
+                    CommonConstant.OBTAIN_STATE_UNSTART.equals(item.getObtainState()) ){
+                continue;
+            }
+            resultDto.add(item);
+        }
+
+
         //消费券排前面,2级券排前面
-        Collections.sort(clientCoupon, new Comparator<ObtainCouponViewDto>() {
+        Collections.sort(resultDto, new Comparator<ObtainCouponViewDto>() {
             @Override
             public int compare(ObtainCouponViewDto entity1, ObtainCouponViewDto entity2) {//如果是折扣、任选、优惠价从小到大
                 int sortresult = entity2.getCouponViewType().compareTo(entity2.getCouponViewType());
@@ -1050,11 +1060,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
         });
         //返回数据不足需要
-        if (clientCoupon.size() >= retInt) {
-            result.addAll(clientCoupon.subList(0, retInt));
+        if (resultDto.size() >= retInt) {
+            result.addAll(resultDto.subList(0, retInt));
             return result;
         }
-        result.addAll(clientCoupon);
+        result.addAll(resultDto);
         return result;
     }
 

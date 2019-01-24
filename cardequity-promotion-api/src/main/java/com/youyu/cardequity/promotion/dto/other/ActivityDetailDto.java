@@ -21,6 +21,9 @@ import java.util.List;
 
 @Data
 public class ActivityDetailDto {
+    @ApiModelProperty(value = "活动状态 0-正常 1-额度已抢完 2-已过期 3-未开始")
+    private String activityStatus;
+
     @ApiModelProperty(value = "活动基本信息", required = true)
     private ActivityProfitDto activityProfit;
 
@@ -77,6 +80,7 @@ public class ActivityDetailDto {
         priceItem.setStatus(activityProfit.getStatus());
         priceItem.setProductId(productList.get(0).getProductId());
         priceItem.setSkuId(productList.get(0).getSkuId());
+        priceItem.setActivityStatus(activityStatus);
         return priceItem;
     }
 }
