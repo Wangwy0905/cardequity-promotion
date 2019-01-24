@@ -1,6 +1,5 @@
 package com.youyu.cardequity.promotion.biz.service;
 
-import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
@@ -8,14 +7,10 @@ import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
-import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
-import com.youyu.common.api.PageData;
 import com.youyu.common.service.IService;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  *  代码生成器
@@ -143,6 +138,14 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @return
      */
     List<ObtainCouponViewDto> findFirstPageVipCoupon(PageQryProfitCommonReq req) ;
+
+    /**
+     * 查询H5指定月可领优惠券
+     *
+     * @param req 查询请求体
+     * @return
+     */
+     List<CouponDetailDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req);
 
 }
 

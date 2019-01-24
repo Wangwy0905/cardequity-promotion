@@ -1,13 +1,11 @@
 package com.youyu.cardequity.promotion.api;
 
 
-import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
-import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
@@ -51,6 +49,16 @@ public interface ProductCouponApi {
     @ApiOperation(value = "【H5】查询H5首页权益优惠券")
     @PostMapping(path = "/findFirstPageVipCoupon")
     Result<List<ObtainCouponViewDto>> findFirstPageVipCoupon(@RequestBody PageQryProfitCommonReq req);
+
+    /**
+     * 查询H5指定月可领优惠券
+     *
+     * @param req 查询请求体
+     * @return
+     */
+    @ApiOperation(value = "【H5】查询H5首页权益优惠券")
+    @PostMapping(path = "/findEnnableObtainCouponByMonth")
+    Result<List<CouponDetailDto>> findEnableObtainCouponByMonth(@RequestBody FindEnableObtainCouponByMonthReq req);
 
     /**
      * *********************************【通用接口】************************

@@ -23,7 +23,6 @@ import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
-import com.youyu.common.utils.YyAssert;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -998,7 +997,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      */
     @Override
     public List<ObtainCouponViewDto> findFirstPageVipCoupon(PageQryProfitCommonReq req) {
-        int retInt = req.getPageSize()<=0?999:req.getPageSize();
+        int retInt = req.getPageSize() <= 0 ? 999 : req.getPageSize();
 
         List<ObtainCouponViewDto> result = new ArrayList<>();
         //1.获取可领取的优惠券
@@ -1020,7 +1019,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         int t = enableGetCoupon.size() >= retInt ? retInt : enableGetCoupon.size();
         for (int i = 0; i < t; i++) {
             ObtainCouponViewDto item = new ObtainCouponViewDto();
-            ProductCouponDto dto=enableGetCoupon.get(i).getProductCouponDto();
+            ProductCouponDto dto = enableGetCoupon.get(i).getProductCouponDto();
             BeanPropertiesUtils.copyProperties(enableGetCoupon.get(i).switchToView(), item);
             item.setLabelDto(dto.getLabelDto());
             item.setObtainState(CommonConstant.OBTAIN_STATE_NO);
@@ -1036,10 +1035,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
         List<ObtainCouponViewDto> clientCoupon = clientCouponService.findClientCoupon(innerReq);
-        List<ObtainCouponViewDto> resultDto=new ArrayList<>();
-        for (ObtainCouponViewDto item:clientCoupon){
+        List<ObtainCouponViewDto> resultDto = new ArrayList<>();
+        for (ObtainCouponViewDto item : clientCoupon) {
             if (CommonConstant.OBTAIN_STATE_OVERDUE.equals(item.getObtainState()) ||
-                    CommonConstant.OBTAIN_STATE_UNSTART.equals(item.getObtainState()) ){
+                    CommonConstant.OBTAIN_STATE_UNSTART.equals(item.getObtainState())) {
                 continue;
             }
             resultDto.add(item);
@@ -1068,8 +1067,24 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         return result;
     }
 
+
+    /**
+     * 查询H5指定月可领优惠券
+     *
+     * @param req 查询请求体
+     * @return
+     */
+    @Override
+    public List<CouponDetailDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req) {
+        if (req == null)
+            req = new FindEnableObtainCouponByMonthReq();
+        if (req.getMonthNum() <= 0)
+            req.setMonthNum(1);
+        List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(), 1);
+
+        return combinationCoupon(nextMonthEntities);
+    }
+
 }
-
-
 
 

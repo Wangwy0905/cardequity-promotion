@@ -129,6 +129,19 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
                                                        @Param("couponType") String couponType);
 
 
+
+    /**
+     * 获取指定月可领取优惠券
+     * @param productId
+     * @param entrustWay
+     * @param clientType
+     * @param monthNum
+     * @return
+     */
+    List<ProductCouponEntity> findSpacifyMonthEnableGetCouponsByCommon(@Param("productId") String productId,
+                                                                       @Param("entrustWay") String entrustWay,
+                                                                       @Param("clientType") String clientType,
+                                                                       @Param("monthNum") int monthNum);
 }
 
 
