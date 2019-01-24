@@ -1037,7 +1037,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
 
                 List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductIds(ids, "1", "1");
-                result.addAll(combinationActivity(entities));
+                for (ActivityDetailDto item : combinationActivity(entities)) {
+                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_COMMON);
+                    result.add(item);
+                }
             }
 
             if (result.size() == req.getPageSize())
@@ -1066,7 +1069,6 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 //过滤已查询的有效的
                 for (ActivityDetailDto dtoitem : result) {
                     if (item.getId().equals(dtoitem.getActivityProfit().getId())) {
-                        dtoitem.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_COMMON);
                         continue;
                     }
                 }
@@ -1075,9 +1077,19 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (filterList.size() >= req.getPageSize() - result.size())
                 filterList = filterList.subList(0, req.getPageSize() - result.size());
 
-            result.addAll(combinationActivity(filterList));
+            for (ActivityDetailDto item : combinationActivity(filterList)) {
+                item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
+                if (item.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
+                        item.getActivityProfit().getAllowUseEndDate().isAfter(LocalDateTime.now())) {
+                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
+                } else if (item.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())) {
+                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
+                }
+                result.add(item);
+            }
 
-        //全部查询时
+
+            //全部查询时
         } else {
             //先获取有效的
             List<ActivityProfitEntity> entities = activityProfitMapper.findValidPriceActivityByProduct("", "");
@@ -1114,7 +1126,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
             filterList.addAll(entities);
             result.addAll(combinationActivity(filterList));
-            for (ActivityDetailDto item:result){
+            for (ActivityDetailDto item : result) {
                 for (ActivityProfitEntity dtoitem : entities) {
                     if (item.getActivityProfit().getId().equals(dtoitem.getId())) {
                         item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_COMMON);
@@ -1122,12 +1134,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     }
                 }
                 item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
-
                 if (item.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
                         item.getActivityProfit().getAllowUseEndDate().isAfter(LocalDateTime.now())) {
                     item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
 
-                }else  if (item.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())){
+                } else if (item.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())) {
                     item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
 
                 }
@@ -1137,7 +1148,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         return result;
     }
 
-
+    /**
+     * 查询抢购商品最后结束时间
+     */
+    @Override
+    public Date findFlashSalePriceActivityEndTime(OperatReq req){
+        if(req==null)
+            req=new OperatReq();
+        Date lastTime = activityProfitMapper.findValidPriceLastTime(req);
+        return lastTime;
+    }
 
 }
 

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -60,6 +61,16 @@ public class ActivityProfitController implements ActivityProfitApi {
     @PostMapping(path = "/findFlashSalePriceActivity")
     public Result<List<ActivityDetailDto>> findFlashSalePriceActivity(@RequestBody OperatQryReq req){
         return Result.ok(activityProfitService.findFlashSalePriceActivity(req));
+    }
+
+    /**
+     * 查询抢购商品最后结束时间
+     */
+    @Override
+    @ApiOperation(value = "【APP】查询抢购商品最后结束时间")
+    @PostMapping(path = "/findFlashSalePriceActivityEndTime")
+    public Result<Date> findFlashSalePriceActivityEndTime(@RequestBody OperatReq req){
+        return Result.ok(activityProfitService.findFlashSalePriceActivityEndTime(req));
     }
 
     /**

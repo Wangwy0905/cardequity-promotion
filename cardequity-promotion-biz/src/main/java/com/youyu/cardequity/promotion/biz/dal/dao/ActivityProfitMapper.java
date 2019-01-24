@@ -8,6 +8,8 @@ import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -195,6 +197,13 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
     List<ActivityProfitEntity> findPriceActivityByProductIds(@Param("idList") List<String> idList,
                                                        @Param("termStatus") String termStatus,
                                                        @Param("status") String status);
+
+    /**
+     * 查询当前有效的特价活动最晚结束日期
+     * @param req
+     * @return
+     */
+    Date findValidPriceLastTime(OperatReq req);
 
 }
 

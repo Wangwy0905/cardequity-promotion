@@ -1,7 +1,6 @@
 package com.youyu.cardequity.promotion.api;
 
 
-import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.other.ActivityDetailDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.*;
@@ -15,7 +14,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.ApiOperation;
 
-import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +47,7 @@ public interface ActivityProfitApi {
     /**
      * *********************************【APP+内部接口】************************
      * 【App】【有效期内、已上架、有额度的】查询商品的活动
+     *
      * @param req 商品基本信息
      * @return 活动详情列表
      */
@@ -58,9 +58,9 @@ public interface ActivityProfitApi {
 
     /**
      * 【App+内部】【有效期内、已上架、有额度的】获取商品有效的优惠价活动（排除了已达额度的活动）
+     *
      * @param req
      * @return
-     *
      */
     @ApiOperation(value = "【App+内部】【有效期内、已上架、有额度的】获取商品有效的优惠价活动（排除了已达额度的活动）")
     @PostMapping(path = "/findValidActivityPrice")
@@ -68,6 +68,7 @@ public interface ActivityProfitApi {
 
     /**
      * 查询抢购特价活动
+     *
      * @param req
      * @return
      */
@@ -76,8 +77,16 @@ public interface ActivityProfitApi {
     Result<List<ActivityDetailDto>> findFlashSalePriceActivity(@RequestBody OperatQryReq req);
 
     /**
+     * 查询抢购商品最后结束时间
+     */
+    @ApiOperation(value = "【APP】查询抢购商品最后结束时间")
+    @PostMapping(path = "/findFlashSalePriceActivityEndTime")
+    Result<Date> findFlashSalePriceActivityEndTime(@RequestBody OperatReq req);
+
+    /**
      * *********************************【通用接口】************************
      * 【App+内部+后台】查询指定活动
+     *
      * @param req 活动基本信息
      * @return 活动详情列表
      */
@@ -177,6 +186,7 @@ public interface ActivityProfitApi {
 
     /**
      * 【后台-分页】模糊指定关键字查找活动
+     *
      * @param req
      * @return
      */
@@ -196,15 +206,17 @@ public interface ActivityProfitApi {
 
     /**
      * 上架活动
+     *
      * @param req
      * @return
      */
     @ApiOperation(value = "【后台】上架活动")
     @PostMapping(path = "/upActivity")
-     Result<CommonBoolDto<Integer>> upActivity(@RequestBody BatchBaseActivityReq req);
+    Result<CommonBoolDto<Integer>> upActivity(@RequestBody BatchBaseActivityReq req);
 
     /**
      * 下架活动
+     *
      * @param req
      * @return
      */

@@ -29,24 +29,24 @@
         and if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
         and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
-        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
+        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)&gt;=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
-        and (ifnull(b.Max_Amount,999999999)>=999999999 or b.Max_Amount &gt;
+        and (ifnull(b.Max_Amount,999999999)&gt;=999999999 or b.Max_Amount &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
-        and (ifnull(b.Per_Date_Max_Count,999999999)>=999999999 or b.Per_Date_Max_Count &gt;
+        and (ifnull(b.Per_Date_Max_Count,999999999)&gt;=999999999 or b.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
-        and (ifnull(b.Max_Count,999999999)>=999999999 or b.Max_Count &gt;
+        and (ifnull(b.Max_Count,999999999)&gt;=999999999 or b.Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
@@ -86,8 +86,7 @@
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
         select *
         from TB_ACTIVITY_PROFIT a
-        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1' =
-        '1'
+        left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.STATUS='1'
         <if test="productId != null and productId!=''">
@@ -105,24 +104,24 @@
         and if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
         and ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
-        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
+        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)&gt;=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
-        and (ifnull(b.Max_Amount,999999999)>=999999999 or b.Max_Amount &gt;
+        and (ifnull(b.Max_Amount,999999999)&gt;=999999999 or b.Max_Amount &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
-        and (ifnull(b.Per_Date_Max_Count,999999999)>=999999999 or b.Per_Date_Max_Count &gt;
+        and (ifnull(b.Per_Date_Max_Count,999999999)&gt;=999999999 or b.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
-        and (ifnull(b.Max_Count,999999999)>=999999999 or b.Max_Count &gt;
+        and (ifnull(b.Max_Count,999999999)&gt;=999999999 or b.Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
@@ -199,24 +198,24 @@
                    )
               )
         </if>
-        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
+        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)&gt;=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
-        and (ifnull(b.Max_Amount,999999999)>=999999999 or b.Max_Amount &gt;
+        and (ifnull(b.Max_Amount,999999999)&gt;=999999999 or b.Max_Amount &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID))
-        and (ifnull(b.Per_Date_Max_Count,999999999)>=999999999 or b.Per_Date_Max_Count &gt;
+        and (ifnull(b.Per_Date_Max_Count,999999999)&gt;=999999999 or b.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
-        and (ifnull(b.Max_Count,999999999)>=999999999 or b.Max_Count &gt;
+        and (ifnull(b.Max_Count,999999999)&gt;=999999999 or b.Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
@@ -480,24 +479,24 @@
             and (if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
             or instr(PAY_TYPE_SET, #{payType,jdbcType=VARCHAR})&gt;0)
         </if>
-        and (ifnull(c.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or c.PER_DATE_MAX_AMOUNT &gt;
+        and (ifnull(c.PER_DATE_MAX_AMOUNT,999999999)&gt;=999999999 or c.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
         and d.ACTIVITY_ID = a.UUID
         and d.create_time &gt;= curdate()))
-        and (ifnull(c.Max_Amount,999999999)>=999999999 or c.Max_Amount &gt;
+        and (ifnull(c.Max_Amount,999999999)&gt;=999999999 or c.Max_Amount &gt;
         (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
         and d.ACTIVITY_ID = a.UUID))
-        and (ifnull(c.Per_Date_Max_Count,999999999)>=999999999 or c.Per_Date_Max_Count &gt;
+        and (ifnull(c.Per_Date_Max_Count,999999999)&gt;=999999999 or c.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
         and d.ACTIVITY_ID = a.UUID
         and d.create_time &gt;= curdate()))
-        and (ifnull(c.Max_Count,999999999)>=999999999 or c.Max_Count  &gt;
+        and (ifnull(c.Max_Count,999999999)&gt;=999999999 or c.Max_Count  &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
@@ -541,6 +540,55 @@
         </foreach>
         )
         Order by a.CREATE_TIME desc
+    </select>
+
+    <select id="findValidPriceLastTime" resultType="date" parameterType="com.youyu.cardequity.promotion.vo.req.OperatReq">
+        select max(a.ALLOW_USE_END_DATE) as lastTime
+        from TB_ACTIVITY_PROFIT a
+        left join TB_ACTIVITY_QUOTA_RULE c on a.UUID = c.ACTIVITY_ID and if(length(c.IS_ENABLE), c.IS_ENABLE,'1')= '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.STATUS='1'
+        AND a.ACTIVITY_COUPON_TYPE='2'
+        and a.ALLOW_USE_BEGIN_DATE &lt;= sysdate()
+        and a.ALLOW_USE_END_DATE &gt;= sysdate()
+        <if test="entrustWay != null and entrustWay!=''">
+            and (if(length(a.ENTRUST_WAY_SET), ENTRUST_WAY_SET,'*') = '*'
+            or instr(ENTRUST_WAY_SET, #{entrustWay,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="clientType != null and clientType!=''">
+            and (if(length(a.CLIENT_TYPE_SET), CLIENT_TYPE_SET,'*') = '*'
+            or instr(CLIENT_TYPE_SET, #{clientType,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="bankCode != null and bankCode!=''">
+            and (if(length(a.BANK_CODE_SET), BANK_CODE_SET,'*') = '*'
+            or instr(BANK_CODE_SET, #{bankCode,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="payType != null and payType!=''">
+            and (if(length(a.PAY_TYPE_SET), PAY_TYPE_SET,'*') = '*'
+            or instr(PAY_TYPE_SET, #{payType,jdbcType=VARCHAR})&gt;0)
+        </if>
+        and (ifnull(c.PER_DATE_MAX_AMOUNT,999999999)&gt;=999999999 or c.PER_DATE_MAX_AMOUNT &gt;
+        (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
+        from TB_CLIENT_TAKE_IN_ACTIVITY d
+        where BUSIN_CODE = '5003'
+        and d.ACTIVITY_ID = a.UUID
+        and d.create_time &gt;= curdate()))
+        and (ifnull(c.Max_Amount,999999999)&gt;=999999999 or c.Max_Amount &gt;
+        (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
+        from TB_CLIENT_TAKE_IN_ACTIVITY d
+        where BUSIN_CODE = '5003'
+        and d.ACTIVITY_ID = a.UUID))
+        and (ifnull(c.Per_Date_Max_Count,999999999)&gt;=999999999 or c.Per_Date_Max_Count &gt;
+        (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
+        from TB_CLIENT_TAKE_IN_ACTIVITY d
+        where BUSIN_CODE = '5003'
+        and d.ACTIVITY_ID = a.UUID
+        and d.create_time &gt;= curdate()))
+        and (ifnull(c.Max_Count,999999999)&gt;=999999999 or c.Max_Count  &gt;
+        (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
+        from TB_CLIENT_TAKE_IN_ACTIVITY d
+        where BUSIN_CODE = '5003'
+        and d.ACTIVITY_ID = a.UUID))
     </select>
 
 </mapper>

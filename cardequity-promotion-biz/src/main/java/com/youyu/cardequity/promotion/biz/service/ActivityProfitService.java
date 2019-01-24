@@ -14,6 +14,7 @@ import com.youyu.common.service.IService;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -150,6 +151,11 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * @return
      */
     List<ActivityDetailDto> findFlashSalePriceActivity(OperatQryReq req);
+
+    /**
+     * 查询抢购商品最后结束时间
+     */
+     Date findFlashSalePriceActivityEndTime(OperatReq req);
 }
 
 

@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 public class OperatReq {
-    @ApiModelProperty(value = "客户编号:必填")
+    @ApiModelProperty(value = "客户编号:")
     private String clientId;
 
     @ApiModelProperty(value = "客户类型:冗余，服务层调用时传入空，需要调用用户中心进行查询该字段")
