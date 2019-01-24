@@ -75,34 +75,29 @@ public class EqualStageCouponStrategy extends CouponStrategy {
             rsp.getProductLsit().add(product);
             //总额做保护
             product.setTotalAmount(product.getAppCount().multiply(product.getPrice()));
-
             countCondition = countCondition.add(product.getAppCount());
             amountCondition = amountCondition.add(product.getTotalAmount());
         }
 
         BigDecimal applyNum = BigDecimal.ZERO;
-        //计算参与活动总金额
-        BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        //计算参与活动总数量
-        BigDecimal totalRealCount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getAppCount).reduce(BigDecimal.ZERO, BigDecimal::add);
         if (TriggerByType.NUMBER.getDictValue().equals(clientCoupon.getTriggerByType())) {
             if (countCondition.compareTo(clientCoupon.getBeginValue()) < 0)
                 return null;
             //不能超过封顶值
-            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(totalRealAmount) < 0) {
+            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(amountCondition) < 0) {
                 applyNum = clientCoupon.getEndValue().divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
             } else {
-                applyNum = totalRealAmount.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                applyNum = amountCondition.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
             }
         } else {
 
             if (amountCondition.compareTo(clientCoupon.getBeginValue()) < 0)
                 return null;
             //不能超过封顶值
-            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(totalRealCount) < 0) {
+            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(countCondition) < 0) {
                 applyNum = clientCoupon.getEndValue().divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
             } else {
-                applyNum = totalRealCount.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                applyNum = countCondition.divide(clientCoupon.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
             }
         }
 
@@ -113,9 +108,9 @@ public class EqualStageCouponStrategy extends CouponStrategy {
             rsp.setProfitAmount(totalProfitAmount);
 
             //每种商品优惠的金额是按适用金额比例来的
-            if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
+            if (amountCondition.compareTo(BigDecimal.ZERO) > 0) {
                 for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
+                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(amountCondition)));
                 }
             }
             return rsp;

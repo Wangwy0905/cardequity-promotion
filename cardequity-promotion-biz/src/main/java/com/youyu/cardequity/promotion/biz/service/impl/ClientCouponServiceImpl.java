@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.bean.CustomHandler;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
+import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.promotion.biz.constant.BusinessCode;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
@@ -109,6 +110,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     public CommonBoolDto<ObtainCouponViewDto> obtainCoupon(ClientObtainCouponReq req) {
         CommonBoolDto<ObtainCouponViewDto> dto = new CommonBoolDto<>();
         dto.setSuccess(true);
+
+        if (req==null|| StringUtil.isEmpty(req.getClientId()) || StringUtil.isEmpty(req.getClientType()) ||StringUtil.isEmpty(req.getCouponId()))
+            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("客户编号、客户类型、优惠券编号不能为空"));
 
         //领取后存储的信息
         ClientCouponEntity entity = BeanPropertiesUtils.copyProperties(req, ClientCouponEntity.class);
