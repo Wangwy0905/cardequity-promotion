@@ -65,10 +65,10 @@ public class CommonCouponStrategy extends CouponStrategy {
             //2.后续会多次设置product对象相关值，需要拷贝出来避免污染
             OrderProductDetailDto product = new OrderProductDetailDto();
             BeanUtils.copyProperties(productItem, product);
-            //校验通过后加入适用商品列表
-            rsp.getProductLsit().add(product);
             //总额做保护
             product.setTotalAmount(product.getAppCount().multiply(product.getPrice()));
+            //校验通过后加入适用商品列表
+            rsp.getProductLsit().add(product);
 
             applyNum = product.getAppCount();
             if (stage != null && CommonUtils.isGtZeroDecimal(clientCoupon.getBeginValue())) {
@@ -76,35 +76,32 @@ public class CommonCouponStrategy extends CouponStrategy {
                 if (TriggerByType.NUMBER.getDictValue().equals(clientCoupon.getTriggerByType())) {
                     diff = stage.getBeginValue().subtract(countCondition);
                     if (applyNum.compareTo(diff) >= 0) {
-                        successFlg = true;
+                        successFlg=true;
                         //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品,不许要下面if处理
                         if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
                             applyNum = diff;
+                            product.setProfitCount(applyNum);
+                            break;
                         }
                     }
                 } else {
                     diff = stage.getBeginValue().subtract(amountCondition);
                     //满足门槛条件情况下
                     if (product.getTotalAmount().compareTo(diff) >= 0) {
-                        successFlg = true;
+                        successFlg=true;
                         //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品,不许要下面if处理；适用范围=向上取整(门槛差额/价格)
                         if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
                             applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
+                            product.setProfitCount(applyNum);
+                            break;
                         }
                     }
                 }
-                //无门槛的,如运费券、免邮券
-            }else{
-                successFlg = true;
+            }else {
+                successFlg=true;
             }
 
-            product.setAppCount(applyNum);
-            product.setTotalAmount(applyNum.multiply(product.getPrice()));
-            //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品
-            if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
-                if (successFlg)
-                    break;
-            }
+            product.setProfitCount(applyNum);
             countCondition = countCondition.add(product.getAppCount());
             amountCondition = amountCondition.add(product.getTotalAmount());
         }
