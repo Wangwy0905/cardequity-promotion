@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.api;
 
 import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
@@ -41,7 +42,15 @@ public interface ProductCouponApi {
     @PostMapping(path = "/findEnableGetCoupon")
     Result<List<CouponDetailDto>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req);
 
-
+    /**
+     * 【H5】查询H5首页权益优惠券
+     *
+     * @param req 查询请求体
+     * @return
+     */
+    @ApiOperation(value = "【H5】查询H5首页权益优惠券")
+    @PostMapping(path = "/findFirstPageVipCoupon")
+    Result<List<ObtainCouponViewDto>> findFirstPageVipCoupon(@RequestBody PageQryProfitCommonReq req);
 
     /**
      * *********************************【通用接口】************************

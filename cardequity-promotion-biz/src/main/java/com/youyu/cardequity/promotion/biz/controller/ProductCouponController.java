@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.api.ProductCouponApi;
 import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
+import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
@@ -46,6 +47,19 @@ public class ProductCouponController implements ProductCouponApi {
     public Result<List<CouponDetailDto>> findEnableGetCoupon(@RequestBody QryProfitCommonReq req) {
         List<CouponDetailDto> rspList = productCouponService.findEnableGetCoupon(req);
         return Result.ok(rspList);
+    }
+
+    /**
+     * 【H5】查询H5首页权益优惠券
+     *
+     * @param req 查询请求体
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【H5】查询H5首页权益优惠券")
+    @PostMapping(path = "/findFirstPageVipCoupon")
+    public Result<List<ObtainCouponViewDto>> findFirstPageVipCoupon(@RequestBody PageQryProfitCommonReq req) {
+        return Result.ok(productCouponService.findFirstPageVipCoupon(req));
     }
 
     /**

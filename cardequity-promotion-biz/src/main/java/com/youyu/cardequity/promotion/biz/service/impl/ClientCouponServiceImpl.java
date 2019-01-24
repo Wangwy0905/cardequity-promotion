@@ -1053,11 +1053,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             viewDto.setUuid(item.getUuid());
             viewDto.setStageId(item.getStageId());
             viewDto.setObtainState(CommonConstant.OBTAIN_STATE_YES);
-            if (item.getValidStartDate().compareTo(LocalDateTime.now()) > 0 ||
-                    item.getValidEndDate().compareTo(LocalDateTime.now()) < 0 ||
-                    CouponUseStatus.USED.getDictValue().equals(item.getStatus()) ||
+            if ( CouponUseStatus.USED.getDictValue().equals(item.getStatus()) ||
                     CouponUseStatus.USING.getDictValue().equals(item.getStatus())) {
-                viewDto.setObtainState(CommonConstant.OBTAIN_STATE_ABATE);
+                viewDto.setObtainState(CommonConstant.OBTAIN_STATE_USE);
+            }else if (item.getValidEndDate().compareTo(LocalDateTime.now()) < 0 ){
+                viewDto.setObtainState(CommonConstant.OBTAIN_STATE_OVERDUE);
+            }else if (item.getValidStartDate().compareTo(LocalDateTime.now()) > 0 ){
+                viewDto.setObtainState(CommonConstant.OBTAIN_STATE_UNSTART);
             }
             result.add(viewDto);
         }
@@ -1093,12 +1095,15 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         result.setUuid(item.getUuid());
         result.setStageId(item.getStageId());
         result.setObtainState(CommonConstant.OBTAIN_STATE_YES);
-        if (item.getValidStartDate().compareTo(LocalDateTime.now()) > 0 ||
-                item.getValidEndDate().compareTo(LocalDateTime.now()) < 0 ||
-                CouponUseStatus.USED.getDictValue().equals(item.getStatus()) ||
+        if ( CouponUseStatus.USED.getDictValue().equals(item.getStatus()) ||
                 CouponUseStatus.USING.getDictValue().equals(item.getStatus())) {
-            result.setObtainState(CommonConstant.OBTAIN_STATE_ABATE);
+            result.setObtainState(CommonConstant.OBTAIN_STATE_USE);
+        }else if (item.getValidEndDate().compareTo(LocalDateTime.now()) < 0 ){
+            result.setObtainState(CommonConstant.OBTAIN_STATE_OVERDUE);
+        }else if (item.getValidStartDate().compareTo(LocalDateTime.now()) > 0 ){
+            result.setObtainState(CommonConstant.OBTAIN_STATE_UNSTART);
         }
+
 
         BaseCouponReq req = new BaseCouponReq();
         req.setCouponId(item.getCouponId());

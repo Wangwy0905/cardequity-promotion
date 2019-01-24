@@ -14,7 +14,7 @@ public class QryProfitCommonReq {
     @ApiModelProperty(value = "客户类型:如果传入只有clientid需要在服务层补全")
     private String clientType;
 
-    @ApiModelProperty(value = "商品id")
+    @ApiModelProperty(value = "商品id,与商品无关时传空")
     private String productId;
 
     @ApiModelProperty(value = "是否新注册用户 0-否(默认) 1-是")

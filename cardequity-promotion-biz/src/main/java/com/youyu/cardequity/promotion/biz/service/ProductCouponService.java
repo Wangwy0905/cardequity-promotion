@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.ProductCouponDto;
+import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
@@ -134,6 +135,14 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @return
      */
     CouponDetailDto combinationCoupon(ProductCouponEntity entity);
+
+    /**
+     * 查询H5首页权益优惠券
+     *
+     * @param req 查询请求体
+     * @return
+     */
+    List<ObtainCouponViewDto> findFirstPageVipCoupon(PageQryProfitCommonReq req) ;
 
 }
 

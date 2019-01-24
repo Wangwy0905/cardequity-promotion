@@ -127,7 +127,7 @@ public class CouponViewDto {
         //默认没有门槛
         couponDto.setCouponStrategyType(CouponStrategyType.stage.getDictValue());
         couponDto.setCouponType(CouponType.COUPON.getDictValue());
-        if ("1".equals(couponViewType)) {
+        if (CommonConstant.VIEW_COUPONTYPE_TRANSFER.equals(couponViewType)) {
             couponDto.setCouponType(CouponType.TRANSFERFARE.getDictValue());
             if (productList==null || productList.isEmpty())
                 couponDto.setCouponLevel(CouponActivityLevel.GLOBAL.getDictValue());
