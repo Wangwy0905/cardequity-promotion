@@ -8,9 +8,9 @@ import lombok.Data;
  */
 @Data
 public class PageQryProfitCommonReq extends QryProfitCommonReq {
-    @ApiModelProperty(value = "页码：从1开始，传0默认查询全部")
+    @ApiModelProperty(value = "页码：从1开始，传0默认查询top条数pageSize")
     private int pageNo;
 
-    @ApiModelProperty(value = "每页数量：从1开始，传0默认查询top条数pageNo")
+    @ApiModelProperty(value = "每页数量：从1开始，传0默认查询全部")
     private int pageSize;
 }

@@ -998,7 +998,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      */
     @Override
     public List<ObtainCouponViewDto> findFirstPageVipCoupon(PageQryProfitCommonReq req) {
-        int retInt = req.getPageNo()<=0?999:req.getPageNo();
+        int retInt = req.getPageSize()<=0?999:req.getPageSize();
 
         List<ObtainCouponViewDto> result = new ArrayList<>();
         //1.获取可领取的优惠券
