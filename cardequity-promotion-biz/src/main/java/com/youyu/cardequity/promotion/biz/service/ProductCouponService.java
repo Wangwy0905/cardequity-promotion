@@ -145,7 +145,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param req 查询请求体
      * @return
      */
-     List<CouponDetailDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req);
+     List<ObtainCouponViewDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req);
 
 }
 

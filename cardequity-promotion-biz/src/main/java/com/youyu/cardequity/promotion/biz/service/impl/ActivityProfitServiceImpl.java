@@ -1043,7 +1043,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             }
 
-            if (result.size() == req.getPageSize())
+            if (dtos.size() == req.getPageSize())
                 return result;
             BaseQryActivityReq innerReq = new BaseQryActivityReq();
             innerReq.setUpAndDownStatus(CouponStatus.YES.getDictValue());
@@ -1064,6 +1064,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             });
 
+
             List<ActivityProfitEntity> filterList = new ArrayList<>();
             for (ActivityProfitEntity item : listByCommon) {
                 //过滤已查询的有效的
@@ -1074,10 +1075,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
                 filterList.add(item);
             }
-            if (filterList.size() >= req.getPageSize() - result.size())
-                filterList = filterList.subList(0, req.getPageSize() - result.size());
+            if (filterList.size() >= req.getPageSize() - dtos.size())
+                filterList = filterList.subList(0, req.getPageSize() - dtos.size());
 
-            for (ActivityDetailDto item : combinationActivity(filterList)) {
+            Map<String,List<ActivityDetailDto>> filterMap=new HashMap<>();
+            List<ActivityDetailDto> detailDtos = combinationActivity(filterList);
+            for (ActivityDetailDto item : detailDtos) {
                 item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
                 if (item.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
                         item.getActivityProfit().getAllowUseEndDate().isAfter(LocalDateTime.now())) {
@@ -1085,9 +1088,20 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 } else if (item.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())) {
                     item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
                 }
+                List<ActivityDetailDto> detailDtoList = filterMap.get(item.getProductList().get(0).getProductId());
+                if (detailDtoList==null) {
+                    detailDtoList=new ArrayList();
+                    filterMap.put(item.getProductList().get(0).getProductId(), detailDtoList);
+                }
+                detailDtoList.add(item);
                 result.add(item);
+                //满足商品请求数量后返回
+                if (filterMap.size()==(req.getPageSize() - dtos.size())) {
+                    //清除缓存
+                    filterMap.clear();
+                    break;
+                }
             }
-
 
             //全部查询时
         } else {

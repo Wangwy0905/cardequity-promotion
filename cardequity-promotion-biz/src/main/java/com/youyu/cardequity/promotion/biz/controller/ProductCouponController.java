@@ -68,7 +68,7 @@ public class ProductCouponController implements ProductCouponApi {
     @Override
     @ApiOperation(value = "【H5】查询H5首页权益优惠券")
     @PostMapping(path = "/findEnableObtainCouponByMonth")
-    public Result<List<CouponDetailDto>> findEnableObtainCouponByMonth(@RequestBody FindEnableObtainCouponByMonthReq req){
+    public Result<List<ObtainCouponViewDto>> findEnableObtainCouponByMonth(@RequestBody FindEnableObtainCouponByMonthReq req){
         return Result.ok(productCouponService.findEnableObtainCouponByMonth(req));
 
     }

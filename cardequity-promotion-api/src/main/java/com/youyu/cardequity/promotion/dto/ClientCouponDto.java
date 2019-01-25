@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
+import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
 import com.youyu.cardequity.promotion.enums.dict.UsedStage;
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
@@ -123,6 +125,23 @@ public class ClientCouponDto implements IBaseDto<String>{
         result.setProductCouponDto(productCouponDto);
         result.setStageList(list);
         return result;
+    }
+
+    /**
+     * 获取领取状态
+     * @return
+     */
+    public String refreshObtainState(){
+        //领取了但是是无效的
+        if (CouponUseStatus.USED.getDictValue().equals(status) ||
+                CouponUseStatus.USING.getDictValue().equals(status)) {
+            return CommonConstant.OBTAIN_STATE_USE;
+        } else if (validEndDate.compareTo(LocalDateTime.now()) < 0 ) {
+            return  CommonConstant.OBTAIN_STATE_OVERDUE;
+        }else if (validStartDate.compareTo(LocalDateTime.now()) > 0 ){
+            return CommonConstant.OBTAIN_STATE_UNSTART;
+        }
+        return CommonConstant.OBTAIN_STATE_YES;
     }
 }
 

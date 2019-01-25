@@ -58,7 +58,7 @@ public interface ProductCouponApi {
      */
     @ApiOperation(value = "【H5】查询H5首页权益优惠券")
     @PostMapping(path = "/findEnableObtainCouponByMonth")
-    Result<List<CouponDetailDto>> findEnableObtainCouponByMonth(@RequestBody FindEnableObtainCouponByMonthReq req);
+    Result<List<ObtainCouponViewDto>> findEnableObtainCouponByMonth(@RequestBody FindEnableObtainCouponByMonthReq req);
 
     /**
      * *********************************【通用接口】************************

@@ -8,6 +8,9 @@ import lombok.Data;
  */
 @Data
 public class FindEnableObtainCouponByMonthReq extends QryProfitCommonReq {
-    @ApiModelProperty(value = "第月可领的券的指定月数")
+    @ApiModelProperty(value = "第几月可领的券的指定月数")
     private int monthNum;
+
+    @ApiModelProperty(value = "截止第几月或指定第几月标志 0-截止第几月 1-指定第几月")
+    private int monthNumFlag;
 }

@@ -19,6 +19,7 @@ import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
+import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
@@ -1090,28 +1091,92 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      * @return
      */
     @Override
-    public List<CouponDetailDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req) {
+    public List<ObtainCouponViewDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req) {
         if (req == null)
             req = new FindEnableObtainCouponByMonthReq();
-        if (req.getMonthNum() <= 0)
+        if (req.getMonthNum() < 0)
             req.setMonthNum(1);
-        List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(), 1);
-
-        //消费券排前面,2级券排前面
-        Collections.sort(nextMonthEntities, new Comparator<ProductCouponEntity>() {
-            @Override
-            public int compare(ProductCouponEntity entity1, ProductCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
-                int sortresult = entity2.getCouponType().compareTo(entity1.getCouponType());
-                if (sortresult != 0)
-                    return sortresult;
-                sortresult = entity1.getCouponLevel().compareTo(entity2.getCouponLevel());
-                if (sortresult != 0)
-                    return sortresult;
-                return entity1.getProfitValue().compareTo(entity2.getProfitValue());
+        List<ObtainCouponViewDto> result = new ArrayList<>();
+        List<ObtainCouponViewDto> result0 = new ArrayList<>();
+        if (req.getMonthNum() == 0) {
+            //当月可领的
+            List<CouponDetailDto> coupon = findEnableGetCoupon(req);
+            //消费券排前面,2级券排前面
+            Collections.sort(coupon, new Comparator<CouponDetailDto>() {
+                @Override
+                public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
+                    int sortresult = entity2.getProductCouponDto().getCouponType().compareTo(entity1.getProductCouponDto().getCouponType());
+                    if (sortresult != 0)
+                        return sortresult;
+                    sortresult = entity1.getProductCouponDto().getCouponLevel().compareTo(entity2.getProductCouponDto().getCouponLevel());
+                    if (sortresult != 0)
+                        return sortresult;
+                    return entity1.getProductCouponDto().getProfitValue().compareTo(entity2.getProductCouponDto().getProfitValue());
+                }
+            });
+            for (CouponDetailDto item : coupon) {
+                ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
+                viewDto.setProductList(item.getProductList());
+                viewDto.setLabelDto(item.getProductCouponDto().getLabelDto());
+                viewDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);
+                result0.add(viewDto);
             }
-        });
 
-        return combinationCoupon(nextMonthEntities);
+            //当月已领的
+            List<ClientCouponEntity> obtainCoupon = clientCouponMapper.findCurrMonthObtainCoupon(req.getClientId(), "");
+            Collections.sort(obtainCoupon, new Comparator<ClientCouponEntity>() {
+                @Override
+                public int compare(ClientCouponEntity entity1, ClientCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
+                    int sortresult = entity2.getCouponType().compareTo(entity1.getCouponType());
+                    if (sortresult != 0)
+                        return sortresult;
+                    sortresult = entity1.getCouponLevel().compareTo(entity2.getCouponLevel());
+                    if (sortresult != 0)
+                        return sortresult;
+                    return entity1.getCouponAmout().compareTo(entity2.getCouponAmout());
+                }
+            });
+            List<FullClientCouponRsp> fullClientCouponRsps = clientCouponService.combClientFullObtainCouponList(obtainCoupon);
+            for (FullClientCouponRsp item : fullClientCouponRsps) {
+                ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.getCoupon().switchToView(), ObtainCouponViewDto.class);
+                viewDto.setProductList(item.getCoupon().getProductList());
+                viewDto.setLabelDto(item.getCoupon().getProductCouponDto().getLabelDto());
+                viewDto.setObtainId(item.getClientCoupon().getId());
+                viewDto.setValidEndDate(item.getClientCoupon().getValidEndDate());
+                viewDto.setValidStartDate(item.getClientCoupon().getValidStartDate());
+                viewDto.setObtainState(item.getClientCoupon().refreshObtainState());
+                result0.add(viewDto);
+            }
+
+        } else {
+
+            if (req.getMonthNumFlag() == 0)
+                result.addAll(result0);
+            List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(), 1);
+
+            //消费券排前面,2级券排前面
+            Collections.sort(nextMonthEntities, new Comparator<ProductCouponEntity>() {
+                @Override
+                public int compare(ProductCouponEntity entity1, ProductCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
+                    int sortresult = entity2.getCouponType().compareTo(entity1.getCouponType());
+                    if (sortresult != 0)
+                        return sortresult;
+                    sortresult = entity1.getCouponLevel().compareTo(entity2.getCouponLevel());
+                    if (sortresult != 0)
+                        return sortresult;
+                    return entity1.getProfitValue().compareTo(entity2.getProfitValue());
+                }
+            });
+            List<CouponDetailDto> detailDtos = combinationCoupon(nextMonthEntities);
+            for (CouponDetailDto item : detailDtos) {
+                ObtainCouponViewDto obtainDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
+                obtainDto.setProductList(item.getProductList());
+                obtainDto.setLabelDto(item.getProductCouponDto().getLabelDto());
+                obtainDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);
+                result0.add(obtainDto);
+            }
+        }
+        return result;
     }
 
 }
