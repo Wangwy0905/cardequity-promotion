@@ -73,26 +73,28 @@ public class DiscountCouponStrategy extends CouponStrategy {
             product.setTotalAmount(product.getAppCount().multiply(product.getPrice()));
 
             applyNum = product.getAppCount();
+            //有门槛的券
             if (stage != null && CommonUtils.isGtZeroDecimal(clientCoupon.getBeginValue())) {
                 //按数量统计
                 if (TriggerByType.NUMBER.getDictValue().equals(clientCoupon.getTriggerByType())) {
                     diff = stage.getBeginValue().subtract(countCondition);
-                    if (applyNum.compareTo(diff) >= 0) {
+                    if (diff.compareTo(BigDecimal.ZERO)>0 && applyNum.compareTo(diff) >= 0) {
                         successFlg = true;
                         //折扣券：虽然按折扣只从小到打排序，但是并不表示排最前的是订单最优惠的，因为其在订单中应用商品范围是不同的，所以需要对所有券循环
                         //算入门槛内的才进行打折，否则全部都要打折
                         if (CouponApplyProductStage.CONDITION.getDictValue().equals(discountApplyStage)) {
                             applyNum = diff;
                             //优惠金额=达到优惠条件总额*(1-折扣),达到优惠条件总额=(买入数量-(总数量-达标门槛))*价格
-                            calculationProfitAmount(rsp, product, clientCoupon, applyNum);
+                            BigDecimal profitAmount = applyNum.multiply(product.getPrice()).multiply(BigDecimal.ONE.subtract(clientCoupon.getCouponAmout()));
+                            product.setProfitAmount(profitAmount);
+                            rsp.setProfitAmount(rsp.getProfitAmount().add(profitAmount));//加总优惠金额
                             break;
                         }
                     }
                 } else {
                     diff = stage.getBeginValue().subtract(amountCondition);
-
                     //满足门槛条件情况下
-                    if (product.getTotalAmount().compareTo(diff) >= 0) {
+                    if (diff.compareTo(BigDecimal.ZERO)>0 && product.getTotalAmount().compareTo(diff) >= 0) {
                         //折扣券：虽然按折扣只从小到打排序，但是并不表示排最前的是订单最优惠的，因为其在订单中应用商品范围是不同的，所以需要对所有券循环
                         successFlg = true;
                         //算入门槛内的才进行打折，否则全部都要打折
@@ -100,7 +102,10 @@ public class DiscountCouponStrategy extends CouponStrategy {
                             //适用范围=向上取整(门槛差额/价格)
                             applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
                             //优惠金额=达到优惠条件总额*(1-折扣),达到优惠条件总额=(买入数量-(总数量-达标门槛))*价格
-                            calculationProfitAmount(rsp, product, clientCoupon, applyNum);
+                            //优惠金额=总额*(1-折扣)
+                            BigDecimal profitAmount = applyNum.multiply(product.getPrice()).multiply(BigDecimal.ONE.subtract(clientCoupon.getCouponAmout()));
+                            product.setProfitAmount(profitAmount);
+                            rsp.setProfitAmount(rsp.getProfitAmount().add(profitAmount));//加总优惠金额
                             break;
                         }
                     }
@@ -108,9 +113,9 @@ public class DiscountCouponStrategy extends CouponStrategy {
             } else {
                 successFlg = true;
             }
-            //没有达到门槛
-            calculationProfitAmount(rsp, product, clientCoupon, applyNum);
-
+            BigDecimal profitAmount = applyNum.multiply(product.getPrice()).multiply(BigDecimal.ONE.subtract(clientCoupon.getCouponAmout()));
+            product.setProfitAmount(profitAmount);
+            rsp.setProfitAmount(rsp.getProfitAmount().add(profitAmount));//加总优惠金额
             countCondition = countCondition.add(product.getAppCount());
             amountCondition = amountCondition.add(product.getTotalAmount());
         }
@@ -121,27 +126,5 @@ public class DiscountCouponStrategy extends CouponStrategy {
     }
 
 
-    /**
-     * 计算优惠金额
-     *
-     * @param useCouponRsp
-     * @param clientCoupon 领取券信息：领取人、编号
-     * @param applyNum     适用的数量，对于等阶满减券而言表示等阶满减券的步长倍数
-     * @return
-     */
-    private BigDecimal calculationProfitAmount(UseCouponRsp useCouponRsp, OrderProductDetailDto product, ClientCouponEntity clientCoupon, BigDecimal applyNum) {
-        //无指定适用范围则按所有数量都打折
-        if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
-            product.setAppCount(applyNum);
-            product.setTotalAmount(product.getPrice().multiply(applyNum));
-        }
-        //优惠金额=总额*(1-折扣)
-        BigDecimal profitAmount = product.getTotalAmount().multiply(BigDecimal.ONE.subtract(clientCoupon.getCouponAmout()));
 
-        product.setProfitAmount(profitAmount);
-        useCouponRsp.setTotalAmount(useCouponRsp.getTotalAmount().add(product.getTotalAmount()));
-        useCouponRsp.setProfitAmount(useCouponRsp.getProfitAmount().add(profitAmount));//加总优惠金额
-
-        return profitAmount;
-    }
 }

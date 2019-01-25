@@ -63,7 +63,7 @@ public class EqualStageCouponStrategy extends CouponStrategy {
         for (OrderProductDetailDto productItem : productList) {
 
             //校验符合商品基本属性
-            //1.该商品是否适用于此活动
+            //1.该商品是否适用于此优惠券
             if (!checkCouponForProduct(coupon, productItem.getProductId())) {
                 continue;
             }
