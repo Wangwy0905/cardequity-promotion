@@ -35,5 +35,6 @@
                  open="(" close=")" separator=",">
             #{couponId}
         </foreach>
+        order by a.COUPON_ID
     </select>
 </mapper>
