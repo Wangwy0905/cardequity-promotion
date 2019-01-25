@@ -1101,9 +1101,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<ObtainCouponViewDto> result0 = new ArrayList<>();
         if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
             //当月可领的
-            List<CouponDetailDto> coupon = findEnableGetCoupon(req);
+            List<CouponDetailDto> enableGetCoupons = findEnableGetCoupon(req);
             //消费券排前面,2级券排前面
-            Collections.sort(coupon, new Comparator<CouponDetailDto>() {
+            Collections.sort(enableGetCoupons, new Comparator<CouponDetailDto>() {
                 @Override
                 public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
                     int sortresult = entity2.getProductCouponDto().getCouponType().compareTo(entity1.getProductCouponDto().getCouponType());
@@ -1115,7 +1115,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     return entity1.getProductCouponDto().getProfitValue().compareTo(entity2.getProductCouponDto().getProfitValue());
                 }
             });
-            for (CouponDetailDto item : coupon) {
+            for (CouponDetailDto item : enableGetCoupons) {
                 ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
                 viewDto.setProductList(item.getProductList());
                 viewDto.setLabelDto(item.getProductCouponDto().getLabelDto());
@@ -1174,7 +1174,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 obtainDto.setProductList(item.getProductList());
                 obtainDto.setLabelDto(item.getProductCouponDto().getLabelDto());
                 obtainDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);
-                result0.add(obtainDto);
+                result.add(obtainDto);
             }
         }
         return result;
