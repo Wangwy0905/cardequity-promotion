@@ -1041,6 +1041,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             item.setObtainState(CommonConstant.OBTAIN_STATE_NO);
             item.setValidStartDate(dto.getAllowUseBeginDate());
             item.setValidEndDate(dto.getAllowUseEndDate());
+            item.setProductList(enableGetCoupon.get(i).getProductList());
             result.add(item);
         }
         if (result.size() == retInt)
@@ -1095,10 +1096,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (req == null)
             req = new FindEnableObtainCouponByMonthReq();
         if (req.getMonthNum() < 0)
-            req.setMonthNum(1);
+            req.setMonthNum(0);
         List<ObtainCouponViewDto> result = new ArrayList<>();
         List<ObtainCouponViewDto> result0 = new ArrayList<>();
-        if (req.getMonthNum() == 0) {
+        if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
             //当月可领的
             List<CouponDetailDto> coupon = findEnableGetCoupon(req);
             //消费券排前面,2级券排前面

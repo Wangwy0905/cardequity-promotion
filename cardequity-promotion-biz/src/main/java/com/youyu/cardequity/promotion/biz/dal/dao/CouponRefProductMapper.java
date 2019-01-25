@@ -38,6 +38,13 @@ public interface CouponRefProductMapper extends YyMapper<CouponRefProductEntity>
      */
     int deleteByCouponId(@Param("couponId") String couponId);
 
+    /**
+     * 查询指定券和产品是否适用
+     * @param list 必填
+     * @return
+     */
+    List<CouponRefProductEntity> findByCouponIds(@Param("list") List<String> list);
+
 }
 
 

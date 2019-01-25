@@ -25,4 +25,15 @@
        DELETE  FROM TB_COUPON_REF_PRODUCT
         WHERE COUPON_ID=#{couponId,jdbcType=VARCHAR}
     </delete>
+
+    <select id="findByCouponIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity">
+        select *
+        from TB_COUPON_REF_PRODUCT a
+        where ifnull(a.IS_ENABLE, '1') = '1'
+        and a.COUPON_ID IN
+        <foreach collection="list" item="couponId" index="index"
+                 open="(" close=")" separator=",">
+            #{couponId}
+        </foreach>
+    </select>
 </mapper>
