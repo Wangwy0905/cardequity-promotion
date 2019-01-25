@@ -394,7 +394,7 @@
             #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
         and a.ALLOW_GET_BEGIN_DATE &lt;= concat(date_format(LAST_DAY(date_add(NOW(), interval #{monthNum,jdbcType=INTEGER} MONTH)), '%Y-%m-'), '01')
-        and a.ALLOW_GET_END_DATE &gt;= concat(date_format(LAST_DAY(date_add(NOW(), interval #{monthNum,jdbcType=INTEGER} MONTH)) MONTH)), '%Y-%m-'), '01')
+        and a.ALLOW_GET_END_DATE &gt;= concat(date_format(LAST_DAY(date_add(NOW(), interval #{monthNum,jdbcType=INTEGER} MONTH)), '%Y-%m-'), '01')
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(d.COUPON_AMOUT, 0)),0)
         from TB_CLIENT_COUPON d
