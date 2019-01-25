@@ -1098,7 +1098,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (req.getMonthNum() < 0)
             req.setMonthNum(0);
         List<ObtainCouponViewDto> result = new ArrayList<>();
-        List<ObtainCouponViewDto> result0 = new ArrayList<>();
         if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
             //当月可领的
             List<CouponDetailDto> enableGetCoupons = findEnableGetCoupon(req);
@@ -1120,7 +1119,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 viewDto.setProductList(item.getProductList());
                 viewDto.setLabelDto(item.getProductCouponDto().getLabelDto());
                 viewDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);
-                result0.add(viewDto);
+                result.add(viewDto);
             }
 
             //当月已领的
@@ -1146,13 +1145,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 viewDto.setValidEndDate(item.getClientCoupon().getValidEndDate());
                 viewDto.setValidStartDate(item.getClientCoupon().getValidStartDate());
                 viewDto.setObtainState(item.getClientCoupon().refreshObtainState());
-                result0.add(viewDto);
+                result.add(viewDto);
             }
 
         } else {
 
-            if (req.getMonthNumFlag() == 0)
-                result.addAll(result0);
             List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(), 1);
 
             //消费券排前面,2级券排前面
