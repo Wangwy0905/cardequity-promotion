@@ -108,10 +108,23 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             List<CouponStageRuleEntity> stageList = couponStageRuleMapper.findStageByCouponId(item.getId());
 
             List<ShortCouponDetailDto> shortStageList = new ArrayList<>();
-            //获取不满足领取频率的数据
+            //获取不满足领取频率的数据:不能反向查找，反向查询返回结果为空并不代表该券不可用
             if (!CommonConstant.EXCLUSIONFLAG_ALL.equals(qryProfitCommonReq.getExclusionFlag())) {
-                //查询客户受频率限制的券
+                //检查指定客户的额度信息
+                CouponQuotaRuleEntity quota = couponQuotaRuleMapper.findCouponQuotaRuleById(item.getId());
+                //检查所有客户领取额度情况
+                CommonBoolDto boolDto = clientCouponService.checkCouponAllQuota(quota);
+                //校验不通过直接返回
+                if (!boolDto.getSuccess()) {
+                    continue;
+                }
                 if (!CommonUtils.isEmptyorNull(qryProfitCommonReq.getClientId())) {
+                    boolDto = clientCouponService.checkCouponPersonQuota(quota, qryProfitCommonReq.getClientId());
+                    //校验不通过直接返回
+                    if (!boolDto.getSuccess()) {
+                        continue;
+                    }
+                    //查询客户受频率限制的券
                     shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClientId(), item.getId(), "");
                 }
             }
@@ -164,6 +177,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     result.add(rsp);
                 }
             }
+
+
         }
 
         return result;
@@ -1049,7 +1064,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         Collections.sort(resultDto, new Comparator<ObtainCouponViewDto>() {
             @Override
             public int compare(ObtainCouponViewDto entity1, ObtainCouponViewDto entity2) {//如果是折扣、任选、优惠价从小到大
-                int sortresult = entity2.getCouponViewType().compareTo(entity2.getCouponViewType());
+                int sortresult = entity2.getCouponViewType().compareTo(entity1.getCouponViewType());
                 if (sortresult != 0)
                     return sortresult;
                 sortresult = entity1.getCouponLevel().compareTo(entity2.getCouponLevel());
@@ -1081,6 +1096,20 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (req.getMonthNum() <= 0)
             req.setMonthNum(1);
         List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(), 1);
+
+        //消费券排前面,2级券排前面
+        Collections.sort(nextMonthEntities, new Comparator<ProductCouponEntity>() {
+            @Override
+            public int compare(ProductCouponEntity entity1, ProductCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
+                int sortresult = entity2.getCouponType().compareTo(entity1.getCouponType());
+                if (sortresult != 0)
+                    return sortresult;
+                sortresult = entity1.getCouponLevel().compareTo(entity2.getCouponLevel());
+                if (sortresult != 0)
+                    return sortresult;
+                return entity1.getProfitValue().compareTo(entity2.getProfitValue());
+            }
+        });
 
         return combinationCoupon(nextMonthEntities);
     }

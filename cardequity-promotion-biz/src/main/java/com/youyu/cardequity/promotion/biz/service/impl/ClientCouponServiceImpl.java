@@ -765,7 +765,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
-    private CommonBoolDto checkCouponPersonQuota(CouponQuotaRuleEntity quota,
+    @Override
+    public CommonBoolDto checkCouponPersonQuota(CouponQuotaRuleEntity quota,
                                                  String clientId) {
         CommonBoolDto dto = new CommonBoolDto(true);
 
@@ -871,7 +872,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
-    private CommonBoolDto checkCouponAllQuota(CouponQuotaRuleEntity quota) {
+    @Override
+    public CommonBoolDto checkCouponAllQuota(CouponQuotaRuleEntity quota) {
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
 

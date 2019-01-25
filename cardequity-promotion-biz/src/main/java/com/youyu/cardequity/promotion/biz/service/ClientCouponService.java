@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
+import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
@@ -129,6 +130,25 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return
      */
     FullClientCouponRsp combClientFullObtainCouponOne(ClientCouponEntity clientCoupon);
+
+    /**
+     * 校验个人的优惠限额
+     *
+     * @param quota    优惠券额度信息
+     * @param clientId 指定校验的客户
+     * @return 开发日志
+     * 1004258-徐长焕-20181213 新增
+     */
+     CommonBoolDto checkCouponPersonQuota(CouponQuotaRuleEntity quota,String clientId);
+
+    /**
+     * 校验所有客户的优惠限额
+     *
+     * @param quota    优惠券额度信息
+     * @return 开发日志
+     * 1004258-徐长焕-20181213 新增
+     */
+    CommonBoolDto checkCouponAllQuota(CouponQuotaRuleEntity quota);
 }
 
 
