@@ -1073,7 +1073,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         if (!ids.isEmpty()) {
             List<CouponDetailDto> detailDtos = productCouponService.findCouponListByIds(ids);
-
+            //已经按券id排序后的
             List<CouponRefProductEntity> productEntities = couponRefProductMapper.findByCouponIds(ids);
             for (ObtainCouponViewDto item : result) {
                 for (CouponDetailDto dto : detailDtos) {
@@ -1083,16 +1083,29 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                         break;
                     }
                 }
-                for (CouponRefProductEntity entity : productEntities) {
+                Iterator<CouponRefProductEntity> it = productEntities.iterator();
+                boolean isExists=false;
+                while (it.hasNext()) {
+                    CouponRefProductEntity entity = it.next();
                     if (item.getUuid().equals(entity.getCouponId())) {
+                        isExists=true;
                         if (item.getProductList() == null)
                             item.setProductList(new ArrayList<>());
                         BaseProductReq productReq = new BaseProductReq();
                         productReq.setProductId(entity.getProductId());
                         productReq.setSkuId(entity.getSkuId());
                         item.getProductList().add(productReq);
+                        //与后续循环不再需要
+                        it.remove();
+                    }else{
+                        //productEntities是一个有序集合
+                        if (isExists){
+                            break;
+                        }
                     }
+
                 }
+
             }
         }
         return result;

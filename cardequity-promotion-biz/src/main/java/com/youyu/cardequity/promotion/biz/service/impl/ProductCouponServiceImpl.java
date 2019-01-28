@@ -967,7 +967,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
         }
 
-        return new ArrayList<>(result.values());
+        List<CouponDetailDto>  resultList=new ArrayList<>(result.values());
+        //清除缓存
+        result.clear();
+        result=null;
+        return resultList;
 
     }
 
