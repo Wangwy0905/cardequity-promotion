@@ -89,6 +89,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     @Override
     public List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq) {
         List<ProductCouponEntity> productCouponlist = null;
+        List<CouponDetailDto> result = new ArrayList<>();
 
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(qryProfitCommonReq.getExclusionFlag())) {
             //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
@@ -96,8 +97,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         } else {
             productCouponlist = productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType());
         }
-        List<CouponDetailDto> result = new ArrayList<>();
 
+        List<ProductCouponEntity> finnalCouponlist = new ArrayList<>();
+        Map<String, List<CouponStageRuleDto>> finnalStageMap = new HashedMap();
         //根据客户对上述券领取情况，以及该券领取频率限制进行排除
         for (ProductCouponEntity item : productCouponlist) {
             //如果非新注册用户,排除掉新用户专享的
@@ -143,7 +145,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                         if (stageItem.getUuid().equals(shortItem.getStageId())) {
                             isExsit = true;
                             shortStageList.remove(shortItem);//线程安全
-                            log.info(String.format("该有门槛优惠券{0}的门槛{1}不能被领取，因为其领取频率超限",item.getId(),shortItem.getStageId()));
+                            log.info(String.format("该有门槛优惠券{0}的门槛{1}不能被领取，因为其领取频率超限", item.getId(), shortItem.getStageId()));
 
                             break;
                         }
@@ -154,19 +156,15 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
                 //有阶梯的优惠券，如果有0个阶梯能领取该券可领取，否则该券不能领取
                 if (couponStageList.size() > 0) {
-
-                    CouponDetailDto rsp = combinationCoupon(item);
-                    rsp.setStageList(couponStageList);//重置可领的子券信息
-                    result.add(rsp);
-                }else {
-                    log.info(String.format("该有门槛优惠券{0}不能被领取，因为其领取频率超限",item.getId()));
+                    finnalCouponlist.add(item);
+                    finnalStageMap.put(item.getId(), couponStageList);
+                } else {
+                    log.info(String.format("该有门槛优惠券{0}不能被领取，因为其领取频率超限", item.getId()));
                 }
             }
             //没有领取频率受限的
             else if (shortStageList.isEmpty()) {
-                CouponDetailDto rsp = combinationCoupon(item);
-                result.add(rsp);
-
+                finnalCouponlist.add(item);//不需要重置门槛
             }
             //没有子券，受领取频率限制
             else {
@@ -181,13 +179,21 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
                 //该券没有领取频率限制则可领取
                 if (!isLimit) {
-                    CouponDetailDto rsp = combinationCoupon(item);
-                    result.add(rsp);
+                    finnalCouponlist.add(item);//不需要重置门槛
+                } else {
+                    log.info(String.format("该无门槛优惠券{0}不能被领取，因为其领取频率超限", item.getId()));
                 }
             }
-
-
         }
+
+        result = combinationCoupon(finnalCouponlist);
+        for (CouponDetailDto item : result) {
+            if (finnalStageMap.get(item.getProductCouponDto().getId()) != null) {
+                item.setStageList(finnalStageMap.get(item.getProductCouponDto().getId()));
+            }
+        }
+        //清除缓存
+        finnalStageMap.clear();
 
         return result;
 
@@ -974,10 +980,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
         }
 
-        List<CouponDetailDto>  resultList=new ArrayList<>(result.values());
+        List<CouponDetailDto> resultList = new ArrayList<>(result.values());
         //清除缓存
         result.clear();
-        result=null;
+        result = null;
         return resultList;
 
     }
@@ -1050,10 +1056,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             BeanPropertiesUtils.copyProperties(enableGetCoupon.get(i).switchToView(), item);
             item.setLabelDto(dto.getLabelDto());
             item.setObtainState(CommonConstant.OBTAIN_STATE_NO);
-            if (dto.getValIdTerm()<=0) {
+            if (dto.getValIdTerm() <= 0) {
                 item.setValidStartDate(dto.getAllowUseBeginDate());
                 item.setValidEndDate(dto.getAllowUseEndDate());
-            }else{
+            } else {
                 item.setValidStartDate(LocalDateTime.now());
                 item.setValidEndDate(LocalDateTime.now().plusDays(dto.getValIdTerm()));
             }
@@ -1135,10 +1141,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 viewDto.setProductList(item.getProductList());
                 viewDto.setLabelDto(item.getProductCouponDto().getLabelDto());
                 viewDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);
-                if (viewDto.getValIdTerm()<=0) {
+                if (viewDto.getValIdTerm() <= 0) {
                     viewDto.setValidStartDate(item.getProductCouponDto().getAllowUseBeginDate());
                     viewDto.setValidEndDate(item.getProductCouponDto().getAllowUseEndDate());
-                }else{
+                } else {
                     viewDto.setValidStartDate(LocalDateTime.now());
                     viewDto.setValidEndDate(LocalDateTime.now().plusDays(viewDto.getValIdTerm()));
                 }
@@ -1194,10 +1200,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 obtainDto.setProductList(item.getProductList());
                 obtainDto.setLabelDto(item.getProductCouponDto().getLabelDto());
                 obtainDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);
-                if (obtainDto.getValIdTerm()<=0) {
+                if (obtainDto.getValIdTerm() <= 0) {
                     obtainDto.setValidStartDate(item.getProductCouponDto().getAllowUseBeginDate());
                     obtainDto.setValidEndDate(item.getProductCouponDto().getAllowUseEndDate());
-                }else{
+                } else {
                     obtainDto.setValidStartDate(LocalDateTime.now());
                     obtainDto.setValidEndDate(LocalDateTime.now().plusDays(obtainDto.getValIdTerm()));
                 }
