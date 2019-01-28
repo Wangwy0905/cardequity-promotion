@@ -20,16 +20,6 @@
             and (if(length(a.STAGE_ID),a.STAGE_ID,'0')='0' or a.STAGE_ID = #{stageId,jdbcType=VARCHAR})
         </if>
         and(
-        (a.ALLOW_COUNT = 0 or 1 &lt;=
-             (select ifnull(count(d.UUID),0)
-                from TB_CLIENT_COUPON d
-               where if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
-                and d.COUPON_ID = a.COUPON_ID
-                and (if(length(a.STAGE_ID),a.STAGE_ID,'0')='0' or d.STAGE_ID = a.STAGE_ID)
-                and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
-                and (d.STATUS in ('0', '1') or curdate() &lt;= d.VALID_END_DATE))
-        )
-        or
         (ifnull(a.Person_Total_Num,999999999)&lt;999999 and a.Person_Total_Num &lt;=
              (select ifnull(count(d.UUID),0) #有效期内
                 from TB_CLIENT_COUPON d
@@ -39,7 +29,7 @@
                  and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
              )
         )
-        or (a.UNIT = '0' or a.ALLOW_COUNT &lt;=
+        or (a.UNIT = '0' and a.ALLOW_COUNT &lt;=
               (select ifnull(count(d.UUID),0) #每天领一次
                  from TB_CLIENT_COUPON d
                 where ifnull(d.IS_ENABLE, '1') = '1'
@@ -48,7 +38,7 @@
                   and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
                   and d.CREATE_TIME &gt;= curdate())
          )
-        or (a.UNIT = '1' or a.ALLOW_COUNT &lt;=
+        or (a.UNIT = '1' and a.ALLOW_COUNT &lt;=
              (select ifnull(count(d.UUID),0)
                 from TB_CLIENT_COUPON d
                where ifnull(d.IS_ENABLE, '1') = '1'
@@ -59,7 +49,7 @@
                  and d.CREATE_TIME &lt;=date_sub(curdate(), INTERVAL WEEKDAY(curdate()) - 5 DAY)
              )
         )
-        or (a.UNIT = '2' or a.ALLOW_COUNT &lt;=
+        or (a.UNIT = '2' and a.ALLOW_COUNT &lt;=
             (select ifnull(count(d.UUID),0)
                from TB_CLIENT_COUPON d
               where ifnull(d.IS_ENABLE, '1') = '1'
@@ -70,7 +60,7 @@
                 and LAST_DAY(now()) &gt;= d.CREATE_TIME
             )
         )
-        or (a.UNIT = '3' or a.ALLOW_COUNT &lt;=
+        or (a.UNIT = '3' and a.ALLOW_COUNT &lt;=
            (select ifnull(count(d.UUID),0)
               from TB_CLIENT_COUPON d
              where ifnull(d.IS_ENABLE, '1') = '1'

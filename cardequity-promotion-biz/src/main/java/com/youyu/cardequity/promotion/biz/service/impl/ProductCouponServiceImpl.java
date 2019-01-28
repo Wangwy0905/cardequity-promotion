@@ -24,6 +24,7 @@ import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
  * 开发日志
  * V1.0-V1 1004244-徐长焕-20181207 新建代码，findEnableGetCoupon：获取客户可领取的券
  */
+@Slf4j
 @Service
 public class ProductCouponServiceImpl extends AbstractService<String, ProductCouponDto, ProductCouponEntity, ProductCouponMapper> implements ProductCouponService {
 
@@ -131,7 +133,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
 
             //子券因领取频率受限的
-            if (stageList.size() > 0 && shortStageList.size() > 0) {
+            if (!stageList.isEmpty() && !shortStageList.isEmpty()) {
                 List<CouponStageRuleDto> couponStageList = new ArrayList<>();
 
                 for (CouponStageRuleEntity stageItem : stageList) {
@@ -141,6 +143,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                         if (stageItem.getUuid().equals(shortItem.getStageId())) {
                             isExsit = true;
                             shortStageList.remove(shortItem);//线程安全
+                            log.info(String.format("该有门槛优惠券{0}的门槛{1}不能被领取，因为其领取频率超限",item.getId(),shortItem.getStageId()));
+
                             break;
                         }
                     }
@@ -150,9 +154,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
                 //有阶梯的优惠券，如果有0个阶梯能领取该券可领取，否则该券不能领取
                 if (couponStageList.size() > 0) {
+
                     CouponDetailDto rsp = combinationCoupon(item);
                     rsp.setStageList(couponStageList);//重置可领的子券信息
                     result.add(rsp);
+                }else {
+                    log.info(String.format("该有门槛优惠券{0}不能被领取，因为其领取频率超限",item.getId()));
                 }
             }
             //没有领取频率受限的
