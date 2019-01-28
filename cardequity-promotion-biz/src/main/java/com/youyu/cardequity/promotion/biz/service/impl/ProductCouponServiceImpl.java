@@ -1026,13 +1026,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         Collections.sort(enableGetCoupon, new Comparator<CouponDetailDto>() {
             @Override
             public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
-                int sortresult = entity2.getProductCouponDto().getCouponType().compareTo(entity1.getProductCouponDto().getCouponType());
+                int sortresult = entity1.getProductCouponDto().getCouponType().compareTo(entity2.getProductCouponDto().getCouponType());
                 if (sortresult != 0)
                     return sortresult;
-                sortresult = entity1.getProductCouponDto().getCouponLevel().compareTo(entity2.getProductCouponDto().getCouponLevel());
+                sortresult = entity2.getProductCouponDto().getCouponLevel().compareTo(entity1.getProductCouponDto().getCouponLevel());
                 if (sortresult != 0)
                     return sortresult;
-                return entity1.getProductCouponDto().getProfitValue().compareTo(entity2.getProductCouponDto().getProfitValue());
+                return entity2.getProductCouponDto().getProfitValue().compareTo(entity1.getProductCouponDto().getProfitValue());
             }
         });
 
@@ -1043,8 +1043,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             BeanPropertiesUtils.copyProperties(enableGetCoupon.get(i).switchToView(), item);
             item.setLabelDto(dto.getLabelDto());
             item.setObtainState(CommonConstant.OBTAIN_STATE_NO);
-            item.setValidStartDate(dto.getAllowUseBeginDate());
-            item.setValidEndDate(dto.getAllowUseEndDate());
+            if (dto.getValIdTerm()<=0) {
+                item.setValidStartDate(dto.getAllowUseBeginDate());
+                item.setValidEndDate(dto.getAllowUseEndDate());
+            }else{
+                item.setValidStartDate(LocalDateTime.now());
+                item.setValidEndDate(LocalDateTime.now().plusDays(dto.getValIdTerm()));
+            }
             item.setProductList(enableGetCoupon.get(i).getProductList());
             result.add(item);
         }
@@ -1070,13 +1075,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         Collections.sort(resultDto, new Comparator<ObtainCouponViewDto>() {
             @Override
             public int compare(ObtainCouponViewDto entity1, ObtainCouponViewDto entity2) {//如果是折扣、任选、优惠价从小到大
-                int sortresult = entity2.getCouponViewType().compareTo(entity1.getCouponViewType());
+                int sortresult = entity1.getCouponViewType().compareTo(entity2.getCouponViewType());
                 if (sortresult != 0)
                     return sortresult;
-                sortresult = entity1.getCouponLevel().compareTo(entity2.getCouponLevel());
+                sortresult = entity2.getCouponLevel().compareTo(entity1.getCouponLevel());
                 if (sortresult != 0)
                     return sortresult;
-                return entity1.getProfitValue().compareTo(entity2.getProfitValue());
+                return entity2.getProfitValue().compareTo(entity1.getProfitValue());
             }
         });
         //返回数据不足需要
@@ -1109,13 +1114,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             Collections.sort(enableGetCoupons, new Comparator<CouponDetailDto>() {
                 @Override
                 public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
-                    int sortresult = entity2.getProductCouponDto().getCouponType().compareTo(entity1.getProductCouponDto().getCouponType());
+                    int sortresult = entity1.getProductCouponDto().getCouponType().compareTo(entity2.getProductCouponDto().getCouponType());
                     if (sortresult != 0)
                         return sortresult;
-                    sortresult = entity1.getProductCouponDto().getCouponLevel().compareTo(entity2.getProductCouponDto().getCouponLevel());
+                    sortresult = entity2.getProductCouponDto().getCouponLevel().compareTo(entity1.getProductCouponDto().getCouponLevel());
                     if (sortresult != 0)
                         return sortresult;
-                    return entity1.getProductCouponDto().getProfitValue().compareTo(entity2.getProductCouponDto().getProfitValue());
+                    return entity2.getProductCouponDto().getProfitValue().compareTo(entity1.getProductCouponDto().getProfitValue());
                 }
             });
             for (CouponDetailDto item : enableGetCoupons) {
@@ -1123,6 +1128,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 viewDto.setProductList(item.getProductList());
                 viewDto.setLabelDto(item.getProductCouponDto().getLabelDto());
                 viewDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);
+                if (viewDto.getValIdTerm()<=0) {
+                    viewDto.setValidStartDate(item.getProductCouponDto().getAllowUseBeginDate());
+                    viewDto.setValidEndDate(item.getProductCouponDto().getAllowUseEndDate());
+                }else{
+                    viewDto.setValidStartDate(LocalDateTime.now());
+                    viewDto.setValidEndDate(LocalDateTime.now().plusDays(viewDto.getValIdTerm()));
+                }
                 result.add(viewDto);
             }
 
@@ -1131,13 +1143,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             Collections.sort(obtainCoupon, new Comparator<ClientCouponEntity>() {
                 @Override
                 public int compare(ClientCouponEntity entity1, ClientCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
-                    int sortresult = entity2.getCouponType().compareTo(entity1.getCouponType());
+                    int sortresult = entity1.getCouponType().compareTo(entity2.getCouponType());
                     if (sortresult != 0)
                         return sortresult;
-                    sortresult = entity1.getCouponLevel().compareTo(entity2.getCouponLevel());
+                    sortresult = entity2.getCouponLevel().compareTo(entity1.getCouponLevel());
                     if (sortresult != 0)
                         return sortresult;
-                    return entity1.getCouponAmout().compareTo(entity2.getCouponAmout());
+                    return entity2.getCouponAmout().compareTo(entity1.getCouponAmout());
                 }
             });
             List<FullClientCouponRsp> fullClientCouponRsps = clientCouponService.combClientFullObtainCouponList(obtainCoupon);
@@ -1160,13 +1172,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             Collections.sort(nextMonthEntities, new Comparator<ProductCouponEntity>() {
                 @Override
                 public int compare(ProductCouponEntity entity1, ProductCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
-                    int sortresult = entity2.getCouponType().compareTo(entity1.getCouponType());
+                    int sortresult = entity1.getCouponType().compareTo(entity2.getCouponType());
                     if (sortresult != 0)
                         return sortresult;
-                    sortresult = entity1.getCouponLevel().compareTo(entity2.getCouponLevel());
+                    sortresult = entity2.getCouponLevel().compareTo(entity1.getCouponLevel());
                     if (sortresult != 0)
                         return sortresult;
-                    return entity1.getProfitValue().compareTo(entity2.getProfitValue());
+                    return entity2.getProfitValue().compareTo(entity1.getProfitValue());
                 }
             });
             List<CouponDetailDto> detailDtos = combinationCoupon(nextMonthEntities);
@@ -1175,6 +1187,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 obtainDto.setProductList(item.getProductList());
                 obtainDto.setLabelDto(item.getProductCouponDto().getLabelDto());
                 obtainDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);
+                if (obtainDto.getValIdTerm()<=0) {
+                    obtainDto.setValidStartDate(item.getProductCouponDto().getAllowUseBeginDate());
+                    obtainDto.setValidEndDate(item.getProductCouponDto().getAllowUseEndDate());
+                }else{
+                    obtainDto.setValidStartDate(LocalDateTime.now());
+                    obtainDto.setValidEndDate(LocalDateTime.now().plusDays(obtainDto.getValIdTerm()));
+                }
                 result.add(obtainDto);
             }
         }

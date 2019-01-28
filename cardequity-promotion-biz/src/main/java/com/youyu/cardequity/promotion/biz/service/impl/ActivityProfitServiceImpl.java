@@ -1,7 +1,5 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
@@ -1056,10 +1054,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     //有效期内排最前
                     if (entity1.getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
                             entity1.getAllowUseEndDate().isAfter(LocalDateTime.now())) {
-                        return 1;
+                        return -1;
                     }
                     if (entity1.getAllowUseEndDate().isBefore(LocalDateTime.now()))
-                        return -1;
+                        return 1;
                     return 0;
                 }
             });
@@ -1119,10 +1117,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     //有效期内排最前
                     if (entity1.getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
                             entity1.getAllowUseEndDate().isAfter(LocalDateTime.now())) {
-                        return 1;
+                        return -1;
                     }
                     if (entity1.getAllowUseEndDate().isBefore(LocalDateTime.now()))
-                        return -1;
+                        return 1;
                     return 0;
                 }
             });
