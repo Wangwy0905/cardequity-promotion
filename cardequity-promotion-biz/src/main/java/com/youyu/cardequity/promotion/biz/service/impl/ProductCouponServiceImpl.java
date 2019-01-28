@@ -163,7 +163,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
             }
             //没有领取频率受限的
-            else if (shortStageList.size() <= 0) {
+            else if (shortStageList.isEmpty()) {
                 CouponDetailDto rsp = combinationCoupon(item);
                 result.add(rsp);
 
