@@ -541,6 +541,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         } else {
             //校验上下架状态,默认为下架状态
             if (!CouponStatus.YES.getDictValue().equals(coupon.getStatus())) {
+                dto.setDesc("该优惠券已下架");
                 dto.setData(coupon);
                 return dto;
             }
