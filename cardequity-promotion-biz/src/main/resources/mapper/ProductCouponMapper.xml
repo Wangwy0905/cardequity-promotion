@@ -88,6 +88,9 @@
         select *
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
+        <if test="commonQry.upAndDownStatus!=null and commonQry.upAndDownStatus!=''">
+            a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
+        </if>
         <if test="commonQry.couponId!=null and commonQry.couponId!=''">
             and a.UUID=#{commonQry.couponId,jdbcType=VARCHAR}
         </if>
@@ -169,6 +172,9 @@
         select *
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
+        <if test="commonQry.upAndDownStatus!=null and commonQry.upAndDownStatus!=''">
+            a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
+        </if>
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
         </if>
@@ -238,6 +244,9 @@
         count(1) as gatherValue
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
+        <if test="commonQry.upAndDownStatus!=null and commonQry.upAndDownStatus!=''">
+            a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
+        </if>
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
         </if>
