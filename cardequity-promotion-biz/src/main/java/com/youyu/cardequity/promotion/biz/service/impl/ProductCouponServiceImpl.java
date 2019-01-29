@@ -682,16 +682,18 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             result.setDesc("没有指定删除的优惠券");
             return result;
         }
-        //检查是否存在客户未使用的优惠券
-        int couponCount = clientCouponMapper.findAllClientValidCouponCount();
-        if (couponCount > 0) {
-            result.setDesc("不能删除，存在客户领取该优惠券有效数量" + couponCount);
-            return result;
-        }
+
 
         List<String> coupons = new ArrayList<>();
         for (BaseCouponReq baseCoupon : req.getBaseCouponList()) {
             coupons.add(baseCoupon.getCouponId());
+        }
+
+        //检查是否存在客户未使用的优惠券
+        int couponCount = clientCouponMapper.findAllClientValidCouponCount(coupons);
+        if (couponCount > 0) {
+            result.setDesc("不能删除，存在客户领取该优惠券有效数量" + couponCount);
+            return result;
         }
 
         //检查是否有有效的已领取的优惠券

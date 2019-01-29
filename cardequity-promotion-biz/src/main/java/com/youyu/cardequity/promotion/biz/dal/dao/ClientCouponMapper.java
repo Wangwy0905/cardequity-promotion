@@ -143,7 +143,7 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      * 查询有效的已领取优惠券数量
      * @return
      */
-    int findAllClientValidCouponCount();
+    int findAllClientValidCouponCount(@Param("idList") List<String> idList);
 
     /**
      * 获取当月领取的券
