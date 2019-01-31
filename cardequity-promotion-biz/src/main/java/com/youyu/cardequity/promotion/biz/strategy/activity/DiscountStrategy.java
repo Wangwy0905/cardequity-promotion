@@ -172,7 +172,7 @@ public class DiscountStrategy extends ActivityStrategy {
                 }
                 //找到最优惠的折扣
                 if (rsp.getStage() != null && rsp.getStage().getId().equals(stage.getId())) {
-                    rsp.setProductLsit(BeanPropertiesConverter.copyPropertiesOfList(temproductLsit, OrderProductDetailDto.class));
+                    rsp.setProductList(BeanPropertiesConverter.copyPropertiesOfList(temproductLsit, OrderProductDetailDto.class));
                 }
             }
         } else {
@@ -198,7 +198,7 @@ public class DiscountStrategy extends ActivityStrategy {
 
                 if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                     product.setProfitCount(profitCount);
-                    rsp.getProductLsit().add(product);
+                    rsp.getProductList().add(product);
                     temproductLsit.add(product);
                     log.info("无门槛折扣活动满足使用条件处理;活动编号：" + item.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                 }
@@ -207,10 +207,10 @@ public class DiscountStrategy extends ActivityStrategy {
         }
 
         //找到最终适用的阶梯后，将对应最终适用商品情况赋值
-        if (!rsp.getProductLsit().isEmpty()) {
+        if (!rsp.getProductList().isEmpty()) {
             rsp.setProfitAmount(BigDecimal.ZERO);
             //对于适用商品明细优惠值进行计算
-            for (OrderProductDetailDto product : rsp.getProductLsit()) {
+            for (OrderProductDetailDto product : rsp.getProductList()) {
                 product.setProfitAmount(product.getTotalAmount().multiply(BigDecimal.ONE.subtract(rsp.getStage() == null ? item.getProfitValue() : rsp.getStage().getProfitValue())));
                 rsp.setProfitAmount(rsp.getProfitAmount().add(product.getProfitAmount()));
             }
@@ -254,7 +254,7 @@ public class DiscountStrategy extends ActivityStrategy {
             BeanUtils.copyProperties(stage, stageDto);
             rsp.setStage(stageDto);
             //用最新适用的折扣重算商品对应优惠金额:之前已经满足条件的按全部数量计算优惠金额
-            for (OrderProductDetailDto item : rsp.getProductLsit()) {
+            for (OrderProductDetailDto item : rsp.getProductList()) {
                 item.setProfitAmount(item.getTotalAmount().multiply(BigDecimal.ONE.subtract(stage.getProfitValue())));
                 temproductLsit.add(item);
             }

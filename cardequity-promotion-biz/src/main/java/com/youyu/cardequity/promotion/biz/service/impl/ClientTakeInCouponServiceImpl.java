@@ -67,8 +67,8 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
         for (OrderProductDetailDto product : innerReq.getProductList()) {
             if (useActivityRsps != null) {
                 for (UseActivityRsp useActivityRsp : useActivityRsps) {
-                    if (useActivityRsp.getProductLsit() != null) {
-                        for (OrderProductDetailDto useProduct : useActivityRsp.getProductLsit()) {
+                    if (useActivityRsp.getProductList() != null) {
+                        for (OrderProductDetailDto useProduct : useActivityRsp.getProductList()) {
                             if (product.getProductId().equals(useProduct.getProductId()) && product.getSkuId().equals(useProduct.getSkuId())) {
                                 product.setTotalAmount(product.getTotalAmount().subtract(product.getProfitAmount()));
                             }
@@ -164,8 +164,8 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
         for (OrderProductDetailDto product : req.getProductList()) {
             if (useActivityRsps != null) {
                 for (UseActivityRsp useActivityRsp : useActivityRsps) {
-                    if (useActivityRsp.getProductLsit() != null) {
-                        for (OrderProductDetailDto useProduct : useActivityRsp.getProductLsit()) {
+                    if (useActivityRsp.getProductList() != null) {
+                        for (OrderProductDetailDto useProduct : useActivityRsp.getProductList()) {
                             if (product.getProductId().equals(useProduct.getProductId()) && product.getSkuId().equals(useProduct.getSkuId())) {
                                 product.setTotalAmount(product.getTotalAmount().subtract(product.getProfitAmount()));
                             }

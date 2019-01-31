@@ -112,7 +112,7 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
             product.setTotalAmount(product.getAppCount().multiply(product.getPrice()));
 
             //记录活动适用的商品，但是没有计算对应优惠值，对应优惠值是在满足门槛后再calculationProfitAmount中计算
-            rsp.getProductLsit().add(product);
+            rsp.getProductList().add(product);
             countCondition = countCondition.add(product.getAppCount());
             amountCondition = amountCondition.add(product.getTotalAmount());
         }
@@ -155,7 +155,7 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
 
             //每种商品优惠的金额是按适用金额比例来的
             if (amountCondition.compareTo(BigDecimal.ZERO) > 0) {
-                for (OrderProductDetailDto product : rsp.getProductLsit()) {
+                for (OrderProductDetailDto product : rsp.getProductList()) {
                     product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(amountCondition)));
                 }
             }

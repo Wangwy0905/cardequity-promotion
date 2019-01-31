@@ -118,7 +118,7 @@ public class PriceStrategy extends ActivityStrategy {
                     product.setProfitCount(applyNum);
                     rsp.setProfitAmount(rsp.getProfitAmount().add(product.getProfitAmount()));
                     //记录活动适用的商品
-                    rsp.getProductLsit().add(product);
+                    rsp.getProductList().add(product);
                     log.info("特价活动满足使用条件处理;活动编号：" + item.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                     //本次优惠已经没有完全满足
                     //if (applyNum.compareTo(product.getAppCount()) < 0) {
@@ -128,7 +128,7 @@ public class PriceStrategy extends ActivityStrategy {
             }
 
         }
-        if (rsp.getProductLsit() == null || rsp.getProductLsit().isEmpty())
+        if (rsp.getProductList() == null || rsp.getProductList().isEmpty())
             return null;
         return rsp;
     }
