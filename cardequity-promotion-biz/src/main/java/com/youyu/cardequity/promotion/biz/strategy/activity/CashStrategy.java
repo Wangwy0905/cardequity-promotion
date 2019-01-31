@@ -205,7 +205,7 @@ public class CashStrategy extends ActivityStrategy {
                 //如果满足条件需要把对应商品拷贝替换后组装返回
                 if (rsp.getStage() != null && rsp.getStage().getId().equals(stage.getId())) {
                     rsp.setProfitAmount(stage.getProfitValue());
-                    rsp.setProductLsit(BeanPropertiesConverter.copyPropertiesOfList(temproductLsit, OrderProductDetailDto.class));
+                    rsp.setProductList(BeanPropertiesConverter.copyPropertiesOfList(temproductLsit, OrderProductDetailDto.class));
                 }
             }
         } else {
@@ -256,7 +256,7 @@ public class CashStrategy extends ActivityStrategy {
 
                 if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                     rsp.setProfitAmount(applyNum.multiply(item.getProfitValue()));
-                    rsp.getProductLsit().add(product);
+                    rsp.getProductList().add(product);
                     product.setProfitCount(applyNum);
                     log.info("无门槛现金立减活动满足使用条件;活动编号" + item.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                     if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyNotStage)) {
@@ -271,21 +271,21 @@ public class CashStrategy extends ActivityStrategy {
 
         //1.有门槛、满足门槛；2.无门槛、有满足的商品、模式为适用一个数量的活动
         if ((!activityProfitDetail.isEmpty() && rsp.getStage() != null) ||
-                (activityProfitDetail.isEmpty() && !rsp.getProductLsit().isEmpty() && CouponApplyProductStage.CONDITION.getDictValue().equals(applyNotStage))) {
-            BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                (activityProfitDetail.isEmpty() && !rsp.getProductList().isEmpty() && CouponApplyProductStage.CONDITION.getDictValue().equals(applyNotStage))) {
+            BigDecimal totalRealAmount = rsp.getProductList().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             //每种商品优惠的金额是按适用金额比例来的
             if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
-                for (OrderProductDetailDto product : rsp.getProductLsit()) {
+                for (OrderProductDetailDto product : rsp.getProductList()) {
                     product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
                 }
             }
             return rsp;
         } else {
             //无门槛、有满足的商品、模式为适用所有数量模式
-            if (activityProfitDetail.isEmpty() && !rsp.getProductLsit().isEmpty() && CouponApplyProductStage.CONDITION.getDictValue().equals(applyNotStage)) {
+            if (activityProfitDetail.isEmpty() && !rsp.getProductList().isEmpty() && CouponApplyProductStage.CONDITION.getDictValue().equals(applyNotStage)) {
                 BigDecimal totalProfitAmount = BigDecimal.ZERO;
                 //无门槛的每个商品都是单独优惠金额
-                for (OrderProductDetailDto product : rsp.getProductLsit()) {
+                for (OrderProductDetailDto product : rsp.getProductList()) {
                     totalProfitAmount = totalProfitAmount.add(item.getProfitValue().multiply(product.getProfitCount()));
                     product.setProfitAmount(item.getProfitValue().multiply(product.getProfitCount()));
                 }

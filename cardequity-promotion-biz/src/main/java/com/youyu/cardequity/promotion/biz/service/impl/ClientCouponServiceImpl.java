@@ -279,13 +279,11 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //返回值
         List<UseCouponRsp> rsps = new ArrayList<>(3);
 
-        //普通券的使用情况
-        Map<String, UseCouponRsp> optimalUseCouponRsp = new HashMap<>(2);
-        optimalUseCouponRsp.put(CouponActivityLevel.GLOBAL.getDictValue(), null);
-        optimalUseCouponRsp.put(CouponActivityLevel.PART.getDictValue(), null);
-
-        //运费券使用情况
+        //券使用情况
         UseCouponRsp useTransferCouponRsp = null;
+        UseCouponRsp globalCouponRsp= null;
+        UseCouponRsp partCouponRsp= null;
+
         //临时变量
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
@@ -308,6 +306,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 enableCouponList.isEmpty()) {
             return rsps;
         }
+
+        BigDecimal totalAmount = req.getProductList().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         for (ClientCouponEntity clientCoupon : enableCouponList) {
             //优惠券已使用的不处理
             if (!CouponUseStatus.NORMAL.getDictValue().equals(clientCoupon.getStatus()))
@@ -343,11 +343,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     if (useTransferCouponRsp == null)
                         useTransferCouponRsp = useCouponRsp;
                     else {
-                        BigDecimal diff = useTransferCouponRsp.getProfitAmount().subtract(req.getTransferFare());
-                        BigDecimal diff2 = useCouponRsp.getProfitAmount().subtract(req.getTransferFare());
-                        //1.都高于原运费，取最小的;2.都低于运费取最大值，本券金额大于运费使用本券
-                        if ((diff.compareTo(BigDecimal.ZERO) > 0 && diff2.compareTo(BigDecimal.ZERO) > 0 && diff.compareTo(diff2) > 0) ||
-                                (diff.compareTo(BigDecimal.ZERO) < 0 && diff.compareTo(diff2) < 0)) {
+                        boolean diviation = CommonUtils.minDiviation(useTransferCouponRsp.getProfitAmount(), useCouponRsp.getProfitAmount(), req.getTransferFare());
+                        if (diviation) {
                             useTransferCouponRsp = useCouponRsp;
                         }
                     }
@@ -357,26 +354,80 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     useCouponRsp.setProfitAmount(req.getTransferFare());//重置免邮券优惠金额=运费
                     useTransferCouponRsp = useCouponRsp;
                 } else {
-                    //普通的券比较两者得到最优惠
-                    if (optimalUseCouponRsp.get(clientCoupon.getCouponLevel()) == null ||
-                            useCouponRsp.getProfitAmount().compareTo(optimalUseCouponRsp.get(clientCoupon.getCouponLevel()).getProfitAmount()) > 0) {
-                        optimalUseCouponRsp.put(clientCoupon.getCouponLevel(), useCouponRsp);
+                    //大鱼券
+                    if (CouponActivityLevel.GLOBAL.getDictValue().equals(clientCoupon.getCouponLevel())){
+                        if (globalCouponRsp==null) {
+                            globalCouponRsp = useCouponRsp;
+                        }else {
+                            BigDecimal otherProfitAmount=partCouponRsp==null?BigDecimal.ZERO:partCouponRsp.getProfitAmount();
+                            globalCouponRsp=optimalCouponBetweenMult(globalCouponRsp,useCouponRsp,otherProfitAmount,totalAmount);
+                        }
+                    }else {
+                        if (partCouponRsp==null) {
+                            partCouponRsp = useCouponRsp;
+                        }else {
+                            BigDecimal otherProfitAmount=globalCouponRsp==null?BigDecimal.ZERO:globalCouponRsp.getProfitAmount();
+                            partCouponRsp=optimalCouponBetweenMult(partCouponRsp,useCouponRsp,otherProfitAmount,totalAmount);
+                        }
                     }
                 }
             }
 
         }
 
-        //装箱返回
-        if (optimalUseCouponRsp.get(CouponActivityLevel.GLOBAL.getDictValue()) != null)
-            rsps.add(optimalUseCouponRsp.get(CouponActivityLevel.GLOBAL.getDictValue()));
-        if (optimalUseCouponRsp.get(CouponActivityLevel.PART.getDictValue()) != null)
-            rsps.add(optimalUseCouponRsp.get(CouponActivityLevel.PART.getDictValue()));
         if (useTransferCouponRsp != null)
             rsps.add(useTransferCouponRsp);
-        optimalUseCouponRsp.clear();
+        //装箱返回
+        if (globalCouponRsp != null) {
+            rsps.add(globalCouponRsp);
+            //如果大鱼券的优惠金额比总金额还大，则不需要小鱼券了,其实策略实现做了保护后，这里只会出现等于
+            if (totalAmount.compareTo(globalCouponRsp.getProfitAmount())<=0){
+                return rsps;
+            }
 
+        }
+        if (partCouponRsp != null) {
+            rsps.add(partCouponRsp);
+            BigDecimal globalAmont=globalCouponRsp==null?BigDecimal.ZERO:globalCouponRsp.getProfitAmount();
+            if (totalAmount.compareTo(partCouponRsp.getProfitAmount().add(globalAmont))<0){
+
+                UseCouponRsp dealCouponRsp=partCouponRsp;
+                //只有满减券才会导致此现象，将满减券实际优惠金额处理
+                if (CouponStrategyType.discount.getDictValue().equals(partCouponRsp.getClientCoupon().getCouponStrategyType())){
+                    //此时globalCouponRsp一定不为空
+                    dealCouponRsp=globalCouponRsp;
+                }
+                BigDecimal oldProfitAmount=dealCouponRsp.getProfitAmount();
+                dealCouponRsp.setProfitAmount(partCouponRsp.getProfitAmount().add(globalAmont).subtract(totalAmount));
+                for (OrderProductDetailDto item:dealCouponRsp.getProductLsit()){
+                    item.setProfitAmount(dealCouponRsp.getProfitAmount().divide(oldProfitAmount));
+                }
+            }
+        }
         return rsps;
+    }
+
+    /**
+     * 取最优的优惠券使用
+     * @param a 原认定使用优惠
+     * @param b 即将比较是否使用的优惠
+     * @param profitedAmont 已优惠的金额
+     * @return
+     */
+    private UseCouponRsp optimalCouponBetweenMult(UseCouponRsp a, UseCouponRsp b,BigDecimal profitedAmont,BigDecimal totalAmount){
+        //当：优惠金额相等且等于总金额时，只会适用原始设置优惠最小的那张券
+        if (a.getProfitAmount().compareTo(b.getProfitAmount())==0 &&
+                a.getClientCoupon().getCouponAmout().compareTo(b.getClientCoupon().getCouponAmout())>0){
+           return b;
+        }
+        //取偏离度最小的组合
+        boolean diviation = CommonUtils.minDiviation(a.getProfitAmount().add(profitedAmont),
+                b.getProfitAmount().add(profitedAmont),
+                totalAmount);
+        if (diviation) {
+            return b;
+        }
+        return a;
     }
 
     /**
@@ -1082,11 +1133,11 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     }
                 }
                 Iterator<CouponRefProductEntity> it = productEntities.iterator();
-                boolean isExists=false;
+                boolean isExists = false;
                 while (it.hasNext()) {
                     CouponRefProductEntity entity = it.next();
                     if (item.getUuid().equals(entity.getCouponId())) {
-                        isExists=true;
+                        isExists = true;
                         if (item.getProductList() == null)
                             item.setProductList(new ArrayList<>());
                         BaseProductReq productReq = new BaseProductReq();
@@ -1095,9 +1146,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                         item.getProductList().add(productReq);
                         //与后续循环不再需要
                         it.remove();
-                    }else{
+                    } else {
                         //productEntities是一个有序集合
-                        if (isExists){
+                        if (isExists) {
                             break;
                         }
                     }

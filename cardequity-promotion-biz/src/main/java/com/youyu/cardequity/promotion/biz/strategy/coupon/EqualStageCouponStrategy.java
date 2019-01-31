@@ -106,6 +106,7 @@ public class EqualStageCouponStrategy extends CouponStrategy {
             //计算活动总优惠金额=步长倍数*每个步长优惠值
             BigDecimal totalProfitAmount = applyNum.multiply(clientCoupon.getCouponAmout());
             rsp.setProfitAmount(totalProfitAmount);
+            rsp.setTotalAmount(amountCondition);
 
             //每种商品优惠的金额是按适用金额比例来的
             if (amountCondition.compareTo(BigDecimal.ZERO) > 0) {

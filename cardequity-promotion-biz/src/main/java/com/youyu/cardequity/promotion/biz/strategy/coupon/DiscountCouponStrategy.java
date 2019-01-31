@@ -116,6 +116,7 @@ public class DiscountCouponStrategy extends CouponStrategy {
             BigDecimal profitAmount = applyNum.multiply(product.getPrice()).multiply(BigDecimal.ONE.subtract(clientCoupon.getCouponAmout()));
             product.setProfitAmount(profitAmount);
             rsp.setProfitAmount(rsp.getProfitAmount().add(profitAmount));//加总优惠金额
+            rsp.setTotalAmount(rsp.getTotalAmount().add(product.getTotalAmount()));
             countCondition = countCondition.add(product.getAppCount());
             amountCondition = amountCondition.add(product.getTotalAmount());
         }

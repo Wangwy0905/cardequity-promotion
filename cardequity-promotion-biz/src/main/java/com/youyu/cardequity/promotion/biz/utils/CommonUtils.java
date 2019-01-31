@@ -112,4 +112,30 @@ public class CommonUtils {
         return realUsevalue;
     }
 
+
+    /**
+     * 比较b偏离度是否最小
+     * @param a 原值
+     * @param b 新值
+     * @param standard 标准
+     * @return 当b偏离度小于a 返回true，当b>标准且a<标准返回true
+     */
+    public static boolean minDiviation(BigDecimal a,BigDecimal b,BigDecimal standard){
+        if (!isGtZeroDecimal(b)) return false;
+        if (!isGtZeroDecimal(a)) return true;
+        BigDecimal oldDiff = a.subtract(standard);
+        BigDecimal newDiff = b.subtract(standard);
+        //1.都高于原运费，取最小的;2.都低于运费取最大值，本券金额大于运费使用本券
+        if (oldDiff.compareTo(BigDecimal.ZERO) > 0 && newDiff.compareTo(BigDecimal.ZERO) > 0) {
+            //取偏离度最小的
+            if (oldDiff.compareTo(newDiff) > 0)
+                return true;
+        } else if (oldDiff.compareTo(BigDecimal.ZERO) < 0) {
+            //负值比较，取偏离度最小的
+            if (oldDiff.compareTo(newDiff) < 0)
+                return true;
+        }
+        return false;
+    }
+
 }

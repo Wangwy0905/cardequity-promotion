@@ -110,6 +110,10 @@ public class CommonCouponStrategy extends CouponStrategy {
             return null;
         }else{
             BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+            rsp.setTotalAmount(totalRealAmount);
+            //无门槛券可能出现优惠金额>总金额
+            if (rsp.getProfitAmount().compareTo(totalRealAmount)>0)
+                rsp.setProfitAmount(totalRealAmount);
             if (totalRealAmount.compareTo(BigDecimal.ZERO)>0) {
                 //每种商品优惠的金额是按适用金额比例来的，如果是免邮券getProfitAmount是0
                 for (OrderProductDetailDto product : rsp.getProductLsit()) {

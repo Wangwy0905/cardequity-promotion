@@ -153,25 +153,25 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
                         rsp.setProfitAmount(profitAmount);
                         //保留此阶梯适配的商品列表,只保留最近一次匹配到的
                         temproductLsit.clear();
-                        temproductLsit.addAll(rsp.getProductLsit());
+                        temproductLsit.addAll(rsp.getProductList());
                         temproductLsit.add(cyproduct);
                         log.info("任选限额券满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                     }
                 }
             }
             //满足条件后加入
-            rsp.getProductLsit().add(product);
+            rsp.getProductList().add(product);
             countCondition = countCondition.add(product.getAppCount());
             amountCondition = amountCondition.add(product.getTotalAmount());
         }
 
         //找到最终适用的阶梯后，将适用情况重置为对应点
         if (rsp.getStage() != null) {
-            rsp.setProductLsit(temproductLsit);
-            BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+            rsp.setProductList(temproductLsit);
+            BigDecimal totalRealAmount = rsp.getProductList().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
                 //每种商品优惠的金额是按适用金额比例来的
-                for (OrderProductDetailDto product : rsp.getProductLsit()) {
+                for (OrderProductDetailDto product : rsp.getProductList()) {
                     product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
                 }
             }
@@ -281,7 +281,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
                         rsp.setProfitAmount(profitAmount);
                         //保留此阶梯适配的商品列表,只保留最近一次匹配到的
                         temproductLsit.add(product);
-                        rsp.setProductLsit(BeanPropertiesConverter.copyPropertiesOfList(temproductLsit,OrderProductDetailDto.class));
+                        rsp.setProductList(BeanPropertiesConverter.copyPropertiesOfList(temproductLsit,OrderProductDetailDto.class));
                         log.info("任选限额券满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
                     }
                     break;
@@ -297,10 +297,10 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
 
         //找到最终适用的阶梯后，将适用情况重置为对应点
         if (rsp.getStage() != null) {
-            BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalRealAmount = rsp.getProductList().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
                 //每种商品优惠的金额是按适用金额比例来的
-                for (OrderProductDetailDto product : rsp.getProductLsit()) {
+                for (OrderProductDetailDto product : rsp.getProductList()) {
                     product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
                 }
             }

@@ -19,7 +19,7 @@ import java.util.List;
 public class UseActivityRsp {
     public UseActivityRsp(){
         profitAmount=BigDecimal.ZERO;
-        productLsit=new ArrayList<>();
+        productList=new ArrayList<>();
     }
 
     @ApiModelProperty(value = "活动")
@@ -35,5 +35,5 @@ public class UseActivityRsp {
     private BigDecimal profitAmount;
 
     @ApiModelProperty(value = "相关商品明细，关联该活动使用的商品及数量")
-    private List<OrderProductDetailDto> productLsit;
+    private List<OrderProductDetailDto> productList;
 }

@@ -68,7 +68,7 @@ public class ClientTakeInActivityServiceImpl extends AbstractService<String, Cli
         List<ClientTakeInActivityEntity> entities = new ArrayList<>();
         if (req != null)
             for (UseActivityRsp useItem : req) {
-                for (OrderProductDetailDto produt : useItem.getProductLsit()) {
+                for (OrderProductDetailDto produt : useItem.getProductList()) {
                     ClientTakeInActivityEntity takeInActivityEntity = new ClientTakeInActivityEntity();
                     takeInActivityEntity.setActivityId(useItem.getActivity().getId());
                     takeInActivityEntity.setBusinCode(BusinessCode.USEACTIVITY);
