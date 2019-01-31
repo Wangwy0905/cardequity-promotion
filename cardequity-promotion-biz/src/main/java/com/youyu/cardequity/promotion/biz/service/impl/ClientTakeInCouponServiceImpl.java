@@ -154,7 +154,7 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
      * @return
      */
     @Override
-    public FindCouponListByOrderDetailRsp OrderDetailApplyAllCouponList(OrderUseEnableCouponReq req) {
+    public FindCouponListByOrderDetailRsp orderDetailApplyAllCouponList(OrderUseEnableCouponReq req) {
         GetUseEnableCouponReq innerReq=new GetUseEnableCouponReq();
         BeanPropertiesUtils.copyProperties(req,innerReq);
         innerReq.setProductList(req.getProductList());

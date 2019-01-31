@@ -65,6 +65,6 @@ public interface ClientTakeInCouponApi {
      * @return
      */
     @ApiOperation(value = "【内部】订单适用的“所有”优惠券:没有限定使用张数情况下")
-    @PostMapping(path = "/OrderDetailApplyAllCouponList")
-    Result<FindCouponListByOrderDetailRsp> OrderDetailApplyAllCouponList(@RequestBody OrderUseEnableCouponReq req);
+    @PostMapping(path = "/orderDetailApplyAllCouponList")
+    Result<FindCouponListByOrderDetailRsp> orderDetailApplyAllCouponList(@RequestBody OrderUseEnableCouponReq req);
 }

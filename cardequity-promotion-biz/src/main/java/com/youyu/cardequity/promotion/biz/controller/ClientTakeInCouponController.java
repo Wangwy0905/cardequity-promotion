@@ -71,9 +71,9 @@ public class ClientTakeInCouponController implements ClientTakeInCouponApi {
      */
     @Override
     @ApiOperation(value = "【内部】订单适用的“所有”优惠券:没有限定使用张数情况下")
-    @PostMapping(path = "/OrderDetailApplyAllCouponList")
-    public Result<FindCouponListByOrderDetailRsp> OrderDetailApplyAllCouponList(@RequestBody OrderUseEnableCouponReq req){
-        return Result.ok(clientTakeInCouponService.OrderDetailApplyAllCouponList(req));
+    @PostMapping(path = "/orderDetailApplyAllCouponList")
+    public Result<FindCouponListByOrderDetailRsp> orderDetailApplyAllCouponList(@RequestBody OrderUseEnableCouponReq req){
+        return Result.ok(clientTakeInCouponService.orderDetailApplyAllCouponList(req));
 
     }
 

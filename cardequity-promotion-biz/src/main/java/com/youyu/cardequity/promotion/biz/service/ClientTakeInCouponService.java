@@ -47,7 +47,7 @@ public interface ClientTakeInCouponService extends IService<ClientTakeInCouponDt
      * @param req
      * @return
      */
-    FindCouponListByOrderDetailRsp OrderDetailApplyAllCouponList(OrderUseEnableCouponReq req);
+    FindCouponListByOrderDetailRsp orderDetailApplyAllCouponList(OrderUseEnableCouponReq req);
 }
 
 
