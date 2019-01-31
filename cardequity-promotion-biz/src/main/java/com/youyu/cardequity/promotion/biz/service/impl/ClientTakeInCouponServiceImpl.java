@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.service.ClientTakeInActivityService;
@@ -11,7 +12,9 @@ import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.CouponType;
 import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.req.OrderUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.OrderCouponAndActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
@@ -143,6 +146,39 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
         return result;
     }
 
+
+    /**
+     * 获取订单适用的所有优惠券
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public FindCouponListByOrderDetailRsp OrderDetailApplyAllCouponList(OrderUseEnableCouponReq req) {
+        GetUseEnableCouponReq innerReq=new GetUseEnableCouponReq();
+        BeanPropertiesUtils.copyProperties(req,innerReq);
+        innerReq.setProductList(req.getProductList());
+
+        List<UseActivityRsp> useActivityRsps = activityProfitService.combActivityRefProductDeal(innerReq);
+        //先拷贝生成第二次请求的数据，第二次请求数据需要在原活动优惠上计算
+        for (OrderProductDetailDto product : req.getProductList()) {
+            if (useActivityRsps != null) {
+                for (UseActivityRsp useActivityRsp : useActivityRsps) {
+                    if (useActivityRsp.getProductLsit() != null) {
+                        for (OrderProductDetailDto useProduct : useActivityRsp.getProductLsit()) {
+                            if (product.getProductId().equals(useProduct.getProductId()) && product.getSkuId().equals(useProduct.getSkuId())) {
+                                product.setTotalAmount(product.getTotalAmount().subtract(product.getProfitAmount()));
+                            }
+                        }
+                    }
+                }
+            }
+            //在活动优惠基础上重算价格和总价
+            product.setPrice(product.getTotalAmount().divide(product.getAppCount()));
+        }
+        return clientCouponService.findCouponListByOrderDetail(req);
+
+    }
 
 }
 

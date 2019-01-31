@@ -5,7 +5,9 @@ import com.youyu.cardequity.promotion.dto.ClientTakeInCouponDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.req.OrderUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.OrderCouponAndActivityRsp;
 import com.youyu.common.service.IService;
 
@@ -40,7 +42,12 @@ public interface ClientTakeInCouponService extends IService<ClientTakeInCouponDt
      */
     CommonBoolDto cancelOrderCouponAndActivityDeal(BaseOrderInPromotionReq req);
 
-
+    /**
+     * 订单适用的“所有”优惠券
+     * @param req
+     * @return
+     */
+    FindCouponListByOrderDetailRsp OrderDetailApplyAllCouponList(OrderUseEnableCouponReq req);
 }
 
 

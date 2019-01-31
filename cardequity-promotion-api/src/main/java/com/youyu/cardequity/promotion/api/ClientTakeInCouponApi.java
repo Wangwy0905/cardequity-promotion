@@ -3,7 +3,9 @@ package com.youyu.cardequity.promotion.api;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
 import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.req.OrderUseEnableCouponReq;
 import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.OrderCouponAndActivityRsp;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
@@ -56,4 +58,13 @@ public interface ClientTakeInCouponApi {
     @ApiOperation(value = "【内部】取消订单预使用活动及优惠券详情")
     @PostMapping(path = "/cancelOrderCouponAndActivityDeal")
     Result<CommonBoolDto> cancelOrderCouponAndActivityDeal(@RequestBody BaseOrderInPromotionReq req);
+
+    /**
+     * 订单适用的“所有”优惠券
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【内部】订单适用的“所有”优惠券:没有限定使用张数情况下")
+    @PostMapping(path = "/OrderDetailApplyAllCouponList")
+    Result<FindCouponListByOrderDetailRsp> OrderDetailApplyAllCouponList(@RequestBody OrderUseEnableCouponReq req);
 }
