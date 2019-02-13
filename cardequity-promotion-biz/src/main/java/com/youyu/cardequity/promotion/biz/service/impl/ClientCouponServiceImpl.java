@@ -107,6 +107,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     public CommonBoolDto<ObtainCouponViewDto> obtainCoupon(ClientObtainCouponReq req) {
         CommonBoolDto<ObtainCouponViewDto> dto = new CommonBoolDto<>();
         dto.setSuccess(true);
+        dto.setCode(NET_ERROR.getCode());
 
         if (req == null || StringUtil.isEmpty(req.getClientId()) || StringUtil.isEmpty(req.getClientType()) || StringUtil.isEmpty(req.getCouponId()))
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("客户编号、客户类型、优惠券编号不能为空"));
@@ -462,6 +463,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto takeInCoupon(String orderId, String operator, List<UseCouponRsp> rsps) {
         CommonBoolDto boolDto = new CommonBoolDto(true);
+        boolDto.setCode(NET_ERROR.getCode());
         //应获取自配置项
         String useType = CouponUseType.ORDER.getDictValue();
         BigDecimal productRealAmout = BigDecimal.ZERO;
@@ -479,6 +481,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             }
             if (clientCouponMapper.updateByPrimaryKeySelective(clientCoupon) <= 0) {
                 boolDto.setSuccess(false);
+                boolDto.setCode(PARAM_ERROR.getCode());
                 boolDto.setDesc("更新已领优惠券状态失败");
             }
 
@@ -543,6 +546,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> cancelTakeInCoupon(BaseOrderInPromotionReq req) {
         CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
+        result.setCode(NET_ERROR.getCode());
         int i = clientCouponMapper.modRecoverByOrderinfo(req);
         result.setData(i);
         return result;
@@ -643,6 +647,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     private CommonBoolDto excludeFreqLimit(List<ShortCouponDetailDto> couponDetailListByIds, String couponId, String stageId) {
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
+        dto.setCode(NET_ERROR.getCode());
         if (couponDetailListByIds == null || CommonUtils.isEmptyorNull(couponId))
             return dto;
 
@@ -698,6 +703,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     private CommonBoolDto checkCouponGetValidDate(ProductCouponEntity coupon) {
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
+        dto.setCode(NET_ERROR.getCode());
         //是否在允許領取期間
         if ((coupon.getAllowGetBeginDate() != null && coupon.getAllowGetBeginDate().toLocalDate().compareTo(LocalDate.now()) > 0) ||
                 (coupon.getAllowGetEndDate() != null && coupon.getAllowGetEndDate().toLocalDate().compareTo(LocalDate.now()) < 0)) {

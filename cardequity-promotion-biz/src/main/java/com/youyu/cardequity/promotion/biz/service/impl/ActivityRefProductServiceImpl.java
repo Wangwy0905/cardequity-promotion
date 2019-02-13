@@ -27,6 +27,7 @@ import com.youyu.cardequity.promotion.biz.dal.dao.ActivityRefProductMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.youyu.cardequity.promotion.enums.ResultCode.NET_ERROR;
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 
 
@@ -59,6 +60,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
     public CommonBoolDto<List<ActivityRefProductEntity>> checkProductReUse(List<BaseProductReq> req, ActivityProfitDto activity) {
 
         CommonBoolDto<List<ActivityRefProductEntity>> result = new CommonBoolDto<>(true);
+        result.setCode(NET_ERROR.getCode());
         //下架活动无需校验
         if (!CouponStatus.YES.getDictValue().equals(activity.getStatus())) {
             return result;
@@ -119,6 +121,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
                             if (CommonUtils.isEmptyorNull(productReq.getSkuId()) ||
                                     item.getGatherItem().equals(key+"|"+productReq.getSkuId()) ){
                                 result.setSuccess(false);
+                                result.setCode(PARAM_ERROR.getCode());
                                 result.setDesc("存在商品已经参与了其他活动,其中商品id=" + productReq.getProductId() + "子商品id=" + productReq.getSkuId());
                                 return result;
                             }
@@ -183,6 +186,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定活动"));
 
         CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
+        result.setCode(NET_ERROR.getCode());
         ActivityProfitEntity profitEntity = activityProfitMapper.findById(req.getId());
         if (profitEntity == null) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("指定活动不存在，活动编号" + req.getId()));

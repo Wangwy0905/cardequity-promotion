@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
+import static com.youyu.cardequity.promotion.enums.ResultCode.NET_ERROR;
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 
 
@@ -211,6 +212,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //权益中心标志为3，活动表标识为1，ProductCoupon表标识为2
         SnowflakeIdWorker stageWorker = new SnowflakeIdWorker(3, 2);
         CommonBoolDto<CouponDetailDto> result = new CommonBoolDto<>(false);
+        result.setCode(PARAM_ERROR.getCode());
         List<CouponStageRuleEntity> stageList = new ArrayList<>();
         List<CouponGetOrUseFreqRuleEntity> freqRuleList = new ArrayList<>();
         int sqlresult = 0;
@@ -412,6 +414,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("新增优惠信息错误，编号" + entity.getId()));
         }
         result.setSuccess(true);
+        result.setCode(NET_ERROR.getCode());
         result.setData(req);
 
         return result;
@@ -428,6 +431,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<CouponDetailDto> editCoupon(CouponDetailDto req) {
         CommonBoolDto<CouponDetailDto> result = new CommonBoolDto<CouponDetailDto>(false);
+        result.setCode(PARAM_ERROR.getCode());
         //先删后插需要同步处理CouponGetOrUseFreqRule：因为这表中存有对应字段
         List<CouponStageRuleEntity> stageList = new ArrayList<>();
         List<CouponGetOrUseFreqRuleEntity> freqRuleList = new ArrayList<>();
@@ -663,6 +667,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("更新优惠信息错误，编号" + entity.getId()));
         }
         result.setSuccess(true);
+        result.setCode(NET_ERROR.getCode());
         result.setData(req);
 
         return result;
@@ -680,6 +685,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
         if (req.getBaseCouponList() == null || req.getBaseCouponList().isEmpty()) {
             result.setDesc("没有指定删除的优惠券");
+            result.setCode(PARAM_ERROR.getCode());
             return result;
         }
 
@@ -692,6 +698,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //检查是否存在客户未使用的优惠券
         int couponCount = clientCouponMapper.findAllClientValidCouponCount(coupons);
         if (couponCount > 0) {
+            result.setCode(PARAM_ERROR.getCode());
             result.setDesc("不能删除，存在客户领取该优惠券有效数量" + couponCount);
             return result;
         }
@@ -711,6 +718,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //逻辑删除额度
         batchService.batchDispose(coupons, CouponQuotaRuleMapper.class, "logicDelByCouponId");
 
+        result.setSuccess(true);
+        result.setCode(NET_ERROR.getCode());
         return result;
     }
 
@@ -723,8 +732,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> upCoupon(BatchBaseCouponReq req) {
-        CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
         result.setData(0);
+        result.setCode(NET_ERROR.getCode());
         result.setDesc("");
 
         if (req == null || req.getBaseCouponList() == null || req.getBaseCouponList().isEmpty()) {
@@ -761,8 +771,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> downCoupon(BatchBaseCouponReq req) {
-        CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
         result.setData(0);
+        result.setCode(NET_ERROR.getCode());
         result.setDesc("");
 
         if (req == null || req.getBaseCouponList() == null || req.getBaseCouponList().isEmpty()) {

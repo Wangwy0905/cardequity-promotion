@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.youyu.cardequity.promotion.enums.ResultCode.NET_ERROR;
+
 
 /**
  *  代码生成器
@@ -105,6 +107,7 @@ public class ClientTakeInActivityServiceImpl extends AbstractService<String, Cli
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> cancelTakeInActivity(BaseOrderInPromotionReq req) {
         CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
+        result.setCode(NET_ERROR.getCode());
         int i = clientTakeInActivityMapper.modRecoverByOrderinfo(req);
         result.setData(i);
         return result;

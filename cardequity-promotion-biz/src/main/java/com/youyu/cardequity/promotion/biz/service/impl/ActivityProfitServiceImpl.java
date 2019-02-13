@@ -175,6 +175,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         //权益中心标志为3，活动表标识为1，ProductCoupon表标识为2
         SnowflakeIdWorker stageWorker = new SnowflakeIdWorker(3, 1);
         CommonBoolDto<BatchActivityDetailDto> result = new CommonBoolDto<>(false);
+        result.setCode(PARAM_ERROR.getCode());
         if (req == null || req.getActivityDetailList() == null || req.getActivityDetailList().isEmpty()) {
             result.setDesc("参数未指定");
             return result;
@@ -326,6 +327,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
 
         result.setSuccess(true);
+        result.setCode(NET_ERROR.getCode());
         result.setData(req);
         return result;
     }
@@ -340,6 +342,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<BatchActivityDetailDto> batchEditActivity(BatchActivityDetailDto req) {
         CommonBoolDto<BatchActivityDetailDto> result = new CommonBoolDto<>(false);
+        result.setCode(PARAM_ERROR.getCode());
         if (req == null || req.getActivityDetailList() == null || req.getActivityDetailList().isEmpty()) {
             result.setDesc("参数未指定");
             return result;
@@ -515,6 +518,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
 
         result.setSuccess(true);
+        result.setCode(NET_ERROR.getCode());
         result.setData(req);
         return result;
     }
@@ -529,13 +533,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> batchDelActivity(BatchBaseActivityReq req) {
         CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
+        result.setCode(NET_ERROR.getCode());
         if (req == null || req.getBaseActivityList() == null || req.getBaseActivityList().isEmpty()) {
             result.setSuccess(false);
+            result.setCode(PARAM_ERROR.getCode());
             result.setData(0);
             return result;
         } else {
             if (req.getBaseActivityList().size() > 50) {
                 result.setSuccess(false);
+                result.setCode(PARAM_ERROR.getCode());
                 result.setData(0);
                 result.setDesc("每次批量删除不能超过50条");
                 return result;
@@ -952,7 +959,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> upActivity(BatchBaseActivityReq req) {
-        CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
+        result.setCode(NET_ERROR.getCode());
         result.setData(0);
         result.setDesc("");
 
@@ -987,7 +995,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> downActivity(BatchBaseActivityReq req) {
-        CommonBoolDto<Integer> result = new CommonBoolDto<>(false);
+        CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
+        result.setCode(NET_ERROR.getCode());
         result.setData(0);
         result.setDesc("");
 

@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.youyu.cardequity.promotion.enums.ResultCode.NET_ERROR;
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
 
 
@@ -131,6 +132,7 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
     @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto cancelOrderCouponAndActivityDeal(BaseOrderInPromotionReq req) {
         CommonBoolDto<Integer> result = new CommonBoolDto<>(true);
+        result.setCode(NET_ERROR.getCode());
         if (req == null || CommonUtils.isEmptyorNull(req.getOrderId()))
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("参数为空"));
 
