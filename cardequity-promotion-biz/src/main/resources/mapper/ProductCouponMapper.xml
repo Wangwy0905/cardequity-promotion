@@ -89,7 +89,7 @@
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
         <if test="commonQry.upAndDownStatus!=null and commonQry.upAndDownStatus!=''">
-            a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
+          AND  a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
         </if>
         <if test="commonQry.couponId!=null and commonQry.couponId!=''">
             and a.UUID=#{commonQry.couponId,jdbcType=VARCHAR}
@@ -173,7 +173,7 @@
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
         <if test="commonQry.upAndDownStatus!=null and commonQry.upAndDownStatus!=''">
-            a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
+           AND a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
         </if>
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
