@@ -518,6 +518,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         if (!refProductList.isEmpty())
             batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
 
+        log.info("batchEditActivity数据库处理完毕");
         result.setSuccess(true);
         result.setCode(NET_ERROR.getCode());
         if (req.getActivityDetailList().size() < 3)
