@@ -198,6 +198,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (CommonUtils.isEmptyorNull(profit.getActivityShortDesc()))
                 profit.setActivityShortDesc(profit.getActivityName());
 
+            if (profit.getAllowUseBeginDate().isAfter(profit.getAllowUseEndDate() ))
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("开始时间不能晚于结束时间"));
+
             //默认是自定义适用商品
             if (CommonUtils.isEmptyorNull(profit.getApplyProductFlag()))
                 profit.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
