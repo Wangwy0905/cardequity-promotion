@@ -52,7 +52,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
     /**
      * 【后台】指定活动的商品配置范围和其他活动是否冲突,考虑分页的问题
      *
-     * @param req 商品编号类别
+     * @param req      商品编号类别
      * @param activity 活动详情
      * @return 关联基础信息列表
      */
@@ -114,12 +114,12 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
 
             if (!gathers.isEmpty()) {
 
-                for (GatherInfoRsp item:gathers){
-                    String key=StringUtil.split(item.getGatherItem(),"|")[0];
-                    for (BaseProductReq productReq:listTemp){
-                        if (key.equals(productReq.getProductId())){
+                for (GatherInfoRsp item : gathers) {
+                    String key = StringUtil.split(item.getGatherItem(), "|")[0];
+                    for (BaseProductReq productReq : listTemp) {
+                        if (key.equals(productReq.getProductId())) {
                             if (CommonUtils.isEmptyorNull(productReq.getSkuId()) ||
-                                    item.getGatherItem().equals(key+"|"+productReq.getSkuId()) ){
+                                    item.getGatherItem().equals(key + "|" + productReq.getSkuId())) {
                                 result.setSuccess(false);
                                 result.setCode(PARAM_ERROR.getCode());
                                 result.setDesc("存在商品已经参与了其他活动,其中商品id=" + productReq.getProductId() + "子商品id=" + productReq.getSkuId());
@@ -194,7 +194,9 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
 
         List<String> activities = new ArrayList<>();
         activities.add(req.getId());
-        batchService.batchDispose(activities, ActivityRefProductMapper.class, "deleteByActivityId");
+        //全量时才允许删除
+        if ("1" != req.getOperatFlag())
+            batchService.batchDispose(activities, ActivityRefProductMapper.class, "deleteByActivityId");
         if (req.getProductList() != null && !req.getProductList().isEmpty()) {
 
             CommonBoolDto<List<ActivityRefProductEntity>> boolDto = checkProductReUse(req.getProductList(), BeanPropertiesUtils.copyProperties(profitEntity, ActivityProfitDto.class));
@@ -239,7 +241,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
 
             for (BaseProductReq item : req.getProductList()) {
                 boolean isExist = false;
-                String key = item.getProductId() + (CommonUtils.isEmptyorNull(item.getSkuId()) ? "|EMPTY" : "|"+item.getSkuId());
+                String key = item.getProductId() + (CommonUtils.isEmptyorNull(item.getSkuId()) ? "|EMPTY" : "|" + item.getSkuId());
 
                 for (GatherInfoRsp gather : firstresult) {
                     if (key.equals(gather.getGatherItem())) {

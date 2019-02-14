@@ -124,7 +124,8 @@ public class ActivityProfitController implements ActivityProfitApi {
     @ApiOperation(value = "【后台】批量添加活动")
     @PostMapping(path = "/batchEditActivity")
     public Result<CommonBoolDto<BatchActivityDetailDto>> batchEditActivity(@RequestBody BatchActivityDetailDto req) {
-        return Result.ok(activityProfitService.batchEditActivity(req));
+        CommonBoolDto<BatchActivityDetailDto> batchActivityDetailDtoCommonBoolDto = activityProfitService.batchEditActivity(req);
+        return Result.ok(batchActivityDetailDtoCommonBoolDto);
     }
 
     /**

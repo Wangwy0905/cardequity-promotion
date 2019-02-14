@@ -60,7 +60,9 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
         List<CouponRefProductEntity> productList = new ArrayList<>();
         //【配置适用商品】:传入了代表着需要更新配置
         if (req.getProductList() != null) {
-            couponRefProductMapper.deleteByCouponId(req.getId());
+            //全量时才允许删除
+            if ("1" != req.getOperatFlag())
+                couponRefProductMapper.deleteByCouponId(req.getId());
             for (BaseProductReq item : req.getProductList()) {
                 CouponRefProductEntity couponRefProductEntity = new CouponRefProductEntity();
                 couponRefProductEntity.setCouponId(req.getId());
@@ -95,42 +97,42 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
 
     /**
      * 查询商品对应的优惠券数量
+     *
      * @param req 商品列表
      * @return 商品对应优惠券数量
      */
     @Override
-    public List<GatherInfoRsp> findProductAboutCouponNum(BatchBaseProductReq req){
-        if (req == null || req.getProductList()==null || req.getProductList().isEmpty())
+    public List<GatherInfoRsp> findProductAboutCouponNum(BatchBaseProductReq req) {
+        if (req == null || req.getProductList() == null || req.getProductList().isEmpty())
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定商品"));
 
         List<GatherInfoRsp> result = productCouponMapper.findCouponNumByProducts(req);
 
         List<ProductCouponEntity> entities = productCouponMapper.findUnlimitedProductCoupon();
-        if (!entities.isEmpty()){
-            for (BaseProductReq item:req.getProductList()){
-                boolean isExist=false;
-                String key=item.getProductId()+(CommonUtils.isEmptyorNull(item.getSkuId())?"|EMPTY":"|"+item.getSkuId());
-                for (GatherInfoRsp gather:result){
-                     //如果有统计数量的加上无产品限制的数量
-                      if (key.equals(gather.getGatherItem())){
-                          gather.setGatherValue(gather.getGatherValue()+entities.size());
-                          isExist=true;
-                          break;
-                      }
-                  }
-                  //如果找到统计数据，该没有产品限制的数量即为其统计数量
-                  if (!isExist){
-                      GatherInfoRsp rsp = new GatherInfoRsp();
-                      rsp.setGatherItem(key);
-                      rsp.setGatherValue(entities.size());
-                      result.add(rsp);
-                  }
+        if (!entities.isEmpty()) {
+            for (BaseProductReq item : req.getProductList()) {
+                boolean isExist = false;
+                String key = item.getProductId() + (CommonUtils.isEmptyorNull(item.getSkuId()) ? "|EMPTY" : "|" + item.getSkuId());
+                for (GatherInfoRsp gather : result) {
+                    //如果有统计数量的加上无产品限制的数量
+                    if (key.equals(gather.getGatherItem())) {
+                        gather.setGatherValue(gather.getGatherValue() + entities.size());
+                        isExist = true;
+                        break;
+                    }
+                }
+                //如果找到统计数据，该没有产品限制的数量即为其统计数量
+                if (!isExist) {
+                    GatherInfoRsp rsp = new GatherInfoRsp();
+                    rsp.setGatherItem(key);
+                    rsp.setGatherValue(entities.size());
+                    result.add(rsp);
+                }
             }
         }
 
         return result;
     }
-
 
 
 }
