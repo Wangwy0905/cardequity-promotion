@@ -362,6 +362,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (profit == null)
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定活动基本信息"));
 
+            if (profit.getAllowUseBeginDate().isAfter(profit.getAllowUseEndDate() ))
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("开始时间不能晚于结束时间"));
+
             //活动暂时不分级
             if (CommonUtils.isEmptyorNull(profit.getActivityLevel()))
                 profit.setActivityLevel(CouponActivityLevel.GLOBAL.getDictValue());
