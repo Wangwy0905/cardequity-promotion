@@ -328,7 +328,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         result.setSuccess(true);
         result.setCode(NET_ERROR.getCode());
-        result.setData(req);
+        if (req.getActivityDetailList().size() < 3)
+            result.setData(req);
         return result;
     }
 
@@ -519,7 +520,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         result.setSuccess(true);
         result.setCode(NET_ERROR.getCode());
-        result.setData(req);
+        if (req.getActivityDetailList().size() < 3)
+            result.setData(req);
         return result;
     }
 
@@ -1085,7 +1087,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (filterList.size() >= req.getPageSize() - dtos.size())
                 filterList = filterList.subList(0, req.getPageSize() - dtos.size());
 
-            Map<String,List<ActivityDetailDto>> filterMap=new HashMap<>();
+            Map<String, List<ActivityDetailDto>> filterMap = new HashMap<>();
             List<ActivityDetailDto> detailDtos = combinationActivity(filterList);
             for (ActivityDetailDto item : detailDtos) {
                 item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
@@ -1096,14 +1098,14 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
                 }
                 List<ActivityDetailDto> detailDtoList = filterMap.get(item.getProductList().get(0).getProductId());
-                if (detailDtoList==null) {
-                    detailDtoList=new ArrayList();
+                if (detailDtoList == null) {
+                    detailDtoList = new ArrayList();
                     filterMap.put(item.getProductList().get(0).getProductId(), detailDtoList);
                 }
                 detailDtoList.add(item);
                 result.add(item);
                 //满足商品请求数量后返回
-                if (filterMap.size()==(req.getPageSize() - dtos.size())) {
+                if (filterMap.size() == (req.getPageSize() - dtos.size())) {
                     //清除缓存
                     filterMap.clear();
                     break;
@@ -1173,9 +1175,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * 查询抢购商品最后结束时间
      */
     @Override
-    public Date findFlashSalePriceActivityEndTime(OperatReq req){
-        if(req==null)
-            req=new OperatReq();
+    public Date findFlashSalePriceActivityEndTime(OperatReq req) {
+        if (req == null)
+            req = new OperatReq();
         Date lastTime = activityProfitMapper.findValidPriceLastTime(req);
         return lastTime;
     }
