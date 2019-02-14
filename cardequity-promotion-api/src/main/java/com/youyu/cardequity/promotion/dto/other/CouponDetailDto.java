@@ -69,6 +69,7 @@ public class CouponDetailDto {
             dto.setMaxCount(quotaRule.getMaxCount());
         }
 
+        dto.setConditionValue(BigDecimal.ZERO);
         if (stageList != null && stageList.size() > 0) {
             for (CouponStageRuleDto stage : stageList) {
                 dto.setConditionValue(stage.getBeginValue());
@@ -85,6 +86,7 @@ public class CouponDetailDto {
             }
 
         }
+
         if (freqRuleList != null && freqRuleList.size() > 0){
             for (CouponGetOrUseFreqRuleDto freq : freqRuleList) {
               if (OpCouponType.USERULE.getDictValue().equals(freq.getOpCouponType()))

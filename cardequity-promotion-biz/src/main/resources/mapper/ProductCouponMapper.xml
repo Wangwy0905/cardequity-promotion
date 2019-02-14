@@ -188,7 +188,7 @@
         <if test="!@com.youyu.cardequity.promotion.biz.utils.CommonUtils@isEmptyorNull(commonQry.couponId)">
             and ( a.UUID=#{commonQry.couponId,jdbcType=VARCHAR} or
             a.COUPON_NAME like CONCAT('%',#{commonQry.couponName,jdbcType=VARCHAR},'%') or
-            ( a.APPLY_PRODUCT_FLAG='1' or
+            (
             exists(select 1 from TB_COUPON_REF_PRODUCT b
             where b.COUPON_ID = a.UUID
             and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR})
@@ -260,7 +260,7 @@
         <if test="!@com.youyu.cardequity.promotion.biz.utils.CommonUtils@isEmptyorNull(commonQry.couponId)">
             and ( a.UUID=#{commonQry.couponId,jdbcType=VARCHAR} or
             a.COUPON_NAME like CONCAT('%',#{commonQry.couponName,jdbcType=VARCHAR},'%') or
-            ( a.APPLY_PRODUCT_FLAG='1' or
+            (
             exists(select 1 from TB_COUPON_REF_PRODUCT b
             where b.COUPON_ID = a.UUID
             and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR})
