@@ -46,15 +46,14 @@ public class CouponDetailDto {
             dto.setLabelDto(productCouponDto.getLabelDto());
 
             //转义领取对象
+            //注册用户
+            if (UsedStage.Register.getDictValue().equals(productCouponDto.getGetStage())) {
+                dto.setTargetFlag(CommonDict.FRONDEND_NEW.getCode());
+            }
             if (productCouponDto.getClientTypeSet() != null) {
                 //会员专属
                 if (productCouponDto.getClientTypeSet().equals(ClientType.MEMBER.getDictValue())) {
                     dto.setTargetFlag(CommonDict.FRONDEND_MEMBER.getCode());
-                } else {
-                    //注册用户
-                    if (UsedStage.Register.getDictValue().equals(productCouponDto.getGetStage())) {
-                        dto.setTargetFlag(CommonDict.FRONDEND_NEW.getCode());
-                    }
                 }
             }
 
