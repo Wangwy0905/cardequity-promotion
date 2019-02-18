@@ -815,7 +815,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (req == null || CommonUtils.isEmptyorNull(req.getProductId()))
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("商品编号未指定"));
         //查询有效期内的上架的消费券
-        List<ProductCouponEntity> entities = productCouponMapper.findCouponListByProduct("1", "1", req.getProductId(), req.getSkuId(), "01");
+        List<ProductCouponEntity> entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), "01");
         List<ProductCouponEntity> couponList = new ArrayList<>();
         for (ProductCouponEntity couponEntity : entities) {
             //剔除没有上架的

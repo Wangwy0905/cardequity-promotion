@@ -310,7 +310,7 @@
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.STATUS='1'
         AND a.COUPON_TYPE IN ('0','1')
-        and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
+        #and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '0'
         and PRODUCT_ID IN
@@ -328,7 +328,7 @@
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.STATUS='1'
         AND a.COUPON_TYPE IN ('0','1')
-        and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
+        #and a.ALLOW_USE_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1'
     </select>

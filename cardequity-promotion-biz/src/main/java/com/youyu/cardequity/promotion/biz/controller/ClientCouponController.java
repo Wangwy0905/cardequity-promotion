@@ -103,4 +103,11 @@ public class ClientCouponController implements ClientCouponApi {
         return Result.ok(clientCouponService.findCouponListByOrderDetail(req));
 
     }
+
+    @Override
+    @ApiOperation(value = "【App】查询客户领取券统计数量")
+    @PostMapping(path = "/findClientCouponNum")
+    public Result<Integer> findClientCouponNum(@RequestBody QryComonClientCouponReq req){
+        return Result.ok(clientCouponService.findClientCouponNum(req));
+    }
 }

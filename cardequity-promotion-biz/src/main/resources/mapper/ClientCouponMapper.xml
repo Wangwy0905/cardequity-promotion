@@ -25,6 +25,10 @@
             and a.status='0'
             and a.VALID_BEGIN_DATE &gt; curdate()
         </if>
+        <if test='"5"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &gt; curdate()
+        </if>
     </select>
     <select id="findClientCouponByCouponId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
@@ -243,7 +247,38 @@
             and a.status='0'
             and a.VALID_BEGIN_DATE &gt; curdate()
         </if>
+        <if test='"5"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &gt; curdate()
+        </if>
         and concat(date_format(LAST_DAY(now()), '%Y-%m-'), '01') &lt;= a.CREATE_TIME
+    </select>
+
+    <select id="findClientCouponNnm" resultType="int">
+        SELECT COUNT(*) FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test='"1"==obtainState'>
+            and a.status='0'
+            and a.VALID_START_DATE &lt;=curdate()
+            and a.VALID_END_DATE &gt;= curdate()
+        </if>
+        <if test='"2"==obtainState'>
+            and a.status in ('1','2')
+        </if>
+        <if test='"3"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &lt; curdate()
+        </if>
+        <if test='"4"==obtainState'>
+            and a.status='0'
+            and a.VALID_BEGIN_DATE &gt; curdate()
+        </if>
+        <if test='"5"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &gt; curdate()
+        </if>
     </select>
 
 </mapper>

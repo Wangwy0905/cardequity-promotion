@@ -1273,6 +1273,20 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         return result;
     }
 
+
+    /**
+     * 获取客户已领取的券,含：已使用(status=1和2)，未使用（status=0且有效期内），已过期（status=0且未在有效期内）
+     *
+     * @param req 指定客户号，必填
+     * @return 返回已领取的券数量
+     */
+    @Override
+    public int findClientCouponNum(QryComonClientCouponReq req) {
+
+        int result = clientCouponMapper.findClientCouponNnm(req.getClientId(), req.getObtainState());
+        return result;
+    }
+
 }
 
 

@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class QryComonClientCouponReq extends BaseClientReq {
 
-    @ApiModelProperty(value = "领取状态：0-未领取(不会使用到) 1-已领取且有效 2-已使用 3-已过期")
+    @ApiModelProperty(value = "领取状态：0-未领取(不会使用到) 1-已领取且有效 2-已使用 3-已过期 4-未开始 5-未过期未使用")
     private String obtainState;
 
 }

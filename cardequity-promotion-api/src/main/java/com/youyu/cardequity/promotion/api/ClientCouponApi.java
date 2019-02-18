@@ -121,5 +121,8 @@ public interface ClientCouponApi {
     @PostMapping(path = "/combCouponRefProductAndUse")
     Result<List<UseCouponRsp>> combCouponRefProductAndUse(@RequestBody GetUseEnableCouponReq req);
 
+    @ApiOperation(value = "【App】查询客户领取券统计数量")
+    @PostMapping(path = "/findClientCouponNum")
+    Result<Integer> findClientCouponNum(@RequestBody QryComonClientCouponReq req);
 
 }

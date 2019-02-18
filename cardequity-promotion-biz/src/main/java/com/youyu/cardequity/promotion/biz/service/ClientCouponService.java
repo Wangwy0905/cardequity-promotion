@@ -149,6 +149,13 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * 1004258-徐长焕-20181213 新增
      */
     CommonBoolDto checkCouponAllQuota(CouponQuotaRuleEntity quota);
+
+    /**
+     * 查询客户领取券统计数量
+     * @param req
+     * @return
+     */
+    int findClientCouponNum(QryComonClientCouponReq req);
 }
 
 

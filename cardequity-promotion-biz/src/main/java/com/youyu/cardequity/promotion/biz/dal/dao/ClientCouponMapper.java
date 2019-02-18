@@ -153,6 +153,14 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      */
     List<ClientCouponEntity> findCurrMonthObtainCoupon(@Param("clientId") String clientId,
                                                        @Param("obtainState") String obtainState);
+
+    /**
+     * 获取客户已领取的券含：已使用(status=1和2)，未使用（status=0且有效期内），已过期（status=0且未在有效期内）
+     * @Param clientId:指定客户号，必填
+     * @return 返回已领取的券数量
+     */
+    int findClientCouponNnm(@Param("clientId") String clientId,
+                             @Param("obtainState") String obtainState);
 }
 
 
