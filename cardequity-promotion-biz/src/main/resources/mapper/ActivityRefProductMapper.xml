@@ -24,7 +24,9 @@
         1 as gatherValue
         FROM TB_ACTIVITY_REF_PRODUCT a
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-        AND a.ACTIVITY_ID!=#{activity.uuid,jdbcType=VARCHAR}
+        <if test="activity.uuid!=null and activity.uuid!=''">
+          AND a.ACTIVITY_ID!=#{activity.uuid,jdbcType=VARCHAR}
+        </if>
         and exists(
           select 1 from TB_ACTIVITY_PROFIT b
             where b.UUID=a.ACTIVITY_ID
