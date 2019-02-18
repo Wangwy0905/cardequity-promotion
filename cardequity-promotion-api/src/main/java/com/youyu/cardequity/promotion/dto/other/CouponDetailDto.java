@@ -52,7 +52,7 @@ public class CouponDetailDto {
                     dto.setTargetFlag(CommonDict.FRONDEND_MEMBER.getCode());
                 } else {
                     //注册用户
-                    if (UsedStage.Register.equals(productCouponDto.getGetStage())) {
+                    if (UsedStage.Register.getDictValue().equals(productCouponDto.getGetStage())) {
                         dto.setTargetFlag(CommonDict.FRONDEND_NEW.getCode());
                     }
                 }
@@ -92,7 +92,7 @@ public class CouponDetailDto {
             for (CouponGetOrUseFreqRuleDto freq : freqRuleList) {
               if (OpCouponType.USERULE.getDictValue().equals(freq.getOpCouponType()))
                   continue;
-                dto.setFreqId(freq.getUuid());
+               dto.setFreqId(freq.getUuid());
                dto.setUnit(freq.getUnit());
                dto.setAllowCount(freq.getAllowCount());
                dto.setPersonTotalNum(freq.getPersonTotalNum());
