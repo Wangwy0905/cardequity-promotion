@@ -935,7 +935,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (entities == null || entities.isEmpty())
             return new ArrayList<>();
 
-        Map<String, CouponDetailDto> result = new HashedMap();
+        //使用LinkedHashMap保留添加顺序
+        Map<String, CouponDetailDto> result = new LinkedHashMap();
         List<String> labelIdList = new ArrayList<>();
         for (ProductCouponEntity item : entities) {
             CouponDetailDto detailDto = new CouponDetailDto();

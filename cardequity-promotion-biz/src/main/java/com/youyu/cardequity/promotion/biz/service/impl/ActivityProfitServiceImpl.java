@@ -824,7 +824,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         if (activityList == null || activityList.isEmpty()) return new ArrayList<>();
 
-        Map<String, ActivityDetailDto> result = new HashedMap();
+        //使用LinkedHashMap保留添加顺序
+        Map<String, ActivityDetailDto> result = new LinkedHashMap();
         List<String> labelIdList = new ArrayList<>();
         for (ActivityProfitEntity item : activityList) {
             ActivityDetailDto detailDto = new ActivityDetailDto();
@@ -889,7 +890,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
             }
         }
-        return new ArrayList<>(result.values());
+        ArrayList<ActivityDetailDto> finalResult = new ArrayList<>(result.values());
+        result.clear();
+        result=null;
+        return finalResult;
     }
 
     /**
