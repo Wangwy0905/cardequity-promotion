@@ -198,7 +198,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (CommonUtils.isEmptyorNull(profit.getActivityShortDesc()))
                 profit.setActivityShortDesc(profit.getActivityName());
 
-            if (profit.getAllowUseBeginDate().isAfter(profit.getAllowUseEndDate() ))
+            if (profit.getAllowUseBeginDate().isAfter(profit.getAllowUseEndDate()))
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("开始时间不能晚于结束时间"));
 
             //默认是自定义适用商品
@@ -365,7 +365,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (profit == null)
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定活动基本信息"));
 
-            if (profit.getAllowUseBeginDate().isAfter(profit.getAllowUseEndDate() ))
+            if (profit.getAllowUseBeginDate().isAfter(profit.getAllowUseEndDate()))
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("开始时间不能晚于结束时间"));
 
             //活动暂时不分级
@@ -385,10 +385,18 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
 
             //检查适用商品是否重复在不同活动配置中
-            CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(item.getProductList(), profit);
-            if (!boolDto.getSuccess()) {
-                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
-            }
+            //非特价上架商品时需要校验
+            //if (!ActivityCouponType.PRICE.getDictValue().equals(item.getActivityProfit().getActivityCouponType()) &&
+            //        (item.getProductList() == null || item.getProductList().isEmpty())) {
+            //        List<BaseProductReq> productReqs = activityRefProductMapper.findForbidCifgProductByActivity(item.getActivityProfit());
+            //        if (!productReqs.isEmpty())
+            //            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("编辑活动有效日期区间时导致原配置的商品在某一时间点同时存在于两个活动中"));
+            //} else {
+                CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(item.getProductList(), profit);
+                if (!boolDto.getSuccess()) {
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
+                }
+            //}
 
             if (!CommonUtils.isGtZeroDecimal(profit.getProfitValue())) {
                 //保护为阶梯中的优惠值
@@ -983,6 +991,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             if (CouponStatus.YES.getDictValue().equals(item.getStatus())) {
                 result.setDesc(result.getDesc() + item.getId() + "状态已上架，无需处理|");
                 continue;
+            }
+            //非特价上架商品时需要校验
+            if (!ActivityCouponType.PRICE.getDictValue().equals(item.getActivityCouponType())) {
+                ActivityProfitDto dto = new ActivityProfitDto();
+                dto.setId(item.getId());
+                dto.setAllowUseBeginDate(item.getAllowUseBeginDate());
+                dto.setAllowUseEndDate(item.getAllowUseEndDate());
+                List<BaseProductReq> productReqs = activityRefProductMapper.findForbidCifgProductByActivity(dto);
+                if (!productReqs.isEmpty())
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("编辑活动上下架导致原配置的商品在某一时间点同时存在于两个活动中"));
             }
             item.setStatus(CouponStatus.YES.getDictValue());
             item.setUpdateAuthor(req.getOperator());

@@ -30,6 +30,7 @@ public interface ActivityRefProductApi {
     /**
      * *********************************【通用接口】************************
      * 【通用】查询活动配置的商品
+     *
      * @param req 活动基本信息
      * @return 商品基本信息
      */
@@ -50,6 +51,7 @@ public interface ActivityRefProductApi {
 
     /**
      * 配置优惠的适用商品范围
+     *
      * @param req
      * @return
      */
@@ -59,6 +61,7 @@ public interface ActivityRefProductApi {
 
     /**
      * 查询商品的活动数量
+     *
      * @param req 商品基本信息
      * @return 活动数量列表
      */
@@ -69,10 +72,21 @@ public interface ActivityRefProductApi {
 
     /**
      * 【后台-有效期内-上架的】查询正在参与活动的商品
+     *
      * @param req 类型和状态
      * @return 商品列表
      */
     @ApiOperation(value = "【后台-有效期内-上架的】查询正在参与活动的商品")
     @PostMapping(path = "/findProductInValidActivity")
-     Result<List<BaseProductReq>> findProductInValidActivity(@RequestBody FindProductInValidActivityReq req);
+    Result<List<BaseProductReq>> findProductInValidActivity(@RequestBody FindProductInValidActivityReq req);
+
+    /**
+     * 根据初始产品列表过滤出可以配置的产品
+     *
+     * @param req 商品列表及活动
+     * @return 可配置商品列表
+     */
+    @ApiOperation(value = "【后台】根据初始产品列表过滤出可以配置的产品")
+    @PostMapping(path = "/findEnableCifgInProducts")
+    Result<List<BaseProductReq>> findEnableCifgInProducts(@RequestBody BatchRefProductDetailReq req);
 }

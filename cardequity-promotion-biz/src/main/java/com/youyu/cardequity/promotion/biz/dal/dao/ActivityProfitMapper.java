@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity;
+import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import com.youyu.cardequity.promotion.dto.other.GroupProductDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.BasePriceActivityRsp;
@@ -204,6 +205,7 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
      * @return
      */
     Date findValidPriceLastTime(OperatReq req);
+
 
 }
 

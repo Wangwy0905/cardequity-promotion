@@ -99,4 +99,50 @@
         </foreach>
     </select>
 
+
+    <select id="findEnableCifgInProducts" resultType="com.youyu.cardequity.promotion.vo.req.BaseProductReq">
+        select PRODUCT_ID as productId,SKU_ID as skuId
+        from TB_ACTIVITY_REF_PRODUCT b
+        where if(length(b.IS_ENABLE), b.IS_ENABLE, '1') = '1'
+        <if test="activity!=null and activity.uuid!=null and activity.uuid!=''">
+            AND b.ACTIVITY_ID!=#{activity.uuid,jdbcType=VARCHAR}
+        </if>
+        AND EXISTS(SELECT 1
+        FROM TB_ACTIVITY_PROFIT a
+        WHERE b.ACTIVITY_ID = a.UUID
+        and if(length(a.IS_ENABLE), a.IS_ENABLE, '1') = '1'
+        and a.STATUS = '1'
+        and a.ALLOW_USE_END_DATE &gt;= curdate()
+        <if test="activity!=null">
+            and NOT (a.ALLOW_USE_END_DATE &lt; #{activity.allowUseBeginDate,jdbcType=DATE}
+            OR a.ALLOW_USE_BEGIN_DATE &gt; #{activity.allowUseEndDate,jdbcType=DATE})
+        </if>
+        and if(length(a.APPLY_PRODUCT_FLAG), a.APPLY_PRODUCT_FLAG, '0') = '0')
+        and PRODUCT_ID IN
+        <foreach collection="productList" item="product" index="index"
+                 open="(" close=")" separator=",">
+            #{product.productId}
+        </foreach>
+    </select>
+
+
+    <select id="findForbidCifgProductByActivity" resultType="com.youyu.cardequity.promotion.vo.req.BaseProductReq">
+        select PRODUCT_ID as productId,SKU_ID as skuId
+        from TB_ACTIVITY_REF_PRODUCT b
+        where if(length(b.IS_ENABLE), b.IS_ENABLE, '1') = '1'
+        AND b.ACTIVITY_ID!=#{activity.uuid,jdbcType=VARCHAR}
+        AND EXISTS(SELECT 1
+        FROM TB_ACTIVITY_PROFIT a
+        WHERE b.ACTIVITY_ID = a.UUID
+        and if(length(a.IS_ENABLE), a.IS_ENABLE, '1') = '1'
+        and a.STATUS = '1'
+        and a.ALLOW_USE_END_DATE &gt;= curdate()
+        <if test="activity!=null">
+            and NOT (a.ALLOW_USE_END_DATE &lt; #{activity.allowUseBeginDate,jdbcType=DATE}
+            OR a.ALLOW_USE_BEGIN_DATE &gt; #{activity.allowUseEndDate,jdbcType=DATE})
+        </if>
+        and if(length(a.APPLY_PRODUCT_FLAG), a.APPLY_PRODUCT_FLAG, '0') = '0')
+        and PRODUCT_ID IN (select PRODUCT_ID from TB_ACTIVITY_REF_PRODUCT c where c.ACTIVITY_ID=#{activity.uuid,jdbcType=VARCHAR})
+
+    </select>
 </mapper>

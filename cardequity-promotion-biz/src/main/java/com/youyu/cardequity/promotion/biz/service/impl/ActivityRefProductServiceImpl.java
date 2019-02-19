@@ -62,14 +62,15 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
         CommonBoolDto<List<ActivityRefProductEntity>> result = new CommonBoolDto<>(true);
         result.setCode(NET_ERROR.getCode());
         //下架活动无需校验
-        if (!CouponStatus.YES.getDictValue().equals(activity.getStatus())) {
+        if (activity != null && !CouponStatus.YES.getDictValue().equals(activity.getStatus())) {
             return result;
         }
 
         List<ActivityProfitEntity> unlimitedProductActivity = activityProfitMapper.findUnlimitedProductActivity();
         if (unlimitedProductActivity.size() > 0) {
             for (ActivityProfitEntity item : unlimitedProductActivity) {
-                if (!(item.getAllowUseBeginDate().compareTo(activity.getAllowUseEndDate()) > 0 || item.getAllowUseEndDate().compareTo(activity.getAllowUseBeginDate()) < 0)) {
+                if (activity == null ||
+                        !(item.getAllowUseBeginDate().compareTo(activity.getAllowUseEndDate()) > 0 || item.getAllowUseEndDate().compareTo(activity.getAllowUseBeginDate()) < 0)) {
                     result.setSuccess(false);
                     result.setDesc("存在商品已经参与了其他活动,该活动允许所有商品,其中冲突活动编号=" + unlimitedProductActivity.get(0).getId());
                     return result;
@@ -77,7 +78,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             }
         }
 
-        if (ApplyProductFlag.ALL.getDictValue().equals(activity.getApplyProductFlag())) {
+        if (activity != null && ApplyProductFlag.ALL.getDictValue().equals(activity.getApplyProductFlag())) {
             BaseQryActivityReq innerreq = new BaseQryActivityReq();
             innerreq.setStatus("1");
             List<ActivityProfitEntity> activityListByCommon = activityProfitMapper.findActivityListByCommon(innerreq);
@@ -261,6 +262,35 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
             }
         } else {
             result = firstresult;
+        }
+        return result;
+    }
+
+
+    /**
+     * 根据初始产品列表过滤出可以配置的产品
+     *
+     * @param req 商品列表及活动
+     * @return 商品对应活动数量
+     */
+    @Override
+    public List<BaseProductReq> findEnableCifgInProducts(BatchRefProductDetailReq req) {
+        if (req == null || req.getProductList() == null || req.getProductList().isEmpty())
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定商品"));
+
+        ActivityProfitDto dto=new ActivityProfitDto();
+        dto.setId(req.getId());
+        dto.setAllowUseEndDate(req.getAllowUseEndDate());
+        dto.setAllowUseBeginDate(req.getAllowUseBeginDate());
+
+        List<BaseProductReq> result = new ArrayList<>();
+        List<BaseProductReq> data = activityRefProductMapper.findEnableCifgInProducts(req.getProductList(),dto);
+        for (BaseProductReq item:req.getProductList()){
+            result.add(item);
+            for (BaseProductReq dataitem:data) {
+                if (item.getProductId().equals(dataitem.getProductId()))
+                    result.remove(item);
+            }
         }
         return result;
     }

@@ -89,6 +89,24 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
      */
     List<ActivityRefProductEntity> findByActivityIds(@Param("idList") List<String> idList);
 
+
+    /**
+     * 根据初始产品列表需要过滤出不能配置的产品
+     * @param productList
+     * @param activity
+     * @return
+     */
+    List<BaseProductReq> findEnableCifgInProducts(@Param("productList") List<BaseProductReq> productList,
+                                                  @Param("activity") ActivityProfitDto activity);
+
+
+
+    /**
+     * 查询活动冲突配置的产品
+     * @param activity
+     * @return
+     */
+    List<BaseProductReq> findForbidCifgProductByActivity(@Param("activity") ActivityProfitDto activity);
 }
 
 

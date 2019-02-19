@@ -591,4 +591,6 @@
         and d.ACTIVITY_ID = a.UUID))
     </select>
 
+
+
 </mapper>

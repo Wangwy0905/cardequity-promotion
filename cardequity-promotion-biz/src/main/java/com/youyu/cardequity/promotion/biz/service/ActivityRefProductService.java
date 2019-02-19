@@ -61,6 +61,14 @@ public interface ActivityRefProductService extends IService<ActivityRefProductDt
      * @return 商品列表
      */
     List<BaseProductReq> findProductInValidActivity(FindProductInValidActivityReq req);
+
+    /**
+     * 根据初始产品列表过滤出可以配置的产品
+     *
+     * @param req 商品列表及活动
+     * @return 可配置商品列表
+     */
+    List<BaseProductReq> findEnableCifgInProducts(BatchRefProductDetailReq req);
 }
 
 

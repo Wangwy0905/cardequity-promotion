@@ -90,5 +90,17 @@ public class ActivityRefProductController implements ActivityRefProductApi {
 
     }
 
+    /**
+     * 根据初始产品列表过滤出可以配置的产品
+     *
+     * @param req 商品列表及活动
+     * @return 可配置商品列表
+     */
+    @Override
+    @ApiOperation(value = "【后台】根据初始产品列表过滤出可以配置的产品")
+    @PostMapping(path = "/findEnableCifgInProducts")
+    public Result<List<BaseProductReq>> findEnableCifgInProducts(@RequestBody BatchRefProductDetailReq req){
+        return Result.ok(activityRefProductService.findEnableCifgInProducts(req));
 
+    }
 }
