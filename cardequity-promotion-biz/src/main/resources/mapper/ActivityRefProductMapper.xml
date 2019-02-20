@@ -31,6 +31,7 @@
           select 1 from TB_ACTIVITY_PROFIT b
             where b.UUID=a.ACTIVITY_ID
               and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
+              and b.STATUS = '1'
               and b.ALLOW_USE_END_DATE &gt;= curdate()
               and NOT (b.ALLOW_USE_END_DATE &lt; #{activity.allowUseBeginDate,jdbcType=DATE}
                   OR b.ALLOW_USE_BEGIN_DATE &gt; #{activity.allowUseEndDate,jdbcType=DATE})
@@ -113,7 +114,7 @@
         and if(length(a.IS_ENABLE), a.IS_ENABLE, '1') = '1'
         and a.STATUS = '1'
         and a.ALLOW_USE_END_DATE &gt;= curdate()
-        <if test="activity!=null">
+        <if test="activity!=null  and activity.allowUseEndDate!=null">
             and NOT (a.ALLOW_USE_END_DATE &lt; #{activity.allowUseBeginDate,jdbcType=DATE}
             OR a.ALLOW_USE_BEGIN_DATE &gt; #{activity.allowUseEndDate,jdbcType=DATE})
         </if>
@@ -133,11 +134,11 @@
         AND b.ACTIVITY_ID!=#{activity.uuid,jdbcType=VARCHAR}
         AND EXISTS(SELECT 1
         FROM TB_ACTIVITY_PROFIT a
-        WHERE b.ACTIVITY_ID = a.UUID
+        WHERE a.UUID=b.ACTIVITY_ID
         and if(length(a.IS_ENABLE), a.IS_ENABLE, '1') = '1'
         and a.STATUS = '1'
         and a.ALLOW_USE_END_DATE &gt;= curdate()
-        <if test="activity!=null">
+        <if test="activity!=null and activity.allowUseEndDate!=null">
             and NOT (a.ALLOW_USE_END_DATE &lt; #{activity.allowUseBeginDate,jdbcType=DATE}
             OR a.ALLOW_USE_BEGIN_DATE &gt; #{activity.allowUseEndDate,jdbcType=DATE})
         </if>
