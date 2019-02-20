@@ -140,6 +140,12 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
     private String applyProductFlag;
 
     /**
+     * 新获取标识：0-否 1-是
+     */
+    @Column(name = "NEW_FLAG")
+    private String newFlag;
+
+    /**
      * 是否有效:
      */
     @Column(name = "IS_ENABLE")

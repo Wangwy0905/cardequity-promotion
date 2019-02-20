@@ -254,8 +254,9 @@
         and concat(date_format(LAST_DAY(now()), '%Y-%m-'), '01') &lt;= a.CREATE_TIME
     </select>
 
-    <select id="findClientCouponNnm" resultType="int">
-        SELECT COUNT(*) FROM
+    <select id="findClientCouponNnm" resultType="com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq">
+        SELECT COUNT(*) as couponNum,
+           sum(case when a.NEW_FLAG='1' THEN 1 ELSE 0 END ) as newNum FROM
         TB_CLIENT_COUPON a
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}

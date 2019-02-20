@@ -90,6 +90,9 @@ public class ClientCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "适用商品类型:0-自动义商品范围 1-全部")
     private String applyProductFlag;
 
+    @ApiModelProperty(value = "新领标识:0-否 1-是")
+    private String newFlag;
+
     @Override
     public String getId() {
         return uuid;

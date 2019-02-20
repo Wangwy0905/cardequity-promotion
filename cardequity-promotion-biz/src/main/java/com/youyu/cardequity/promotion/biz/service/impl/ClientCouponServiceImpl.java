@@ -16,6 +16,7 @@ import com.youyu.cardequity.promotion.dto.other.*;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
@@ -217,6 +218,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         entity.setCouponLevel(coupon.getCouponLevel());
         entity.setUpdateAuthor(req.getOperator());
         entity.setCreateAuthor(req.getOperator());
+        entity.setNewFlag(CommonDict.IF_YES.getCode());
         entity.setIsEnable(CommonDict.IF_YES.getCode());
         entity.setStatus(CouponUseStatus.NORMAL.getDictValue());
         entity.setJoinOrderId(req.getActivityId());
@@ -1281,9 +1283,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @return 返回已领取的券数量
      */
     @Override
-    public int findClientCouponNum(QryComonClientCouponReq req) {
+    public FindClientCouponNumReq findClientCouponNum(QryComonClientCouponReq req) {
 
-        int result = clientCouponMapper.findClientCouponNnm(req.getClientId(), req.getObtainState());
+        FindClientCouponNumReq result = clientCouponMapper.findClientCouponNnm(req.getClientId(), req.getObtainState());
         return result;
     }
 

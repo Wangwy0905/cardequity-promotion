@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.api.ClientCouponApi;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.api.Result;
@@ -107,7 +108,7 @@ public class ClientCouponController implements ClientCouponApi {
     @Override
     @ApiOperation(value = "【App】查询客户领取券统计数量")
     @PostMapping(path = "/findClientCouponNum")
-    public Result<Integer> findClientCouponNum(@RequestBody QryComonClientCouponReq req){
+    public Result<FindClientCouponNumReq> findClientCouponNum(@RequestBody QryComonClientCouponReq req){
         return Result.ok(clientCouponService.findClientCouponNum(req));
     }
 }

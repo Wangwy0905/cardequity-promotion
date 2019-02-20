@@ -4,10 +4,10 @@ package com.youyu.cardequity.promotion.api;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.api.Result;
-import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import io.swagger.annotations.Api;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -128,6 +128,6 @@ public interface ClientCouponApi {
      */
     @ApiOperation(value = "【App】查询客户领取券统计数量")
     @PostMapping(path = "/findClientCouponNum")
-    Result<Integer> findClientCouponNum(@RequestBody QryComonClientCouponReq req);
+    Result<FindClientCouponNumReq> findClientCouponNum(@RequestBody QryComonClientCouponReq req);
 
 }

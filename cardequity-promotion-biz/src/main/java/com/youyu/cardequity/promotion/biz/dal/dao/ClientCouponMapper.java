@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.dto.other.ClientCoupStatisticsQuotaDto;
 import com.youyu.cardequity.promotion.dto.other.ShortClientCouponDto;
 import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
+import com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -159,8 +160,8 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      * @Param clientId:指定客户号，必填
      * @return 返回已领取的券数量
      */
-    int findClientCouponNnm(@Param("clientId") String clientId,
-                             @Param("obtainState") String obtainState);
+    FindClientCouponNumReq findClientCouponNnm(@Param("clientId") String clientId,
+                                               @Param("obtainState") String obtainState);
 }
 
 

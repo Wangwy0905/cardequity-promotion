@@ -6,6 +6,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.vo.req.*;
+import com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
@@ -155,7 +156,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @param req
      * @return
      */
-    int findClientCouponNum(QryComonClientCouponReq req);
+    FindClientCouponNumReq findClientCouponNum(QryComonClientCouponReq req);
 }
 
 
