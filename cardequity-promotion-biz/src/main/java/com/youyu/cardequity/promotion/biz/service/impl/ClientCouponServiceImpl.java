@@ -1289,6 +1289,22 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         return result;
     }
 
+
+    /**
+     * 【App】客户领取券变更new标识
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonBoolDto changeClientCouponNewFlag(BaseClientReq req){
+        CommonBoolDto result = new CommonBoolDto(true);
+        result.setCode(NET_ERROR.getCode());
+        clientCouponMapper.modClientCouponNewFlag(req.getClientId());
+
+        return result;
+    }
+
 }
 
 

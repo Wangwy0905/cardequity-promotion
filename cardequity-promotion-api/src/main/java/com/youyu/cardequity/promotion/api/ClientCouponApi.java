@@ -130,4 +130,13 @@ public interface ClientCouponApi {
     @PostMapping(path = "/findClientCouponNum")
     Result<FindClientCouponNumReq> findClientCouponNum(@RequestBody QryComonClientCouponReq req);
 
+
+    /**
+     * 【App】客户领取券变更new标识
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【App】客户领取券变更new标识")
+    @PostMapping(path = "/changeClientCouponNewFlag")
+    Result<CommonBoolDto> changeClientCouponNewFlag(@RequestBody BaseClientReq req);
 }

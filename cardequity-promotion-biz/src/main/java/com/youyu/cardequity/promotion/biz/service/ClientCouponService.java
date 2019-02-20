@@ -10,7 +10,11 @@ import com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
+import com.youyu.common.api.Result;
 import com.youyu.common.service.IService;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -157,6 +161,13 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return
      */
     FindClientCouponNumReq findClientCouponNum(QryComonClientCouponReq req);
+
+    /**
+     * 【App】客户领取券变更new标识
+     * @param req
+     * @return
+     */
+    CommonBoolDto changeClientCouponNewFlag(BaseClientReq req);
 }
 
 

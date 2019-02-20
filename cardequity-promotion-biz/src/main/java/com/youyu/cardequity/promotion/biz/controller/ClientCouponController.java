@@ -111,4 +111,18 @@ public class ClientCouponController implements ClientCouponApi {
     public Result<FindClientCouponNumReq> findClientCouponNum(@RequestBody QryComonClientCouponReq req){
         return Result.ok(clientCouponService.findClientCouponNum(req));
     }
+
+
+    /**
+     * 【App】客户领取券变更new标识
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【App】客户领取券变更new标识")
+    @PostMapping(path = "/changeClientCouponNewFlag")
+    public Result<CommonBoolDto> changeClientCouponNewFlag(@RequestBody BaseClientReq req){
+        return Result.ok(clientCouponService.changeClientCouponNewFlag(req));
+
+    }
 }

@@ -162,6 +162,13 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
      */
     FindClientCouponNumReq findClientCouponNnm(@Param("clientId") String clientId,
                                                @Param("obtainState") String obtainState);
+
+    /**
+     * 根据客户更新领取券新领标识
+     * @param clientId
+     * @return
+     */
+    int modClientCouponNewFlag(@Param("clientId") String clientId);
 }
 
 

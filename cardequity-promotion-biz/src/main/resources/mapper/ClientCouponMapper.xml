@@ -282,4 +282,13 @@
         </if>
     </select>
 
+
+    <update id="modClientCouponNewFlag" >
+        UPDATE TB_CLIENT_COUPON a
+        SET a.NEW_FLAG='1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        and a.NEW_FLAG='0'
+    </update>
+
 </mapper>
