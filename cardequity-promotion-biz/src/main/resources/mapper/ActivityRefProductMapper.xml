@@ -143,7 +143,8 @@
             OR a.ALLOW_USE_BEGIN_DATE &gt; #{activity.allowUseEndDate,jdbcType=DATE})
         </if>
         and if(length(a.APPLY_PRODUCT_FLAG), a.APPLY_PRODUCT_FLAG, '0') = '0')
-        and PRODUCT_ID IN (select PRODUCT_ID from TB_ACTIVITY_REF_PRODUCT c where c.ACTIVITY_ID=#{activity.uuid,jdbcType=VARCHAR})
-
+        and EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT c where c.ACTIVITY_ID=#{activity.uuid,jdbcType=VARCHAR}
+                       and c.PRODUCT_ID=b.PRODUCT_ID and (c.SKU_ID is null b.skuid is null or c.SKU_ID=b.skuid))
     </select>
+
 </mapper>

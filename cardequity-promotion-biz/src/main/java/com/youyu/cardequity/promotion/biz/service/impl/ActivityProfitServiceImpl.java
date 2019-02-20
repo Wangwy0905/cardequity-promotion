@@ -27,7 +27,6 @@ import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -392,10 +391,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //        if (!productReqs.isEmpty())
             //            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("编辑活动有效日期区间时导致原配置的商品在某一时间点同时存在于两个活动中"));
             //} else {
-                CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(item.getProductList(), profit);
-                if (!boolDto.getSuccess()) {
-                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
-                }
+            CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(item.getProductList(), profit);
+            if (!boolDto.getSuccess()) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
+            }
             //}
 
             if (!CommonUtils.isGtZeroDecimal(profit.getProfitValue())) {
@@ -892,7 +891,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         }
         ArrayList<ActivityDetailDto> finalResult = new ArrayList<>(result.values());
         result.clear();
-        result=null;
+        result = null;
         return finalResult;
     }
 
@@ -996,16 +995,15 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 result.setDesc(result.getDesc() + item.getId() + "状态已上架，无需处理|");
                 continue;
             }
-            //非特价上架商品时需要校验
-            if (!ActivityCouponType.PRICE.getDictValue().equals(item.getActivityCouponType())) {
-                ActivityProfitDto dto = new ActivityProfitDto();
-                dto.setId(item.getId());
-                dto.setAllowUseBeginDate(item.getAllowUseBeginDate());
-                dto.setAllowUseEndDate(item.getAllowUseEndDate());
-                List<BaseProductReq> productReqs = activityRefProductMapper.findForbidCifgProductByActivity(dto);
-                if (!productReqs.isEmpty())
-                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("编辑活动上下架导致原配置的商品在某一时间点同时存在于两个活动中"));
-            }
+
+            ActivityProfitDto dto = new ActivityProfitDto();
+            dto.setId(item.getId());
+            dto.setAllowUseBeginDate(item.getAllowUseBeginDate());
+            dto.setAllowUseEndDate(item.getAllowUseEndDate());
+            List<BaseProductReq> productReqs = activityRefProductMapper.findForbidCifgProductByActivity(dto);
+            if (!productReqs.isEmpty())
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("编辑活动上下架导致原配置的商品在某一时间点同时存在于两个活动中"));
+
             item.setStatus(CouponStatus.YES.getDictValue());
             item.setUpdateAuthor(req.getOperator());
             item.setRemark("上架活动");
