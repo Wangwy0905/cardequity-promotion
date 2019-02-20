@@ -120,6 +120,7 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
                     for (BaseProductReq productReq : listTemp) {
                         if (key.equals(productReq.getProductId())) {
                             if (CommonUtils.isEmptyorNull(productReq.getSkuId()) ||
+                                    item.getGatherItem().equals(key + "|" + "EMPTY")||
                                     item.getGatherItem().equals(key + "|" + productReq.getSkuId())) {
                                 result.setSuccess(false);
                                 result.setCode(PARAM_ERROR.getCode());
