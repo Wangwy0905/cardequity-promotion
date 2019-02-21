@@ -1086,7 +1086,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             }
 
-            if (dtos.size() == req.getPageSize())
+            if (dtos.size() >= req.getPageSize())
                 return result;
             BaseQryActivityReq innerReq = new BaseQryActivityReq();
             innerReq.setUpAndDownStatus(CouponStatus.YES.getDictValue());
