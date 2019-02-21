@@ -244,7 +244,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 if (CommonUtils.isEmptyorNull(item.getProductList().get(0).getSkuId())) {
                     profit.setStatus(CouponStatus.NO.getDictValue());
                     //需要检查该商品是否已经存在下架的一个活动
-                    List<ActivityProfitEntity> entities = activityProfitMapper.findPriceTempActivityByProductId(item.getProductList().get(0).getProductId(), item.getProductList().get(0).getSkuId(),"");
+                    List<ActivityProfitEntity> entities = activityProfitMapper.findPriceTempActivityByProductId(item.getProductList().get(0).getProductId(), item.getProductList().get(0).getSkuId(), "");
                     if (!entities.isEmpty())
                         throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(String.format("该商品已存在其他活动，活动数量%s，商品编号%s，sku编号%s", entities.size(), item.getProductList().get(0).getProductId(), item.getProductList().get(0).getSkuId())));
                 }
@@ -355,6 +355,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<ActivityProfitEntity> activityList = new ArrayList<>();
         List<ActivityRefProductEntity> refProductList = new ArrayList<>();
         List<String> activityIds = new ArrayList<>();
+
+        List<String> configProductActivityIds = new ArrayList<>();
         List<ActivityStageCouponEntity> modStageList = new ArrayList<>();
         List<ActivityStageCouponEntity> addStageList = new ArrayList<>();
         List<ActivityQuotaRuleEntity> addQuotaList = new ArrayList<>();
@@ -496,6 +498,8 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
             //5.配置适用商品：先删后插
             if (item.getProductList() != null) {
+                if (!StringUtil.isEmpty(item.getActivityProfit().getId()))
+                    configProductActivityIds.add(item.getActivityProfit().getId());
                 for (BaseProductReq product : item.getProductList()) {
                     ActivityRefProductEntity refProductEntity = BeanPropertiesUtils.copyProperties(product, ActivityRefProductEntity.class);
                     refProductEntity.setUpdateAuthor(req.getOperator());
@@ -514,7 +518,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         if (!activityIds.isEmpty()) {
             batchService.batchDispose(activityIds, ActivityStageCouponMapper.class, "logicDelByActivityId");
-            batchService.batchDispose(activityIds, ActivityRefProductMapper.class, "deleteByActivityId");
+            if (!configProductActivityIds.isEmpty()) {
+                batchService.batchDispose(configProductActivityIds, ActivityRefProductMapper.class, "deleteByActivityId");
+            }
         }
 
         if (!addQuotaList.isEmpty())
