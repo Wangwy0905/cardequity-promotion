@@ -1116,34 +1116,35 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                         continue;
                     }
                 }
-                filterList.add(item);
-            }
-            if (filterList.size() >= req.getPageSize() - dtos.size())
-                filterList = filterList.subList(0, req.getPageSize() - dtos.size());
+                ActivityDetailDto detail=combinationActivity(item);
+                detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
+                if (detail.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
+                        detail.getActivityProfit().getAllowUseEndDate().isAfter(LocalDateTime.now())) {
+                    detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
+                } else if (detail.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())) {
+                    detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
+                }
 
-            Map<String, List<ActivityDetailDto>> filterMap = new HashMap<>();
-            List<ActivityDetailDto> detailDtos = combinationActivity(filterList);
-            for (ActivityDetailDto item : detailDtos) {
-                item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
-                if (item.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
-                        item.getActivityProfit().getAllowUseEndDate().isAfter(LocalDateTime.now())) {
-                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
-                } else if (item.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())) {
-                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
+                boolean isExist=false;
+                for (GroupProductDto groupItem:dtos){
+                    if (groupItem.getProductId().equals(detail.getProductList().get(0).getProductId())){
+                        isExist=true;
+                        break;
+                    }
                 }
-                List<ActivityDetailDto> detailDtoList = filterMap.get(item.getProductList().get(0).getProductId());
-                if (detailDtoList == null) {
-                    detailDtoList = new ArrayList();
-                    filterMap.put(item.getProductList().get(0).getProductId(), detailDtoList);
+                if (!isExist){
+                    GroupProductDto groupItem=new GroupProductDto();
+                    groupItem.setProductId(detail.getProductList().get(0).getProductId());
+                    groupItem.setLastTime(item.getCreateTime());
+                    dtos.add(groupItem);
                 }
-                detailDtoList.add(item);
-                result.add(item);
-                //满足商品请求数量后返回
-                if (filterMap.size() == (req.getPageSize() - dtos.size())) {
-                    //清除缓存
-                    filterMap.clear();
+                result.add(detail);
+
+                if (dtos.size() == (req.getPageSize() - dtos.size())) {
+                    dtos=null;
                     break;
                 }
+
             }
 
             //全部查询时
