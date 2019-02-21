@@ -591,6 +591,22 @@
         and d.ACTIVITY_ID = a.UUID))
     </select>
 
-
+    <select id="findPriceTempActivityByProductId"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
+        select *
+        from TB_ACTIVITY_PROFIT a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND ACTIVITY_COUPON_TYPE='2'
+        <if test="activityId!=null and activityId!=''">
+            AND a.UUID !=#{activityId,jdbcType=VARCHAR}
+        </if>
+        and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
+        EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b
+            where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+            and b.SKU_ID is null
+           )
+        )
+        Order by a.CREATE_TIME desc
+    </select>
 
 </mapper>

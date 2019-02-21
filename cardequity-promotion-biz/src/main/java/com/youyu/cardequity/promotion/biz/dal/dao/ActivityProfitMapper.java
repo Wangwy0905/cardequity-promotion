@@ -207,6 +207,16 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
     Date findValidPriceLastTime(OperatReq req);
 
 
+    /**
+     * 【后台】通过商品id查询其查询特价活动信息
+     *
+     * @param productId
+     * @return
+     */
+    List<ActivityProfitEntity> findPriceTempActivityByProductId(@Param("productId") String productId,
+                                                                @Param("skuId") String skuId,
+                                                                @Param("activityId") String activityId);
+
 }
 
 
