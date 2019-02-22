@@ -394,7 +394,20 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //        if (!productReqs.isEmpty())
             //            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("编辑活动有效日期区间时导致原配置的商品在某一时间点同时存在于两个活动中"));
             //} else {
-            CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(item.getProductList(), profit);
+
+            List<BaseProductReq> checkproductList=item.getProductList();
+            if (item.getProductList()==null){
+                checkproductList=new ArrayList<>();
+                //如果适用日期区间有变化时需要再次检查适用商品的
+                List<ActivityRefProductEntity> byActivityId = activityRefProductMapper.findByActivityId(profit.getId());
+                for (ActivityRefProductEntity refItem:byActivityId){
+                    BaseProductReq refreq=new BaseProductReq();
+                    refreq.setProductId(refItem.getProductId());
+                    refreq.setSkuId(refItem.getSkuId());
+                    checkproductList.add(refreq);
+                }
+            }
+            CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(checkproductList, profit);
             if (!boolDto.getSuccess()) {
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
             }
