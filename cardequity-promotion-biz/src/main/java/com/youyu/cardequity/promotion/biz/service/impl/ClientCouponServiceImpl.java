@@ -284,8 +284,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         //券使用情况
         UseCouponRsp useTransferCouponRsp = null;
-        UseCouponRsp globalCouponRsp= null;
-        UseCouponRsp partCouponRsp= null;
+        UseCouponRsp globalCouponRsp = null;
+        UseCouponRsp partCouponRsp = null;
 
         //临时变量
         CommonBoolDto dto = new CommonBoolDto();
@@ -358,19 +358,19 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     useTransferCouponRsp = useCouponRsp;
                 } else {
                     //大鱼券
-                    if (CouponActivityLevel.GLOBAL.getDictValue().equals(clientCoupon.getCouponLevel())){
-                        if (globalCouponRsp==null) {
+                    if (CouponActivityLevel.GLOBAL.getDictValue().equals(clientCoupon.getCouponLevel())) {
+                        if (globalCouponRsp == null) {
                             globalCouponRsp = useCouponRsp;
-                        }else {
-                            BigDecimal otherProfitAmount=partCouponRsp==null?BigDecimal.ZERO:partCouponRsp.getProfitAmount();
-                            globalCouponRsp=optimalCouponBetweenMult(globalCouponRsp,useCouponRsp,otherProfitAmount,totalAmount);
+                        } else {
+                            BigDecimal otherProfitAmount = partCouponRsp == null ? BigDecimal.ZERO : partCouponRsp.getProfitAmount();
+                            globalCouponRsp = optimalCouponBetweenMult(globalCouponRsp, useCouponRsp, otherProfitAmount, totalAmount);
                         }
-                    }else {
-                        if (partCouponRsp==null) {
+                    } else {
+                        if (partCouponRsp == null) {
                             partCouponRsp = useCouponRsp;
-                        }else {
-                            BigDecimal otherProfitAmount=globalCouponRsp==null?BigDecimal.ZERO:globalCouponRsp.getProfitAmount();
-                            partCouponRsp=optimalCouponBetweenMult(partCouponRsp,useCouponRsp,otherProfitAmount,totalAmount);
+                        } else {
+                            BigDecimal otherProfitAmount = globalCouponRsp == null ? BigDecimal.ZERO : globalCouponRsp.getProfitAmount();
+                            partCouponRsp = optimalCouponBetweenMult(partCouponRsp, useCouponRsp, otherProfitAmount, totalAmount);
                         }
                     }
                 }
@@ -384,25 +384,25 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         if (globalCouponRsp != null) {
             rsps.add(globalCouponRsp);
             //如果大鱼券的优惠金额比总金额还大，则不需要小鱼券了,其实策略实现做了保护后，这里只会出现等于
-            if (totalAmount.compareTo(globalCouponRsp.getProfitAmount())<=0){
+            if (totalAmount.compareTo(globalCouponRsp.getProfitAmount()) <= 0) {
                 return rsps;
             }
 
         }
         if (partCouponRsp != null) {
             rsps.add(partCouponRsp);
-            BigDecimal globalAmont=globalCouponRsp==null?BigDecimal.ZERO:globalCouponRsp.getProfitAmount();
-            if (totalAmount.compareTo(partCouponRsp.getProfitAmount().add(globalAmont))<0){
+            BigDecimal globalAmont = globalCouponRsp == null ? BigDecimal.ZERO : globalCouponRsp.getProfitAmount();
+            if (totalAmount.compareTo(partCouponRsp.getProfitAmount().add(globalAmont)) < 0) {
 
-                UseCouponRsp dealCouponRsp=partCouponRsp;
+                UseCouponRsp dealCouponRsp = partCouponRsp;
                 //只有满减券才会导致此现象，将满减券实际优惠金额处理
-                if (CouponStrategyType.discount.getDictValue().equals(partCouponRsp.getClientCoupon().getCouponStrategyType())){
+                if (CouponStrategyType.discount.getDictValue().equals(partCouponRsp.getClientCoupon().getCouponStrategyType())) {
                     //此时globalCouponRsp一定不为空
-                    dealCouponRsp=globalCouponRsp;
+                    dealCouponRsp = globalCouponRsp;
                 }
-                BigDecimal oldProfitAmount=dealCouponRsp.getProfitAmount();
+                BigDecimal oldProfitAmount = dealCouponRsp.getProfitAmount();
                 dealCouponRsp.setProfitAmount(partCouponRsp.getProfitAmount().add(globalAmont).subtract(totalAmount));
-                for (OrderProductDetailDto item:dealCouponRsp.getProductLsit()){
+                for (OrderProductDetailDto item : dealCouponRsp.getProductLsit()) {
                     item.setProfitAmount(dealCouponRsp.getProfitAmount().divide(oldProfitAmount));
                 }
             }
@@ -412,16 +412,17 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
     /**
      * 取最优的优惠券使用
-     * @param a 原认定使用优惠
-     * @param b 即将比较是否使用的优惠
+     *
+     * @param a             原认定使用优惠
+     * @param b             即将比较是否使用的优惠
      * @param profitedAmont 已优惠的金额
      * @return
      */
-    private UseCouponRsp optimalCouponBetweenMult(UseCouponRsp a, UseCouponRsp b,BigDecimal profitedAmont,BigDecimal totalAmount){
+    private UseCouponRsp optimalCouponBetweenMult(UseCouponRsp a, UseCouponRsp b, BigDecimal profitedAmont, BigDecimal totalAmount) {
         //当：优惠金额相等且等于总金额时，只会适用原始设置优惠最小的那张券
-        if (a.getProfitAmount().compareTo(b.getProfitAmount())==0 &&
-                a.getClientCoupon().getCouponAmout().compareTo(b.getClientCoupon().getCouponAmout())>0){
-           return b;
+        if (a.getProfitAmount().compareTo(b.getProfitAmount()) == 0 &&
+                a.getClientCoupon().getCouponAmout().compareTo(b.getClientCoupon().getCouponAmout()) > 0) {
+            return b;
         }
         //取偏离度最小的组合
         boolean diviation = CommonUtils.minDiviation(a.getProfitAmount().add(profitedAmont),
@@ -1109,12 +1110,16 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         List<ObtainCouponViewDto> result = new ArrayList<>();
         if (clientCouponEnts == null || clientCouponEnts.isEmpty())
             return result;
-        List<String> ids = new ArrayList<>();
+        Set<String> ids = new HashSet<>();
         for (ClientCouponEntity item : clientCouponEnts) {
-            ids.add(item.getCouponId());
+            if (!ids.contains(item.getCouponId()))
+                ids.add(item.getCouponId());
             ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item, ObtainCouponViewDto.class);
+
+            viewDto.setProfitValue(item.getCouponAmout());
             viewDto.setStatus(CouponStatus.YES.getDictValue());//拷贝会覆盖状态
-            viewDto.setUuid(item.getUuid());
+            viewDto.setObtainId(item.getId());
+            viewDto.setUuid(item.getCouponId());
             viewDto.setStageId(item.getStageId());
             viewDto.setObtainState(CommonConstant.OBTAIN_STATE_YES);
             if (CouponUseStatus.USED.getDictValue().equals(item.getStatus()) ||
@@ -1129,9 +1134,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         }
 
         if (!ids.isEmpty()) {
-            List<CouponDetailDto> detailDtos = productCouponService.findCouponListByIds(ids);
+            List<CouponDetailDto> detailDtos = productCouponService.findCouponListByIds(new ArrayList<>(ids));
             //已经按券id排序后的
-            List<CouponRefProductEntity> productEntities = couponRefProductMapper.findByCouponIds(ids);
+            List<CouponRefProductEntity> productEntities = couponRefProductMapper.findByCouponIds(new ArrayList<>(ids));
             for (ObtainCouponViewDto item : result) {
                 for (CouponDetailDto dto : detailDtos) {
                     if (item.getUuid().equals(dto.getProductCouponDto().getId())) {
@@ -1181,7 +1186,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             return null;
 
         ObtainCouponViewDto result = BeanPropertiesUtils.copyProperties(item, ObtainCouponViewDto.class);
-        result.setUuid(item.getUuid());
+        result.setUuid(item.getCouponId());
         result.setStageId(item.getStageId());
         result.setObtainState(CommonConstant.OBTAIN_STATE_YES);
         result.setStatus(CouponStatus.YES.getDictValue());
@@ -1292,12 +1297,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
     /**
      * 【App】客户领取券变更new标识
+     *
      * @param req
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CommonBoolDto changeClientCouponNewFlag(BaseClientReq req){
+    public CommonBoolDto changeClientCouponNewFlag(BaseClientReq req) {
         CommonBoolDto result = new CommonBoolDto(true);
         result.setCode(NET_ERROR.getCode());
         clientCouponMapper.modClientCouponNewFlag(req.getClientId());
