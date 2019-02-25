@@ -1125,9 +1125,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             if (CouponUseStatus.USED.getDictValue().equals(item.getStatus()) ||
                     CouponUseStatus.USING.getDictValue().equals(item.getStatus())) {
                 viewDto.setObtainState(CommonConstant.OBTAIN_STATE_USE);
-            } else if (item.getValidEndDate().compareTo(LocalDateTime.now()) < 0) {
+            } else if (item.getValidEndDate().toLocalDate().compareTo(LocalDate.now()) < 0) {
                 viewDto.setObtainState(CommonConstant.OBTAIN_STATE_OVERDUE);
-            } else if (item.getValidStartDate().compareTo(LocalDateTime.now()) > 0) {
+            } else if (item.getValidStartDate().toLocalDate().compareTo(LocalDate.now()) > 0) {
                 viewDto.setObtainState(CommonConstant.OBTAIN_STATE_UNSTART);
             }
             result.add(viewDto);
@@ -1193,9 +1193,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         if (CouponUseStatus.USED.getDictValue().equals(item.getStatus()) ||
                 CouponUseStatus.USING.getDictValue().equals(item.getStatus())) {
             result.setObtainState(CommonConstant.OBTAIN_STATE_USE);
-        } else if (item.getValidEndDate().compareTo(LocalDateTime.now()) < 0) {
+        } else if (item.getValidEndDate().toLocalDate().compareTo(LocalDate.now()) < 0) {
             result.setObtainState(CommonConstant.OBTAIN_STATE_OVERDUE);
-        } else if (item.getValidStartDate().compareTo(LocalDateTime.now()) > 0) {
+        } else if (item.getValidStartDate().toLocalDate().compareTo(LocalDate.now()) > 0) {
             result.setObtainState(CommonConstant.OBTAIN_STATE_UNSTART);
         }
 
