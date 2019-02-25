@@ -62,9 +62,9 @@ public class ActivityRefProductServiceImpl extends AbstractService<String, Activ
         CommonBoolDto<List<ActivityRefProductEntity>> result = new CommonBoolDto<>(true);
         result.setCode(NET_ERROR.getCode());
         //下架活动无需校验
-        if (activity != null && !CouponStatus.YES.getDictValue().equals(activity.getStatus())) {
-            return result;
-        }
+        //if (activity != null && !CouponStatus.YES.getDictValue().equals(activity.getStatus())) {
+        //    return result;
+        //}
 
         List<ActivityProfitEntity> unlimitedProductActivity = activityProfitMapper.findUnlimitedProductActivity();
         if (unlimitedProductActivity.size() > 0) {
