@@ -51,7 +51,7 @@ public abstract class CouponStrategy {
             List<CouponStageRuleEntity> stageByCouponId = couponStageRuleMapper.findStageByCouponId(clientCoupon.getCouponId());
             //领券只能指定某个阶梯
             if (stageByCouponId.size() > 1)
-                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getDesc());
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(clientCoupon.getCouponId()+"存在多个子券"));
             if (stageByCouponId.size() == 1) {
                 stage = stageByCouponId.get(0);
             }
@@ -60,7 +60,7 @@ public abstract class CouponStrategy {
             stage = couponStageRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
                     clientCoupon.getStageId());
             if (stage == null) {
-                throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc(clientCoupon.getCouponId()+",子券："+clientCoupon.getStageId()));
+                throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc(clientCoupon.getCouponId()+",子券不存在："+clientCoupon.getStageId()));
             }
         }
         return stage;
