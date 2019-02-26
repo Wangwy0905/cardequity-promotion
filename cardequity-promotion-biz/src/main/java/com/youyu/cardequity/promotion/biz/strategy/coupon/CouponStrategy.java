@@ -7,7 +7,9 @@ import com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
+import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
@@ -60,7 +62,17 @@ public abstract class CouponStrategy {
             stage = couponStageRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
                     clientCoupon.getStageId());
             if (stage == null) {
-                throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc(clientCoupon.getCouponId()+",子券不存在："+clientCoupon.getStageId()));
+                //可能原阶梯已经被删除，仍按初始值进行处理
+                //throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc(clientCoupon.getCouponId()+",子券不存在："+clientCoupon.getStageId()));
+                stage=new CouponStageRuleEntity();
+                stage.setBeginValue(clientCoupon.getBeginValue());
+                stage.setCouponId(clientCoupon.getCouponId());
+                stage.setCouponShortDesc(clientCoupon.getCouponShortDesc());
+                stage.setCouponValue(clientCoupon.getCouponAmout());
+                stage.setEndValue(clientCoupon.getEndValue());
+                stage.setId(clientCoupon.getStageId());
+                stage.setTriggerByType(clientCoupon.getTriggerByType());
+                stage.setIsEnable(CommonDict.IF_YES.getCode());
             }
         }
         return stage;
