@@ -33,6 +33,7 @@ public abstract class CouponStrategy {
 
     /**
      * 计算优惠券适用信息
+     *
      * @param clientCoupon
      * @param coupon
      * @param productList
@@ -47,33 +48,36 @@ public abstract class CouponStrategy {
      * @return
      */
     protected CouponStageRuleEntity protectCompletion(ClientCouponEntity clientCoupon) {
+
         CouponStageRuleEntity stage = null;
         //保护一下如果券下面只有一个阶梯，算作使用该券
-        if (CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
-            List<CouponStageRuleEntity> stageByCouponId = couponStageRuleMapper.findStageByCouponId(clientCoupon.getCouponId());
-            //领券只能指定某个阶梯
-            if (stageByCouponId.size() > 1)
-                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(clientCoupon.getCouponId()+"存在多个子券"));
-            if (stageByCouponId.size() == 1) {
-                stage = stageByCouponId.get(0);
-            }
-        } else {
+        //if (CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
+        //    List<CouponStageRuleEntity> stageByCouponId = couponStageRuleMapper.findStageByCouponId(clientCoupon.getCouponId());
+        //领券只能指定某个阶梯
+        //   if (stageByCouponId.size() > 1)
+        //       throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(clientCoupon.getCouponId()+"存在多个子券"));
+        //   if (stageByCouponId.size() == 1) {
+        //      stage = stageByCouponId.get(0);
+        //   }
+        //}
+
+        if (!CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
+            //可能原阶梯已经被删除，仍按初始值进行处理
+            stage = new CouponStageRuleEntity();
+            stage.setBeginValue(clientCoupon.getBeginValue());
+            stage.setCouponId(clientCoupon.getCouponId());
+            stage.setCouponShortDesc(clientCoupon.getCouponShortDesc());
+            stage.setCouponValue(clientCoupon.getCouponAmout());
+            stage.setEndValue(clientCoupon.getEndValue());
+            stage.setId(clientCoupon.getStageId());
+            stage.setTriggerByType(clientCoupon.getTriggerByType());
+            stage.setIsEnable(CommonDict.IF_YES.getCode());
             //先取得对应阶梯的信息
-            stage = couponStageRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
-                    clientCoupon.getStageId());
-            if (stage == null) {
-                //可能原阶梯已经被删除，仍按初始值进行处理
-                //throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc(clientCoupon.getCouponId()+",子券不存在："+clientCoupon.getStageId()));
-                stage=new CouponStageRuleEntity();
-                stage.setBeginValue(clientCoupon.getBeginValue());
-                stage.setCouponId(clientCoupon.getCouponId());
-                stage.setCouponShortDesc(clientCoupon.getCouponShortDesc());
-                stage.setCouponValue(clientCoupon.getCouponAmout());
-                stage.setEndValue(clientCoupon.getEndValue());
-                stage.setId(clientCoupon.getStageId());
-                stage.setTriggerByType(clientCoupon.getTriggerByType());
-                stage.setIsEnable(CommonDict.IF_YES.getCode());
-            }
+            //    stage = couponStageRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
+            //            clientCoupon.getStageId());
+            //    if (stage == null) {
+            //throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc(clientCoupon.getCouponId()+",子券不存在："+clientCoupon.getStageId()));
+            //   }
         }
         return stage;
     }
