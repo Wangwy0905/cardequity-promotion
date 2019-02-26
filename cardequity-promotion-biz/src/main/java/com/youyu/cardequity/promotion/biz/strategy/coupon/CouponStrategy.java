@@ -60,7 +60,7 @@ public abstract class CouponStrategy {
             stage = couponStageRuleMapper.findCouponStageById(clientCoupon.getCouponId(),
                     clientCoupon.getStageId());
             if (stage == null) {
-                throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getDesc());
+                throw new BizException(COUPON_NOT_EXISTS.getCode(), COUPON_NOT_EXISTS.getFormatDesc(clientCoupon.getCouponId()+",子券："+clientCoupon.getStageId()));
             }
         }
         return stage;
