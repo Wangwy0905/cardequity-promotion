@@ -343,6 +343,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //useCouponRsp.set(req.getClientId());
                 //运费券，条件1：选择免邮券，条件2：选择>运费的最接近，如果条件2不满足选择<运费的最接近的券
                 if (clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue())) {
+                    if (useCouponRsp.getProfitAmount().compareTo(req.getTransferFare()) > 0)
+                        useCouponRsp.setProfitAmount(req.getTransferFare());//重置运费券优惠金额=运费
                     if (useTransferCouponRsp == null)
                         useTransferCouponRsp = useCouponRsp;
                     else {
