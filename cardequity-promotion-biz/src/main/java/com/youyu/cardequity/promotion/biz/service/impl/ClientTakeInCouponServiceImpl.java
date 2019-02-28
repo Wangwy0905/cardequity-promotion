@@ -20,6 +20,7 @@ import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientTakeInCouponEntity;
@@ -39,6 +40,7 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
  * @author 技术平台
  * @date 2018-12-07
  */
+@Slf4j
 @Service
 public class ClientTakeInCouponServiceImpl extends AbstractService<String, ClientTakeInCouponDto, ClientTakeInCouponEntity, ClientTakeInCouponMapper> implements ClientTakeInCouponService {
     @Autowired
@@ -81,9 +83,10 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
             product.setPrice(product.getTotalAmount().divide(product.getAppCount()));
         }
         result.setActivities(useActivityRsps);
+        log.info(String.format("适用活动个数%d",useActivityRsps==null?0:useActivityRsps.size()));
         //在活动基础上计算优惠券
         List<UseCouponRsp> useCouponRsps = clientCouponService.combCouponRefProductDeal(innerReq);
-
+        log.info(String.format("适用优惠券个数%d",useCouponRsps==null?0:useCouponRsps.size()));
         if (useCouponRsps != null) {
             for (UseCouponRsp useCouponRsp : useCouponRsps) {
                 //运费券

@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.base.util.StringUtil;
@@ -301,6 +302,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             //获取已领取的有效优惠券：排除过期，已使用、使用中的券，按优惠金额已排序后的
             enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId(), "1");
         }
+        log.info("订单待处理优惠券列表:{}", JSONObject.toJSONString(enableCouponList));
+
 
         //空订单或者没有可用优惠券直接返回
         if (req.getProductList() == null ||
@@ -343,8 +346,6 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 //useCouponRsp.set(req.getClientId());
                 //运费券，条件1：选择免邮券，条件2：选择>运费的最接近，如果条件2不满足选择<运费的最接近的券
                 if (clientCoupon.getCouponType().equals(CouponType.TRANSFERFARE.getDictValue())) {
-                    if (useCouponRsp.getProfitAmount().compareTo(req.getTransferFare()) > 0)
-                        useCouponRsp.setProfitAmount(req.getTransferFare());//重置运费券优惠金额=运费
                     if (useTransferCouponRsp == null)
                         useTransferCouponRsp = useCouponRsp;
                     else {
@@ -353,6 +354,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                             useTransferCouponRsp = useCouponRsp;
                         }
                     }
+                    if (useTransferCouponRsp.getProfitAmount().compareTo(req.getTransferFare()) > 0)
+                        useTransferCouponRsp.setProfitAmount(req.getTransferFare());//重置保护运费券优惠金额=运费
                 }
                 //免邮券：优惠金额不确定
                 else if (clientCoupon.getCouponType().equals(CouponType.FREETRANSFERFARE.getDictValue())) {
