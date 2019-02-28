@@ -655,25 +655,21 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
         dto.setCode(NET_ERROR.getCode());
-        if (couponDetailListByIds == null || CommonUtils.isEmptyorNull(couponId))
+        if (couponDetailListByIds == null|| couponDetailListByIds.isEmpty() || CommonUtils.isEmptyorNull(couponId))
             return dto;
 
-        //逐一进行排除
-        boolean isExist = CollectionUtils.exists(couponDetailListByIds, new Predicate() {
-            public boolean evaluate(Object object) {
-                ShortCouponDetailDto item = (ShortCouponDetailDto) object;
-                if (item.getCouponId().equals(couponId) &&
-                        ((!CommonUtils.isEmptyorNull(item.getStageId()) && item.getStageId().equals(stageId)) ||
-                                (CommonUtils.isEmptyorNull(item.getStageId()) && CommonUtils.isEmptyorNull(stageId)))
-                        )
-                    return true;
-                return false;
+        for (ShortCouponDetailDto item:couponDetailListByIds) {
+            if (item.getCouponId().equals(couponId) &&
+                    ((!CommonUtils.isEmptyorNull(item.getStageId()) && item.getStageId().equals(stageId)) ||
+                            (CommonUtils.isEmptyorNull(item.getStageId()) && CommonUtils.isEmptyorNull(stageId)))
+                    ) {
+                dto.setSuccess(false);
+                dto.setCode(COUPON_FAIL_OP_FREQ.getCode());
+                dto.setDesc(String.format("优惠券编号%s,阶梯编号%s超使用或获取频率限额",couponId,item.getStageId()));
+                return dto;
             }
-        });
-        if (isExist) {
-            dto.setSuccess(false);
-            dto.setDesc(COUPON_FAIL_OP_FREQ.getDesc());
         }
+
 
         return dto;
     }
