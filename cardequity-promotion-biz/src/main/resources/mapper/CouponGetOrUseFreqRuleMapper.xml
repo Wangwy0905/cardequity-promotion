@@ -13,7 +13,7 @@
             parameterType="java.lang.String">
         select a.COUPON_ID,a.STAGE_ID
         from TB_COUPON_GET_OR_USE_FREQ_RULE a
-        where a.OP_COUPON_TYPE = '0'
+        where if(length(a.OP_COUPON_TYPE),a.IS_ENABLE,'0')  = #{opCoupontype,jdbcType=VARCHAR}
         and if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.COUPON_ID =#{couponId,jdbcType=VARCHAR}
         <if test="stageId!=null and stageId!=''">

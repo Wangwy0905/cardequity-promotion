@@ -635,7 +635,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     private CommonBoolDto checkCouponUseFreqLimit(String clientId, String couponId, String stageId) {
 
         //获取因为频率限制无法获取的券
-        List<ShortCouponDetailDto> couponDetailListByIds = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(clientId, couponId, stageId);
+        List<ShortCouponDetailDto> couponDetailListByIds = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(clientId, couponId, stageId,OpCouponType.USERULE.getDictValue());
 
         //逐一进行排除
         return excludeFreqLimit(couponDetailListByIds, couponId, stageId);

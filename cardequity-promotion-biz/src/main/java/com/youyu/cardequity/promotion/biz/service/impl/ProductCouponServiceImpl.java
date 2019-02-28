@@ -131,7 +131,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                         continue;
                     }
                     //查询客户受频率限制的券
-                    shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClientId(), item.getId(), "");
+                    shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClientId(), item.getId(), "",OpCouponType.GETRULE.getDictValue());
                 }
             }
 
