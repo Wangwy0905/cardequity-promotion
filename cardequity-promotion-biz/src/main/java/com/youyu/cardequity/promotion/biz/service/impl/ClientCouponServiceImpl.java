@@ -511,13 +511,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     if (CommonUtils.isGtZeroDecimal(rsp.getProfitAmount())) {
                         if (CommonUtils.isGtZeroDecimal(rsp.getTotalAmount())) {
                             //优惠金额=总优惠额*该商品总额/订单总该券涉及总金额
-                            productProfitValue = rsp.getProfitAmount().multiply(productDetailDto.getTotalAmount().divide(rsp.getTotalAmount()));
+                            productProfitValue = rsp.getProfitAmount().multiply(productDetailDto.getTotalAmount().divide(rsp.getTotalAmount(),4, RoundingMode.DOWN));
                             clientTakeInCoupon.setProfitValue(productProfitValue);
                         } else {
                             productRealAmout = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
                             //做算数保护
                             if (CommonUtils.isGtZeroDecimal(productRealAmout)) {
-                                productProfitValue = productDetailDto.getTotalAmount().divide(productRealAmout,2, RoundingMode.DOWN);
+                                productProfitValue = productDetailDto.getTotalAmount().divide(productRealAmout,4, RoundingMode.DOWN);
                                 clientTakeInCoupon.setProfitValue(productProfitValue);
                             }
                         }
