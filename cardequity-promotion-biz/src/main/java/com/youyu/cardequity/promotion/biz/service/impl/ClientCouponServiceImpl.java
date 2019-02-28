@@ -339,7 +339,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             ProductCouponEntity coupon = (ProductCouponEntity) dto.getData();
 
             //根据策略得到该活动是否满足门槛，返回满足活动适用信息
-            String key = CouponStrategy.class.getSimpleName() + clientCoupon.getCouponStrategyType();
+            String key = CouponStrategy.class.getSimpleName() + (CouponStrategyType.fix.getDictValue().equals(clientCoupon.getCouponStrategyType())?CouponStrategyType.stage.getDictValue():clientCoupon.getCouponStrategyType());
+
             CouponStrategy executor = (CouponStrategy) CustomHandler.getBeanByName(key);
             UseCouponRsp useCouponRsp = executor.applyCoupon(clientCoupon, coupon, req.getProductList());
             if (useCouponRsp != null) {
