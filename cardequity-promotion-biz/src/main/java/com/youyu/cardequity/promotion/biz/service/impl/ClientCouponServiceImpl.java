@@ -293,7 +293,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         dto.setSuccess(true);
 
         List<ClientCouponEntity> enableCouponList = new ArrayList<>();
-        log.info("订单待指定优惠券列表:{}", JSONObject.toJSONString(req.getObtainCouponList()));
+        log.info("订单指定使用优惠券列表:{}", JSONObject.toJSONString(req.getObtainCouponList()));
         //如果是指定了使用的券，检验后用使用的券
         if (req.getObtainCouponList() != null && req.getObtainCouponList().size() > 0) {
             enableCouponList = clientCouponMapper.findClientCouponByIds(req.getClientId(), req.getObtainCouponList());
