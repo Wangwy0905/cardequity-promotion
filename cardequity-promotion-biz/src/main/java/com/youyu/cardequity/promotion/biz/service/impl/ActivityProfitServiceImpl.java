@@ -122,12 +122,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         CommonBoolDto boolDto = new CommonBoolDto(true);
         List<ActivityProfitEntity> activityList = new ArrayList<>();
         //获取所有可以参与的活动：按初始条件，有效日期内
-        if (req.getActivityList() != null) {
-            if (!req.getActivityList().isEmpty()) {
-                BatchBaseActivityReq innerReq = new BatchBaseActivityReq();
-                innerReq.setBaseActivityList(req.getActivityList());
-                activityList = activityProfitMapper.findActivityByIds(innerReq);
-            }
+        if (req.getActivityList() != null && !req.getActivityList().isEmpty()) {
+
+            BatchBaseActivityReq innerReq = new BatchBaseActivityReq();
+            innerReq.setBaseActivityList(req.getActivityList());
+            activityList = activityProfitMapper.findActivityByIds(innerReq);
+
         } else {
 
             //获取普通活动列表
@@ -395,13 +395,13 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("编辑活动有效日期区间时导致原配置的商品在某一时间点同时存在于两个活动中"));
             //} else {
 
-            List<BaseProductReq> checkproductList=item.getProductList();
-            if (item.getProductList()==null){
-                checkproductList=new ArrayList<>();
+            List<BaseProductReq> checkproductList = item.getProductList();
+            if (item.getProductList() == null) {
+                checkproductList = new ArrayList<>();
                 //如果适用日期区间有变化时需要再次检查适用商品的
                 List<ActivityRefProductEntity> byActivityId = activityRefProductMapper.findByActivityId(profit.getId());
-                for (ActivityRefProductEntity refItem:byActivityId){
-                    BaseProductReq refreq=new BaseProductReq();
+                for (ActivityRefProductEntity refItem : byActivityId) {
+                    BaseProductReq refreq = new BaseProductReq();
                     refreq.setProductId(refItem.getProductId());
                     refreq.setSkuId(refItem.getSkuId());
                     checkproductList.add(refreq);
@@ -1129,7 +1129,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                         continue;
                     }
                 }
-                ActivityDetailDto detail=combinationActivity(item);
+                ActivityDetailDto detail = combinationActivity(item);
                 detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
                 if (detail.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
                         detail.getActivityProfit().getAllowUseEndDate().isAfter(LocalDateTime.now())) {
@@ -1138,15 +1138,15 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
                 }
 
-                boolean isExist=false;
-                for (GroupProductDto groupItem:dtos){
-                    if (groupItem.getProductId().equals(detail.getProductList().get(0).getProductId())){
-                        isExist=true;
+                boolean isExist = false;
+                for (GroupProductDto groupItem : dtos) {
+                    if (groupItem.getProductId().equals(detail.getProductList().get(0).getProductId())) {
+                        isExist = true;
                         break;
                     }
                 }
-                if (!isExist){
-                    GroupProductDto groupItem=new GroupProductDto();
+                if (!isExist) {
+                    GroupProductDto groupItem = new GroupProductDto();
                     groupItem.setProductId(detail.getProductList().get(0).getProductId());
                     groupItem.setLastTime(item.getCreateTime());
                     dtos.add(groupItem);
@@ -1154,7 +1154,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 result.add(detail);
 
                 if (dtos.size() == (req.getPageSize() - dtos.size())) {
-                    dtos=null;
+                    dtos = null;
                     break;
                 }
 
