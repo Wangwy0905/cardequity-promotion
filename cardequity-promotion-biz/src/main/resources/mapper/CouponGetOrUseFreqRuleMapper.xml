@@ -13,7 +13,7 @@
             parameterType="java.lang.String">
         select a.COUPON_ID,a.STAGE_ID
         from TB_COUPON_GET_OR_USE_FREQ_RULE a
-        where if(length(a.OP_COUPON_TYPE),a.IS_ENABLE,'0')  = #{opCoupontype,jdbcType=VARCHAR}
+        where if(length(a.OP_COUPON_TYPE),a.OP_COUPON_TYPE,'0')  = #{opCoupontype,jdbcType=VARCHAR}
         and if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.COUPON_ID =#{couponId,jdbcType=VARCHAR}
         <if test="stageId!=null and stageId!=''">
@@ -25,6 +25,9 @@
                 from TB_CLIENT_COUPON d
                where ifnull(d.IS_ENABLE, '1') = '1'
                  and d.COUPON_ID = a.COUPON_ID
+                 <if test='opCoupontype!=null and "1"==opCoupontype'>
+                 and d.STATUS in ('1','2')
+                 </if>
                  and (if(length(a.STAGE_ID),a.STAGE_ID,'0')='0' or d.STAGE_ID = a.STAGE_ID)
                  and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
              )
@@ -34,6 +37,9 @@
                  from TB_CLIENT_COUPON d
                 where ifnull(d.IS_ENABLE, '1') = '1'
                   and d.COUPON_ID = a.COUPON_ID
+                  <if test='opCoupontype!=null and "1"==opCoupontype'>
+                      and d.STATUS in ('1','2')
+                  </if>
                   and(if(length(a.STAGE_ID),a.STAGE_ID,'0')='0' or d.STAGE_ID = a.STAGE_ID)
                   and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
                   and d.CREATE_TIME &gt;= curdate())
@@ -43,6 +49,9 @@
                 from TB_CLIENT_COUPON d
                where ifnull(d.IS_ENABLE, '1') = '1'
                  and d.COUPON_ID = a.COUPON_ID
+                 <if test='opCoupontype!=null and "1"==opCoupontype'>
+                     and d.STATUS in ('1','2')
+                 </if>
                  and (if(length(a.STAGE_ID),a.STAGE_ID,'0')='0' or d.STAGE_ID = a.STAGE_ID)
                  and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
                  and d.CREATE_TIME &gt;= date_sub(curdate(), INTERVAL WEEKDAY(curdate()) + 1 DAY)
@@ -54,6 +63,9 @@
                from TB_CLIENT_COUPON d
               where ifnull(d.IS_ENABLE, '1') = '1'
                 and d.COUPON_ID = a.COUPON_ID
+               <if test='opCoupontype!=null and "1"==opCoupontype'>
+                   and d.STATUS in ('1','2')
+               </if>
                 and (if(length(a.STAGE_ID),a.STAGE_ID,'0')='0' or d.STAGE_ID = a.STAGE_ID)
                 and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
                 and concat(date_format(LAST_DAY(now()), '%Y-%m-'), '01') &lt;= d.CREATE_TIME
@@ -65,6 +77,9 @@
               from TB_CLIENT_COUPON d
              where ifnull(d.IS_ENABLE, '1') = '1'
                and d.COUPON_ID = a.COUPON_ID
+              <if test='opCoupontype!=null and "1"==opCoupontype'>
+                  and d.STATUS in ('1','2')
+              </if>
                and (if(length(a.STAGE_ID),a.STAGE_ID,'0')='0' or d.STAGE_ID = a.STAGE_ID)
                and d.CLIENT_ID = #{clientId,jdbcType=VARCHAR}
                and DATE_SUB(CURDATE(), INTERVAL dayofyear(now()) - 1 DAY) &lt;= d.CREATE_TIME
