@@ -43,13 +43,16 @@ public interface CommonConstant {
     String USENEWREGISTER_YES="1";
 
     /**
-     * 领取状态:0-未领取 1-已领取 2-已使用 3-过期未使用 4-为开始
+     * 领取状态:0-未领取 1-已领取 2-已使用 3-过期未使用 4-为开始 5-未过期未使用 6-该用户已领完 7-可继续领取
      */
     String OBTAIN_STATE_NO = "0";
     String OBTAIN_STATE_YES = "1";
     String OBTAIN_STATE_USE = "2";
     String OBTAIN_STATE_OVERDUE = "3";
     String OBTAIN_STATE_UNSTART = "4";
+    String OBTAIN_STATE_14 = "5";
+    String OBTAIN_STATE_PERSON_OVER = "6";
+    String OBTAIN_STATE_CONTINUE = "7";
 
     /**
      * 领取状态:0-消费券 1-运费券
@@ -64,5 +67,6 @@ public interface CommonConstant {
     String VIEW_ACTIVITYSTATUS_NOT_QUOTA = "1";
     String VIEW_ACTIVITYSTATUS_OVERDUE = "2";
     String VIEW_ACTIVITYSTATUSE_UNSTART = "3";
+
 
 }

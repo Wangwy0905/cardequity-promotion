@@ -1313,6 +1313,19 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         return result;
     }
 
+
+    /**
+     * 获取客户指定商品关联的券
+     *
+     * @param req 客户及商品信息
+     * @return 返回已领取的券
+     */
+    @Override
+    public List<ObtainCouponViewDto> findClientCouponForProduct(FindClientCouponForProductReq req) {
+        List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientCouponByProduct(req.getClientId(), req.getProductId(), req.getSkuId(),req.getStatus(),req.getTermStatus());
+        return combClientObtainCouponList(clientCouponEnts);
+    }
+
 }
 
 

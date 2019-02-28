@@ -74,7 +74,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param req
      * @return
      */
-    List<CouponDetailDto> findCouponListByProduct(BaseProductReq req);
+    List<CouponDetailDto> findCouponListByProduct(FindCouponListByProductReq req);
 
     /**
      * 查询所有优惠券列表

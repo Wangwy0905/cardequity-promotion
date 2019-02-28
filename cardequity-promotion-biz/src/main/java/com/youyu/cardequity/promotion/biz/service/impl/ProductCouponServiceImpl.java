@@ -811,12 +811,18 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      * @return 优惠券详情列表
      */
     @Override
-    public List<CouponDetailDto> findCouponListByProduct(BaseProductReq req) {
+    public List<CouponDetailDto> findCouponListByProduct(FindCouponListByProductReq req) {
         if (req == null || CommonUtils.isEmptyorNull(req.getProductId()))
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("商品编号未指定"));
         //查询有效期内的上架的消费券
-        List<ProductCouponEntity> entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), "01");
+        List<ProductCouponEntity> entities = null;
         List<ProductCouponEntity> couponList = new ArrayList<>();
+
+        if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())){
+            entities = productCouponMapper.findInQuotaCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), "01");
+        }else {
+            entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), "01");
+        }
         for (ProductCouponEntity couponEntity : entities) {
             //剔除没有上架的
             if (CouponStatus.YES.getDictValue().equals(couponEntity.getStatus())) {

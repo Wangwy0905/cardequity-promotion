@@ -139,4 +139,14 @@ public interface ClientCouponApi {
     @ApiOperation(value = "【App】客户领取券变更new标识")
     @PostMapping(path = "/changeClientCouponNewFlag")
     Result<CommonBoolDto> changeClientCouponNewFlag(@RequestBody BaseClientReq req);
+
+    /**
+     * 获取客户指定商品关联的券
+     *
+     * @param req 客户及商品信息
+     * @return 返回已领取的券
+     */
+    @ApiOperation(value = "【通用】客户领取的与商品关联的券")
+    @PostMapping(path = "/findClientCouponForProduct")
+    Result<List<ObtainCouponViewDto>> findClientCouponForProduct(@RequestBody FindClientCouponForProductReq req);
 }

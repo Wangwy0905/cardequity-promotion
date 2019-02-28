@@ -69,7 +69,7 @@ public interface ProductCouponApi {
      */
     @ApiOperation(value = "【通用-有效期-上架】查看商品对应优惠券列表")
     @PostMapping(path = "/findCouponListByProduct")
-    Result<List<CouponDetailDto>> findCouponListByProduct(@RequestBody BaseProductReq req);
+    Result<List<CouponDetailDto>> findCouponListByProduct(@RequestBody FindCouponListByProductReq req);
 
 
     /**

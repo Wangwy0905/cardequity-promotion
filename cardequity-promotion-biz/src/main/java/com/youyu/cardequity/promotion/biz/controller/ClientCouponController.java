@@ -125,4 +125,17 @@ public class ClientCouponController implements ClientCouponApi {
         return Result.ok(clientCouponService.changeClientCouponNewFlag(req));
 
     }
+
+    /**
+     * 获取客户指定商品关联的券
+     *
+     * @param req 客户及商品信息
+     * @return 返回已领取的券
+     */
+    @Override
+    @ApiOperation(value = "【通用】客户领取的与商品关联的券")
+    @PostMapping(path = "/findClientCouponForProduct")
+    public Result<List<ObtainCouponViewDto>> findClientCouponForProduct(@RequestBody FindClientCouponForProductReq req){
+        return Result.ok(clientCouponService.findClientCouponForProduct(req));
+    }
 }

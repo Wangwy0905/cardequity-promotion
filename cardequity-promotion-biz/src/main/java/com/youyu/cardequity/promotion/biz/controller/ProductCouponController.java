@@ -83,7 +83,7 @@ public class ProductCouponController implements ProductCouponApi {
     @Override
     @ApiOperation(value = "【通用-有效期-上架】查看商品对应优惠券列表")
     @PostMapping(path = "/findCouponListByProduct")
-    public Result<List<CouponDetailDto>> findCouponListByProduct(@RequestBody BaseProductReq req){
+    public Result<List<CouponDetailDto>> findCouponListByProduct(@RequestBody FindCouponListByProductReq req){
         return Result.ok(productCouponService.findCouponListByProduct(req));
     }
 

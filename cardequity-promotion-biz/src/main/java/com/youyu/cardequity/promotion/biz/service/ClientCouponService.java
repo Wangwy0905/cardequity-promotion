@@ -168,6 +168,14 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return
      */
     CommonBoolDto changeClientCouponNewFlag(BaseClientReq req);
+
+    /**
+     * 获取客户指定商品关联的券
+     *
+     * @param req 客户及商品信息
+     * @return 返回已领取的券
+     */
+    List<ObtainCouponViewDto> findClientCouponForProduct(FindClientCouponForProductReq req);
 }
 
 
