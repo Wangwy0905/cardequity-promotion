@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -135,7 +136,7 @@ public class DiscountStrategy extends ActivityStrategy {
                             //满足门槛条件情况下
                             if (product.getTotalAmount().compareTo(diff) >= 0) {
                                 //设置达标门槛数量：可能为负数，表示循环上一个商品时就已经满足门槛值了
-                                profitCount = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
+                                profitCount = diff.divide(product.getPrice(),0, RoundingMode.UP);
 
                                 rsp.setStage(BeanPropertiesUtils.copyProperties(stage, ActivityStageCouponDto.class));
                                 log.info("金额门槛折扣活动满足使用条件处理;活动编号：" + item.getId() + ";门槛编号：" + stage.getId() + ";商品编号" + product.getProductId() + ";子商品编号" + product.getSkuId());
@@ -304,7 +305,7 @@ public class DiscountStrategy extends ActivityStrategy {
             if (applyNum.compareTo(countCondition.add(BigDecimal.ZERO)) > 0) {
                 //校验个人优惠总额
                 BigDecimal enableProfitAmount = CommonUtils.GetEnableUseQuota(profitConditionAmount, profitApplyAmount, quota.getPerMaxAmount());
-                applyNum = enableProfitAmount.divide(profitPerAmount).setScale(0, BigDecimal.ROUND_DOWN);//重量类商品也是按1单位数量参与活动
+                applyNum = enableProfitAmount.divide(profitPerAmount,0, RoundingMode.DOWN);//重量类商品也是按1单位数量参与活动
                 if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                     //2.校验【个人限额】
                     QuotaIndexDiffInfo personDiffInfo = statisticsQuotaIndexMinDiff(quota, clientQuotaDto);
@@ -313,7 +314,7 @@ public class DiscountStrategy extends ActivityStrategy {
                     if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                         //先转换为优惠金额比较限额
                         enableProfitAmount = CommonUtils.GetEnableUseQuota(profitConditionAmount, profitApplyAmount, personDiffInfo.getClientDiffAmount());
-                        applyNum = enableProfitAmount.divide(profitPerAmount).setScale(0, BigDecimal.ROUND_DOWN);//重量类商品也是按1单位数量参与活动
+                        applyNum = enableProfitAmount.divide(profitPerAmount,0, RoundingMode.DOWN);//重量类商品也是按1单位数量参与活动
 
                         if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                             //3.校验【全局限额】
@@ -321,7 +322,7 @@ public class DiscountStrategy extends ActivityStrategy {
                             applyNum = CommonUtils.GetEnableUseQuota(profitConditionCount, profitApplyCount, allDiffInfo.getClientDiffCount());
                             if (applyNum.compareTo(BigDecimal.ZERO) > 0) {
                                 enableProfitAmount = CommonUtils.GetEnableUseQuota(profitConditionAmount, profitApplyAmount, allDiffInfo.getClientDiffAmount());
-                                applyNum = enableProfitAmount.divide(profitPerAmount).setScale(0, BigDecimal.ROUND_DOWN);//重量类商品也是按1单位数量参与活动
+                                applyNum = enableProfitAmount.divide(profitPerAmount,0, RoundingMode.DOWN);//重量类商品也是按1单位数量参与活动
                             }
                         }
                     }

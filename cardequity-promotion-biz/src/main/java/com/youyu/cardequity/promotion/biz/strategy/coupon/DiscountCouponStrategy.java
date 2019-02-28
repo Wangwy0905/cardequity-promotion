@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -100,7 +101,7 @@ public class DiscountCouponStrategy extends CouponStrategy {
                         //算入门槛内的才进行打折，否则全部都要打折
                         if (CouponApplyProductStage.CONDITION.getDictValue().equals(discountApplyStage)) {
                             //适用范围=向上取整(门槛差额/价格)
-                            applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
+                            applyNum = diff.divide(product.getPrice(),0, RoundingMode.UP);
                             //优惠金额=达到优惠条件总额*(1-折扣),达到优惠条件总额=(买入数量-(总数量-达标门槛))*价格
                             //优惠金额=总额*(1-折扣)
                             BigDecimal profitAmount = applyNum.multiply(product.getPrice()).multiply(BigDecimal.ONE.subtract(clientCoupon.getCouponAmout()));

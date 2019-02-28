@@ -28,6 +28,7 @@ import com.youyu.cardequity.promotion.dto.ClientTakeInCouponDto;
 import com.youyu.cardequity.promotion.biz.dal.dao.ClientTakeInCouponMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.RoundingMode;
 import java.util.List;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.NET_ERROR;
@@ -80,7 +81,7 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
                 }
             }
             //在活动优惠基础上重算价格和总价
-            product.setPrice(product.getTotalAmount().divide(product.getAppCount()));
+            product.setPrice(product.getTotalAmount().divide(product.getAppCount(),4, RoundingMode.UP));
         }
         result.setActivities(useActivityRsps);
         log.info(String.format("适用活动个数%d",useActivityRsps==null?0:useActivityRsps.size()));
@@ -179,7 +180,7 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
                 }
             }
             //在活动优惠基础上重算价格和总价
-            product.setPrice(product.getTotalAmount().divide(product.getAppCount()));
+            product.setPrice(product.getTotalAmount().divide(product.getAppCount(),4, RoundingMode.UP));
         }
         return clientCouponService.findCouponListByOrderDetail(req);
 

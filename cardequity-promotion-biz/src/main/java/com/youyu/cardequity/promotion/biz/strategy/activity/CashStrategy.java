@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -154,7 +155,7 @@ public class CashStrategy extends ActivityStrategy {
                         if (CommonUtils.isGtZeroDecimal(diff)) {
                             if (product.getTotalAmount().compareTo(diff) >= 0) {
                                 //满足门槛范围点=向上取整(门槛差额/价格)
-                                applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
+                                applyNum = diff.divide(product.getPrice(),0, RoundingMode.UP);
                                 //数量额度不足
                                 if (maxProfitQuotaCount.compareTo(applyNum) < 0) {
                                     break;
@@ -249,7 +250,7 @@ public class CashStrategy extends ActivityStrategy {
                     totalProfitAmount = applyNum.multiply(item.getProfitValue());
                     if (maxProfitQuotaAmount.compareTo(BigDecimal.ZERO) > 0) {
                         totalProfitAmount = totalProfitAmount.min(maxProfitQuotaAmount);
-                        applyNum = totalProfitAmount.divide(item.getProfitValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                        applyNum = totalProfitAmount.divide(item.getProfitValue(),0, RoundingMode.DOWN);
                         totalProfitAmount = applyNum.multiply(item.getProfitValue());
                     }
                 }
@@ -276,7 +277,7 @@ public class CashStrategy extends ActivityStrategy {
             //每种商品优惠的金额是按适用金额比例来的
             if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
                 for (OrderProductDetailDto product : rsp.getProductList()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
+                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount,4, RoundingMode.DOWN)));
                 }
             }
             return rsp;

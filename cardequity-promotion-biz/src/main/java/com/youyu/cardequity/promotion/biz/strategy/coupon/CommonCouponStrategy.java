@@ -15,6 +15,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -91,7 +92,7 @@ public class CommonCouponStrategy extends CouponStrategy {
                         successFlg=true;
                         //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品,不许要下面if处理；适用范围=向上取整(门槛差额/价格)
                         if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
-                            applyNum = diff.divide(product.getPrice()).setScale(0, BigDecimal.ROUND_UP);
+                            applyNum = diff.divide(product.getPrice(),0, RoundingMode.UP);
                             product.setProfitCount(applyNum);
                             break;
                         }
@@ -117,7 +118,7 @@ public class CommonCouponStrategy extends CouponStrategy {
             if (totalRealAmount.compareTo(BigDecimal.ZERO)>0) {
                 //每种商品优惠的金额是按适用金额比例来的，如果是免邮券getProfitAmount是0
                 for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
+                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount,4, RoundingMode.DOWN)));
                 }
             }
         }

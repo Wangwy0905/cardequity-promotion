@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -172,7 +173,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
             if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
                 //每种商品优惠的金额是按适用金额比例来的
                 for (OrderProductDetailDto product : rsp.getProductList()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
+                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount,4, RoundingMode.DOWN)));
                 }
             }
             return rsp;
@@ -301,7 +302,7 @@ public class MaxQuotaStrategy  extends ActivityStrategy {
             if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
                 //每种商品优惠的金额是按适用金额比例来的
                 for (OrderProductDetailDto product : rsp.getProductList()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount)));
+                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount,0, RoundingMode.DOWN)));
                 }
             }
             return rsp;

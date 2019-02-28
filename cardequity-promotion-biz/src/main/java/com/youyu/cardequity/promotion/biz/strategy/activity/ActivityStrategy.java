@@ -13,6 +13,7 @@ import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
@@ -396,7 +397,7 @@ public abstract class ActivityStrategy {
             if (CommonUtils.isGtZeroDecimal(vauleCondition)) {
                 if (CommonDict.IF_YES.getCode().equals(conditionFlag)) {
                     fundCondition = vauleCondition;
-                    countCondition = vauleCondition.divide(profitPerAmount);
+                    countCondition = vauleCondition.divide(profitPerAmount,0, RoundingMode.UP);
                 } else {
                     fundCondition = vauleCondition.multiply(profitPerAmount);
                     countCondition = vauleCondition;
@@ -423,7 +424,7 @@ public abstract class ActivityStrategy {
                 return result;
             }
             //最终能优惠的金额转换为可优惠的数量
-            applyNum = enableProfitAmount.divide(profitPerAmount).setScale(0, BigDecimal.ROUND_DOWN);//重量类商品也是按1单位数量参与活动
+            applyNum = enableProfitAmount.divide(profitPerAmount,0, RoundingMode.DOWN);//重量类商品也是按1单位数量参与活动
 
         }
         result.setData(applyNum);
@@ -468,7 +469,7 @@ public abstract class ActivityStrategy {
             if (CommonUtils.isGtZeroDecimal(vauleCondition)) {
                 if (CommonDict.IF_YES.getCode().equals(conditionFlag)) {
                     fundCondition = vauleCondition;
-                    countCondition = vauleCondition.divide(profitPerAmount);
+                    countCondition = vauleCondition.divide(profitPerAmount,0, RoundingMode.UP);
                 } else {
                     fundCondition = vauleCondition.multiply(profitPerAmount);
                     countCondition = vauleCondition;
@@ -495,7 +496,7 @@ public abstract class ActivityStrategy {
                 return result;
             }
             //最终能优惠的金额转换为可优惠的数量
-            applyNum = enableProfitAmount.divide(profitPerAmount).setScale(0, BigDecimal.ROUND_DOWN);//重量类商品也是按1单位数量参与活动
+            applyNum = enableProfitAmount.divide(profitPerAmount,0, RoundingMode.DOWN);//重量类商品也是按1单位数量参与活动
 
         }
         result.setData(applyNum);

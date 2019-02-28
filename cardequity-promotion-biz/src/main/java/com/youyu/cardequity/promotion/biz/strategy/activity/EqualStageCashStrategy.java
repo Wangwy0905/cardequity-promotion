@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -125,9 +126,9 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
             //不能超过封顶值
             if (CommonDict.CONTINUEVALID.getCode().equals(CommonUtils.isQuotaValueNeedValidFlag(stage.getEndValue())) &&
                     stage.getEndValue().compareTo(amountCondition) < 0){
-                applyNum = stage.getEndValue().divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                applyNum = stage.getEndValue().divide(stage.getBeginValue(),0, RoundingMode.DOWN);
             } else {
-                applyNum = amountCondition.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                applyNum = amountCondition.divide(stage.getBeginValue(),0, RoundingMode.DOWN);
             }
         }else {
             //没有满足条件
@@ -137,9 +138,9 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
             //不能超过封顶值
             if (CommonDict.CONTINUEVALID.getCode().equals(CommonUtils.isQuotaValueNeedValidFlag(stage.getEndValue())) &&
                     stage.getEndValue().compareTo(countCondition) < 0) {
-                applyNum = stage.getEndValue().divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                applyNum = stage.getEndValue().divide(stage.getBeginValue(),0, RoundingMode.DOWN);
             } else {
-                applyNum = countCondition.divide(stage.getBeginValue()).setScale(0, BigDecimal.ROUND_DOWN);
+                applyNum = countCondition.divide(stage.getBeginValue(),0, RoundingMode.DOWN);
             }
         }
 
@@ -156,7 +157,7 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
             //每种商品优惠的金额是按适用金额比例来的
             if (amountCondition.compareTo(BigDecimal.ZERO) > 0) {
                 for (OrderProductDetailDto product : rsp.getProductList()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(amountCondition)));
+                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(amountCondition,4, RoundingMode.DOWN)));
                 }
             }
             log.info("等阶立减券满足使用条件处理;活动编号：" + item.getId() +";门槛编号："+stage.getId());

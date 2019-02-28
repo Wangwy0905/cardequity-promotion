@@ -14,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -111,7 +112,7 @@ public class EqualStageCouponStrategy extends CouponStrategy {
             //每种商品优惠的金额是按适用金额比例来的
             if (amountCondition.compareTo(BigDecimal.ZERO) > 0) {
                 for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(amountCondition)));
+                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(amountCondition,4, RoundingMode.DOWN)));
                 }
             }
             return rsp;

@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -407,7 +408,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 BigDecimal oldProfitAmount = dealCouponRsp.getProfitAmount();
                 dealCouponRsp.setProfitAmount(partCouponRsp.getProfitAmount().add(globalAmont).subtract(totalAmount));
                 for (OrderProductDetailDto item : dealCouponRsp.getProductLsit()) {
-                    item.setProfitAmount(dealCouponRsp.getProfitAmount().divide(oldProfitAmount));
+                    item.setProfitAmount(dealCouponRsp.getProfitAmount().divide(oldProfitAmount,4, RoundingMode.DOWN));
                 }
             }
         }
@@ -516,7 +517,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                             productRealAmout = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
                             //做算数保护
                             if (CommonUtils.isGtZeroDecimal(productRealAmout)) {
-                                productProfitValue = productDetailDto.getTotalAmount().divide(productRealAmout);
+                                productProfitValue = productDetailDto.getTotalAmount().divide(productRealAmout,2, RoundingMode.DOWN);
                                 clientTakeInCoupon.setProfitValue(productProfitValue);
                             }
                         }

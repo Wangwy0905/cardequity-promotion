@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -106,7 +107,7 @@ public class PriceStrategy extends ActivityStrategy {
                 BigDecimal totalProfitAmount = applyNum.multiply(product.getPrice().subtract(item.getProfitValue()));
                 if (maxProfitQuotaAmount.compareTo(BigDecimal.ZERO) > 0) {
                     totalProfitAmount = totalProfitAmount.min(maxProfitQuotaAmount);
-                    applyNum = totalProfitAmount.divide(product.getPrice().subtract(item.getProfitValue())).setScale(0,BigDecimal.ROUND_DOWN);
+                    applyNum = totalProfitAmount.divide(product.getPrice().subtract(item.getProfitValue()),0, RoundingMode.DOWN);
                     totalProfitAmount=applyNum.multiply(product.getPrice().subtract(item.getProfitValue()));
                 }
 
