@@ -96,8 +96,6 @@ public class DiscountStrategy extends ActivityStrategy {
         }
         ClientCoupStatisticsQuotaDto allQuotaDto = boolDto.getData();
 
-        BigDecimal countCondition = BigDecimal.ZERO;
-        BigDecimal amountCondition = BigDecimal.ZERO;
         BigDecimal diff = BigDecimal.ZERO;
         BigDecimal applyNum = BigDecimal.ZERO;
         BigDecimal profitCount = BigDecimal.ZERO;
@@ -111,6 +109,8 @@ public class DiscountStrategy extends ActivityStrategy {
                         rsp.getStage().getProfitValue().compareTo(stage.getProfitValue()) <= 0) {
                     continue;
                 }
+                BigDecimal countCondition = BigDecimal.ZERO;
+                BigDecimal amountCondition = BigDecimal.ZERO;
                 temproductLsit.clear();
                 //所有活动在定义适用商品时都不会重叠
                 for (OrderProductDetailDto productItem : productList) {
