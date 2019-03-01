@@ -180,7 +180,7 @@
 
     <select id="findValidPriceActivityByProduct"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityProfitEntity">
-        select *
+        select a.*
         from TB_ACTIVITY_PROFIT a
         left join TB_ACTIVITY_QUOTA_RULE b on a.UUID = b.ACTIVITY_ID and if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'

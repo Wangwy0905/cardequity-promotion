@@ -125,10 +125,10 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
                 return null;
             //不能超过封顶值
             if (CommonDict.CONTINUEVALID.getCode().equals(CommonUtils.isQuotaValueNeedValidFlag(stage.getEndValue())) &&
-                    stage.getEndValue().compareTo(amountCondition) < 0){
+                    stage.getEndValue().compareTo(countCondition) < 0){
                 applyNum = stage.getEndValue().divide(stage.getBeginValue(),0, RoundingMode.DOWN);
             } else {
-                applyNum = amountCondition.divide(stage.getBeginValue(),0, RoundingMode.DOWN);
+                applyNum = countCondition.divide(stage.getBeginValue(),0, RoundingMode.DOWN);
             }
         }else {
             //没有满足条件
@@ -137,10 +137,10 @@ public class EqualStageCashStrategy  extends ActivityStrategy {
 
             //不能超过封顶值
             if (CommonDict.CONTINUEVALID.getCode().equals(CommonUtils.isQuotaValueNeedValidFlag(stage.getEndValue())) &&
-                    stage.getEndValue().compareTo(countCondition) < 0) {
+                    stage.getEndValue().compareTo(amountCondition) < 0) {
                 applyNum = stage.getEndValue().divide(stage.getBeginValue(),0, RoundingMode.DOWN);
             } else {
-                applyNum = countCondition.divide(stage.getBeginValue(),0, RoundingMode.DOWN);
+                applyNum = amountCondition.divide(stage.getBeginValue(),0, RoundingMode.DOWN);
             }
         }
 

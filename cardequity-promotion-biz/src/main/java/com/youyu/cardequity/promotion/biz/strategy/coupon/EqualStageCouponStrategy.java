@@ -85,20 +85,20 @@ public class EqualStageCouponStrategy extends CouponStrategy {
             if (countCondition.compareTo(clientCoupon.getBeginValue()) < 0)
                 return null;
             //不能超过封顶值
-            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(amountCondition) < 0) {
+            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(countCondition) < 0) {
                 applyNum = clientCoupon.getEndValue().divide(clientCoupon.getBeginValue(),0, RoundingMode.DOWN);
             } else {
-                applyNum = amountCondition.divide(clientCoupon.getBeginValue(),0, RoundingMode.DOWN);
+                applyNum = countCondition.divide(clientCoupon.getBeginValue(),0, RoundingMode.DOWN);
             }
         } else {
 
             if (amountCondition.compareTo(clientCoupon.getBeginValue()) < 0)
                 return null;
             //不能超过封顶值
-            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(countCondition) < 0) {
+            if (CommonUtils.isGtZeroDecimal(clientCoupon.getEndValue()) && clientCoupon.getEndValue().compareTo(amountCondition) < 0) {
                 applyNum = clientCoupon.getEndValue().divide(clientCoupon.getBeginValue(),0, RoundingMode.DOWN);
             } else {
-                applyNum = countCondition.divide(clientCoupon.getBeginValue(),0, RoundingMode.DOWN);
+                applyNum = amountCondition.divide(clientCoupon.getBeginValue(),0, RoundingMode.DOWN);
             }
         }
 
