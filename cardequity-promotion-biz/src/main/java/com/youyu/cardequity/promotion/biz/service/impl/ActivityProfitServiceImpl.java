@@ -286,7 +286,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                             result.setDesc("折扣优惠券优惠折扣不能高于等于1且不能低于等于0，参数值" + stage.getProfitValue());
                             return result;
                         }
-                        profit.setProfitValue(stage.getProfitValue());
+                        //主信息存最低折扣值
+                        if (!CommonUtils.isGtZeroDecimal(profit.getProfitValue()) ||
+                                profit.getProfitValue().compareTo(stage.getProfitValue()) > 0)
+                            profit.setProfitValue(stage.getProfitValue());
                     }
 
                     stage.setActivityId(profitEntity.getId());
