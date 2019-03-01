@@ -300,14 +300,14 @@
         <if test="status!=null and status!=''">
         and a.status=#{status,jdbcType=VARCHAR}
         </if>
-        <if test='"0"=termStatus'>
+        <if test='"0"==termStatus'>
             and a.VALID_START_DATE &lt;=curdate()
             and a.VALID_END_DATE &gt;= curdate()
         </if>
-        <if test='"1"=termStatus'>
+        <if test='"1"==termStatus'>
             and a.VALID_START_DATE &gt;curdate()
         </if>
-        <if test='"2"=termStatus'>
+        <if test='"2"==termStatus'>
             and a.VALID_END_DATE &lt; curdate()
         </if>
 
