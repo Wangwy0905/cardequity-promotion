@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -278,6 +279,16 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //4.处理阶梯信息
             if (item.getStageList() != null) {
                 for (ActivityStageCouponDto stage : item.getStageList()) {
+
+                    if (ActivityCouponType.DISCOUNT.getDictValue().equals(profit.getActivityCouponType())) {
+                        if (BigDecimal.ONE.compareTo(stage.getProfitValue()) <= 0 ||
+                                !CommonUtils.isGtZeroDecimal(stage.getProfitValue())) {
+                            result.setDesc("折扣优惠券优惠折扣不能高于等于1且不能低于等于0，参数值" + stage.getProfitValue());
+                            return result;
+                        }
+                        profit.setProfitValue(stage.getProfitValue());
+                    }
+
                     stage.setActivityId(profitEntity.getId());
                     stage.setId(CommonUtils.getUUID());
 
