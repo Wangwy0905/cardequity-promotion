@@ -66,6 +66,8 @@ public class CouponDetailDto {
 
         if (quotaRule != null) {
             dto.setMaxCount(quotaRule.getMaxCount());
+        }else{
+            dto.setMaxCount(CommonConstant.IGNOREINTVALUE);
         }
 
         dto.setConditionValue(BigDecimal.ZERO);

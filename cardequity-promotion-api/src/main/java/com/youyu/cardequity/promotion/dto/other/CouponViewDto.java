@@ -158,7 +158,7 @@ public class CouponViewDto {
         }
 
         //*******额度转义**********
-        if (maxCount!=null && maxCount.intValue()>=0){
+        if (maxCount!=null && maxCount.intValue()>=0 && maxCount<CommonConstant.IGNOREINTVALUE){
             CouponQuotaRuleDto quotaRuleDto=new CouponQuotaRuleDto();
             quotaRuleDto.setCouponId(uuid);
             quotaRuleDto.setMaxCount(maxCount);
