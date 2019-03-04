@@ -826,7 +826,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())){
             entities = productCouponMapper.findInQuotaCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), "01");
         }else {
-            entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), "01");
+            entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), "01",CouponGetType.HANLD.getDictValue());
         }
         for (ProductCouponEntity couponEntity : entities) {
             //剔除没有上架的

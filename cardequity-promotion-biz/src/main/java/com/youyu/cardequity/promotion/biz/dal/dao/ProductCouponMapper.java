@@ -126,7 +126,8 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
                                                        @Param("couponStatus") String couponStatus,
                                                        @Param("productId") String productId,
                                                        @Param("skuId") String skuId,
-                                                       @Param("couponType") String couponType);
+                                                       @Param("couponType") String couponType,
+                                                       @Param("couponType") String obtainType);
 
     /**
      * 【后台】查询商品相关的优惠券
