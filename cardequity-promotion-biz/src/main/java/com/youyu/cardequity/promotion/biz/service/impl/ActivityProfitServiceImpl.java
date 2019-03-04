@@ -1199,6 +1199,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             });
 
             List<ActivityProfitEntity> filterList = new ArrayList<>();
+            //有效的抢购放在最开始
+            filterList.addAll(entities);
+            //过滤有效的抢购
             for (ActivityProfitEntity item : listByCommon) {
                 //过滤已查询的有效的
                 for (ActivityProfitEntity dtoitem : entities) {
@@ -1209,8 +1212,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 filterList.add(item);
             }
 
-            filterList.addAll(entities);
+            //补全信息
             result.addAll(combinationActivity(filterList));
+
+            //处理状态
             for (ActivityDetailDto item : result) {
                 for (ActivityProfitEntity dtoitem : entities) {
                     if (item.getActivityProfit().getId().equals(dtoitem.getId())) {
