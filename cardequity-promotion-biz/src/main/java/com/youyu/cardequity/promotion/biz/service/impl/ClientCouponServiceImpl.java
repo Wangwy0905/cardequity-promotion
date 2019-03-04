@@ -119,14 +119,17 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         ClientCouponEntity entity = BeanPropertiesUtils.copyProperties(req, ClientCouponEntity.class);
 
         //传参默认手动领取
-        if (StringUtil.isEmpty(req.getGetType())){
+        if (StringUtil.isEmpty(req.getGetType())) {
             req.setGetType(CouponGetType.HANLD.getDictValue());
         }
         //数据库默认手动领取
-        if (StringUtil.isEmpty(entity.getGetType()) && !CouponGetType.HANLD.getDictValue().equals(req.getGetType())){
-            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("该券只能手动领取"));
-        }else if (!req.getGetType().equals(entity.getGetType())){
-            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("该券获取方式错误"));
+        if (StringUtil.isEmpty(entity.getGetType())) {
+            if (!CouponGetType.HANLD.getDictValue().equals(req.getGetType()))
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("该券只能手动领取"));
+        } else {
+            if (!req.getGetType().equals(entity.getGetType())) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("该券获取方式错误"));
+            }
         }
 
         GetUseEnableCouponReq checkreq = BeanPropertiesUtils.copyProperties(req, GetUseEnableCouponReq.class);
@@ -351,7 +354,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             ProductCouponEntity coupon = (ProductCouponEntity) dto.getData();
 
             //根据策略得到该活动是否满足门槛，返回满足活动适用信息
-            String key = CouponStrategy.class.getSimpleName() + (CouponStrategyType.fix.getDictValue().equals(clientCoupon.getCouponStrategyType())?CouponStrategyType.stage.getDictValue():clientCoupon.getCouponStrategyType());
+            String key = CouponStrategy.class.getSimpleName() + (CouponStrategyType.fix.getDictValue().equals(clientCoupon.getCouponStrategyType()) ? CouponStrategyType.stage.getDictValue() : clientCoupon.getCouponStrategyType());
 
             CouponStrategy executor = (CouponStrategy) CustomHandler.getBeanByName(key);
             UseCouponRsp useCouponRsp = executor.applyCoupon(clientCoupon, coupon, req.getProductList());
@@ -421,7 +424,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 BigDecimal oldProfitAmount = dealCouponRsp.getProfitAmount();
                 dealCouponRsp.setProfitAmount(partCouponRsp.getProfitAmount().add(globalAmont).subtract(totalAmount));
                 for (OrderProductDetailDto item : dealCouponRsp.getProductLsit()) {
-                    item.setProfitAmount(dealCouponRsp.getProfitAmount().divide(oldProfitAmount,4, RoundingMode.DOWN));
+                    item.setProfitAmount(dealCouponRsp.getProfitAmount().divide(oldProfitAmount, 4, RoundingMode.DOWN));
                 }
             }
         }
@@ -524,13 +527,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                     if (CommonUtils.isGtZeroDecimal(rsp.getProfitAmount())) {
                         if (CommonUtils.isGtZeroDecimal(rsp.getTotalAmount())) {
                             //优惠金额=总优惠额*该商品总额/订单总该券涉及总金额
-                            productProfitValue = rsp.getProfitAmount().multiply(productDetailDto.getTotalAmount().divide(rsp.getTotalAmount(),4, RoundingMode.DOWN));
+                            productProfitValue = rsp.getProfitAmount().multiply(productDetailDto.getTotalAmount().divide(rsp.getTotalAmount(), 4, RoundingMode.DOWN));
                             clientTakeInCoupon.setProfitValue(productProfitValue);
                         } else {
                             productRealAmout = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
                             //做算数保护
                             if (CommonUtils.isGtZeroDecimal(productRealAmout)) {
-                                productProfitValue = productDetailDto.getTotalAmount().divide(productRealAmout,4, RoundingMode.DOWN);
+                                productProfitValue = productDetailDto.getTotalAmount().divide(productRealAmout, 4, RoundingMode.DOWN);
                                 clientTakeInCoupon.setProfitValue(productProfitValue);
                             }
                         }
@@ -649,7 +652,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
     private CommonBoolDto checkCouponUseFreqLimit(String clientId, String couponId, String stageId) {
 
         //获取因为频率限制无法获取的券
-        List<ShortCouponDetailDto> couponDetailListByIds = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(clientId, couponId, stageId,OpCouponType.USERULE.getDictValue());
+        List<ShortCouponDetailDto> couponDetailListByIds = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(clientId, couponId, stageId, OpCouponType.USERULE.getDictValue());
 
         //逐一进行排除
         return excludeFreqLimit(couponDetailListByIds, couponId, stageId);
@@ -669,17 +672,17 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         CommonBoolDto dto = new CommonBoolDto();
         dto.setSuccess(true);
         dto.setCode(NET_ERROR.getCode());
-        if (couponDetailListByIds == null|| couponDetailListByIds.isEmpty() || CommonUtils.isEmptyorNull(couponId))
+        if (couponDetailListByIds == null || couponDetailListByIds.isEmpty() || CommonUtils.isEmptyorNull(couponId))
             return dto;
 
-        for (ShortCouponDetailDto item:couponDetailListByIds) {
+        for (ShortCouponDetailDto item : couponDetailListByIds) {
             if (item.getCouponId().equals(couponId) &&
                     ((!CommonUtils.isEmptyorNull(item.getStageId()) && item.getStageId().equals(stageId)) ||
                             (CommonUtils.isEmptyorNull(item.getStageId()) && CommonUtils.isEmptyorNull(stageId)))
                     ) {
                 dto.setSuccess(false);
                 dto.setCode(COUPON_FAIL_OP_FREQ.getCode());
-                dto.setDesc(String.format("优惠券编号%s,阶梯编号%s超使用或获取频率限额",couponId,item.getStageId()));
+                dto.setDesc(String.format("优惠券编号%s,阶梯编号%s超使用或获取频率限额", couponId, item.getStageId()));
                 return dto;
             }
         }
@@ -703,7 +706,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //获取因为频率限制无法获取的券
         List<ShortCouponDetailDto> couponDetailListByIds =
                 couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(clientId,
-                        couponId, stageId,OpCouponType.GETRULE.getDictValue());
+                        couponId, stageId, OpCouponType.GETRULE.getDictValue());
 
         //逐一进行排除
         return excludeFreqLimit(couponDetailListByIds, couponId, stageId);
@@ -1096,7 +1099,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 continue;
             }
             //根据策略得到该活动是否满足门槛，返回满足活动适用信息
-            String key = CouponStrategy.class.getSimpleName() + (CouponStrategyType.fix.getDictValue().equals(clientCoupon.getCouponStrategyType())?CouponStrategyType.stage.getDictValue():clientCoupon.getCouponStrategyType());
+            String key = CouponStrategy.class.getSimpleName() + (CouponStrategyType.fix.getDictValue().equals(clientCoupon.getCouponStrategyType()) ? CouponStrategyType.stage.getDictValue() : clientCoupon.getCouponStrategyType());
             CouponStrategy executor = (CouponStrategy) CustomHandler.getBeanByName(key);
             UseCouponRsp useCouponRsp = executor.applyCoupon(clientCoupon, coupon, req.getProductList());
             if (useCouponRsp != null) {
@@ -1334,7 +1337,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      */
     @Override
     public List<ObtainCouponViewDto> findClientCouponForProduct(FindClientCouponForProductReq req) {
-        List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientCouponByProduct(req.getClientId(), req.getProductId(), req.getSkuId(),req.getStatus(),req.getTermStatus());
+        List<ClientCouponEntity> clientCouponEnts = clientCouponMapper.findClientCouponByProduct(req.getClientId(), req.getProductId(), req.getSkuId(), req.getStatus(), req.getTermStatus());
         return combClientObtainCouponList(clientCouponEnts);
     }
 
