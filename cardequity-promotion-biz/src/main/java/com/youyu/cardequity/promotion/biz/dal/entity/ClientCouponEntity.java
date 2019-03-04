@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.*;
+
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -86,6 +88,12 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
     private String entrustWay;
 
     /**
+     * 获取方式:0-自动 1-收到 2-平台指定发放
+     */
+    @Column(name = "GET_TYPE")
+    private String getType;
+
+    /**
      * 优惠金额:
      */
     @Column(name = "COUPON_AMOUT")
@@ -125,7 +133,7 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
      * 使用日期
      */
     @Column(name = "BUSIN_DATE")
-    private LocalDate BusinDate;
+    private LocalDate businDate;
 
     /**
      * 级别：0-自定义 1-全局

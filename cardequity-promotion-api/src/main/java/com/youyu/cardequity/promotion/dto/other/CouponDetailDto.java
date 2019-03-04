@@ -40,6 +40,7 @@ public class CouponDetailDto {
 
     public CouponViewDto switchToView() {
         CouponViewDto dto = new CouponViewDto();
+        dto.setProductDetailShowFlag(CommonDict.IF_YES.getCode());
         if (productCouponDto != null) {
             BeanUtils.copyProperties(productCouponDto, dto);
             dto.setTargetFlag(CommonDict.FRONDEND_ALL.getCode());
@@ -62,6 +63,9 @@ public class CouponDetailDto {
             if (CouponType.TRANSFERFARE.getDictValue().equals(productCouponDto.getCouponType()) ||
                     CouponType.FREETRANSFERFARE.getDictValue().equals(productCouponDto.getCouponType()))
                 dto.setCouponViewType("1");
+            //转义展示的标识
+            if (CouponGetType.GRANT.getDictValue().equals(productCouponDto.getGetType()))
+                dto.setProductDetailShowFlag(CommonDict.IF_NO.getCode());
         }
 
         if (quotaRule != null) {

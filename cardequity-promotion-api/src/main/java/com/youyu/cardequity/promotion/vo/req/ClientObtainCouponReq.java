@@ -37,6 +37,9 @@ public class ClientObtainCouponReq {
     @ApiModelProperty(value = "活动编号:关联的活动编号,暂时不用")
     private String activityId;
 
+    @ApiModelProperty(value = "获取方式:0-自动 1-手动获取（默认值） 2-平台指定发放")
+    private String getType;
+
     @ApiModelProperty(value = "操作者：用于更新产生者或更新者")
     private String operator;
 }

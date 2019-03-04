@@ -54,6 +54,9 @@ public class ClientCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "委托方式:通过什么方式获取")
     private String entrustWay;
 
+    @ApiModelProperty(value = "获取方式:0-自动 1-收到 2-平台指定发放")
+    private String getType;
+
     @ApiModelProperty(value = "优惠金额:")
     private BigDecimal couponAmout;
 

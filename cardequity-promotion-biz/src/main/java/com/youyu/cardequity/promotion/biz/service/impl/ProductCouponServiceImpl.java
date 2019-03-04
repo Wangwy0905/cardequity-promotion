@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
+import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
@@ -264,12 +265,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (dto.getUseGeEndDateFlag() == null)
             dto.setUseGeEndDateFlag(UseGeEndDateFlag.NO.getDictValue());
 
-        if (dto.getUsedStage() == null)
+        if (StringUtil.isEmpty(dto.getUsedStage()))
             dto.setUsedStage(UsedStage.AfterPay.getDictValue());
 
-        if (dto.getGetStage() == null)
+        if (StringUtil.isEmpty(dto.getGetStage()))
             dto.setGetStage(UsedStage.Other.getDictValue());
 
+        if (StringUtil.isEmpty(dto.getGetType()))
+            dto.setGetType(CouponGetType.HANLD.getDictValue());
 
         if (dto.getAllowUseEndDate().compareTo(dto.getAllowUseBeginDate()) < 0) {
             result.setDesc("优惠券使用日期无效：起始值" + dto.getAllowUseBeginDate() + "；结束值" + dto.getAllowUseEndDate());
@@ -471,12 +474,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (dto.getUseGeEndDateFlag() == null)
             dto.setUseGeEndDateFlag(UseGeEndDateFlag.NO.getDictValue());
 
-        if (dto.getUsedStage() == null)
+        if (StringUtil.isEmpty(dto.getUsedStage()))
             dto.setUsedStage(UsedStage.AfterPay.getDictValue());
 
-        if (dto.getGetStage() == null)
+        if (StringUtil.isEmpty(dto.getGetStage()))
             dto.setGetStage(UsedStage.Other.getDictValue());
 
+        if (StringUtil.isEmpty(dto.getGetType()))
+            dto.setGetType(CouponGetType.HANLD.getDictValue());
 
         if (dto.getAllowUseEndDate().compareTo(dto.getAllowUseBeginDate()) < 0) {
             result.setDesc("优惠券使用日期无效：起始值" + dto.getAllowUseBeginDate() + "；结束值" + dto.getAllowUseEndDate());

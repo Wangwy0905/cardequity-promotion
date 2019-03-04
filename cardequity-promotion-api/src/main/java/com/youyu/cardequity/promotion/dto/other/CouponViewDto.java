@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.dto.other;
 
+import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
@@ -94,6 +95,9 @@ public class CouponViewDto {
     @ApiModelProperty(value = "门槛触发类型:0-按买入金额 1-按买入数量")
     private String triggerByType;
 
+    @ApiModelProperty(value = "商品详情展示标识:0-不展示 1-展示")
+    private String productDetailShowFlag;
+
     @ApiModelProperty(value = "优惠券涉及的商品")
     private List<BaseProductReq> productList;
 
@@ -109,6 +113,12 @@ public class CouponViewDto {
         BeanUtils.copyProperties(this, couponDto);
         couponDto.setLabelDto(labelDto);
         //couponDto.getLabelDto().setId(this.getCouponLable());
+
+        //***********获取方式:商品详情不展示的领取方式是发放的************
+        couponDto.setGetType(CouponGetType.HANLD.getDictValue());
+        if (CommonDict.IF_NO.getCode().equals(productDetailShowFlag))
+            couponDto.setGetType(CouponGetType.GRANT.getDictValue());
+
 
         //********适用对象转义*********
         couponDto.setClientTypeSet(CommonConstant.WILDCARD);

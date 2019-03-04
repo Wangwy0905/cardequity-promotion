@@ -118,6 +118,17 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //领取后存储的信息
         ClientCouponEntity entity = BeanPropertiesUtils.copyProperties(req, ClientCouponEntity.class);
 
+        //传参默认手动领取
+        if (StringUtil.isEmpty(req.getGetType())){
+            req.setGetType(CouponGetType.HANLD.getDictValue());
+        }
+        //数据库默认手动领取
+        if (StringUtil.isEmpty(entity.getGetType()) && !CouponGetType.HANLD.getDictValue().equals(req.getGetType())){
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("该券只能手动领取"));
+        }else if (!req.getGetType().equals(entity.getGetType())){
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("该券获取方式错误"));
+        }
+
         GetUseEnableCouponReq checkreq = BeanPropertiesUtils.copyProperties(req, GetUseEnableCouponReq.class);
         //如果需要校验相关联产品
         if (!CommonUtils.isEmptyorNull(req.getProductId())) {
@@ -212,6 +223,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         }
 
         //entity.setBusinDate(LocalDate.now());//使用时候才填入
+        entity.setGetType(coupon.getGetType());
         entity.setApplyProductFlag(coupon.getApplyProductFlag());
         entity.setCouponStrategyType(coupon.getCouponStrategyType());
         entity.setCouponShortDesc(coupon.getCouponShortDesc());
