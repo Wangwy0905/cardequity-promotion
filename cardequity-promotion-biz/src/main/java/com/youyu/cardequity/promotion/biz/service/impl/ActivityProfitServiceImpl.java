@@ -1220,9 +1220,13 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 for (ActivityProfitEntity dtoitem : entities) {
                     if (item.getActivityProfit().getId().equals(dtoitem.getId())) {
                         item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_COMMON);
-                        continue;
+                        break;
                     }
                 }
+                //如果是可抢的
+                if(CommonConstant.VIEW_ACTIVITYSTATUS_COMMON.equals(item.getActivityStatus()))
+                    continue;
+
                 item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
                 if (item.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
                         item.getActivityProfit().getAllowUseEndDate().isAfter(LocalDateTime.now())) {
