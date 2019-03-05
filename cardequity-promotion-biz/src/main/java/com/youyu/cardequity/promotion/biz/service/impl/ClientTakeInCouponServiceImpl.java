@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.promotion.biz.service.ActivityProfitService;
@@ -84,10 +85,10 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
             product.setPrice(product.getTotalAmount().divide(product.getAppCount(),4, RoundingMode.UP));
         }
         result.setActivities(useActivityRsps);
-        log.info(String.format("适用活动个数%d",useActivityRsps==null?0:useActivityRsps.size()));
+        log.info(String.format("适用活动个数%d,活动适用详情为：%s,活动处理后的商品详情为:%s",useActivityRsps==null?0:useActivityRsps.size(),JSONObject.toJSONString(useActivityRsps), JSONObject.toJSONString(innerReq.getProductList())));
         //在活动基础上计算优惠券
         List<UseCouponRsp> useCouponRsps = clientCouponService.combCouponRefProductDeal(innerReq);
-        log.info(String.format("适用优惠券个数%d",useCouponRsps==null?0:useCouponRsps.size()));
+        log.info(String.format("适用优惠券个数%d,适用用的优惠券详情为：%s",useCouponRsps==null?0:useCouponRsps.size(),JSONObject.toJSONString(useCouponRsps)));
         if (useCouponRsps != null) {
             for (UseCouponRsp useCouponRsp : useCouponRsps) {
                 //运费券
