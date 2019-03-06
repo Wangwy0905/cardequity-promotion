@@ -1204,6 +1204,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         ObtainCouponViewDto result = BeanPropertiesUtils.copyProperties(item, ObtainCouponViewDto.class);
         result.setUuid(item.getCouponId());
+        result.setObtainId(item.getId());
         result.setStageId(item.getStageId());
         result.setObtainState(CommonConstant.OBTAIN_STATE_YES);
         result.setStatus(CouponStatus.YES.getDictValue());

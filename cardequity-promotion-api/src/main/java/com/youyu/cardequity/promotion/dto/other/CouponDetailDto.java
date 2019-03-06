@@ -66,6 +66,7 @@ public class CouponDetailDto {
             //转义展示的标识
             if (CouponGetType.GRANT.getDictValue().equals(productCouponDto.getGetType()))
                 dto.setProductDetailShowFlag(CommonDict.IF_NO.getCode());
+
         }
 
         if (quotaRule != null) {
