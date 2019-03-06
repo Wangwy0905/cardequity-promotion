@@ -792,8 +792,10 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 for (OrderProductDetailDto item : req.getProductList()) {
                     dto = checkCouponForProduct(coupon, item.getProductId());
                     //该券不适用任何商品，则该券不能用
-                    if (dto.getSuccess())
+                    if (dto.getSuccess()) {
                         dto.setSuccess(true);
+                        break;
+                    }
                 }
             }
             if (!dto.getSuccess()) {
