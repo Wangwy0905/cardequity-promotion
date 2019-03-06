@@ -144,7 +144,7 @@
         </if>
         and if(length(a.APPLY_PRODUCT_FLAG), a.APPLY_PRODUCT_FLAG, '0') = '0')
         and EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT c where c.ACTIVITY_ID=#{activity.uuid,jdbcType=VARCHAR}
-                       and c.PRODUCT_ID=b.PRODUCT_ID and (c.SKU_ID is null or b.skuid is null or c.SKU_ID=b.skuid))
+                       and c.PRODUCT_ID=b.PRODUCT_ID and (c.SKU_ID is null or b.SKU_ID is null or c.SKU_ID=b.SKU_ID))
     </select>
 
 </mapper>
