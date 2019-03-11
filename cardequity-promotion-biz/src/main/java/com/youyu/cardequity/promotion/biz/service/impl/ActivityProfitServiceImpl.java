@@ -1144,7 +1144,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     }
                 }
                 if (isExist)
-                    break;
+                    continue;
                 ActivityDetailDto detail = combinationActivity(item);
                 detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
                 if (detail.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
@@ -1216,7 +1216,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     }
                 }
                 if (isExist)
-                    break;
+                    continue;
                 filterList.add(item);
             }
 
