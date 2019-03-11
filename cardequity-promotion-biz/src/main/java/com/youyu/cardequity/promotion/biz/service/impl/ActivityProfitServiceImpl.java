@@ -1134,15 +1134,17 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             });
 
-
-            List<ActivityProfitEntity> filterList = new ArrayList<>();
             for (ActivityProfitEntity item : listByCommon) {
+                boolean isExist = false;
                 //过滤已查询的有效的
                 for (ActivityDetailDto dtoitem : result) {
                     if (item.getId().equals(dtoitem.getActivityProfit().getId())) {
-                        continue;
+                        isExist=true;
+                        break;
                     }
                 }
+                if (isExist)
+                    break;
                 ActivityDetailDto detail = combinationActivity(item);
                 detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
                 if (detail.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
@@ -1152,7 +1154,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
                 }
 
-                boolean isExist = false;
+                isExist = false;
                 for (GroupProductDto groupItem : dtos) {
                     if (groupItem.getProductId().equals(detail.getProductList().get(0).getProductId())) {
                         isExist = true;
@@ -1178,6 +1180,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         } else {
             //先获取有效的
             List<ActivityProfitEntity> entities = activityProfitMapper.findValidPriceActivityByProduct("", "");
+            List<ActivityProfitEntity> filterList = new ArrayList<>();
+            //有效的抢购放在最开始
+            filterList.addAll(entities);
 
             BaseQryActivityReq innerReq = new BaseQryActivityReq();
             innerReq.setUpAndDownStatus(CouponStatus.YES.getDictValue());
@@ -1198,17 +1203,20 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             });
 
-            List<ActivityProfitEntity> filterList = new ArrayList<>();
-            //有效的抢购放在最开始
-            filterList.addAll(entities);
+
             //过滤有效的抢购
+            boolean isExist=false;
             for (ActivityProfitEntity item : listByCommon) {
+                isExist=false;
                 //过滤已查询的有效的
                 for (ActivityProfitEntity dtoitem : entities) {
                     if (item.getId().equals(dtoitem.getId())) {
-                        continue;
+                        isExist=true;
+                        break;
                     }
                 }
+                if (isExist)
+                    break;
                 filterList.add(item);
             }
 

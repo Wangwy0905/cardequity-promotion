@@ -33,23 +33,27 @@
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Amount,999999999)&gt;=999999999 or b.Max_Amount &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID))
         and (ifnull(b.Per_Date_Max_Count,999999999)&gt;=999999999 or b.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Count,999999999)&gt;=999999999 or b.Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID))
         Order by a.CREATE_TIME desc
     </select>
@@ -108,23 +112,27 @@
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Amount,999999999)&gt;=999999999 or b.Max_Amount &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID))
         and (ifnull(b.Per_Date_Max_Count,999999999)&gt;=999999999 or b.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Count,999999999)&gt;=999999999 or b.Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID))
         Order by a.CREATE_TIME desc
     </select>
@@ -202,23 +210,27 @@
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Amount,999999999)&gt;=999999999 or b.Max_Amount &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID))
         and (ifnull(b.Per_Date_Max_Count,999999999)&gt;=999999999 or b.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Count,999999999)&gt;=999999999 or b.Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID))
         Order by a.CREATE_TIME desc
     </select>
@@ -484,22 +496,26 @@
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
         and d.ACTIVITY_ID = a.UUID
+        and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.create_time &gt;= curdate()))
         and (ifnull(c.Max_Amount,999999999)&gt;=999999999 or c.Max_Amount &gt;
         (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
+        and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID))
         and (ifnull(c.Per_Date_Max_Count,999999999)&gt;=999999999 or c.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
+        and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID
         and d.create_time &gt;= curdate()))
         and (ifnull(c.Max_Count,999999999)&gt;=999999999 or c.Max_Count  &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
+        and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID))
         group by b.PRODUCT_ID
         order by max(a.UPDATE_TIME) desc
@@ -571,23 +587,27 @@
         (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID
         and d.create_time &gt;= curdate()))
         and (ifnull(c.Max_Amount,999999999)&gt;=999999999 or c.Max_Amount &gt;
         (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID))
         and (ifnull(c.Per_Date_Max_Count,999999999)&gt;=999999999 or c.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID
         and d.create_time &gt;= curdate()))
         and (ifnull(c.Max_Count,999999999)&gt;=999999999 or c.Max_Count  &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID))
     </select>
 
@@ -646,23 +666,27 @@
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Amount,999999999)&gt;=999999999 or b.Max_Amount &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID))
         and (ifnull(b.Per_Date_Max_Count,999999999)&gt;=999999999 or b.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID
         and c.create_time &gt;= curdate()))
         and (ifnull(b.Max_Count,999999999)&gt;=999999999 or b.Max_Count &gt;
         (select ifnull(sum(ifnull(c.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c
         where BUSIN_CODE = '5003'
+        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
         and c.ACTIVITY_ID = a.UUID))
         Order by a.CREATE_TIME desc
     </select>
