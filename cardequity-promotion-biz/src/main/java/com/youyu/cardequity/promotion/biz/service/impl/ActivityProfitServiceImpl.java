@@ -1224,7 +1224,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     }
                 }
                 //如果是可抢的
-                if(CommonConstant.VIEW_ACTIVITYSTATUS_COMMON.equals(item.getActivityStatus()))
+                if (CommonConstant.VIEW_ACTIVITYSTATUS_COMMON.equals(item.getActivityStatus()))
                     continue;
 
                 item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
@@ -1251,6 +1251,28 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             req = new OperatReq();
         Date lastTime = activityProfitMapper.findValidPriceLastTime(req);
         return lastTime;
+    }
+
+
+    /**
+     * 【App】查询商品相关的特价活动
+     *
+     * @param req 商品列表
+     * @return 活动详情列表
+     */
+    @Override
+    public List<BasePriceActivityRsp> findSkuAboutPriceActivity(BatchBaseProductReq req) {
+        if (req == null || req.getProductList() == null || req.getProductList().isEmpty())
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("必须指定商品SKUID"));
+        List<String> idList = new ArrayList<>();
+        for (BaseProductReq sku : req.getProductList()) {
+            if (StringUtil.isEmpty(sku.getSkuId()))
+                idList.add(sku.getSkuId());
+        }
+
+        //查询已上架和有效的
+        List<BasePriceActivityRsp> result = activityProfitMapper.findPriceActivityByProductIdsInQuota(idList, "1", "1");
+        return result;
     }
 
 }

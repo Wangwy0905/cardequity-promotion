@@ -217,6 +217,16 @@ public interface ActivityProfitMapper extends YyMapper<ActivityProfitEntity> {
                                                                 @Param("skuId") String skuId,
                                                                 @Param("activityId") String activityId);
 
+
+    /**
+     * 【后台+App】查询【有效期内、上架的】特价活动信息通过商品id
+     *
+     * @param skuId
+     * @return
+     */
+    List<BasePriceActivityRsp> findPriceActivityByProductIdsInQuota(@Param("idList") List<String> idList,
+                                                       @Param("termStatus") String termStatus,
+                                                       @Param("status") String status);
 }
 
 

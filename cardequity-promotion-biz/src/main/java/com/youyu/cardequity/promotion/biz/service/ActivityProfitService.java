@@ -156,6 +156,13 @@ public interface ActivityProfitService extends IService<ActivityProfitDto, Activ
      * 查询抢购商品最后结束时间
      */
      Date findFlashSalePriceActivityEndTime(OperatReq req);
+
+    /**
+     * 查询指定商品集合对应的有效的额度内的特价活动
+     * @param req
+     * @return
+     */
+    List<BasePriceActivityRsp> findSkuAboutPriceActivity(BatchBaseProductReq req);
 }
 
 

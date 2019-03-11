@@ -225,4 +225,12 @@ public interface ActivityProfitApi {
     Result<CommonBoolDto<Integer>> downActivity(@RequestBody BatchBaseActivityReq req);
 
 
+    /**
+     * 【APP】查询指定商品集合对应的有效的额度内的特价活动
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【APP】查询指定商品集合对应的有效的额度内的特价活动")
+    @PostMapping(path = "/findSkuAboutPriceActivity")
+     Result<List<BasePriceActivityRsp>> findSkuAboutPriceActivity(@RequestBody BatchBaseProductReq req);
 }

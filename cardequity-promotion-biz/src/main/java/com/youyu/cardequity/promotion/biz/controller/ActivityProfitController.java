@@ -280,5 +280,16 @@ public class ActivityProfitController implements ActivityProfitApi {
 
     }
 
+    /**
+     * 【APP】查询指定商品集合对应的有效的额度内的特价活动
+     * @param req
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "【APP】查询指定商品集合对应的有效的额度内的特价活动")
+    @PostMapping(path = "/findSkuAboutPriceActivity")
+    public Result<List<BasePriceActivityRsp>> findSkuAboutPriceActivity(@RequestBody BatchBaseProductReq req){
+        return Result.ok(activityProfitService.findSkuAboutPriceActivity(req));
+    }
 
 }
