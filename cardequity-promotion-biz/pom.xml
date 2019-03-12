@@ -72,6 +72,10 @@
         </dependency>
         <!--公用的项目 -->
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.youyu.cardequity</groupId>
             <artifactId>cardequity-common-spring</artifactId>
             <version>0.0.1-SNAPSHOT</version>

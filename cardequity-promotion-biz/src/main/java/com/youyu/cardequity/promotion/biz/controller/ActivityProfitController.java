@@ -178,7 +178,7 @@ public class ActivityProfitController implements ActivityProfitApi {
      * @return 活动详情列表
      */
     @Override
-    @ApiOperation(value = "【App】【有效期内、已上架、有额度的】查找商品相关活动")
+    @ApiOperation(value = "【App】【有效期内、已上架】查找商品相关活动")
     @PostMapping(path = "/findProductAboutActivity")
     public Result<List<ActivityDetailDto>> findProductAboutActivity(@RequestBody BaseProductReq req) {
         return Result.ok(activityProfitService.findProductAboutActivity(req));

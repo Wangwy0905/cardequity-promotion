@@ -823,7 +823,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<ProductCouponEntity> entities = null;
         List<ProductCouponEntity> couponList = new ArrayList<>();
         if (StringUtil.isEmpty(req.getContainsCouponType()))
-            req.setContainsCouponType("01");
+            req.setContainsCouponType(CouponType.MONEYBAG.getDictValue()+CouponType.COUPON.getDictValue());
 
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())){
             entities = productCouponMapper.findInQuotaCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType());
