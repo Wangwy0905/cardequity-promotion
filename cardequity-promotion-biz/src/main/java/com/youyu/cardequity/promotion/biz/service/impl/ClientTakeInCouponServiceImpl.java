@@ -156,7 +156,7 @@ public class ClientTakeInCouponServiceImpl extends AbstractService<String, Clien
 
 
     /**
-     * 获取订单适用的所有优惠券
+     * 获取订单适用的所有优惠券-不考虑大鱼券小鱼券之间冲突关系
      *
      * @param req
      * @return

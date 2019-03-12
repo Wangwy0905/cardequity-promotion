@@ -311,8 +311,11 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         List<ClientCouponEntity> enableCouponList = new ArrayList<>();
         log.info("订单指定使用优惠券列表:{}", JSONObject.toJSONString(req.getObtainCouponList()));
         //如果是指定了使用的券，检验后用使用的券
-        if (req.getObtainCouponList() != null && req.getObtainCouponList().size() > 0) {
-            enableCouponList = clientCouponMapper.findClientCouponByIds(req.getClientId(), req.getObtainCouponList());
+        if (req.getObtainCouponList() != null) {
+            //传空数组标识客户什么券都不想用
+            if (req.getObtainCouponList().size() > 0) {
+                enableCouponList = clientCouponMapper.findClientCouponByIds(req.getClientId(), req.getObtainCouponList());
+            }
         } else {
             //获取已领取的有效优惠券：排除过期，已使用、使用中的券，按优惠金额已排序后的
             enableCouponList = clientCouponMapper.findClientCoupon(req.getClientId(), "1");
