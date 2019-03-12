@@ -776,7 +776,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //a.客户属性校验
         // 客户类型是否允许领取
         if (!CommonUtils.isEmptyIgnoreOrWildcardOrContains(coupon.getClientTypeSet(),
-                req.getClientId())) {
+                req.getClientType())) {
 
             dto.setSuccess(false);
             dto.setDesc(COUPON_NOT_ALLOW_CLIENTTYPE.getFormatDesc(req.getClientType()));

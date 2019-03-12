@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.biz.utils;
 
+import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 
@@ -60,6 +61,7 @@ public class CommonUtils {
         if (target == null ||
                 source == null ||
                 source.equals(CommonConstant.WILDCARD) ||
+                StringUtil.containsAny(source,target) ||
                 source.contains(target)) {
             return true;
         }
