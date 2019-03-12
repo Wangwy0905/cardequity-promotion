@@ -593,27 +593,27 @@
         (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
-        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
+        and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID
         and d.create_time &gt;= curdate()))
         and (ifnull(c.Max_Amount,999999999)&gt;=999999999 or c.Max_Amount &gt;
         (select ifnull(sum(ifnull(d.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
-        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
+        and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID))
         and (ifnull(c.Per_Date_Max_Count,999999999)&gt;=999999999 or c.Per_Date_Max_Count &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
-        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
+        and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID
         and d.create_time &gt;= curdate()))
         and (ifnull(c.Max_Count,999999999)&gt;=999999999 or c.Max_Count  &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
-        and if(length(c.IS_ENABLE),c.IS_ENABLE,'1') = '1'
+        and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID))
     </select>
 
