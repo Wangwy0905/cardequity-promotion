@@ -110,6 +110,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     continue;
                 }
             }
+            //商品详情和商品列表的需要排除掉运费券
+            if (!StringUtil.isEmpty(qryProfitCommonReq.getProductId())){
+                if (CouponType.TRANSFERFARE.getDictValue().equals(item.getCouponType()) || CouponType.FREETRANSFERFARE.getDictValue().equals(item.getCouponType()))
+                    continue;
+            }
 
             //查询子券信息
             List<CouponStageRuleEntity> stageList = couponStageRuleMapper.findStageByCouponId(item.getId());
