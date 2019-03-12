@@ -13,7 +13,7 @@ public class QueueConfig {
     /**
      * 订单优惠券(解冻)消息:Queue
      */
-    @Value("${rabbit.orderCouponQueue}")
+    @Value("${rabbit.orderCouponQueue:rabbit_order_coupon_queue}")
     private String orderCouponQueue;
 
     /**
