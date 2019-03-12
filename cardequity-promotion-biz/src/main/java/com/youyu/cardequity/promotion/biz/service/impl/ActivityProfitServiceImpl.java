@@ -1117,10 +1117,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 return result;
             BaseQryActivityReq innerReq = new BaseQryActivityReq();
             innerReq.setUpAndDownStatus(CouponStatus.YES.getDictValue());
+            innerReq.setStatus("1");
             innerReq.setActivityCouponType(ActivityCouponType.PRICE.getDictValue());
             List<ActivityProfitEntity> listByCommon = activityProfitMapper.findActivityListByCommon(innerReq);
             //有效期无额度的>未到期的>过期的
-            Collections.sort(listByCommon, new Comparator<ActivityProfitEntity>() {
+            /*Collections.sort(listByCommon, new Comparator<ActivityProfitEntity>() {
                 @Override
                 public int compare(ActivityProfitEntity entity1, ActivityProfitEntity entity2) {
                     //有效期内排最前
@@ -1132,7 +1133,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                         return 1;
                     return 0;
                 }
-            });
+            });*/
 
             for (ActivityProfitEntity item : listByCommon) {
                 boolean isExist = false;
@@ -1146,10 +1147,9 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 if (isExist)
                     continue;
                 ActivityDetailDto detail = combinationActivity(item);
-                detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
-                if (detail.getActivityProfit().getAllowUseBeginDate().isBefore(LocalDateTime.now()) &&
-                        detail.getActivityProfit().getAllowUseEndDate().isAfter(LocalDateTime.now())) {
-                    detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
+                detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
+                if (detail.getActivityProfit().getAllowUseBeginDate().isAfter(LocalDateTime.now()) ) {
+                    detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
                 } else if (detail.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())) {
                     detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
                 }

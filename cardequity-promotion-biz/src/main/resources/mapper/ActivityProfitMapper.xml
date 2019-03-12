@@ -328,6 +328,12 @@
         <if test='"2"==commonQry.status'>
             and a.ALLOW_USE_END_DATE &lt;sysdate()
         </if>
+        <if test='"3"==commonQry.status'>
+            and a.ALLOW_USE_END_DATE &gt;sysdate()
+        </if>
+        <if test='"4"==commonQry.status'>
+            and a.ALLOW_USE_BEGIN_DATE &gt;sysdate()
+        </if>
         <if test="commonQry.activityCouponType!=null and commonQry.activityCouponType!=''">
             and instr(#{commonQry.activityCouponType,jdbcType=VARCHAR},a.ACTIVITY_COUPON_TYPE) &gt;0
         </if>

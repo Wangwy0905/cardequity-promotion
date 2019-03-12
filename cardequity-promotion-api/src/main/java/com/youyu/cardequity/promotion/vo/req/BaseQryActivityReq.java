@@ -14,7 +14,7 @@ public class BaseQryActivityReq {
     @ApiModelProperty(value = "上下架状态:0-下架 1-上架")
     private String upAndDownStatus;
 
-    @ApiModelProperty(value = "促销状态:0-未开始 1-活动中 2-已结束")
+    @ApiModelProperty(value = "促销状态:0-未开始 1-活动中 2-已结束 3-未过期 4-未开始")
     private String status;
 
     @ApiModelProperty(value = "优惠券名称：可模糊")
