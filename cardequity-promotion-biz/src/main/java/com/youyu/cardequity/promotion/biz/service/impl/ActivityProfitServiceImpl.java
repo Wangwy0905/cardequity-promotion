@@ -1287,10 +1287,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         List<String> idList = new ArrayList<>();
         for (BaseProductReq sku : req.getProductList()) {
             //有sku则以sku为基础查询
-            if (StringUtil.isEmpty(sku.getSkuId()))
+            if (!StringUtil.isEmpty(sku.getSkuId()))
                 idList.add(sku.getSkuId());
             else {
-                if (StringUtil.isEmpty(sku.getProductId()))
+                if (!StringUtil.isEmpty(sku.getProductId()))
                     productList.add(sku.getProductId());
             }
         }
