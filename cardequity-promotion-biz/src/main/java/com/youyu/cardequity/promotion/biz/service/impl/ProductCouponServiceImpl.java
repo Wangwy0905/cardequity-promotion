@@ -1055,7 +1055,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
 
     /**
-     * 查询H5首页权益优惠券
+     * 查询H5首页会员专享权益优惠券
      *
      * @param req 查询请求体
      * @return
@@ -1071,20 +1071,26 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         Collections.sort(enableGetCoupon, new Comparator<CouponDetailDto>() {
             @Override
             public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
+                //券类型升序排列
                 int sortresult = entity1.getProductCouponDto().getCouponType().compareTo(entity2.getProductCouponDto().getCouponType());
                 if (sortresult != 0)
                     return sortresult;
+                //券类型降序排列
                 sortresult = entity2.getProductCouponDto().getCouponLevel().compareTo(entity1.getProductCouponDto().getCouponLevel());
                 if (sortresult != 0)
                     return sortresult;
+                //券优惠金额降序排列
                 return entity2.getProductCouponDto().getProfitValue().compareTo(entity1.getProductCouponDto().getProfitValue());
             }
         });
 
         int t = enableGetCoupon.size() >= retInt ? retInt : enableGetCoupon.size();
         for (int i = 0; i < t; i++) {
-            ObtainCouponViewDto item = new ObtainCouponViewDto();
             ProductCouponDto dto = enableGetCoupon.get(i).getProductCouponDto();
+            if (!ClientType.MEMBER.getDictValue().equals(dto.getClientTypeSet()))
+                continue;
+
+            ObtainCouponViewDto item = new ObtainCouponViewDto();
             BeanPropertiesUtils.copyProperties(enableGetCoupon.get(i).switchToView(), item);
             item.setLabelDto(dto.getLabelDto());
             item.setObtainState(CommonConstant.OBTAIN_STATE_NO);
@@ -1108,6 +1114,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<ObtainCouponViewDto> clientCoupon = clientCouponService.findClientCoupon(innerReq);
         List<ObtainCouponViewDto> resultDto = new ArrayList<>();
         for (ObtainCouponViewDto item : clientCoupon) {
+            if (!CommonDict.FRONDEND_MEMBER.getCode().equals(item.getTargetFlag()))
+                continue;
             if (CommonConstant.OBTAIN_STATE_OVERDUE.equals(item.getObtainState()) ||
                     CommonConstant.OBTAIN_STATE_UNSTART.equals(item.getObtainState())) {
                 continue;
@@ -1120,12 +1128,15 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         Collections.sort(resultDto, new Comparator<ObtainCouponViewDto>() {
             @Override
             public int compare(ObtainCouponViewDto entity1, ObtainCouponViewDto entity2) {//如果是折扣、任选、优惠价从小到大
+                //券类型升序排列
                 int sortresult = entity1.getCouponViewType().compareTo(entity2.getCouponViewType());
                 if (sortresult != 0)
                     return sortresult;
+                //券类型降序排列
                 sortresult = entity2.getCouponLevel().compareTo(entity1.getCouponLevel());
                 if (sortresult != 0)
                     return sortresult;
+                //券优惠金额降序排列
                 return entity2.getProfitValue().compareTo(entity1.getProfitValue());
             }
         });
@@ -1140,7 +1151,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
 
     /**
-     * 查询H5指定月可领优惠券
+     * 查询H5指定月会员专享可领优惠券
      *
      * @param req 查询请求体
      * @return
@@ -1169,6 +1180,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
             });
             for (CouponDetailDto item : enableGetCoupons) {
+                if (!ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()))
+                    continue;
                 ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
                 viewDto.setProductList(item.getProductList());
                 viewDto.setLabelDto(item.getProductCouponDto().getLabelDto());
@@ -1199,6 +1212,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             });
             List<FullClientCouponRsp> fullClientCouponRsps = clientCouponService.combClientFullObtainCouponList(obtainCoupon);
             for (FullClientCouponRsp item : fullClientCouponRsps) {
+                if (!ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet()))
+                    continue;
                 ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.getCoupon().switchToView(), ObtainCouponViewDto.class);
                 viewDto.setProductList(item.getCoupon().getProductList());
                 viewDto.setLabelDto(item.getCoupon().getProductCouponDto().getLabelDto());
@@ -1228,6 +1243,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             });
             List<CouponDetailDto> detailDtos = combinationCoupon(nextMonthEntities);
             for (CouponDetailDto item : detailDtos) {
+                if (!ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()))
+                    continue;
                 ObtainCouponViewDto obtainDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
                 obtainDto.setProductList(item.getProductList());
                 obtainDto.setLabelDto(item.getProductCouponDto().getLabelDto());

@@ -25,16 +25,16 @@ public class ClientCoupStatisticsQuotaDto {
     @ApiModelProperty(value = "指定统计的券")
     private String couponId;
 
-    @ApiModelProperty(value = "客户当日优惠券额度")
+    @ApiModelProperty(value = "统计的客户当日使用优惠券额度：")
     private BigDecimal clientPerDateAmount;
 
-    @ApiModelProperty(value = "客户优惠券总额度")
+    @ApiModelProperty(value = "客户优惠券使用总额度")
     private BigDecimal clientAmount;
 
-    @ApiModelProperty(value = "客户当日优惠券数量")
+    @ApiModelProperty(value = "客户当日使用优惠券数量")
     private BigDecimal clientPerDateCount;
 
-    @ApiModelProperty(value = "客户优惠券总数量")
+    @ApiModelProperty(value = "客户优惠券使用总数量")
     private BigDecimal clientCount;
 
     @ApiModelProperty(value = "是否已统计")

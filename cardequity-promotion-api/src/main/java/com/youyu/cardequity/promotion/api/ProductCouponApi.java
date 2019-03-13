@@ -46,7 +46,7 @@ public interface ProductCouponApi {
      * @param req 查询请求体
      * @return
      */
-    @ApiOperation(value = "【H5】查询H5首页权益优惠券")
+    @ApiOperation(value = "【H5】查询H5首页会员专享权益优惠券")
     @PostMapping(path = "/findFirstPageVipCoupon")
     Result<List<ObtainCouponViewDto>> findFirstPageVipCoupon(@RequestBody PageQryProfitCommonReq req);
 
@@ -56,7 +56,7 @@ public interface ProductCouponApi {
      * @param req 查询请求体
      * @return
      */
-    @ApiOperation(value = "【H5】查询H5首页权益优惠券")
+    @ApiOperation(value = "【H5】查询H5首页会员专享“更多”权益优惠券")
     @PostMapping(path = "/findEnableObtainCouponByMonth")
     Result<List<ObtainCouponViewDto>> findEnableObtainCouponByMonth(@RequestBody FindEnableObtainCouponByMonthReq req);
 

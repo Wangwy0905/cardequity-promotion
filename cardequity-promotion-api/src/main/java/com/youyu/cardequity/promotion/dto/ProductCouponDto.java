@@ -46,7 +46,7 @@ public class ProductCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "说明")
     private String couponDesc;
 
-    @ApiModelProperty(value = "级别：0-自动义 1-全局")
+    @ApiModelProperty(value = "级别：0-小鱼券 1-大鱼券")
     private String couponLevel;
 
     @ApiModelProperty(value = "专属客户类型集合:订单涉及门槛属性：只有这些这些客户类型才提供优惠。多种客户类型用逗号相隔，为*标识所有")

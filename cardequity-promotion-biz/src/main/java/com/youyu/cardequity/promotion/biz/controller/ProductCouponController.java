@@ -53,7 +53,7 @@ public class ProductCouponController implements ProductCouponApi {
      * @return
      */
     @Override
-    @ApiOperation(value = "【H5】查询H5首页权益优惠券")
+    @ApiOperation(value = "【H5】查询H5首页会员专享权益优惠券")
     @PostMapping(path = "/findFirstPageVipCoupon")
     public Result<List<ObtainCouponViewDto>> findFirstPageVipCoupon(@RequestBody PageQryProfitCommonReq req) {
         return Result.ok(productCouponService.findFirstPageVipCoupon(req));
@@ -66,7 +66,7 @@ public class ProductCouponController implements ProductCouponApi {
      * @return
      */
     @Override
-    @ApiOperation(value = "【H5】查询H5首页权益优惠券")
+    @ApiOperation(value = "【H5】查询H5首页会员专享权益优惠券")
     @PostMapping(path = "/findEnableObtainCouponByMonth")
     public Result<List<ObtainCouponViewDto>> findEnableObtainCouponByMonth(@RequestBody FindEnableObtainCouponByMonthReq req){
         return Result.ok(productCouponService.findEnableObtainCouponByMonth(req));
