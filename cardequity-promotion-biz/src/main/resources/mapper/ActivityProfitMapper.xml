@@ -197,14 +197,14 @@
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
         AND ACTIVITY_COUPON_TYPE='2'
         <if test="productId!=null and productId!=''">
-           and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
-              EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
-                       b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
-                    <if test="skuId!=null and skuId!=''">
-                       and b.SKU_ID=#{skuId,jdbcType=VARCHAR}
-                    </if>
-                   )
-              )
+            and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
+            EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b where
+            b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+            <if test="skuId!=null and skuId!=''">
+                and b.SKU_ID=#{skuId,jdbcType=VARCHAR}
+            </if>
+            )
+            )
         </if>
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)&gt;=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
@@ -343,11 +343,11 @@
         <if test="commonQry.productId!=null and commonQry.productId!=''">
             and( a.APPLY_PRODUCT_FLAG='1' or
             exists(select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID = a.UUID
-                and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR}
-                <if test="commonQry.skuId!=null and commonQry.skuId!=''">
+            and b.PRODUCT_ID =#{commonQry.productId,jdbcType=VARCHAR}
+            <if test="commonQry.skuId!=null and commonQry.skuId!=''">
                 and b.SKU_ID =#{commonQry.skuId,jdbcType=VARCHAR}
-                </if>
-                 )
+            </if>
+            )
             )
         </if>
         Order by a.CREATE_TIME desc
@@ -395,11 +395,11 @@
         <if test="productId!=null and productId!=''">
             and( a.APPLY_PRODUCT_FLAG='1' or
             exists(select 1 from TB_ACTIVITY_REF_PRODUCT b where b.ACTIVITY_ID = a.UUID
-                 and b.PRODUCT_ID =#{productId,jdbcType=VARCHAR}
-               <if test="skuId!=null and skuId!=''">
+            and b.PRODUCT_ID =#{productId,jdbcType=VARCHAR}
+            <if test="skuId!=null and skuId!=''">
                 and b.SKU_ID =#{skuId,jdbcType=VARCHAR}
-                </if>
-                 )
+            </if>
+            )
             )
         </if>
         group by ACTIVITY_COUPON_TYPE
@@ -471,7 +471,8 @@
     </select>
 
     <select id="findLeastPriceProductActivity"
-            resultType="com.youyu.cardequity.promotion.dto.other.GroupProductDto" parameterType="com.youyu.cardequity.promotion.vo.req.OperatQryReq">
+            resultType="com.youyu.cardequity.promotion.dto.other.GroupProductDto"
+            parameterType="com.youyu.cardequity.promotion.vo.req.OperatQryReq">
         select b.PRODUCT_ID as productId,max(a.UPDATE_TIME) as lastTime
         from TB_ACTIVITY_PROFIT a
         left join TB_ACTIVITY_REF_PRODUCT b on a.UUID = b.ACTIVITY_ID AND if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
@@ -517,7 +518,7 @@
         and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID
         and d.create_time &gt;= curdate()))
-        and (ifnull(c.Max_Count,999999999)&gt;=999999999 or c.Max_Count  &gt;
+        and (ifnull(c.Max_Count,999999999)&gt;=999999999 or c.Max_Count &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
@@ -564,7 +565,8 @@
         Order by a.CREATE_TIME desc
     </select>
 
-    <select id="findValidPriceLastTime" resultType="date" parameterType="com.youyu.cardequity.promotion.vo.req.OperatReq">
+    <select id="findValidPriceLastTime" resultType="date"
+            parameterType="com.youyu.cardequity.promotion.vo.req.OperatReq">
         select max(a.ALLOW_USE_END_DATE) as lastTime
         from TB_ACTIVITY_PROFIT a
         left join TB_ACTIVITY_QUOTA_RULE c on a.UUID = c.ACTIVITY_ID and if(length(c.IS_ENABLE), c.IS_ENABLE,'1')= '1'
@@ -609,7 +611,7 @@
         and if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         and d.ACTIVITY_ID = a.UUID
         and d.create_time &gt;= curdate()))
-        and (ifnull(c.Max_Count,999999999)&gt;=999999999 or c.Max_Count  &gt;
+        and (ifnull(c.Max_Count,999999999)&gt;=999999999 or c.Max_Count &gt;
         (select ifnull(sum(ifnull(d.Product_Count, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY d
         where BUSIN_CODE = '5003'
@@ -628,9 +630,9 @@
         </if>
         and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
         EXISTS (select 1 from TB_ACTIVITY_REF_PRODUCT b
-            where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
-            and b.SKU_ID is null
-           )
+        where b.ACTIVITY_ID=a.UUID and b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}
+        and b.SKU_ID is null
+        )
         )
         Order by a.CREATE_TIME desc
     </select>
@@ -638,12 +640,13 @@
 
     <select id="findPriceActivityByProductIdsInQuota"
             resultType="com.youyu.cardequity.promotion.vo.rsp.BasePriceActivityRsp">
-        select d.PRODUCT_ID as productId,d.SKU_ID as skuId,a.PROFIT_VALUE as price,a.STATUS as status,b.MAX_COUNT as maxCount,a.UUID as id,
-        CASE WHEN  a.ALLOW_USE_END_DATE &lt;sysdate() THEN '2'
+        select d.PRODUCT_ID as productId,d.SKU_ID as skuId,a.PROFIT_VALUE as price,a.STATUS as status,b.MAX_COUNT as
+        maxCount,a.UUID as id,
+        CASE WHEN a.ALLOW_USE_END_DATE &lt;sysdate() THEN '2'
         WHEN a.ALLOW_USE_BEGIN_DATE &gt;sysdate() THEN '3'
         ELSE '0' END AS activityStatus
         from TB_ACTIVITY_PROFIT a
-        LEFT JOIN TB_ACTIVITY_REF_PRODUCT d ON  d.ACTIVITY_ID=a.UUID AND if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
+        LEFT JOIN TB_ACTIVITY_REF_PRODUCT d ON d.ACTIVITY_ID=a.UUID AND if(length(d.IS_ENABLE),d.IS_ENABLE,'1') = '1'
         LEFT JOIN TB_ACTIVITY_QUOTA_RULE b ON b.ACTIVITY_ID=a.UUID AND if(length(b.IS_ENABLE),b.IS_ENABLE,'1') = '1'
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.ACTIVITY_COUPON_TYPE='2'
@@ -663,11 +666,27 @@
         <if test='"3"==termStatus'>
             and a.ALLOW_USE_END_DATE &gt;sysdate()
         </if>
-        and d.SKU_ID in
-        <foreach collection="idList" item="idstr" index="index"
-                 open="(" close=")" separator=",">
-            #{idstr}
-        </foreach>
+        <if test="productList!=null and product.size() > 0 or idList!=null and idList.size() > 0">
+            and (
+            <if test="productList!=null and product.size() > 0">
+                d.PRODUCT_ID in
+                <foreach collection="productList" item="product" index="index"
+                         open="(" close=")" separator=",">
+                    #{product}
+                </foreach>
+            </if>
+            <if test="idList!=null and idList.size() > 0">
+                <if test="productList!=null and product.size() > 0">
+                    or
+                </if>
+                 d.SKU_ID in
+                <foreach collection="idList" item="idstr" index="index"
+                         open="(" close=")" separator=",">
+                    #{idstr}
+                </foreach>
+            </if>
+            )
+        </if>
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)&gt;=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(c.Profit_Value, 0)),0)
         from TB_CLIENT_TAKE_IN_ACTIVITY c

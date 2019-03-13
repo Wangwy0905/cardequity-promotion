@@ -1270,14 +1270,20 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
     public List<BasePriceActivityRsp> findSkuAboutPriceActivity(BatchBaseProductReq req) {
         if (req == null || req.getProductList() == null || req.getProductList().isEmpty())
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("必须指定商品SKUID"));
+        List<String> productList = new ArrayList<>();
         List<String> idList = new ArrayList<>();
         for (BaseProductReq sku : req.getProductList()) {
+            //有sku则以sku为基础查询
             if (StringUtil.isEmpty(sku.getSkuId()))
                 idList.add(sku.getSkuId());
+            else{
+                if (StringUtil.isEmpty(sku.getProductId()))
+                    productList.add(sku.getProductId());
+            }
         }
 
         //查询已上架和有效的
-        List<BasePriceActivityRsp> result = activityProfitMapper.findPriceActivityByProductIdsInQuota(idList, "1", "1");
+        List<BasePriceActivityRsp> result = activityProfitMapper.findPriceActivityByProductIdsInQuota(productList,idList, "1", "1");
         return result;
     }
 

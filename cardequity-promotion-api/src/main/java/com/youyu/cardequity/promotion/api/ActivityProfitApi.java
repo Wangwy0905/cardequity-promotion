@@ -88,7 +88,7 @@ public interface ActivityProfitApi {
      * @param req
      * @return
      */
-    @ApiOperation(value = "【APP】查询指定商品集合对应的有效的额度内的特价活动")
+    @ApiOperation(value = "【APP】查询指定商品集合对应的有效的额度内的特价活动,当通过skuid查询时最好不要设置BatchBaseProductReq.productList(i).productId直接传空查询效率更高")
     @PostMapping(path = "/findSkuAboutPriceActivity")
     Result<List<BasePriceActivityRsp>> findSkuAboutPriceActivity(@RequestBody BatchBaseProductReq req);
 
