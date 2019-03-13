@@ -259,6 +259,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 profitEntity.setActivityLable(profit.getLabelDto().getId());
             }
             profitEntity.setIsEnable(CommonDict.IF_YES.getCode());
+            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
+                //特价模板
+                if (StringUtil.isEmpty(item.getProductList().get(0).getSkuId())) {
+                    profitEntity.setIsEnable(CommonDict.IF_NO.getCode());
+                }
+            }
             profitEntity.setUpdateAuthor(req.getOperator());
             profitEntity.setCreateAuthor(req.getOperator());
             activityList.add(profitEntity);
@@ -467,6 +473,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             }
             profitEntity.setUpdateAuthor(req.getOperator());
             profitEntity.setIsEnable(CommonDict.IF_YES.getCode());
+            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
+                //特价模板
+                if (StringUtil.isEmpty(item.getProductList().get(0).getSkuId())) {
+                    profitEntity.setIsEnable(CommonDict.IF_NO.getCode());
+                }
+            }
             activityList.add(profitEntity);
 
             ActivityQuotaRuleDto quotaRule = item.getActivityQuotaRule();
@@ -748,6 +760,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
      * @param req      获取可用活动优惠券请求体
      * @return 返回是否校验成功
      */
+
     private CommonBoolDto checkActivityBase(ActivityProfitEntity activity,
                                             GetUseEnableCouponReq req) {
         CommonBoolDto dto = new CommonBoolDto(true);
@@ -1140,7 +1153,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 //过滤已查询的有效的
                 for (ActivityDetailDto dtoitem : result) {
                     if (item.getId().equals(dtoitem.getActivityProfit().getId())) {
-                        isExist=true;
+                        isExist = true;
                         break;
                     }
                 }
@@ -1148,7 +1161,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     continue;
                 ActivityDetailDto detail = combinationActivity(item);
                 detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
-                if (detail.getActivityProfit().getAllowUseBeginDate().isAfter(LocalDateTime.now()) ) {
+                if (detail.getActivityProfit().getAllowUseBeginDate().isAfter(LocalDateTime.now())) {
                     detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
                 } else if (detail.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())) {
                     detail.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
@@ -1206,13 +1219,13 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
 
             //过滤有效的抢购
-            boolean isExist=false;
+            boolean isExist = false;
             for (ActivityProfitEntity item : listByCommon) {
-                isExist=false;
+                isExist = false;
                 //过滤已查询的有效的
                 for (ActivityProfitEntity dtoitem : entities) {
                     if (item.getId().equals(dtoitem.getId())) {
-                        isExist=true;
+                        isExist = true;
                         break;
                     }
                 }
@@ -1237,7 +1250,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     continue;
 
                 item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
-                if (item.getActivityProfit().getAllowUseBeginDate().isAfter(LocalDateTime.now()) ) {
+                if (item.getActivityProfit().getAllowUseBeginDate().isAfter(LocalDateTime.now())) {
                     item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
                 } else if (item.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())) {
                     item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
@@ -1276,14 +1289,14 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //有sku则以sku为基础查询
             if (StringUtil.isEmpty(sku.getSkuId()))
                 idList.add(sku.getSkuId());
-            else{
+            else {
                 if (StringUtil.isEmpty(sku.getProductId()))
                     productList.add(sku.getProductId());
             }
         }
 
         //查询已上架和有效的
-        List<BasePriceActivityRsp> result = activityProfitMapper.findPriceActivityByProductIdsInQuota(productList,idList, "1", "1");
+        List<BasePriceActivityRsp> result = activityProfitMapper.findPriceActivityByProductIdsInQuota(productList, idList, "1", "1");
         return result;
     }
 
