@@ -666,9 +666,9 @@
         <if test='"3"==termStatus'>
             and a.ALLOW_USE_END_DATE &gt;sysdate()
         </if>
-        <if test="productList!=null and product.size() > 0 or idList!=null and idList.size() > 0">
+        <if test="productList!=null and productList.size() > 0 or idList!=null and idList.size() > 0">
             and (
-            <if test="productList!=null and product.size() > 0">
+            <if test="productList!=null and productList.size() > 0">
                 d.PRODUCT_ID in
                 <foreach collection="productList" item="product" index="index"
                          open="(" close=")" separator=",">
@@ -676,7 +676,7 @@
                 </foreach>
             </if>
             <if test="idList!=null and idList.size() > 0">
-                <if test="productList!=null and product.size() > 0">
+                <if test="productList!=null and productList.size() > 0">
                     or
                 </if>
                  d.SKU_ID in
