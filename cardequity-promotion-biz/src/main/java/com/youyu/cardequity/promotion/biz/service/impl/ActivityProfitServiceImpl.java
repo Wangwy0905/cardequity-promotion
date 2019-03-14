@@ -259,12 +259,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 profitEntity.setActivityLable(profit.getLabelDto().getId());
             }
             profitEntity.setIsEnable(CommonDict.IF_YES.getCode());
-            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
-                //特价模板
-                if (StringUtil.isEmpty(item.getProductList().get(0).getSkuId())) {
-                    profitEntity.setIsEnable(CommonDict.IF_NO.getCode());
-                }
-            }
+//            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
+//                //特价模板
+//                if (StringUtil.isEmpty(item.getProductList().get(0).getSkuId())) {
+//                    profitEntity.setIsEnable(CommonDict.IF_NO.getCode());
+//                }
+//            }
             profitEntity.setUpdateAuthor(req.getOperator());
             profitEntity.setCreateAuthor(req.getOperator());
             activityList.add(profitEntity);
@@ -473,12 +473,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             }
             profitEntity.setUpdateAuthor(req.getOperator());
             profitEntity.setIsEnable(CommonDict.IF_YES.getCode());
-            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
-                //特价模板
-                if (StringUtil.isEmpty(item.getProductList().get(0).getSkuId())) {
-                    profitEntity.setIsEnable(CommonDict.IF_NO.getCode());
-                }
-            }
+//            if (ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
+//                //特价模板
+//                if (StringUtil.isEmpty(item.getProductList().get(0).getSkuId())) {
+//                    profitEntity.setIsEnable(CommonDict.IF_NO.getCode());
+//                }
+//            }
             activityList.add(profitEntity);
 
             ActivityQuotaRuleDto quotaRule = item.getActivityQuotaRule();

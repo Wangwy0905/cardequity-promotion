@@ -480,6 +480,7 @@
         where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         AND a.STATUS='1'
         AND a.ACTIVITY_COUPON_TYPE='2'
+        AND b.SKU_ID is not null
         and a.ALLOW_USE_BEGIN_DATE &lt;= sysdate()
         and a.ALLOW_USE_END_DATE &gt;= sysdate()
         <if test="entrustWay != null and entrustWay!=''">
@@ -666,6 +667,7 @@
         <if test='"3"==termStatus'>
             and a.ALLOW_USE_END_DATE &gt;sysdate()
         </if>
+        and d.SKU_ID is not null
         <if test="productList!=null and productList.size() > 0 or idList!=null and idList.size() > 0">
             and (
             <if test="productList!=null and productList.size() > 0">
