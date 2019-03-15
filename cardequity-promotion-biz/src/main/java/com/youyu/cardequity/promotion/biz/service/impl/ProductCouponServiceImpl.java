@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -111,7 +112,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
             }
             //商品详情和商品列表的需要排除掉运费券
-            if (!StringUtil.isEmpty(qryProfitCommonReq.getProductId())){
+            if (!StringUtil.isEmpty(qryProfitCommonReq.getProductId())) {
                 if (CouponType.TRANSFERFARE.getDictValue().equals(item.getCouponType()) || CouponType.FREETRANSFERFARE.getDictValue().equals(item.getCouponType()))
                     continue;
             }
@@ -137,7 +138,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                         continue;
                     }
                     //查询客户受频率限制的券
-                    shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClientId(), item.getId(), "",OpCouponType.GETRULE.getDictValue());
+                    shortStageList = couponGetOrUseFreqRuleMapper.findClinetFreqForbidCouponDetailListById(qryProfitCommonReq.getClientId(), item.getId(), "", OpCouponType.GETRULE.getDictValue());
                 }
             }
 
@@ -828,12 +829,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<ProductCouponEntity> entities = null;
         List<ProductCouponEntity> couponList = new ArrayList<>();
         if (StringUtil.isEmpty(req.getContainsCouponType()))
-            req.setContainsCouponType(CouponType.MONEYBAG.getDictValue()+CouponType.COUPON.getDictValue());
+            req.setContainsCouponType(CouponType.MONEYBAG.getDictValue() + CouponType.COUPON.getDictValue());
 
-        if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())){
+        if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())) {
             entities = productCouponMapper.findInQuotaCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType());
-        }else {
-            entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType(),CouponGetType.HANLD.getDictValue());
+        } else {
+            entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType(), CouponGetType.HANLD.getDictValue());
         }
         for (ProductCouponEntity couponEntity : entities) {
             //剔除没有上架的
@@ -1086,6 +1087,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         int t = enableGetCoupon.size() >= retInt ? retInt : enableGetCoupon.size();
         for (int i = 0; i < t; i++) {
+            if (result.size() == retInt)
+                return result;
             ProductCouponDto dto = enableGetCoupon.get(i).getProductCouponDto();
             if (!ClientType.MEMBER.getDictValue().equals(dto.getClientTypeSet()))
                 continue;
@@ -1104,8 +1107,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             item.setProductList(enableGetCoupon.get(i).getProductList());
             result.add(item);
         }
-        if (result.size() == retInt)
-            return result;
 
         retInt = retInt - result.size();
         //2.获取已领取的优惠券
@@ -1128,6 +1129,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         Collections.sort(resultDto, new Comparator<ObtainCouponViewDto>() {
             @Override
             public int compare(ObtainCouponViewDto entity1, ObtainCouponViewDto entity2) {//如果是折扣、任选、优惠价从小到大
+                //已过期的排最后
+                if (entity1.getValidEndDate().toLocalDate().isBefore(LocalDate.now()) && !entity2.getValidEndDate().toLocalDate().isBefore(LocalDate.now()))
+                    return 1;
                 //券类型升序排列
                 int sortresult = entity1.getCouponViewType().compareTo(entity2.getCouponViewType());
                 if (sortresult != 0)
@@ -1141,10 +1145,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
         });
         //返回数据不足需要
-        if (resultDto.size() >= retInt) {
-            result.addAll(resultDto.subList(0, retInt));
-            return result;
+        t = resultDto.size() >= retInt ? retInt : resultDto.size();
+        for (int i = 0; i < t; i++) {
+            if (result.size() == retInt)
+                return result;
         }
+
         result.addAll(resultDto);
         return result;
     }
@@ -1163,6 +1169,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (req.getMonthNum() < 0)
             req.setMonthNum(0);
         List<ObtainCouponViewDto> result = new ArrayList<>();
+        //已使用过的券
+        List<ObtainCouponViewDto> overresult = new ArrayList<>();
         if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
             //当月可领的
             List<CouponDetailDto> enableGetCoupons = findEnableGetCoupon(req);
@@ -1201,16 +1209,23 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             Collections.sort(obtainCoupon, new Comparator<ClientCouponEntity>() {
                 @Override
                 public int compare(ClientCouponEntity entity1, ClientCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
+                    //已过期的排最后
+                    if (entity1.getValidEndDate().toLocalDate().isBefore(LocalDate.now()) && !entity2.getValidEndDate().toLocalDate().isBefore(LocalDate.now()))
+                        return 1;
+                    //消费券->运费券
                     int sortresult = entity1.getCouponType().compareTo(entity2.getCouponType());
                     if (sortresult != 0)
                         return sortresult;
+                    //大鱼券->小鱼券
                     sortresult = entity2.getCouponLevel().compareTo(entity1.getCouponLevel());
                     if (sortresult != 0)
                         return sortresult;
+                    //金额降序
                     return entity2.getCouponAmout().compareTo(entity1.getCouponAmout());
                 }
             });
             List<FullClientCouponRsp> fullClientCouponRsps = clientCouponService.combClientFullObtainCouponList(obtainCoupon);
+
             for (FullClientCouponRsp item : fullClientCouponRsps) {
                 if (!ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet()))
                     continue;
@@ -1221,7 +1236,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 viewDto.setValidEndDate(item.getClientCoupon().getValidEndDate());
                 viewDto.setValidStartDate(item.getClientCoupon().getValidStartDate());
                 viewDto.setObtainState(item.getClientCoupon().refreshObtainState());
-                result.add(viewDto);
+                    result.add(viewDto);
             }
 
         } else {
@@ -1256,8 +1271,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     obtainDto.setValidStartDate(LocalDateTime.now());
                     obtainDto.setValidEndDate(LocalDateTime.now().plusDays(obtainDto.getValIdTerm()));
                 }
-                result.add(obtainDto);
+                if (obtainDto.getValidEndDate().toLocalDate().isBefore(LocalDate.now()))
+                    overresult.add(obtainDto);
+                else
+                    result.add(obtainDto);
             }
+            result.addAll(overresult);
         }
         return result;
     }
