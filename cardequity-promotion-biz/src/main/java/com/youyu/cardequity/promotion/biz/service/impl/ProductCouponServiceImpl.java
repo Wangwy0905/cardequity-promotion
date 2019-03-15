@@ -1087,8 +1087,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         int t = enableGetCoupon.size() >= retInt ? retInt : enableGetCoupon.size();
         for (int i = 0; i < t; i++) {
-            if (result.size() == retInt)
-                return result;
             ProductCouponDto dto = enableGetCoupon.get(i).getProductCouponDto();
             if (!ClientType.MEMBER.getDictValue().equals(dto.getClientTypeSet()))
                 continue;
@@ -1109,6 +1107,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         retInt = retInt - result.size();
+        if (retInt==0)
+            return result;
+
         //2.获取已领取的优惠券
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
@@ -1147,11 +1148,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //返回数据不足需要
         t = resultDto.size() >= retInt ? retInt : resultDto.size();
         for (int i = 0; i < t; i++) {
-            if (result.size() == retInt)
-                return result;
+            result.add(resultDto.get(i));
         }
-
-        result.addAll(resultDto);
+        resultDto.clear();
+        resultDto=null;
         return result;
     }
 
@@ -1171,6 +1171,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<ObtainCouponViewDto> result = new ArrayList<>();
         //已使用过的券
         List<ObtainCouponViewDto> overresult = new ArrayList<>();
+        //查询当月可以领的券
         if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
             //当月可领的
             List<CouponDetailDto> enableGetCoupons = findEnableGetCoupon(req);
@@ -1239,7 +1240,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     result.add(viewDto);
             }
 
-        } else {
+
+        } else {//查询指定月可以领的券
 
             List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(), 1);
 
