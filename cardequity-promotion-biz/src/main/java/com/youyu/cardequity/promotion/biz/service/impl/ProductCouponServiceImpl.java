@@ -1055,6 +1055,52 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     }
 
 
+    public int myCompare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
+        //券类型升序排列
+        int sortresult = entity1.getProductCouponDto().getCouponType().compareTo(entity2.getProductCouponDto().getCouponType());
+        if (sortresult != 0)
+            return sortresult;
+        //券类型降序排列
+        sortresult = entity2.getProductCouponDto().getCouponLevel().compareTo(entity1.getProductCouponDto().getCouponLevel());
+        if (sortresult != 0)
+            return sortresult;
+        //券优惠金额降序排列
+        return entity2.getProductCouponDto().getProfitValue().compareTo(entity1.getProductCouponDto().getProfitValue());
+    }
+
+
+    public int myCompare(ObtainCouponViewDto entity1, ObtainCouponViewDto entity2) {//如果是折扣、任选、优惠价从小到大
+        //已过期的排最后
+        if (entity1.getValidEndDate().toLocalDate().isBefore(LocalDate.now()) && !entity2.getValidEndDate().toLocalDate().isBefore(LocalDate.now()))
+            return -1;
+        //券类型升序排列
+        int sortresult = entity1.getCouponViewType().compareTo(entity2.getCouponViewType());
+        if (sortresult != 0)
+            return sortresult;
+        //券类型降序排列
+        sortresult = entity2.getCouponLevel().compareTo(entity1.getCouponLevel());
+        if (sortresult != 0)
+            return sortresult;
+        //券优惠金额降序排列
+        return entity2.getProfitValue().compareTo(entity1.getProfitValue());
+    }
+
+    public int myCompare(ClientCouponEntity entity1, ClientCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
+        //已过期的排最后
+        if (entity1.getValidEndDate().toLocalDate().isBefore(LocalDate.now()) && !entity2.getValidEndDate().toLocalDate().isBefore(LocalDate.now()))
+            return -1;
+        //消费券->运费券
+        int sortresult = entity1.getCouponType().compareTo(entity2.getCouponType());
+        if (sortresult != 0)
+            return sortresult;
+        //大鱼券->小鱼券
+        sortresult = entity2.getCouponLevel().compareTo(entity1.getCouponLevel());
+        if (sortresult != 0)
+            return sortresult;
+        //金额降序
+        return entity2.getCouponAmout().compareTo(entity1.getCouponAmout());
+    }
+
     /**
      * 查询H5首页会员专享权益优惠券
      *
@@ -1072,16 +1118,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         Collections.sort(enableGetCoupon, new Comparator<CouponDetailDto>() {
             @Override
             public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
-                //券类型升序排列
-                int sortresult = entity1.getProductCouponDto().getCouponType().compareTo(entity2.getProductCouponDto().getCouponType());
-                if (sortresult != 0)
-                    return sortresult;
-                //券类型降序排列
-                sortresult = entity2.getProductCouponDto().getCouponLevel().compareTo(entity1.getProductCouponDto().getCouponLevel());
-                if (sortresult != 0)
-                    return sortresult;
-                //券优惠金额降序排列
-                return entity2.getProductCouponDto().getProfitValue().compareTo(entity1.getProductCouponDto().getProfitValue());
+               return myCompare(entity1,entity2);
             }
         });
 
@@ -1130,19 +1167,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         Collections.sort(resultDto, new Comparator<ObtainCouponViewDto>() {
             @Override
             public int compare(ObtainCouponViewDto entity1, ObtainCouponViewDto entity2) {//如果是折扣、任选、优惠价从小到大
-                //已过期的排最后
-                if (entity1.getValidEndDate().toLocalDate().isBefore(LocalDate.now()) && !entity2.getValidEndDate().toLocalDate().isBefore(LocalDate.now()))
-                    return 1;
-                //券类型升序排列
-                int sortresult = entity1.getCouponViewType().compareTo(entity2.getCouponViewType());
-                if (sortresult != 0)
-                    return sortresult;
-                //券类型降序排列
-                sortresult = entity2.getCouponLevel().compareTo(entity1.getCouponLevel());
-                if (sortresult != 0)
-                    return sortresult;
-                //券优惠金额降序排列
-                return entity2.getProfitValue().compareTo(entity1.getProfitValue());
+                return myCompare(entity1,entity2);
             }
         });
         //返回数据不足需要
@@ -1179,13 +1204,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             Collections.sort(enableGetCoupons, new Comparator<CouponDetailDto>() {
                 @Override
                 public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
-                    int sortresult = entity1.getProductCouponDto().getCouponType().compareTo(entity2.getProductCouponDto().getCouponType());
-                    if (sortresult != 0)
-                        return sortresult;
-                    sortresult = entity2.getProductCouponDto().getCouponLevel().compareTo(entity1.getProductCouponDto().getCouponLevel());
-                    if (sortresult != 0)
-                        return sortresult;
-                    return entity2.getProductCouponDto().getProfitValue().compareTo(entity1.getProductCouponDto().getProfitValue());
+                    return myCompare(entity1,entity2);
                 }
             });
             for (CouponDetailDto item : enableGetCoupons) {
@@ -1210,19 +1229,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             Collections.sort(obtainCoupon, new Comparator<ClientCouponEntity>() {
                 @Override
                 public int compare(ClientCouponEntity entity1, ClientCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
-                    //已过期的排最后
-                    if (entity1.getValidEndDate().toLocalDate().isBefore(LocalDate.now()) && !entity2.getValidEndDate().toLocalDate().isBefore(LocalDate.now()))
-                        return 1;
-                    //消费券->运费券
-                    int sortresult = entity1.getCouponType().compareTo(entity2.getCouponType());
-                    if (sortresult != 0)
-                        return sortresult;
-                    //大鱼券->小鱼券
-                    sortresult = entity2.getCouponLevel().compareTo(entity1.getCouponLevel());
-                    if (sortresult != 0)
-                        return sortresult;
-                    //金额降序
-                    return entity2.getCouponAmout().compareTo(entity1.getCouponAmout());
+                    return myCompare(entity1,entity2);
                 }
             });
             List<FullClientCouponRsp> fullClientCouponRsps = clientCouponService.combClientFullObtainCouponList(obtainCoupon);
