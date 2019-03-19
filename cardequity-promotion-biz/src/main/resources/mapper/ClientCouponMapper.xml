@@ -239,10 +239,10 @@
         <if test='"2"==obtainState'>
             and a.status in ('1','2')
         </if>
-  <!--      <if test='"3"==obtainState'>
+        <if test='"3"==obtainState'>
             and a.status='0'
             and a.VALID_END_DATE &lt; curdate()
-        </if>-->
+        </if>
         <if test='"4"==obtainState'>
             and a.status='0'
             and a.VALID_BEGIN_DATE &gt; curdate()

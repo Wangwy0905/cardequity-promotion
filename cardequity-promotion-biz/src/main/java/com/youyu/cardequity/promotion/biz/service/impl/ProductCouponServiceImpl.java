@@ -1239,13 +1239,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
             //当月已领的          //去掉过期未使用的优惠卷   3
             List<ClientCouponEntity> obtainCoupon = clientCouponMapper.findCurrMonthObtainCoupon(req.getClientId(), "");
-          /*  //改动
-            Iterator<ClientCouponEntity> it=obtainCoupon.iterator();
-            while(it.hasNext()){
-                ClientCouponEntity clientCouponEntity=it.next();
-                if(CommonConstant.OBTAIN_STATE_OVERDUE.equals(clientCouponEntity.))
-            }
-            */
+
             Collections.sort(obtainCoupon, new Comparator<ClientCouponEntity>() {
                 @Override
                 public int compare(ClientCouponEntity entity1, ClientCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
@@ -1267,13 +1261,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 viewDto.setValidStartDate(item.getClientCoupon().getValidStartDate());
                 viewDto.setObtainState(item.getClientCoupon().refreshObtainState());
                 //改动
-                if(!CommonConstant.OBTAIN_STATE_USE.equals(viewDto.getObtainState())){
-                    result.add(viewDto);
-                }else{
-                    overresult.add(viewDto);
+                if(!CommonConstant.OBTAIN_STATE_OVERDUE.equals(viewDto.getObtainState())){
+                    if(!CommonConstant.OBTAIN_STATE_USE.equals(viewDto.getObtainState())){
+                        result.add(viewDto);
+                    }else{
+                        overresult.add(viewDto);
+                    }
                 }
-
-
             }
             result.addAll(overresult);
 
