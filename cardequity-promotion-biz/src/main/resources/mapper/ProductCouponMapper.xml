@@ -26,11 +26,12 @@
             and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
             #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
-        and a.ALLOW_USE_END_DATE &gt;= a.ALLOW_GET_BEGIN_DATE
-        and a.ALLOW_GET_BEGIN_DATE &lt;=DATEADD(day,  -1, DATEADD(month, 1,DATEADD(day,-DATEPART(day, GETDATE())+1,getdate())))
-     /*   and a.ALLOW_USE_END_DATE &gt;=  curdate()
-        and a.ALLOW_GET_BEGIN_DATE &lt;= curdate()*/
-        and a.ALLOW_GET_END_DATE &gt;= curdate()
+
+        and a.ALLOW_USE_END_DATE &gt;=curdate()
+        and a.ALLOW_GET_BEGIN_DATE &lt;=(select date_sub(date_sub(date_format(now(), '%y-%m-%d'),interval extract(day from now()) day),interval - 1 month))
+        and a.ALLOW_GET_END_DATE &gt;=a.ALLOW_GET_BEGIN_DATE
+      /*  and a.ALLOW_GET_BEGIN_DATE &lt;=curdate()
+        and a.ALLOW_GET_END_DATE &gt;= curdate()*/
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(d.COUPON_AMOUT, 0)),0)
         from TB_CLIENT_COUPON d
@@ -77,11 +78,12 @@
             and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
             #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
-        /*   and a.ALLOW_USE_END_DATE &gt;=  curdate()
-        and a.ALLOW_GET_BEGIN_DATE &lt;= curdate()*/
-        and a.ALLOW_USE_END_DATE &gt;= a.ALLOW_GET_BEGIN_DATE
-        and a.ALLOW_GET_BEGIN_DATE &lt;=DATEADD(day,  -1, DATEADD(month, 1,DATEADD(day,-DATEPART(day, GETDATE())+1,getdate())))
-        and a.ALLOW_GET_END_DATE &gt;= curdate()
+
+        and a.ALLOW_USE_END_DATE &gt;=curdate()
+        and a.ALLOW_GET_BEGIN_DATE &lt;=(select date_sub(date_sub(date_format(now(), '%y-%m-%d'),interval extract(day from now()) day),interval - 1 month))
+        and a.ALLOW_GET_END_DATE &gt;= a.ALLOW_GET_BEGIN_DATE
+      /*  and a.ALLOW_GET_BEGIN_DATE &lt;=curdate()
+        and a.ALLOW_GET_END_DATE &gt;= curdate()*/
         Order by a.CREATE_TIME desc
     </select>
 
