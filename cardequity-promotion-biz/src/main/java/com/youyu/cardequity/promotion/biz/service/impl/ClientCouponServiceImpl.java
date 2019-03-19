@@ -1250,8 +1250,9 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
      * @param clientCouponEnts 领取券集合
      * @return 领取券视图集合
      */
-    @Override
+    @Override                                                              //客户优惠券信息表
     public List<FullClientCouponRsp> combClientFullObtainCouponList(List<ClientCouponEntity> clientCouponEnts) {
+
         List<FullClientCouponRsp> result = new ArrayList<>();
         if (clientCouponEnts == null || clientCouponEnts.isEmpty())
             return result;
@@ -1265,6 +1266,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         }
 
         if (!ids.isEmpty()) {
+                //优惠详情表
             List<CouponDetailDto> detailDtos = productCouponService.findCouponListByIds(ids);
             for (FullClientCouponRsp item : result) {
                 for (CouponDetailDto dto : detailDtos) {

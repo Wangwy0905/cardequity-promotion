@@ -49,6 +49,7 @@
         and d.COUPON_ID = a.UUID
         and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)))
         Order by a.CREATE_TIME desc
+
     </select>
 
     <select id="findEnableGetCouponList"
