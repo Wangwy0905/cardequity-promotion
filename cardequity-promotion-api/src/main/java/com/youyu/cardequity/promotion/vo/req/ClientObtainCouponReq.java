@@ -11,22 +11,19 @@ import lombok.Setter;
 @Setter
 public class ClientObtainCouponReq {
     @ApiModelProperty(value = "客户编号:必填")
-    private String clinetId;
+    private String clientId;
 
     @ApiModelProperty(value = "优惠券id：必填")
     private String couponId;
 
-    @ApiModelProperty(value = "所属阶梯id：对阶梯的优惠券必填")
+    @ApiModelProperty(value = "所属阶梯id：对有门槛的优惠券必填")
     private String stageId;
 
     @ApiModelProperty(value = "商品id：指定相关商品，为空不校验该券是否对应该商品可使用")
     private String productId;
 
-    @ApiModelProperty(value = "商品组id：为空但是productId不为空需要服务层调商品中心获取")
-    private String groupId;
-
     @ApiModelProperty(value = "客户类型:冗余，服务层调用时传入空，需要调用用户中心进行查询该字段")
-    private String clinetType;
+    private String clientType;
 
     @ApiModelProperty(value = "委托方式:验证该渠道操作方式是否可以领取")
     private String entrustWay;
@@ -37,6 +34,12 @@ public class ClientObtainCouponReq {
     @ApiModelProperty(value = "支付类型:传入用于校验是否该支付类型可用")
     private String payType;
 
-    @ApiModelProperty(value = "活动编号:关联的活动编号")
+    @ApiModelProperty(value = "活动编号:关联的活动编号,暂时不用")
     private String activityId;
+
+    @ApiModelProperty(value = "获取方式:0-自动 1-手动获取（默认值） 2-平台指定发放")
+    private String getType;
+
+    @ApiModelProperty(value = "操作者：用于更新产生者或更新者")
+    private String operator;
 }

@@ -1,11 +1,11 @@
 package com.youyu.cardequity.promotion.biz;
 
+import org.springframework.cloud.client.SpringCloudApplication;
 import tk.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
+@SpringCloudApplication
 @EnableFeignClients(basePackages={"com.youyu.cardequity.promotion.api"})
 @MapperScan("com.youyu.cardequity.promotion.biz.dal.dao")
 public class CardequityPromotionApplication {

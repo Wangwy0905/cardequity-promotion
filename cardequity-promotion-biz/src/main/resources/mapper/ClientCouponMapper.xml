@@ -7,20 +7,41 @@
     <select id="findClientCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
         TB_CLIENT_COUPON a
-        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test='"1"==obtainState'>
+            and a.status='0'
+            and a.VALID_START_DATE &lt;=curdate()
+            and a.VALID_END_DATE &gt;= curdate()
+        </if>
+        <if test='"2"==obtainState'>
+            and a.status in ('1','2')
+        </if>
+        <if test='"3"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &lt; curdate()
+        </if>
+        <if test='"4"==obtainState'>
+            and a.status='0'
+            and a.VALID_BEGIN_DATE &gt; curdate()
+        </if>
+        <if test='"5"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &gt; curdate()
+        </if>
     </select>
     <select id="findClientCouponByCouponId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
         TB_CLIENT_COUPON a
-        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
         and a.COUPON_ID=#{couponId,jdbcType=VARCHAR}
+        order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
     <select id="findClientCouponByCommon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
         TB_CLIENT_COUPON a
-        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="id != null and id !=''">
         and a.UUID=#{id,jdbcType=VARCHAR}
         </if>
@@ -33,9 +54,10 @@
         <if test="stageId != null and stageId!=''">
         and a.STAGE_ID=#{stageId,jdbcType=VARCHAR}
         </if>
+        order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
 
-    <resultMap id="ClientCoupStatisticsQuotaDto" type="com.youyu.cardequity.promotion.dto.ClientCoupStatisticsQuotaDto">
+    <resultMap id="ClientCoupStatisticsQuotaDto" type="com.youyu.cardequity.promotion.dto.other.ClientCoupStatisticsQuotaDto">
         <result column="COUPON_ID" property="couponId" jdbcType="VARCHAR" />
         <result column="CLIENT_ID" property="clientId" jdbcType="VARCHAR" />
         <result column="CLIENT_AMOUNT" property="clientAmount" jdbcType="DECIMAL" />
@@ -49,7 +71,7 @@
         ifnull(sum(case when a.CREATE_TIME>CURDATE() then ifnull(a.COUPON_AMOUT, 0) else 0 end ),0) as CLIENT_PERDATE_AMOUNT,
         ifnull(sum(case when a.CREATE_TIME>CURDATE() then 1 else 0 end ),0) as CLIENT_PERDATE_COUNT
         FROM TB_CLIENT_COUPON a
-        WHERE ifnull(a.IS_ENABLE, '1') = '1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         <if test="id != null and id !=''">
             and a.UUID=#{id,jdbcType=VARCHAR}
         </if>
@@ -66,12 +88,241 @@
     <select id="findClientValidCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
         TB_CLIENT_COUPON a
-        WHERE ifnull(a.IS_ENABLE,'1')='1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
         and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
         and a.status='0'
         and a.VALID_START_DATE &lt;=curdate()
         and a.VALID_END_DATE &gt;= curdate()
+        order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
 
+    <select id="findClientValidDiscountCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.COUPON_STRATEGY_TYPE='0'
+        AND a.COUPON_TYPE='1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test="couponLevel!=null and couponLevel!=''">
+            and a.COUPON_LEVEL=#{couponLevel,jdbcType=VARCHAR}
+        </if>
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        order by COUPON_AMOUT ,VALID_END_DATE
+    </select>
+
+    <select id="findClientValidCommonCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.COUPON_STRATEGY_TYPE !='0'
+        AND a.COUPON_TYPE='1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test="couponLevel!=null and couponLevel!=''">
+            and a.COUPON_LEVEL=#{couponLevel,jdbcType=VARCHAR}
+        </if>
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        order by COUPON_AMOUT desc,VALID_END_DATE
+    </select>
+
+    <select id="findClientValidFreePostageCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.COUPON_STRATEGY_TYPE ='3'
+        AND a.COUPON_TYPE ='3'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test="couponLevel!=null and couponLevel!=''">
+            and a.COUPON_LEVEL=#{couponLevel,jdbcType=VARCHAR}
+        </if>
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        order by VALID_END_DATE
+    </select>
+
+    <select id="findClientValidMimusPostageCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.COUPON_STRATEGY_TYPE in ('1','2')
+        AND a.COUPON_TYPE ='2'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test="couponLevel!=null and couponLevel!=''">
+            and a.COUPON_LEVEL=#{couponLevel,jdbcType=VARCHAR}
+        </if>
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        order by COUPON_AMOUT desc,VALID_END_DATE
+    </select>
+
+    <select id="findClientCouponByIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity" >
+         SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.uuid IN
+        <foreach collection="shortClientCouponList" open="(" close=")" separator="," item="item">
+           #{item.uuid}
+        </foreach>
+        and a.CLIENT_ID= #{clientId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findClientCouponById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity" >
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.uuid =#{uuid,jdbcType=VARCHAR}
+    </select>
+
+    <update id="modRecoverByOrderinfo" parameterType="com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq">
+        UPDATE TB_CLIENT_COUPON a
+        SET a.STATUS='0',
+        a.REMARK=CONCAT(ifnull(a.REMARK,''),sysdate(),'恢复券状态|'),
+        a.UPDATE_AUTHOR=#{orderinfo.operator,jdbcType=VARCHAR}
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.JOIN_ORDER_ID=#{orderinfo.orderId,jdbcType=VARCHAR}
+        <if test="orderinfo.clientId!=null and orderinfo.clientId!=''">
+            AND a.CLIENT_ID=#{orderinfo.clientId,jdbcType=VARCHAR}
+        </if>
+    </update>
+
+    <select id="findClientValidCouponByProduct" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        and a.status='0'
+        and a.VALID_START_DATE &lt;=curdate()
+        and a.VALID_END_DATE &gt;= curdate()
+        <if test="productId!=null and productId!=''">
+            and( a.APPLY_PRODUCT_FLAG='1' or
+            exists(select 1 from TB_COUPON_REF_PRODUCT b
+            where b.COUPON_ID = a.COUPON_ID
+            and b.PRODUCT_ID =#{productId,jdbcType=VARCHAR}
+            <if test="skuId!=null and skuId!=''">
+                and b.SKU_ID =#{skuId,jdbcType=VARCHAR}
+            </if>
+            )
+            )
+        </if>
+        order by COUPON_AMOUT desc,VALID_END_DATE
+    </select>
+
+
+    <select id="findAllClientValidCouponCount" resultType="int" >
+        SELECT count(*) FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.status IN ('0','1')
+        AND a.VALID_END_DATE &gt;= curdate()
+        AND a.COUPON_ID IN
+        <foreach collection="idList" item="coupon" index="index"
+                      open="(" close=")" separator=",">
+            #{coupon}
+        </foreach>
+    </select>
+
+    <select id="findCurrMonthObtainCoupon" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test='"1"==obtainState'>
+            and a.status='0'
+            and a.VALID_START_DATE &lt;=curdate()
+            and a.VALID_END_DATE &gt;= curdate()
+        </if>
+        <if test='"2"==obtainState'>
+            and a.status in ('1','2')
+        </if>
+        <if test='"3"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &lt; curdate()
+        </if>
+        <if test='"4"==obtainState'>
+            and a.status='0'
+            and a.VALID_BEGIN_DATE &gt; curdate()
+        </if>
+        <if test='"5"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &gt; curdate()
+        </if>
+        and concat(date_format(LAST_DAY(now()), '%Y-%m-'), '01') &lt;= a.CREATE_TIME
+    </select>
+
+    <select id="findClientCouponNnm" resultType="com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq">
+        SELECT COUNT(*) as couponNum,
+           sum(case when a.NEW_FLAG='1' THEN 1 ELSE 0 END ) as newNum FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test='"1"==obtainState'>
+            and a.status='0'
+            and a.VALID_START_DATE &lt;=curdate()
+            and a.VALID_END_DATE &gt;= curdate()
+        </if>
+        <if test='"2"==obtainState'>
+            and a.status in ('1','2')
+        </if>
+        <if test='"3"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &lt; curdate()
+        </if>
+        <if test='"4"==obtainState'>
+            and a.status='0'
+            and a.VALID_BEGIN_DATE &gt; curdate()
+        </if>
+        <if test='"5"==obtainState'>
+            and a.status='0'
+            and a.VALID_END_DATE &gt; curdate()
+        </if>
+    </select>
+
+
+    <update id="modClientCouponNewFlag" >
+        UPDATE TB_CLIENT_COUPON a
+        SET a.NEW_FLAG='1'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        and a.NEW_FLAG='0'
+    </update>
+
+
+    <select id="findClientCouponByProduct" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
+        SELECT * FROM
+        TB_CLIENT_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        <if test="status!=null and status!=''">
+        and a.status=#{status,jdbcType=VARCHAR}
+        </if>
+        <if test='"0"==termStatus'>
+            and a.VALID_START_DATE &lt;=curdate()
+            and a.VALID_END_DATE &gt;= curdate()
+        </if>
+        <if test='"1"==termStatus'>
+            and a.VALID_START_DATE &gt;curdate()
+        </if>
+        <if test='"2"==termStatus'>
+            and a.VALID_END_DATE &lt; curdate()
+        </if>
+
+        <if test="productId!=null and productId!=''">
+            and( a.APPLY_PRODUCT_FLAG='1' or
+            exists(select 1 from TB_COUPON_REF_PRODUCT b
+            where b.COUPON_ID = a.COUPON_ID
+            and b.PRODUCT_ID =#{productId,jdbcType=VARCHAR}
+            <if test="skuId!=null and skuId!=''">
+                and b.SKU_ID =#{skuId,jdbcType=VARCHAR}
+            </if>
+            )
+            )
+        </if>
+        order by COUPON_AMOUT desc,VALID_END_DATE
+    </select>
 
 </mapper>

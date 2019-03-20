@@ -1,8 +1,9 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ActivityStageCouponEntity;
+import com.youyu.cardequity.promotion.vo.req.BaseActivityReq;
 import com.youyu.common.mapper.YyMapper;
-import feign.Param;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,7 +21,30 @@ public interface ActivityStageCouponMapper extends YyMapper<ActivityStageCouponE
      * @param activityId 活动id
      * @return
      */
-    public List<ActivityStageCouponEntity> findActivityProfitDetail(@Param("activityId") String activityId);
+    List<ActivityStageCouponEntity> findActivityProfitDetail(@Param("activityId") String activityId);
+
+    /**
+     * 1004259-徐长焕-20181210 新增
+     * 功能：查询指定集合活动门槛阶梯详细信息
+     * @param idList 活动id列表
+     * @return
+     */
+    List<ActivityStageCouponEntity> findActivityProfitDetailByIds(@Param("idList") List<String> idList);
+
+
+    /**
+     * 通过活动id逻辑删除
+     * @param activityId
+     * @return
+     */
+    int logicDelByActivityId(@Param("activityId") String activityId);
+
+    /**
+     * 通过活动id逻辑删除
+     * @param baseActivity
+     * @return
+     */
+    int logicDelByBaseActivity(BaseActivityReq baseActivity);
 }
 
 

@@ -29,12 +29,6 @@ public class ActivityStageCouponEntity extends com.youyu.common.entity.BaseEntit
     private String activityId;
 
     /**
-     * 活动处理类型:对ActivityCouponType=1有效；0-所有都优惠 1-前N(起始值)件优惠 2-每N(起始值)件优惠
-     */
-    @Column(name = "ACTIVITY_PROFIT_TYPE")
-    private String ActivityProfitType;
-
-    /**
      * 门槛触发类型:0-按买入金额 1-按买入数量（应设置其中之一，如果第二件5折可在此设置）
      */
     @Column(name = "TRIGGER_BY_TYPE")

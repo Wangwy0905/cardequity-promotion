@@ -3,6 +3,8 @@ package com.youyu.cardequity.promotion.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,29 +21,33 @@ import io.swagger.annotations.ApiModel;
 @ApiModel
 public class ProductCouponDto implements IBaseDto<String>{
 
-    @ApiModelProperty(value = "优惠券编号:")
+    public ProductCouponDto(){
+        status= CouponStatus.NO.getDictValue();
+    }
+
+    @ApiModelProperty(value = "领取编号:")
     private String uuid;
 
-    @ApiModelProperty(value = "优惠策略类型:0-折扣券(该表不会出现) 1-阶梯优惠券(满多少减多少)  2-定额优惠券（该券无阶梯优惠固定金额）")
+    @ApiModelProperty(value = "优惠策略类型:0-折扣券 1-满减现金 2-无门槛现金券  3-随机  4-每满减现金")
     private String couponStrategyType;
 
-    @ApiModelProperty(value = "类型:0-红包 1-优惠券 2-运费券")
+    @ApiModelProperty(value = "类型:0-红包 1-消费券 2-运费券")
     private String couponType;
 
     @ApiModelProperty(value = "优惠名称:")
     private String couponName;
 
     @ApiModelProperty(value = "优惠标签:标签：满返券、促销等")
-    private String couponLable;
+    private CouponAndActivityLabelDto labelDto ;
 
     @ApiModelProperty(value = "优惠短描:如满3件减20")
     private String couponShortDesc;
 
-    @ApiModelProperty(value = "专属商品集合:订单涉及门槛属性：只有这些买入商品才提供优惠，但是具体优惠需要通过阶梯表获取，为*标识所有")
-    private String productSet;
+    @ApiModelProperty(value = "说明")
+    private String couponDesc;
 
-    @ApiModelProperty(value = "专属商品组集合:订单涉及门槛属性：只有这些买入商品组的商品才提供优惠，为*标识所有")
-    private String productGroupSet;
+    @ApiModelProperty(value = "级别：0-小鱼券 1-大鱼券")
+    private String couponLevel;
 
     @ApiModelProperty(value = "专属客户类型集合:订单涉及门槛属性：只有这些这些客户类型才提供优惠。多种客户类型用逗号相隔，为*标识所有")
     private String clientTypeSet;
@@ -59,16 +65,16 @@ public class ProductCouponDto implements IBaseDto<String>{
     private String payTypeSet;
 
     @ApiModelProperty(value = "优惠开始日:到分秒级别")
-    private LocalDate allowUseBeginDate;
+    private LocalDateTime allowUseBeginDate;
 
     @ApiModelProperty(value = "优惠结束日:")
-    private LocalDate allowUseEndDate;
+    private LocalDateTime allowUseEndDate;
 
     @ApiModelProperty(value = "领取开始日:到分秒级别")
-    private LocalDate allowGetBeginDate;
+    private LocalDateTime allowGetBeginDate;
 
     @ApiModelProperty(value = "领取结束日:")
-    private LocalDate allowGetEndDate;
+    private LocalDateTime allowGetEndDate;
 
     @ApiModelProperty(value = "有效期限:以天为单位")
     private Integer valIdTerm;
@@ -78,6 +84,10 @@ public class ProductCouponDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "优惠值:如果是阶梯或随机的填0，存折扣、金额")
     private BigDecimal profitValue;
+
+    @ApiModelProperty(value = "状态:0-下架 1-上架")
+    private String status;
+
 
     @ApiModelProperty(value = "积分兑换额度:允许兑换该券的积分额度；积分不能兑换填99999999")
     private BigDecimal exchangeByPointVol;
@@ -94,26 +104,14 @@ public class ProductCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "领取方式:0-自动 1-手动 ")
     private String getType;
 
-    @ApiModelProperty(value = "叠加码:定义为8位码。相同标识码可叠加，多个以逗号相隔(设置该券时，应向操作员自动展示可叠加券列表)，为空代表所有")
-    private String reCouponCode;
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
     @ApiModelProperty(value = "叠加标志:0-不可叠加 1-可叠加 2-自定义（建议规则简单点，不采用该值）")
     private String reCouponFlag;
 
-    @ApiModelProperty(value = "产生者:")
-    private String createAuthor;
-
-    @ApiModelProperty(value = "更新者:")
-    private String updateAuthor;
-
-    @ApiModelProperty(value = "更新时间:")
-    private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "产生时间:")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "是否有效:")
-    private String isEnable;
+    @ApiModelProperty(value = "适用商品类型:0-自动义商品范围 1-全部")
+    private String applyProductFlag;
 
     @Override
     public String getId() {

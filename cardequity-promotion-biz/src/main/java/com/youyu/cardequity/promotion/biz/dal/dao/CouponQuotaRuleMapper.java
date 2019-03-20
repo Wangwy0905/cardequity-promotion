@@ -2,7 +2,9 @@ package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
 import com.youyu.common.mapper.YyMapper;
-import feign.Param;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  *  代码生成器
@@ -18,6 +20,21 @@ public interface CouponQuotaRuleMapper extends YyMapper<CouponQuotaRuleEntity> {
      * @return
      */
     CouponQuotaRuleEntity findCouponQuotaRuleById(@Param("couponId") String couponId );
+
+    /**
+     * 根据优惠券id获取额度规则
+     * @param idList
+     * @return
+     */
+    List<CouponQuotaRuleEntity> findCouponQuotaRuleByIds(@Param("idList") List<String> idList );
+
+
+    /**
+     * 逻辑删除通过优惠id
+     * @param couponId
+     * @return
+     */
+    int logicDelByCouponId(@Param("couponId") String couponId);
 
 }
 

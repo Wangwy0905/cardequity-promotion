@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponStageRuleMapper">
+
+    <select id="findStageByCouponId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity"  >
+        select *
+        from TB_COUPON_STAGE_RULE a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.COUPON_ID =#{couponId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findStageByCouponIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity"  >
+        select *
+        from TB_COUPON_STAGE_RULE a
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.COUPON_ID in
+        <foreach collection="idList" item="idstr" index="index"
+                 open="(" close=")" separator=",">
+            #{idstr}
+        </foreach>
+    </select>
+
+<select id="findCouponStageById" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponStageRuleEntity">
+    select *
+from TB_COUPON_STAGE_RULE a
+where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+    <if test="couponId != null and couponId!=''">
+  and a.COUPON_ID =#{couponId,jdbcType=VARCHAR}
+    </if>
+  and a.UUID =#{stageId,jdbcType=VARCHAR}
+
+</select>
+
+    <update id="logicDelByList" parameterType="com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq">
+        UPDATE TB_COUPON_STAGE_RULE a
+          SET IS_ENABLE='0',a.UPDATE_AUTHOR= #{operator,jdbcType=VARCHAR}
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND COUPON_ID=#{couponId,,jdbcType=VARCHAR}
+        and UUID in
+        <foreach collection="list.baseCouponList" item="baseCoupon" index="index"
+                 open="(" close=")" separator=",">
+            #{baseCoupon.stageId}
+        </foreach>
+    </update>
+    <update id="logicDelByCouponId" parameterType="string">
+        UPDATE TB_COUPON_STAGE_RULE a
+          SET IS_ENABLE='0'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND COUPON_ID=#{couponId,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

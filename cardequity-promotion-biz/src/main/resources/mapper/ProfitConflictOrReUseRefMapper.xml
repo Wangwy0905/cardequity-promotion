@@ -4,4 +4,31 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.ProfitConflictOrReUseRefMapper">
 
+    <select id="findBySpecifyId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProfitConflictOrReUseRefEntity">
+        select *
+from TB_PROFIT_CONFLICT_OR_RE_USE_REF a
+where ifnull(a.IS_ENABLE, '1') = '1'
+  and ifnull(a.REF_TYPE, '1')=#{conflictFlag,jdbcType=VARCHAR}
+  and ((a.OBJ_ID = #{activeOrCouponId,jdbcType=VARCHAR}
+  and a.OBJ_TYPE = #{activeOrCouponType,jdbcType=VARCHAR})
+  or (a.TARGET_OBJ_ID=#{activeOrCouponId,jdbcType=VARCHAR}
+  and a.TARGET_OBJ_TYPE=#{activeOrCouponType,jdbcType=VARCHAR}))
+    </select>
+
+    <select id="findByBothId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProfitConflictOrReUseRefEntity">
+        select *
+        from TB_PROFIT_CONFLICT_OR_RE_USE_REF a
+        where ifnull(a.IS_ENABLE, '1') = '1'
+        and ifnull(a.REF_TYPE, '1')=#{conflictFlag,jdbcType=VARCHAR}
+        and (
+        (a.OBJ_ID = #{activeOrCouponId,jdbcType=VARCHAR}
+        and a.OBJ_TYPE = #{activeOrCouponType,jdbcType=VARCHAR}
+        and a.TARGET_OBJ_ID=#{targetActiveOrCouponId,jdbcType=VARCHAR}
+        and a.TARGET_OBJ_TYPE=#{targetActiveOrCouponType,jdbcType=VARCHAR})
+        or
+        (a.OBJ_ID = #{targetActiveOrCouponId,jdbcType=VARCHAR}
+        and a.OBJ_TYPE = #{targetActiveOrCouponType,jdbcType=VARCHAR}
+        and a.TARGET_OBJ_ID=#{activOrCouponId,jdbcType=VARCHAR}
+        and a.TARGET_OBJ_TYPE=#{activeOrCouponType,jdbcType=VARCHAR}))
+    </select>
 </mapper>

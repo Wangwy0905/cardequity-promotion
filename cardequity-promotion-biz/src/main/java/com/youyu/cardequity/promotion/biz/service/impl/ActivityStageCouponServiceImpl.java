@@ -1,7 +1,5 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
-import com.youyu.cardequity.promotion.biz.dal.dao.CouponStageUseAndGetRuleMapper;
-import com.youyu.cardequity.promotion.biz.dal.entity.CouponStageUseAndGetRuleEntity;
 import com.youyu.common.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +26,7 @@ public class ActivityStageCouponServiceImpl extends AbstractService<String, Acti
      * 1004259-徐长焕-20181210 新增
      * 功能：查询指定活动门槛阶梯详细信息
      * @param activityId 活动id
-     * @return
+     * @return 门槛列表
      */
     public List<ActivityStageCouponEntity> findActivityProfitDetail(String activityId) {
         return activityStageCouponMapper.findActivityProfitDetail(activityId);

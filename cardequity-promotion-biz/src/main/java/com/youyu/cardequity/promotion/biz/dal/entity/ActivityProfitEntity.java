@@ -2,14 +2,11 @@ package com.youyu.cardequity.promotion.biz.dal.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 
-import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
-import com.youyu.cardequity.promotion.dto.ActivityProfitDto;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 @Getter
 @Setter
@@ -47,16 +44,11 @@ public class ActivityProfitEntity extends com.youyu.common.entity.BaseEntity<Str
     private String activityShortDesc;
 
     /**
-     * 专属商品集合:订单涉及门槛属性：只有这些买入商品才提供优惠，但是具体优惠需要通过阶梯表获取，为*标识所有，最大允许20个商品编号，超过20个通过商品组进行控制
+     * 级别：0-自定义 1-全局
      */
-    @Column(name = "PRODUCT_SET")
-    private String productSet;
+    @Column(name = "ACTIVITY_LEVEL")
+    private String activityLevel;
 
-    /**
-     * 专属商品组集合:订单涉及门槛属性：只有这些买入商品组的商品才提供优惠，为*标识所有
-     */
-    @Column(name = "PRODUCT_GROUP_SET")
-    private String productGroupSet;
 
     /**
      * 专属客户类型集合:订单涉及门槛属性：只有这些这些客户类型才提供优惠。多种客户类型用逗号相隔，为*标识所有
@@ -92,13 +84,13 @@ public class ActivityProfitEntity extends com.youyu.common.entity.BaseEntity<Str
      * 优惠开始日:到分秒级别
      */
     @Column(name = "ALLOW_USE_BEGIN_DATE")
-    private LocalDate allowUseBeginDate;
+    private LocalDateTime allowUseBeginDate;
 
     /**
      * 优惠结束日:
      */
     @Column(name = "ALLOW_USE_END_DATE")
-    private LocalDate allowUseEndDate;
+    private LocalDateTime allowUseEndDate;
 
     /**
      * 优惠值:如果是按阶梯进行“现金立减”该值无效，如果是按阶梯进行“折扣”该值无效，如果是阶梯“优惠价”该值无效，如果是阶梯“限额任选”该值无效，是以最终的阶梯中优惠值覆盖；如果ActivityType=1填折扣值(0-1]
@@ -107,16 +99,28 @@ public class ActivityProfitEntity extends com.youyu.common.entity.BaseEntity<Str
     private BigDecimal profitValue;
 
     /**
-     * 叠加码:定义为8位码。相同标识码可叠加，多个以逗号相隔(设置该券时，应向操作员自动展示可叠加券列表)，为空代表所有
+     * 状态：0-上架 1-下架
      */
-    @Column(name = "RE_COUPON_CODE")
-    private String reCouponCode;
+    @Column(name = "STATUS")
+    private String status;
+
+    /**
+     * 备注
+     */
+    @Column(name = "REMARK")
+    private String remark;
 
     /**
      * 叠加标志:0-不可叠加 1-可叠加 2-自定义（建议规则简单点，不采用该值）
      */
     @Column(name = "RE_COUPON_FLAG")
     private String reCouponFlag;
+
+    /**
+     * 适用商品类型:0-自动义商品范围 1-全部
+     */
+    @Column(name = "APPLY_PRODUCT_FLAG")
+    private String applyProductFlag;
 
     /**
      * 是否有效:

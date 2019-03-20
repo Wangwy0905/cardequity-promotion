@@ -6,8 +6,35 @@
     <select id="findActivityProfitDetail" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityStageCouponEntity">
         SELECT * FROM
         TB_ACTIVITY_STAGE_COUPON a
-        WHERE ifnull(a.Is_enable,'1')='1'
-          and a.Activity_Id=#{activityId,jdbcType=VARCHAR}
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+          and a.ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
     </select>
+
+    <select id="findActivityProfitDetailByIds" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ActivityStageCouponEntity">
+        SELECT * FROM
+        TB_ACTIVITY_STAGE_COUPON a
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.ACTIVITY_ID IN
+        <foreach collection="idList" item="idstr" index="index"
+                 open="(" close=")" separator=",">
+            #{idstr}
+        </foreach>
+    </select>
+
+    <update id="logicDelByActivityId" parameterType="string">
+        UPDATE TB_ACTIVITY_STAGE_COUPON a
+        SET IS_ENABLE='0'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="logicDelByBaseActivity" parameterType="com.youyu.cardequity.promotion.vo.req.BaseActivityReq">
+        UPDATE TB_ACTIVITY_STAGE_COUPON a
+        SET IS_ENABLE='0'
+        WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        AND ACTIVITY_ID=#{activityId,jdbcType=VARCHAR}
+    </update>
+
+
 
 </mapper>

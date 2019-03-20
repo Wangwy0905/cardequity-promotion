@@ -1,72 +1,70 @@
 package com.youyu.cardequity.promotion.api;
 
-
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.vo.req.BaseOrderInPromotionReq;
+import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.req.OrderUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.req.PromotionDealReq;
+import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
+import com.youyu.cardequity.promotion.vo.rsp.OrderCouponAndActivityRsp;
 import com.youyu.common.api.Result;
-import com.youyu.cardequity.promotion.dto.ClientTakeInCouponDto;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.List;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * 代码生成器
+ * 优惠使用情况
  *
- * @author 技术平台
- * @date 2018-12-07
+ * @author 徐长焕
+ * @date 2018-12-27
+ * 修改日志：
+ * V1.0-V1 1004259-徐长焕-20181227 新增
  */
+@Api(tags = "优惠使用操作")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/tbClientTakeInCoupon")
+@RequestMapping(path = "/clientTakeInCoupon")
 public interface ClientTakeInCouponApi {
-
     /**
-     * select one
+     * *********************************【内部接口】************************
+     * 【内部】在订单时候根据使用活动及优惠券详情处理优惠券记录，记录使用痕迹
      *
-     * @param id
+     * @param req 订单及其权益使用信息
      * @return
      */
-    @ApiOperation(value = "select one")
-    @GetMapping("/{id}")
-    Result<ClientTakeInCouponDto> get(@PathVariable(name = "id") String id);
-
-    /**
-     * delete one
-     *
-     * @param id
-     * @return
-     */
-    @ApiOperation(value = "delete one")
-    @DeleteMapping("/{id}")
-    Result delete(@PathVariable(name = "id") String id);
-
-    /**
-     * save one
-     *
-     * @param dto
-     * @return
-     */
-    @ApiOperation(value = "save one")
-    @PostMapping("/")
-    Result<ClientTakeInCouponDto> save(@RequestBody ClientTakeInCouponDto dto);
+    @ApiOperation(value = "【内部】在订单时候使用活动及优惠券详情:处理优惠券记录，记录使用痕迹")
+    @PostMapping(path = "/orderCouponAndActivityDeal")
+     Result<OrderCouponAndActivityRsp> orderCouponAndActivityDeal(@RequestBody  PromotionDealReq req);
 
 
     /**
-     * update one
-     *
-     * @param dto
+     * 【内部】在订单预生成时候使用活动及优惠券详情
+     * 考虑了幂等性
+     * @param req
      * @return
      */
-    @ApiOperation(value = "update one")
-    @PutMapping("/")
-    Result<ClientTakeInCouponDto> update(@RequestBody ClientTakeInCouponDto dto);
-
+    @ApiOperation(value = "【内部】在订单预生成时候使用活动及优惠券详情")
+    @PostMapping(path = "/preOrderCouponAndActivityDeal")
+     Result<OrderCouponAndActivityRsp> preOrderCouponAndActivityDeal(@RequestBody GetUseEnableCouponReq  req);
 
     /**
-     * 查询所有
-     *
+     * 【内部】取消订单预使用活动及优惠券详情
+     * 考虑了幂等性
+     * @param req
      * @return
      */
-    @ApiOperation(value = "find all")
-    @GetMapping(path = "/findAll")
-    Result<List<ClientTakeInCouponDto>> findAll();
+    @ApiOperation(value = "【内部】取消订单预使用活动及优惠券详情")
+    @PostMapping(path = "/cancelOrderCouponAndActivityDeal")
+    Result<CommonBoolDto> cancelOrderCouponAndActivityDeal(@RequestBody BaseOrderInPromotionReq req);
+
+    /**
+     * 订单适用的“所有”优惠券
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【内部】订单适用的“所有”优惠券:没有限定使用张数情况下")
+    @PostMapping(path = "/orderDetailApplyAllCouponList")
+    Result<FindCouponListByOrderDetailRsp> orderDetailApplyAllCouponList(@RequestBody OrderUseEnableCouponReq req);
 }

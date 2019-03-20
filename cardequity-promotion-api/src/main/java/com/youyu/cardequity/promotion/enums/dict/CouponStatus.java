@@ -1,18 +1,14 @@
 package com.youyu.cardequity.promotion.enums.dict;
 
 /**
- * 订单状态
- *
- * @author hanxiaorui
- * @date 2018年12月10日
- * @work 订单状态
+ * Created by caiyi on 2019/1/16.
  */
 public enum CouponStatus {
-    NORMAL("0", "正常"),
-    USING("1", "使用中"),
-    USED("2", "已使用"),
 
-    ;
+    NO("0", "下架"),
+    YES("1", "上架"),
+
+            ;
 
     public static final String DICTID = "100179";
     public static final String DICTNAME = "CouponStatus";

@@ -1,7 +1,8 @@
 package com.youyu.cardequity.promotion.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,6 +18,9 @@ import io.swagger.annotations.ApiModel;
 @Data
 @ApiModel
 public class ActivityStageCouponDto implements IBaseDto<String>{
+    public ActivityStageCouponDto(){
+        endValue= CommonConstant.IGNOREVALUE;
+    }
 
     @ApiModelProperty(value = "编号:")
     private String uuid;
@@ -27,23 +31,17 @@ public class ActivityStageCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "活动编号:")
     private String activityId;
 
-    @ApiModelProperty(value = "活动处理类型:对ActivityCouponType=1有效；0-所有都优惠 1-前N(起始值)件优惠 2-每N(起始值)件优惠")
-    private String ActivityProfitType;
-
     @ApiModelProperty(value = "门槛触发类型:0-按买入金额 1-按买入数量（应设置其中之一，如果第二件5折可在此设置）")
     private String triggerByType;
 
     @ApiModelProperty(value = "值起始（不含）:没有阶梯填(0,999999999]")
     private BigDecimal beginValue;
 
-    @ApiModelProperty(value = "结束值（含）:最大值为999999999；")
+    @ApiModelProperty(value = "结束值（含）:最大值为999999999；空时也表示最大值")
     private BigDecimal endValue;
 
     @ApiModelProperty(value = "优惠值:使用时覆盖ActivityProfit中值起效")
     private BigDecimal profitValue;
-
-    @ApiModelProperty(value = "是否有效:")
-    private String isEnable;
 
     @Override
     public String getId() {

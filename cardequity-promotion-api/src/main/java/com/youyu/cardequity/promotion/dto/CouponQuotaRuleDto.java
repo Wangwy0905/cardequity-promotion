@@ -2,6 +2,8 @@ package com.youyu.cardequity.promotion.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,6 +19,14 @@ import io.swagger.annotations.ApiModel;
 @Data
 @ApiModel
 public class CouponQuotaRuleDto implements IBaseDto<String>{
+    public CouponQuotaRuleDto(){
+        perMaxAmount= CommonConstant.IGNOREVALUE;
+        perDateAndAccMaxAmount= CommonConstant.IGNOREVALUE;
+        perDateMaxAmount= CommonConstant.IGNOREVALUE;
+        personMaxAmount= CommonConstant.IGNOREVALUE;
+        maxAmount= CommonConstant.IGNOREVALUE;
+        maxCount= CommonConstant.IGNOREINTVALUE;
+    }
 
     @ApiModelProperty(value = "优惠券编号:")
     private String couponId;
@@ -41,21 +51,6 @@ public class CouponQuotaRuleDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "备注:")
     private String remark;
-
-    @ApiModelProperty(value = "产生者:")
-    private String createAuthor;
-
-    @ApiModelProperty(value = "更新者:")
-    private String updateAuthor;
-
-    @ApiModelProperty(value = "更新时间:")
-    private LocalDateTime updateTime;
-
-    @ApiModelProperty(value = "产生时间:")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "是否有效:")
-    private String isEnable;
 
     @Override
     public String getId() {

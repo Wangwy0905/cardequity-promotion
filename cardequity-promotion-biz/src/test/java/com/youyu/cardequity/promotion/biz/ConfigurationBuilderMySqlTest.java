@@ -4,7 +4,7 @@ package com.youyu.cardequity.promotion.biz;
 import com.youyu.common.generator.ConfigurationBuilder;
 import com.youyu.common.generator.model.YyGeneratorConfig;
 import com.youyu.common.generator.model.YyTableConfig;
-import io.micrometer.core.instrument.config.InvalidConfigurationException;
+//import io.micrometer.core.instrument.config.InvalidConfigurationException;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.JDBCConnectionConfiguration;
 import org.mybatis.generator.internal.DefaultShellCallback;
@@ -17,14 +17,15 @@ import java.util.List;
 
 public class ConfigurationBuilderMySqlTest {
 
-    public static void main(String[] args) throws InterruptedException, SQLException, InvalidConfigurationException, IOException, org.mybatis.generator.exception.InvalidConfigurationException {
+    public static void main(String[] args) throws InterruptedException, SQLException, IOException, org.mybatis.generator.exception.InvalidConfigurationException {
         /**
          * 初始化 db oracleDB.sql
          */
         oracle();
     }
 
-    public static void oracle() throws InvalidConfigurationException, InterruptedException, SQLException, IOException, org.mybatis.generator.exception.InvalidConfigurationException {
+    public static void oracle() throws InterruptedException, SQLException, IOException, org.mybatis.generator.exception.InvalidConfigurationException {
+    //public static void oracle() throws InvalidConfigurationException, InterruptedException, SQLException, IOException, org.mybatis.generator.exception.InvalidConfigurationException {
 //        Generator.startDB();
         YyGeneratorConfig config = new YyGeneratorConfig();
         config.setTargetProject("/分期商城/cardequity-promotion/cardequity-promotion-biz/src/main/java");
@@ -39,7 +40,7 @@ public class ConfigurationBuilderMySqlTest {
         config.setJdbcConnectionConfiguration(connectionConfiguration);
 
         YyTableConfig t1 = new YyTableConfig();
-        t1.setTableName("TB_PROFIT_CONFLICT_OR_RE_USE_REF");
+        t1.setTableName("TB_COUPON_REF_PRODUCT");
 //        t1.setPkColumn("id");
         t1.setSqlStatement("JDBC");
 //        t1.setSqlStatement("select SEQ_{1}.nextval from dual");

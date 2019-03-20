@@ -1,72 +1,37 @@
 package com.youyu.cardequity.promotion.api;
 
 
-import com.youyu.common.api.Result;
-import com.youyu.cardequity.promotion.dto.ClientTakeInActivityDto;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import com.youyu.cardequity.promotion.vo.req.GetUseEnableCouponReq;
+import com.youyu.cardequity.promotion.vo.rsp.UseActivityRsp;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.youyu.common.api.Result;
 import java.util.List;
 
 /**
- * 代码生成器
+ * 参加活动相关动作
  *
- * @author 技术平台
- * @date 2018-12-07
+ * @author 徐长焕
+ * @date 2019-01-03
+ * 修改日志：
  */
+@Api(tags = "参加活动相关动作")
 @FeignClient(name = "cardequity-promotion")
-@RequestMapping(path = "/tbClientTakeInActivity")
+@RequestMapping(path = "/clientTakeInActivity")
 public interface ClientTakeInActivityApi {
 
     /**
-     * select one
-     *
-     * @param id
+     * *********************************【内部接口】************************
+     * 【内部】通过选购信息进行参加活动处理
+     * @param req
      * @return
      */
-    @ApiOperation(value = "select one")
-    @GetMapping("/{id}")
-    Result<ClientTakeInActivityDto> get(@PathVariable(name = "id") String id);
-
-    /**
-     * delete one
-     *
-     * @param id
-     * @return
-     */
-    @ApiOperation(value = "delete one")
-    @DeleteMapping("/{id}")
-    Result delete(@PathVariable(name = "id") String id);
-
-    /**
-     * save one
-     *
-     * @param dto
-     * @return
-     */
-    @ApiOperation(value = "save one")
-    @PostMapping("/")
-    Result<ClientTakeInActivityDto> save(@RequestBody ClientTakeInActivityDto dto);
-
-
-    /**
-     * update one
-     *
-     * @param dto
-     * @return
-     */
-    @ApiOperation(value = "update one")
-    @PutMapping("/")
-    Result<ClientTakeInActivityDto> update(@RequestBody ClientTakeInActivityDto dto);
-
-
-    /**
-     * 查询所有
-     *
-     * @return
-     */
-    @ApiOperation(value = "find all")
-    @GetMapping(path = "/findAll")
-    Result<List<ClientTakeInActivityDto>> findAll();
+    @ApiOperation(value = "【内部】通过选购信息进行参加活动处理")
+    @PostMapping(path = "/takeInActivityByOrder")
+    Result<List<UseActivityRsp>> takeInActivityByOrder(@RequestBody GetUseEnableCouponReq req);
 }
