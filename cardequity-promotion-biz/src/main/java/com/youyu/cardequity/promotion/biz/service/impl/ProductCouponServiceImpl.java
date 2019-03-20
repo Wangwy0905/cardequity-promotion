@@ -18,6 +18,7 @@ import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.*;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
+import com.youyu.cardequity.promotion.vo.DateParam.DateParam;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -93,12 +95,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     public List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq) {
         List<ProductCouponEntity> productCouponlist = null;
         List<CouponDetailDto> result = new ArrayList<>();
-
+        DateParam dateParam=getMaxMonthDate();
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(qryProfitCommonReq.getExclusionFlag())) {
             //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
-            productCouponlist = productCouponMapper.findEnableGetCouponList(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType());
+            productCouponlist = productCouponMapper.findEnableGetCouponList(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType(),dateParam.getLastMonth());
         } else {
-            productCouponlist = productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType());
+            productCouponlist = productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType(),dateParam.getLastMonth());
         }
 
         List<ProductCouponEntity> finnalCouponlist = new ArrayList<>();
@@ -1208,6 +1210,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //monthNum        第几月可领的券的指定月数
         if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
             //当月可领的
+            //改动
+            DateParam maxMonthDate = getMaxMonthDate();
             List<CouponDetailDto> enableGetCoupons = findEnableGetCoupon(req);
             //消费券排前面,2级券排前面
             Collections.sort(enableGetCoupons, new Comparator<CouponDetailDto>() {
@@ -1315,6 +1319,27 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             result.addAll(overresult);
         }
         return result;
+    }
+
+    /**
+     * 查询每个月月末的日期
+     *
+     * @param
+     * @return 每个月月末的值
+     */
+
+    @Override
+    public DateParam getMaxMonthDate(){
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        Calendar cale=Calendar.getInstance();
+        cale.add(Calendar.MONTH,1);
+        cale.set(Calendar.DAY_OF_MONTH,0);
+        String lastDay;
+        lastDay=sdf.format(cale.getTime());
+        DateParam dateParam=new DateParam();
+        dateParam.setLastMonth(lastDay);
+
+        return dateParam;
     }
 
 }

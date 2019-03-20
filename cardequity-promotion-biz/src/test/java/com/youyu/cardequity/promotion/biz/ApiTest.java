@@ -1,9 +1,12 @@
 package com.youyu.cardequity.promotion.biz;
 
+import com.youyu.cardequity.common.base.util.DateUtil;
 import com.youyu.cardequity.promotion.biz.controller.ActivityProfitController;
 import com.youyu.cardequity.promotion.biz.controller.ClientCouponController;
 import com.youyu.cardequity.promotion.biz.controller.ProductCouponController;
+import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.vo.DateParam.DateParam;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.common.api.Result;
 import org.junit.Test;
@@ -11,6 +14,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.SimpleTimeZone;
 
 /**
  * Created by caiyi on 2018/12/11.
@@ -26,6 +34,8 @@ public class ApiTest {
 
     @Autowired
     ClientCouponController clientCouponController;
+    @Autowired
+    ProductCouponService productCouponService;
 
     @Test
     public  void test() {
@@ -55,4 +65,63 @@ public class ApiTest {
         //System.out.println(rsp.data.size());
 
     }
+
+    /**
+     * 获取月份最后日期
+     * @param
+     * @return
+     * @throws ParseException
+     */
+    @Test
+  public void test2(){
+
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        String firstDay,lastDay;
+        Calendar calendar=null;
+        //当前月的第一天
+        calendar=Calendar.getInstance();
+        calendar.add(Calendar.MONTH,0);
+        calendar.set(Calendar.DAY_OF_MONTH,1);
+        firstDay=sdf.format(calendar.getTime());
+
+        //当前月的最后一天
+        Calendar cale=Calendar.getInstance();
+        cale.add(Calendar.MONTH,1);
+        cale.set(Calendar.DAY_OF_MONTH,0);
+        lastDay=sdf.format(cale.getTime());
+        System.out.println(lastDay);
+
+
+        System.out.println(firstDay);
+
+
+
+
+    }
+    @Test
+    public void test3(){
+        DateParam maxMonthDate = productCouponService.getMaxMonthDate();
+
+        System.out.println(maxMonthDate);
+
+    }
+
+  /*  public static void main(String[] args) throws ParseException {
+        String s = getMaxMonthDate();
+        System.out.println(s);
+    }
+
+    */
+  /*
+    public void testGetMaxMonthDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String lastDay;
+        Calendar cale=Calendar.getInstance();
+        cale.add(Calendar.MONTH,1);
+        cale.set(Calendar.DAY_OF_MONTH,0);
+        lastDay=dateFormat.format(cale.getTime());
+        System.out.println(lastDay);
+    }*/
+
 }
+

@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
+import com.youyu.cardequity.promotion.vo.DateParam.DateParam;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
@@ -146,6 +147,13 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @return
      */
      List<ObtainCouponViewDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req);
+     //改动
+    /**
+     * 获取每哥月月初月末的具体日期
+     *
+     * @return  月初值 月末值
+     */
+     DateParam getMaxMonthDate();
 
 }
 

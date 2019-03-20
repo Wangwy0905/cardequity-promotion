@@ -32,7 +32,8 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      */
     List<ProductCouponEntity> findEnableGetCouponListByCommon(@Param("productId") String productId,
                                                               @Param("entrustWay") String entrustWay,
-                                                              @Param("clientType") String clientType);
+                                                              @Param("clientType") String clientType,
+                                                              @Param("lastMonth") String lastMonth);
 
 
     /**
@@ -46,7 +47,8 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      */
     List<ProductCouponEntity> findEnableGetCouponList(@Param("productId") String productId,
                                                               @Param("entrustWay") String entrustWay,
-                                                              @Param("clientType") String clientType);
+                                                              @Param("clientType") String clientType,
+                                                              @Param("lastMonth") String lastMonth);
 
     /**
      * 根据指定券，获取到券的基本信息
