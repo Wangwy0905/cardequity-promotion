@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,9 @@ public class CouponDetailDto {
 
     @ApiModelProperty(value = "优惠券涉及的商品")
     private List<BaseProductReq> productList;
+    //改动
+    @ApiModelProperty(value = "优惠券需要删除的商品")
+    private List<BaseProductReq> delProductList;
 
     @ApiModelProperty(value = "领取或使用规则")
     private List<CouponGetOrUseFreqRuleDto> freqRuleList;
@@ -52,7 +56,7 @@ public class CouponDetailDto {
             dto.setLabelDto(productCouponDto.getLabelDto());
 
             //转义领取对象
-            //注册用户                      //getStage  获取阶段:0-付后 1-即时 2-确认收货后 3-注册 4-推荐 5-分享 6-平台指定发放
+            //注册用户    //getStage  获取阶段:0-付后 1-即时 2-确认收货后 3-注册 4-推荐 5-分享 6-平台指定发放
             if (UsedStage.Register.getDictValue().equals(productCouponDto.getGetStage())) {
                 dto.setTargetFlag(CommonDict.FRONDEND_NEW.getCode());  //新用户
             }
@@ -99,7 +103,7 @@ public class CouponDetailDto {
                         stage.getEndValue()!=null && stage.getEndValue().compareTo(BigDecimal.ZERO)>0 && stage.getEndValue().compareTo(CommonConstant.IGNOREVALUE)<0 &&
                         stage.getBeginValue()!=null && stage.getBeginValue().compareTo(BigDecimal.ZERO)>0) {
 
-                    //？？？？？？？？？？？？                     // //除                          //乘
+
                     dto.setPerProfitTopValue(stage.getEndValue().divide(stage.getBeginValue()).multiply(stage.getCouponValue()));
                 }
                 dto.setStageId(stage.getUuid());

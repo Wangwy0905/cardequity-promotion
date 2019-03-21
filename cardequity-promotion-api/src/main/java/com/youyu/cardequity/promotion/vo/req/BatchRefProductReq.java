@@ -18,6 +18,10 @@ public class BatchRefProductReq {
     @ApiModelProperty(value = "优惠券涉及的商品")
     private  List<BaseProductReq> productList;
 
+    //改动
+    @ApiModelProperty(value = "优惠券涉及的需要删除的商品")
+    private  List<BaseProductReq> delProductList;
+
     @ApiModelProperty(value = "操作标识：0-全量 1-增量")
     private String operatFlag;
 

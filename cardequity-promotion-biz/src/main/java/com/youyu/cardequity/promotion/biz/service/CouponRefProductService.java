@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity;
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.CouponRefProductDto;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
@@ -28,6 +29,13 @@ public interface CouponRefProductService extends IService<CouponRefProductDto, C
      CommonBoolDto<Integer> batchAddCouponRefProduct(BatchRefProductReq req);
 
     /**
+     * 删除不需要的适用商品
+     * @Param req
+     * @return
+     */
+     CommonBoolDto<Integer> batchDeleteCouponRefProduct(BatchRefProductReq req);
+
+    /**
      * 查询优惠券配置的商品信息
      * @param req
      * @return
@@ -41,6 +49,8 @@ public interface CouponRefProductService extends IService<CouponRefProductDto, C
      * @return 商品对应活动数量
      */
     List<GatherInfoRsp> findProductAboutCouponNum(BatchBaseProductReq req);
+
+
 }
 
 
