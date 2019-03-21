@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "TB_COUPON_REF_PRODUCT")
+//优惠活动定义适用商品表
 public class CouponRefProductEntity extends com.youyu.common.entity.BaseEntity<String> {
     /**
      * 活动编号:
