@@ -94,7 +94,7 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
         CommonBoolDto<Integer> delDto =new CommonBoolDto<>(true);
         //优惠活动定义适用商品表
         List<CouponRefProductEntity> delProductList = new ArrayList<>();
-        //【配置适用商品】:传入代表着需要更新配置
+        //【配置适用商品】:传入了代表着需要更新配置
         if(req.getDelProductList() !=null){
             for(BaseProductReq item :req.getDelProductList()){
                 CouponRefProductEntity couponRefProductEntity = new CouponRefProductEntity();
