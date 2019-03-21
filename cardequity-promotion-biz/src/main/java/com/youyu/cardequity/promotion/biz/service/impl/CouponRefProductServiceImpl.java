@@ -85,7 +85,7 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
      * @param req
      * @return
      */
-    //改动
+    //改动代码
     @Override
     public  CommonBoolDto<Integer> batchDeleteCouponRefProduct(BatchRefProductReq req){
         if (req == null || CommonUtils.isEmptyorNull(req.getId())) {
