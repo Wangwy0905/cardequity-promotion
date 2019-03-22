@@ -310,6 +310,7 @@
         group by case when a.CLIENT_TYPE_SET = '11' then '2' when ifnull(a.GET_STAGE, '6') = '3' then '1' else '0' end
     </select>
 
+
     <select id="findCouponNumByProducts" resultType="com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp">
         select CONCAT(PRODUCT_ID,'|',if(length(SKU_ID),SKU_ID,'EMPTY')) as gatherItem,
         count(*) as gatherValue
@@ -327,6 +328,7 @@
         </foreach>
         group by CONCAT(PRODUCT_ID,'|',if(length(SKU_ID),SKU_ID,'EMPTY'))
     </select>
+
 
     <select id="findUnlimitedProductCoupon"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
