@@ -26,6 +26,7 @@ import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import javafx.beans.binding.ObjectBinding;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1145,6 +1146,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         int retInt = req.getPageSize() <= 0 ? 999 : req.getPageSize();
 
         List<ObtainCouponViewDto> result = new ArrayList<>();
+        //显示数据集合
+        List<ObtainCouponViewDto> fiveResult=new ArrayList<>();
+        //已使用过的券
+        List<ObtainCouponViewDto> overresult = new ArrayList<>();
+
         //1.获取可领取的优惠券
         List<CouponDetailDto> enableGetCoupon = findEnableGetCoupon(req);
         //消费券排前面,2级券排前面
@@ -1174,16 +1180,21 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 item.setValidEndDate(LocalDateTime.now().plusDays(dto.getValIdTerm()));
             }
             item.setProductList(enableGetCoupon.get(i).getProductList());
+            //result  获得优惠卷视图list
             result.add(item);
         }
-
-        retInt = retInt - result.size();
-        if (retInt==0)
+      /*  //改动
+       // retInt =retInt - result.size();
+        if (retInt >= result.size()) {
             return result;
+        }else{
+
+        }*/
 
         //2.获取已领取的优惠券
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
+        //1-已领取 2-已使用 3-过期未使用 4-为开始 5-可使用
         List<ObtainCouponViewDto> clientCoupon = clientCouponService.findClientCoupon(innerReq);
         List<ObtainCouponViewDto> resultDto = new ArrayList<>();
         for (ObtainCouponViewDto item : clientCoupon) {
@@ -1193,7 +1204,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     CommonConstant.OBTAIN_STATE_UNSTART.equals(item.getObtainState())) {
                 continue;
             }
-            resultDto.add(item);
+            //改动
+            if(CommonConstant.OBTAIN_STATE_USE.equals(item.getObtainState())){
+                overresult.add(item);
+            }else{
+                resultDto.add(item);
+            }
+
         }
 
 
@@ -1204,14 +1221,30 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 return myCompare(entity1,entity2);
             }
         });
-        //返回数据不足需要
+        resultDto.addAll(overresult);
+        result.addAll(resultDto);
+        if(result.size()<=retInt){
+            for (int i=0;i<result.size();i++){
+                fiveResult.add(result.get(i));
+            }
+
+        }else{
+            for (int i=0;i<retInt;i++){
+                fiveResult.add(result.get(i));
+            }
+
+        }
+        return fiveResult;
+
+     /*   //返回数据不足需要
         t = resultDto.size() >= retInt ? retInt : resultDto.size();
         for (int i = 0; i < t; i++) {
             result.add(resultDto.get(i));
         }
         resultDto.clear();
         resultDto=null;
-        return result;
+        return result;*/
+
     }
     /**
      * 查询H5指定月会员专享可领优惠券
