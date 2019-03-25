@@ -673,14 +673,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //商品优惠券Dto
        // ProductCouponDto dto = req.getProductCouponDto();
         //改动
-/*        if(req.getDelProductList()!=null){
-            //批量删除关联商品
-            BatchRefProductReq refDelProductReq = new BatchRefProductReq();
-            refDelProductReq.setId(dto.getId());
-            refDelProductReq.setDelProductList(req.getDelProductList());
 
-            couponRefProductService.batchDeleteCouponRefProduct(refDelProductReq);
-        }*/
         //改动
         BatchRefProductReq refProductReq = new BatchRefProductReq();
         refProductReq.setId(dto.getId());
@@ -699,17 +692,15 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             refProductReq.setDelProductList(req.getDelProductList());
             couponRefProductService.batchDeleteCouponRefProduct(refProductReq);
         }else{
-            throw new BizException(PARAM_ERROR.getCode(),PARAM_ERROR.getFormatDesc("参数的传递出现错误"));
-        }
+            BeanPropertiesUtils.copyProperties(dto, entity);  //enity-（商品优惠券实体）编辑实体必须存在   dto-商品优惠券dto
+            entity.setCouponLable(dto.getLabelDto().getId());
+            entity.setUpdateAuthor(req.getOperator());
+            entity.setIsEnable(CommonDict.IF_YES.getCode());
 
-        BeanPropertiesUtils.copyProperties(dto, entity);  //enity-（商品优惠券实体）编辑实体必须存在   dto-商品优惠券dto
-        entity.setCouponLable(dto.getLabelDto().getId());
-        entity.setUpdateAuthor(req.getOperator());
-        entity.setIsEnable(CommonDict.IF_YES.getCode());
-
-        sqlresult = productCouponMapper.updateByPrimaryKey(entity);
-        if (sqlresult <= 0) {
-            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("更新优惠信息错误，编号" + entity.getId()));
+            sqlresult = productCouponMapper.updateByPrimaryKey(entity);
+            if (sqlresult <= 0) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("更新优惠信息错误，编号" + entity.getId()));
+            }
         }
         result.setSuccess(true);
         result.setCode(NET_ERROR.getCode());
@@ -1144,14 +1135,15 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     @Override
     public List<ObtainCouponViewDto> findFirstPageVipCoupon(PageQryProfitCommonReq req) {
         int retInt = req.getPageSize() <= 0 ? 999 : req.getPageSize();
-
+        //获得优惠卷视图
         List<ObtainCouponViewDto> result = new ArrayList<>();
-        //显示数据集合
+        //显示数据集合   改动
         List<ObtainCouponViewDto> fiveResult=new ArrayList<>();
-        //已使用过的券
+        //已使用过的券  改动
         List<ObtainCouponViewDto> overresult = new ArrayList<>();
 
         //1.获取可领取的优惠券
+
         List<CouponDetailDto> enableGetCoupon = findEnableGetCoupon(req);
         //消费券排前面,2级券排前面
         Collections.sort(enableGetCoupon, new Comparator<CouponDetailDto>() {
@@ -1160,9 +1152,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                return myCompare(entity1,entity2);
             }
         });
-                //可以领取的优惠券
-        int t = enableGetCoupon.size() >= retInt ? retInt : enableGetCoupon.size();
-        for (int i = 0; i < t; i++) {
+                //可以领取的优惠券  改动
+        //int t = enableGetCoupon.size() >= retInt ? retInt : enableGetCoupon.size();
+        for (int i = 0; i < enableGetCoupon.size(); i++) {
             //商品优惠券
             ProductCouponDto dto = enableGetCoupon.get(i).getProductCouponDto();
             if (!ClientType.MEMBER.getDictValue().equals(dto.getClientTypeSet()))
@@ -1171,7 +1163,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             ObtainCouponViewDto item = new ObtainCouponViewDto();
             BeanPropertiesUtils.copyProperties(enableGetCoupon.get(i).switchToView(), item);
             item.setLabelDto(dto.getLabelDto());//优惠标签:标签：满返券、促销等
-            item.setObtainState(CommonConstant.OBTAIN_STATE_NO); //领取状态   0-未领取
+            item.setObtainState(CommonConstant.OBTAIN_STATE_NO); //领取状态   0-可领取
             if (dto.getValIdTerm() <= 0) {  //有效期限
                 item.setValidStartDate(dto.getAllowUseBeginDate());
                 item.setValidEndDate(dto.getAllowUseEndDate());
@@ -1183,18 +1175,16 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             //result  获得优惠卷视图list
             result.add(item);
         }
-      /*  //改动
+        //改动
        // retInt =retInt - result.size();
-        if (retInt >= result.size()) {
+      /*  if (retInt >= result.size()) {
             return result;
-        }else{
-
-        }*/
-
+        }
+*/
         //2.获取已领取的优惠券
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
-        //1-已领取 2-已使用 3-过期未使用 4-为开始 5-可使用
+        //0-可领取 1-已领取 2-已使用 3-过期未使用 4-未开始 5-可使用
         List<ObtainCouponViewDto> clientCoupon = clientCouponService.findClientCoupon(innerReq);
         List<ObtainCouponViewDto> resultDto = new ArrayList<>();
         for (ObtainCouponViewDto item : clientCoupon) {
@@ -1212,7 +1202,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
 
         }
-
 
         //消费券排前面,2级券排前面
         Collections.sort(resultDto, new Comparator<ObtainCouponViewDto>() {
