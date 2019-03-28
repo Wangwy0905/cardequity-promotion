@@ -147,4 +147,15 @@
                        and c.PRODUCT_ID=b.PRODUCT_ID and (c.SKU_ID is null or b.SKU_ID is null or c.SKU_ID=b.SKU_ID))
     </select>
 
+
+
+    <delete id="deleteByProductId" >
+        DELETE  FROM TB_ACTIVITY_REF_PRODUCT
+        WHERE PRODUCT_ID IN
+        <foreach collection="productList" item="product" index="index"
+                                      open="(" close=")" separator=",">
+           #{product}
+        </foreach>
+    </delete>
+
 </mapper>

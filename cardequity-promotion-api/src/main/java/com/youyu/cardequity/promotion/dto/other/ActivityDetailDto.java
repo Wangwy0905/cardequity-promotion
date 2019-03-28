@@ -36,6 +36,9 @@ public class ActivityDetailDto {
     @ApiModelProperty(value = "优惠券涉及的商品")
     private List<BaseProductReq> productList;
 
+    @ApiModelProperty(value = "原来需要剔除的优惠券商品")
+    private List<BaseProductReq> delProductList;
+
     public ActivityViewDto switchToView() {
         ActivityViewDto result = new ActivityViewDto();
         if (activityProfit != null) {
