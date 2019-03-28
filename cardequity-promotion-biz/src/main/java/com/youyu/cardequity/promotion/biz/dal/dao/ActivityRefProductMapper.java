@@ -111,10 +111,10 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
 
     /**
      * 通过商品id物理删除适用商品
-     * @param productList
+     * @param delActivityProductIds
      * @return
      */
-    int deleteByProductId(@Param("productList") List<String> productList);
+    int deleteByProductId(@Param("delActivityProductIds") List<String> delActivityProductIds);
 }
 
 

@@ -536,7 +536,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             }
 
-            //5.配置适用商品：先删后插
+            //5.配置适用商品
             if (item.getProductList() != null) {
                 if (!StringUtil.isEmpty(item.getActivityProfit().getId()))
                     configProductActivityIds.add(item.getActivityProfit().getId());
@@ -552,6 +552,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     refProductEntity.setId(CommonUtils.getUUID());
                     refProductEntity.setIsEnable(CommonDict.IF_YES.getCode());
                     refProductList.add(refProductEntity);
+                }
+            }
+            if(item.getDelProductList() !=null){
+                for (BaseProductReq delProduct : item.getDelProductList()){
+                    delActivityProductIds.add(delProduct.getProductId());
                 }
             }
         }
