@@ -151,11 +151,11 @@
 
     <delete id="deleteByProductId" >
         DELETE  FROM TB_ACTIVITY_REF_PRODUCT
-        WHERE PRODUCT_ID IN
-        <foreach collection="productList" item="product" index="index"
-                                      open="(" close=")" separator=",">
-           #{product}
-        </foreach>
+        WHERE PRODUCT_ID = #{delActivityProductId}
+        <!--<foreach collection="delActivityProductIds" item="id" index="index"-->
+                                      <!--open="(" close=")" separator=",">-->
+           <!--#{id}-->
+        <!--</foreach>-->
     </delete>
 
 </mapper>

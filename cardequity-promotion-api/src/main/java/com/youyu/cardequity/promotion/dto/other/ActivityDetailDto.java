@@ -69,6 +69,7 @@ public class ActivityDetailDto {
 
         result.setStageList(stageList);
         result.setProductList(productList);
+
         return result;
     }
 

@@ -457,8 +457,9 @@
         <if test='couponStatus!=null and couponStatus=="2"'>
             and a.ALLOW_USE_END_DATE &lt;curdate()
         </if>
+        /*改动*/
         <if test='couponStatus!=null and couponStatus=="3"'>
-            and a.ALLOW_USE_END_DATE &gt;curdate()
+            and a.ALLOW_USE_END_DATE &gt;=curdate()
         </if>
         <if test="productId!=null and productId!=''">
             and( a.APPLY_PRODUCT_FLAG='1' or

@@ -536,14 +536,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             }
 
-            //5.配置适用商品：先删后插
+            //5.配置适用商品
             if (item.getProductList() != null) {
                 if (!StringUtil.isEmpty(item.getActivityProfit().getId()))
                     configProductActivityIds.add(item.getActivityProfit().getId());
-                if (item.getDelProductList() != null)
-                    for (BaseProductReq product : item.getDelProductList()) {
-                        delActivityProductIds.add(product.getProductId());
-                    }
                 for (BaseProductReq product : item.getProductList()) {
                     ActivityRefProductEntity refProductEntity = BeanPropertiesUtils.copyProperties(product, ActivityRefProductEntity.class);
                     refProductEntity.setUpdateAuthor(req.getOperator());
@@ -554,6 +550,14 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                     refProductList.add(refProductEntity);
                 }
             }
+
+            if(item.getDelProductList() !=null){
+                for (BaseProductReq delProduct : item.getDelProductList()){
+                    delActivityProductIds.add(delProduct.getProductId());
+                    delActivityProductIds.add(profit.getId());
+                    System.out.println("==================");
+                }
+            }
         }
 
         //数据库操作
@@ -561,9 +565,6 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             batchService.batchDispose(activityList, ActivityProfitMapper.class, "updateByPrimaryKey");
 
 
-        if (!delActivityProductIds.isEmpty()){
-            batchService.batchDispose(delActivityProductIds, ActivityRefProductMapper.class, "deleteByProductId");
-        }
 
         if (!activityIds.isEmpty()) {
             batchService.batchDispose(activityIds, ActivityStageCouponMapper.class, "logicDelByActivityId");
@@ -587,6 +588,10 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         if (!refProductList.isEmpty())
             batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
 
+        if (!delActivityProductIds.isEmpty()){
+            batchService.batchDispose(delActivityProductIds, ActivityRefProductMapper.class, "deleteByProductId");
+            System.out.println("++++++++++++++++++++++++++++++++++");
+        }
         log.info("batchEditActivity数据库处理完毕");
         result.setSuccess(true);
         result.setCode(NET_ERROR.getCode());
