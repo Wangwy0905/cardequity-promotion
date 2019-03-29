@@ -107,6 +107,14 @@ public interface ActivityRefProductMapper extends YyMapper<ActivityRefProductEnt
      * @return
      */
     List<BaseProductReq> findForbidCifgProductByActivity(@Param("activity") ActivityProfitDto activity);
+
+
+    /**
+     * 通过商品id物理删除适用商品
+     * @param delActivityProductId
+     * @return
+     */
+    int deleteByProductId(@Param("delActivityProductId") String delActivityProductId);
 }
 
 

@@ -43,7 +43,7 @@ public interface CommonConstant {
     String USENEWREGISTER_YES="1";
 
     /**
-     * 领取状态:0-未领取 1-已领取 2-已使用 3-过期未使用 4-为开始 5-未过期未使用 6-该用户已领完 7-可继续领取
+     * 领取状态:0-可领取 1-已领取 2-已使用 3-过期未使用 4-为开始 5-可使用 6-该用户已领完 7-可继续领取
      */
     String OBTAIN_STATE_NO = "0";
     String OBTAIN_STATE_YES = "1";

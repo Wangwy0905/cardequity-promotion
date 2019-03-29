@@ -57,12 +57,13 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
 
 
         CommonBoolDto<Integer> dto = new CommonBoolDto<>(true);
+        //优惠活动定义适用商品表
         List<CouponRefProductEntity> productList = new ArrayList<>();
         //【配置适用商品】:传入了代表着需要更新配置
         if (req.getProductList() != null) {
-            //全量时才允许删除
-            if ("1" != req.getOperatFlag())
-                couponRefProductMapper.deleteByCouponId(req.getId());
+            //全量时才允许删除    改动
+              //if ("1" != req.getOperatFlag())
+              //  couponRefProductMapper.deleteByCouponId(req.getId());
             for (BaseProductReq item : req.getProductList()) {
                 CouponRefProductEntity couponRefProductEntity = new CouponRefProductEntity();
                 couponRefProductEntity.setCouponId(req.getId());
@@ -75,8 +76,39 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
 
             batchService.batchDispose(productList, CouponRefProductMapper.class, "insert");
             dto.setData(req.getProductList().size());
-        }
+       }
         return dto;
+    }
+
+    /**
+     * 删除取消配置优惠的适用商品
+     * @param req
+     * @return
+     */
+    //改动
+    @Override
+    public  CommonBoolDto<Integer> batchDeleteCouponRefProduct(BatchRefProductReq req){
+        if (req == null || CommonUtils.isEmptyorNull(req.getId())) {
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定优惠券id 参数"));
+        }
+        CommonBoolDto<Integer> delDto =new CommonBoolDto<>(true);
+        //优惠活动定义适用商品表
+        List<CouponRefProductEntity> delProductList = new ArrayList<>();
+        //【配置适用商品】:传入了代表着需要更新配置
+        if(req.getDelProductList() !=null){
+            for(BaseProductReq item :req.getDelProductList()){
+                CouponRefProductEntity couponRefProductEntity = new CouponRefProductEntity();
+                couponRefProductEntity.setCouponId(req.getId());
+                couponRefProductEntity.setProductId(item.getProductId());
+                couponRefProductEntity.setSkuId(item.getSkuId());
+                //couponRefProductEntity.setId(CommonUtils.getUUID());
+                // couponRefProductEntity.setIsEnable(CommonDict.IF_YES.getCode());
+                delProductList.add(couponRefProductEntity);
+            }
+            batchService.batchDispose(delProductList,CouponRefProductMapper.class,"delete");
+            delDto.setData(req.getDelProductList().size());
+        }
+        return delDto;
     }
 
 

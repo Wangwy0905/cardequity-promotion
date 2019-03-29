@@ -26,6 +26,7 @@ import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import javafx.beans.binding.ObjectBinding;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -361,8 +362,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 stageRuleEntity.setCreateAuthor(req.getOperator());
                 stageRuleEntity.setUpdateAuthor(req.getOperator());
                 stageRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
-                //子券id=券id+前补03位
-                //stage.setId(stage.getCouponId() + String.format("%03d", Integer.valueOf(req.getStageList().indexOf(stage))));
                 stageRuleEntity.setId(CommonUtils.getUUID());
                 stage.setId(stageRuleEntity.getId());
                 stageList.add(stageRuleEntity);
@@ -371,6 +370,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //【处理频率】
+        //逻辑删除  通过优惠id
         couponGetOrUseFreqRuleMapper.logicDelByCouponId(dto.getId());
         if (req.getFreqRuleList() != null) {
             for (CouponGetOrUseFreqRuleDto item : req.getFreqRuleList()) {
@@ -451,6 +451,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<CouponGetOrUseFreqRuleEntity> freqRuleList = new ArrayList<>();
         int sqlresult = 0;
 
+        //商品优惠券Dto
         ProductCouponDto dto = req.getProductCouponDto();
         if (dto == null) {
             result.setDesc("没有指定编辑信息");
@@ -485,7 +486,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (dto.getUseGeEndDateFlag() == null)
             dto.setUseGeEndDateFlag(UseGeEndDateFlag.NO.getDictValue());
 
-        if (StringUtil.isEmpty(dto.getUsedStage()))
+        if (StringUtil.isEmpty(dto.getUsedStage()))//付后-0  确认收货后-1
             dto.setUsedStage(UsedStage.AfterPay.getDictValue());
 
         if (StringUtil.isEmpty(dto.getGetStage()))
@@ -558,11 +559,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //【处理阶梯】
-        //先逻辑删除门槛信息
-        couponStageRuleMapper.logicDelByCouponId(dto.getId());
+
         if (req.getStageList() != null && !req.getStageList().isEmpty()) {
             //组装子券信息
             for (CouponStageRuleDto stage : req.getStageList()) {
+                //优惠券阶梯规则实体
                 CouponStageRuleEntity stageRuleEntity = new CouponStageRuleEntity();
                 if (stage.getBeginValue() == null)
                     stage.setBeginValue(BigDecimal.ZERO);
@@ -585,8 +586,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 BeanPropertiesUtils.copyProperties(stage, stageRuleEntity);
                 stageRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
                 if (CommonUtils.isEmptyorNull(stage.getId())) {
-                    //子券id=券id+前补03位
-                    //stage.setId(stage.getCouponId() + String.format("%03d", Integer.valueOf(req.getStageList().indexOf(stage))));
+
                     stageRuleEntity.setId(CommonUtils.getUUID());
                     stage.setId(stageRuleEntity.getId());
                     stageRuleEntity.setCreateAuthor(req.getOperator());
@@ -607,25 +607,28 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         }
 
-        //【处理频率】
+        //【处理频率】   优惠卷获得或使用频率规则-删除通过优惠id    dto商品优惠券
         couponGetOrUseFreqRuleMapper.deleteByCouponId(dto.getId());
         //couponGetOrUseFreqRuleMapper.logicDelByCouponId(dto.getId());
+               //领取或使用频率规则
         if (req.getFreqRuleList() != null) {
             for (CouponGetOrUseFreqRuleDto item : req.getFreqRuleList()) {
                 item.setValue(1);//默认不支持多频率
                 item.setCouponId(dto.getId());
-                if (CommonUtils.isEmptyorNull(item.getOpCouponType()))
+                if (CommonUtils.isEmptyorNull(item.getOpCouponType())) //操作方式 0-获取 1-使用
                     item.setOpCouponType(OpCouponType.GETRULE.getDictValue());
-
+                                             //优惠阶梯编号
                 if (CommonUtils.isEmptyorNull(item.getStageId())) {
                     if (req.getStageList() != null && req.getStageList().size() == 1) {
                         item.setStageId(req.getStageList().get(0).getId());
                     }
                 }
 
-                item.setCouponId(dto.getId());
+                item.setCouponId(dto.getId()); //领取编号
+                //优惠券领取使用频率规则实体
                 CouponGetOrUseFreqRuleEntity freqRuleEntity = BeanPropertiesUtils.copyProperties(item, CouponGetOrUseFreqRuleEntity.class);
                 freqRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+
                 if (CommonUtils.isEmptyorNull(item.getId())) {
                     freqRuleEntity.setId(CommonUtils.getUUID());
                     item.setId(freqRuleEntity.getId());
@@ -635,6 +638,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     }
                 } else {
                     sqlresult = couponGetOrUseFreqRuleMapper.updateByPrimaryKey(freqRuleEntity);
+
                     if (sqlresult <= 0) {
                         throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("更新优惠适用频率错误，编号" + freqRuleEntity.getId()));
                     }
@@ -644,7 +648,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
         }
 
-        //【处理限额】
+        //【处理限额】    //优惠劵额度规则-
         sqlresult = couponQuotaRuleMapper.logicDelByCouponId(dto.getId());
         if (req.getQuotaRule() != null) {
 
@@ -666,21 +670,37 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         //【配置适用商品】:传入了代表着需要更新配置
 
-        if (req.getProductList() != null) {
-            BatchRefProductReq refProductReq = new BatchRefProductReq();
-            refProductReq.setId(dto.getId());
+        //商品优惠券Dto
+       // ProductCouponDto dto = req.getProductCouponDto();
+        //改动
+
+        //改动
+        BatchRefProductReq refProductReq = new BatchRefProductReq();
+        refProductReq.setId(dto.getId());
+        if (req.getProductList() != null&&req.getDelProductList()!=null) {
+            //批量关联商品
+            refProductReq.setProductList(req.getProductList());
+            refProductReq.setDelProductList(req.getDelProductList());
+            couponRefProductService.batchDeleteCouponRefProduct(refProductReq);
+            couponRefProductService.batchAddCouponRefProduct(refProductReq);
+        }else if (req.getProductList() != null&&req.getDelProductList()==null){
+
             refProductReq.setProductList(req.getProductList());
             couponRefProductService.batchAddCouponRefProduct(refProductReq);
-        }
 
-        BeanPropertiesUtils.copyProperties(dto, entity);
-        entity.setCouponLable(dto.getLabelDto().getId());
-        entity.setUpdateAuthor(req.getOperator());
-        entity.setIsEnable(CommonDict.IF_YES.getCode());
+        }else if(req.getProductList() == null&&req.getDelProductList()!=null){
+            refProductReq.setDelProductList(req.getDelProductList());
+            couponRefProductService.batchDeleteCouponRefProduct(refProductReq);
+        }else{
+            BeanPropertiesUtils.copyProperties(dto, entity);  //enity-（商品优惠券实体）编辑实体必须存在   dto-商品优惠券dto
+            entity.setCouponLable(dto.getLabelDto().getId());
+            entity.setUpdateAuthor(req.getOperator());
+            entity.setIsEnable(CommonDict.IF_YES.getCode());
 
-        sqlresult = productCouponMapper.updateByPrimaryKey(entity);
-        if (sqlresult <= 0) {
-            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("更新优惠信息错误，编号" + entity.getId()));
+            sqlresult = productCouponMapper.updateByPrimaryKey(entity);
+            if (sqlresult <= 0) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("更新优惠信息错误，编号" + entity.getId()));
+            }
         }
         result.setSuccess(true);
         result.setCode(NET_ERROR.getCode());
@@ -833,13 +853,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //查询有效期内的上架的消费券
         List<ProductCouponEntity> entities = null;
         List<ProductCouponEntity> couponList = new ArrayList<>();
+        //包含的券类型0-红包 1-消费券 2-运费券，传多个，无分隔符默认值为01
         if (StringUtil.isEmpty(req.getContainsCouponType()))
             req.setContainsCouponType(CouponType.MONEYBAG.getDictValue() + CouponType.COUPON.getDictValue());
-
+            //查询优惠信息时是否排除掉因额度和领取频率限制的 -0
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())) {
             entities = productCouponMapper.findInQuotaCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType());
         } else {
-            entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType(), CouponGetType.HANLD.getDictValue());
+            entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType(), CouponGetType.HANLD.getDictValue()); //手动
         }
         for (ProductCouponEntity couponEntity : entities) {
             //剔除没有上架的
@@ -1115,9 +1136,15 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     @Override
     public List<ObtainCouponViewDto> findFirstPageVipCoupon(PageQryProfitCommonReq req) {
         int retInt = req.getPageSize() <= 0 ? 999 : req.getPageSize();
-
+        //获得优惠卷视图
         List<ObtainCouponViewDto> result = new ArrayList<>();
+        //显示数据集合   改动
+        List<ObtainCouponViewDto> fiveResult=new ArrayList<>();
+        //已使用过的券  改动
+        List<ObtainCouponViewDto> overresult = new ArrayList<>();
+
         //1.获取可领取的优惠券
+
         List<CouponDetailDto> enableGetCoupon = findEnableGetCoupon(req);
         //消费券排前面,2级券排前面
         Collections.sort(enableGetCoupon, new Comparator<CouponDetailDto>() {
@@ -1126,18 +1153,19 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                return myCompare(entity1,entity2);
             }
         });
-
-        int t = enableGetCoupon.size() >= retInt ? retInt : enableGetCoupon.size();
-        for (int i = 0; i < t; i++) {
+                //可以领取的优惠券  改动
+        //int t = enableGetCoupon.size() >= retInt ? retInt : enableGetCoupon.size();
+        for (int i = 0; i < enableGetCoupon.size(); i++) {
+            //商品优惠券
             ProductCouponDto dto = enableGetCoupon.get(i).getProductCouponDto();
             if (!ClientType.MEMBER.getDictValue().equals(dto.getClientTypeSet()))
                 continue;
-
+            //获得优惠劵视图
             ObtainCouponViewDto item = new ObtainCouponViewDto();
             BeanPropertiesUtils.copyProperties(enableGetCoupon.get(i).switchToView(), item);
-            item.setLabelDto(dto.getLabelDto());
-            item.setObtainState(CommonConstant.OBTAIN_STATE_NO);
-            if (dto.getValIdTerm() <= 0) {
+            item.setLabelDto(dto.getLabelDto());//优惠标签:标签：满返券、促销等
+            item.setObtainState(CommonConstant.OBTAIN_STATE_NO); //领取状态   0-可领取
+            if (dto.getValIdTerm() <= 0) {  //有效期限
                 item.setValidStartDate(dto.getAllowUseBeginDate());
                 item.setValidEndDate(dto.getAllowUseEndDate());
             } else {
@@ -1145,16 +1173,19 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 item.setValidEndDate(LocalDateTime.now().plusDays(dto.getValIdTerm()));
             }
             item.setProductList(enableGetCoupon.get(i).getProductList());
+            //result  获得优惠卷视图list
             result.add(item);
         }
-
-        retInt = retInt - result.size();
-        if (retInt==0)
+        //改动
+       // retInt =retInt - result.size();
+      /*  if (retInt >= result.size()) {
             return result;
-
+        }
+*/
         //2.获取已领取的优惠券
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
+        //0-可领取 1-已领取 2-已使用 3-过期未使用 4-未开始 5-可使用
         List<ObtainCouponViewDto> clientCoupon = clientCouponService.findClientCoupon(innerReq);
         List<ObtainCouponViewDto> resultDto = new ArrayList<>();
         for (ObtainCouponViewDto item : clientCoupon) {
@@ -1164,9 +1195,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     CommonConstant.OBTAIN_STATE_UNSTART.equals(item.getObtainState())) {
                 continue;
             }
-            resultDto.add(item);
-        }
+            //改动
+            if(CommonConstant.OBTAIN_STATE_USE.equals(item.getObtainState())){
+                overresult.add(item);
+            }else{
+                resultDto.add(item);
+            }
 
+        }
 
         //消费券排前面,2级券排前面
         Collections.sort(resultDto, new Comparator<ObtainCouponViewDto>() {
@@ -1175,17 +1211,31 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 return myCompare(entity1,entity2);
             }
         });
-        //返回数据不足需要
+        resultDto.addAll(overresult);
+        result.addAll(resultDto);
+        if(result.size()<=retInt){
+            for (int i=0;i<result.size();i++){
+                fiveResult.add(result.get(i));
+            }
+
+        }else{
+            for (int i=0;i<retInt;i++){
+                fiveResult.add(result.get(i));
+            }
+
+        }
+        return fiveResult;
+
+     /*   //返回数据不足需要
         t = resultDto.size() >= retInt ? retInt : resultDto.size();
         for (int i = 0; i < t; i++) {
             result.add(resultDto.get(i));
         }
         resultDto.clear();
         resultDto=null;
-        return result;
+        return result;*/
+
     }
-
-
     /**
      * 查询H5指定月会员专享可领优惠券
      *
@@ -1210,8 +1260,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //monthNum        第几月可领的券的指定月数
         if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
             //当月可领的
-            //改动
-            DateParam maxMonthDate = getMaxMonthDate();
             List<CouponDetailDto> enableGetCoupons = findEnableGetCoupon(req);
             //消费券排前面,2级券排前面
             Collections.sort(enableGetCoupons, new Comparator<CouponDetailDto>() {
@@ -1229,7 +1277,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
                 viewDto.setProductList(item.getProductList());
                 viewDto.setLabelDto(item.getProductCouponDto().getLabelDto());
-                viewDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);  //未领取
+                viewDto.setObtainState(CommonConstant.OBTAIN_STATE_NO);  //可领取
 
                 if (viewDto.getValIdTerm() <= 0) {   //有效日期
                     viewDto.setValidStartDate(item.getProductCouponDto().getAllowUseBeginDate());   //起始时间
