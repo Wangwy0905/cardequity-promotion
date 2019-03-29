@@ -23,7 +23,7 @@ import java.util.Map;
  * 开发日志
  */
 @Api(tags = "配置活动的商品信息")
-@FeignClient(name = "cardequity-promotion")
+@FeignClient(name = "cardequity-promotion"/*,url = "http://127.0.0.1:8888"*/)
 @RequestMapping(path = "/activityRefProduct")
 public interface ActivityRefProductApi {
 

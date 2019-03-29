@@ -853,13 +853,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //查询有效期内的上架的消费券
         List<ProductCouponEntity> entities = null;
         List<ProductCouponEntity> couponList = new ArrayList<>();
+        //包含的券类型0-红包 1-消费券 2-运费券，传多个，无分隔符默认值为01
         if (StringUtil.isEmpty(req.getContainsCouponType()))
             req.setContainsCouponType(CouponType.MONEYBAG.getDictValue() + CouponType.COUPON.getDictValue());
-
+            //查询优惠信息时是否排除掉因额度和领取频率限制的 -0
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(req.getExclusionFlag())) {
             entities = productCouponMapper.findInQuotaCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType());
         } else {
-            entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType(), CouponGetType.HANLD.getDictValue());
+            entities = productCouponMapper.findCouponListByProduct("1", "3", req.getProductId(), req.getSkuId(), req.getContainsCouponType(), CouponGetType.HANLD.getDictValue()); //手动
         }
         for (ProductCouponEntity couponEntity : entities) {
             //剔除没有上架的
