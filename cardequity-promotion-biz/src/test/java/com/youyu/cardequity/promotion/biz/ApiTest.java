@@ -98,30 +98,24 @@ public class ApiTest {
 
 
     }
+
     @Test
-    public void test3(){
-        DateParam maxMonthDate = productCouponService.getMaxMonthDate();
-
-        System.out.println(maxMonthDate);
-
-    }
-
-  /*  public static void main(String[] args) throws ParseException {
-        String s = getMaxMonthDate();
-        System.out.println(s);
-    }
-
-    */
-  /*
     public void testGetMaxMonthDate() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String lastDay;
-        Calendar cale=Calendar.getInstance();
-        cale.add(Calendar.MONTH,1);
-        cale.set(Calendar.DAY_OF_MONTH,0);
-        lastDay=dateFormat.format(cale.getTime());
-        System.out.println(lastDay);
-    }*/
+        Calendar cale = null;
+        cale = Calendar.getInstance();
+        //int year = cale.get(Calendar.YEAR);
+        int month = cale.get(Calendar.MONTH) + 1;
+        System.out.println(month);
+    }
+
+    /**
+     * 测试直接加入优惠券无需领取发放给客户
+     * @Param
+     */
+    @Test
+    public  void testCoupon(){
+
+    }
 
 }
 

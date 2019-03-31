@@ -555,7 +555,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 for (BaseProductReq delProduct : item.getDelProductList()){
                     delActivityProductIds.add(delProduct.getProductId());
                     delActivityProductIds.add(profit.getId());
-                    System.out.println("==================");
+
                 }
             }
         }
@@ -590,7 +590,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
 
         if (!delActivityProductIds.isEmpty()){
             batchService.batchDispose(delActivityProductIds, ActivityRefProductMapper.class, "deleteByProductId");
-            System.out.println("++++++++++++++++++++++++++++++++++");
+
         }
         log.info("batchEditActivity数据库处理完毕");
         result.setSuccess(true);
