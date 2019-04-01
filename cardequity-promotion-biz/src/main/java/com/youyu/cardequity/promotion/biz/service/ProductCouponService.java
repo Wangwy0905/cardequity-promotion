@@ -147,13 +147,6 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @return
      */
      List<ObtainCouponViewDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req);
-     //改动
-    /**
-     * 获取每哥月月初月末的具体日期
-     *
-     * @return  月初值 月末值
-     */
-     DateParam getMaxMonthDate();
 
 }
 

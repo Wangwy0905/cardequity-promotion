@@ -96,12 +96,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     public List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq) {
         List<ProductCouponEntity> productCouponlist = null;
         List<CouponDetailDto> result = new ArrayList<>();
-        DateParam dateParam=getMaxMonthDate();
+       // DateParam dateParam=getMaxMonthDate();
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(qryProfitCommonReq.getExclusionFlag())) {
             //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
-            productCouponlist = productCouponMapper.findEnableGetCouponList(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType(),dateParam.getLastMonth());
+            productCouponlist = productCouponMapper.findEnableGetCouponList(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType());
         } else {
-            productCouponlist = productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType(),dateParam.getLastMonth());
+            productCouponlist= productCouponMapper.findEnableGetCouponListByCommon(qryProfitCommonReq.getProductId(), qryProfitCommonReq.getEntrustWay(), qryProfitCommonReq.getClientType());
         }
 
         List<ProductCouponEntity> finnalCouponlist = new ArrayList<>();
@@ -1143,26 +1143,34 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //已使用过的券  改动
         List<ObtainCouponViewDto> overresult = new ArrayList<>();
 
-        //1.获取可领取的优惠券
+        //1.获取当月可领取的优惠券
+        Calendar cale = null;
+        cale = Calendar.getInstance();
+        int monthNum = cale.get(Calendar.MONTH) + 1;
+        List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(),monthNum);
 
-        List<CouponDetailDto> enableGetCoupon = findEnableGetCoupon(req);
+        //当天可领的
+        // List<CouponDetailDto> enableGetCoupon = findEnableGetCoupon(req);
+        //组装CouponDetailDto
+        List<CouponDetailDto> couponDetailDtos = combinationCoupon(nextMonthEntities);
         //消费券排前面,2级券排前面
-        Collections.sort(enableGetCoupon, new Comparator<CouponDetailDto>() {
+
+        Collections.sort(couponDetailDtos, new Comparator<CouponDetailDto>() {
             @Override
             public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
                return myCompare(entity1,entity2);
             }
         });
-                //可以领取的优惠券  改动
+        //可以领取的优惠券  改动
         //int t = enableGetCoupon.size() >= retInt ? retInt : enableGetCoupon.size();
-        for (int i = 0; i < enableGetCoupon.size(); i++) {
+        for (int i = 0; i < couponDetailDtos.size(); i++) {
             //商品优惠券
-            ProductCouponDto dto = enableGetCoupon.get(i).getProductCouponDto();
+            ProductCouponDto dto = couponDetailDtos.get(i).getProductCouponDto();
             if (!ClientType.MEMBER.getDictValue().equals(dto.getClientTypeSet()))
                 continue;
             //获得优惠劵视图
             ObtainCouponViewDto item = new ObtainCouponViewDto();
-            BeanPropertiesUtils.copyProperties(enableGetCoupon.get(i).switchToView(), item);
+            BeanPropertiesUtils.copyProperties(couponDetailDtos.get(i).switchToView(), item);
             item.setLabelDto(dto.getLabelDto());//优惠标签:标签：满返券、促销等
             item.setObtainState(CommonConstant.OBTAIN_STATE_NO); //领取状态   0-可领取
             if (dto.getValIdTerm() <= 0) {  //有效期限
@@ -1172,7 +1180,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 item.setValidStartDate(LocalDateTime.now());
                 item.setValidEndDate(LocalDateTime.now().plusDays(dto.getValIdTerm()));
             }
-            item.setProductList(enableGetCoupon.get(i).getProductList());
+            item.setProductList(couponDetailDtos.get(i).getProductList());
             //result  获得优惠卷视图list
             result.add(item);
         }
@@ -1255,21 +1263,27 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<ObtainCouponViewDto> result = new ArrayList<>();
         //已使用过的券
         List<ObtainCouponViewDto> overresult = new ArrayList<>();
-        //查询当月可以领的券
+
         //monthNumFlag   截止第几月或指定第几月标志 0-截止第几月 1-指定第几月
         //monthNum        第几月可领的券的指定月数
         if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
             //当月可领的
-            List<CouponDetailDto> enableGetCoupons = findEnableGetCoupon(req);
-            //消费券排前面,2级券排前面
-            Collections.sort(enableGetCoupons, new Comparator<CouponDetailDto>() {
+            Calendar cale = null;
+            cale = Calendar.getInstance();
+            int monthNum = cale.get(Calendar.MONTH) + 1;
+            //当月可领的
+            List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(),monthNum);
+            //当天可领的
+            // List<CouponDetailDto> enableGetCoupon = findEnableGetCoupon(req);
+            List<CouponDetailDto> couponDetailDtos = combinationCoupon(nextMonthEntities);
+            //消费券排前面,2级券排前面  当月可领取的
+            Collections.sort(couponDetailDtos, new Comparator<CouponDetailDto>() {
                 @Override
                 public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
                     return myCompare(entity1,entity2);
                 }
             });
-
-            for (CouponDetailDto item : enableGetCoupons) {
+            for (CouponDetailDto item : couponDetailDtos) {
                 if (!ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()))
                     continue;
 
@@ -1322,14 +1336,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
             }
             result.addAll(overresult);
+        }/* else {//查询指定月可以领的券
 
-
-        } else {//查询指定月可以领的券
-
-            List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(), 1);
+            List<CouponDetailDto> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(), 1);
 
             //消费券排前面,2级券排前面
-            Collections.sort(nextMonthEntities, new Comparator<ProductCouponEntity>() {
+           *//* Collections.sort(nextMonthEntities, new Comparator<ProductCouponEntity>() {
                 @Override
                 public int compare(ProductCouponEntity entity1, ProductCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
                     int sortresult = entity1.getCouponType().compareTo(entity2.getCouponType());
@@ -1340,7 +1352,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                         return sortresult;
                     return entity2.getProfitValue().compareTo(entity1.getProfitValue());
                 }
-            });
+            });*//*
 
             List<CouponDetailDto> detailDtos = combinationCoupon(nextMonthEntities);
 
@@ -1365,31 +1377,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
             }
             result.addAll(overresult);
-        }
+        }*/
         return result;
     }
-
-    /**
-     * 查询每个月月末的日期
-     *
-     * @param
-     * @return 每个月月末的值
-     */
-
-    @Override
-    public DateParam getMaxMonthDate(){
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-        Calendar cale=Calendar.getInstance();
-        cale.add(Calendar.MONTH,1);
-        cale.set(Calendar.DAY_OF_MONTH,0);
-        String lastDay;
-        lastDay=sdf.format(cale.getTime());
-        DateParam dateParam=new DateParam();
-        dateParam.setLastMonth(lastDay);
-
-        return dateParam;
-    }
-
 }
 
 

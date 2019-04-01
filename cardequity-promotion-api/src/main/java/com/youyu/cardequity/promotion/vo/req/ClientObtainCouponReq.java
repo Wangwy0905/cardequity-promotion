@@ -31,6 +31,9 @@ public class ClientObtainCouponReq {
     @ApiModelProperty(value = "银行代码:传入用于校验是否该银行卡可用")
     private String bankCode;
 
+    @ApiModelProperty(value = "是否新注册用户 0-否(默认) 1-是")
+    private String newRegisterFlag;
+
     @ApiModelProperty(value = "支付类型:传入用于校验是否该支付类型可用")
     private String payType;
 
