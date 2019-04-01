@@ -77,8 +77,6 @@
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and a.ALLOW_GET_BEGIN_DATE &lt;= curdate()
         and a.ALLOW_GET_END_DATE &gt;= curdate()
-       /* and a.ALLOW_GET_BEGIN_DATE &lt;=a.ALLOW_GET_END_DATE
-        and a.ALLOW_GET_END_DATE &gt;= #{lastMonth,jdbcType=DATE}*/
         Order by a.CREATE_TIME desc
     </select>
 
