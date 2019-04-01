@@ -394,7 +394,6 @@
 
     <select id="findSpacifyMonthEnableGetCouponsByCommon"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
-
         select a.*
         from TB_PRODUCT_COUPON a
         left join TB_COUPON_QUOTA_RULE b on a.UUID = b.COUPON_ID and IFNULL(b.IS_ENABLE, '1') = '1'

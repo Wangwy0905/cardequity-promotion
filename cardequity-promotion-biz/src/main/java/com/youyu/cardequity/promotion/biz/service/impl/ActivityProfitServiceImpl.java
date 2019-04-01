@@ -1133,7 +1133,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 for (GroupProductDto item : dtos) {
                     ids.add(item.getProductId());
                 }
-
+                // ActivityProfitEntity   优惠活动实体
                 List<ActivityProfitEntity> entities = activityProfitMapper.findPriceActivityByProductIds(ids, "1", "1");
                 for (ActivityDetailDto item : combinationActivity(entities)) {
                     item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_COMMON);
@@ -1141,7 +1141,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 }
             }
 
-            if (dtos.size() >= req.getPageSize())
+            if (dtos.size() >= req.getPageSize())   //getPageSize  显示数量，从一开始
                 return result;
             BaseQryActivityReq innerReq = new BaseQryActivityReq();
             innerReq.setUpAndDownStatus(CouponStatus.YES.getDictValue());
@@ -1264,11 +1264,11 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 if (CommonConstant.VIEW_ACTIVITYSTATUS_COMMON.equals(item.getActivityStatus()))
                     continue;
 
-                item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);
+                item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_NOT_QUOTA);//额度已抢完
                 if (item.getActivityProfit().getAllowUseBeginDate().isAfter(LocalDateTime.now())) {
-                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);
+                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUSE_UNSTART);//未开始
                 } else if (item.getActivityProfit().getAllowUseEndDate().isBefore(LocalDateTime.now())) {
-                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);
+                    item.setActivityStatus(CommonConstant.VIEW_ACTIVITYSTATUS_OVERDUE);//已过期
                 }
             }
         }
