@@ -172,6 +172,13 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         //商品优惠劵信息
         ProductCouponEntity coupon = fristdto.getData();
 
+        //如果券必须是新用户才能领
+        if (UsedStage.Register.getDictValue().equals(coupon.getGetStage())) {
+            if (!CommonDict.IF_YES.getCode().equals(req.getNewRegisterFlag())) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("该券只能新注册用户才能领取"));
+            }
+        }
+
         //2.校验券的额度限制是否满足
         //检查指定客户的额度信息
         CouponQuotaRuleEntity quota = couponQuotaRuleMapper.findCouponQuotaRuleById(req.getCouponId());
