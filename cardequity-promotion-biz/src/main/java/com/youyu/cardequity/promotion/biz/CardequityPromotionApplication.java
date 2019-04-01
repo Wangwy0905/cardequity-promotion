@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringCloudApplication
 @EnableFeignClients(basePackages={"com.youyu.cardequity.promotion.api"})
-@MapperScan("com.youyu.cardequity.promotion.biz.dal.dao")
+@MapperScan("com.youyu.cardequity.promotion.biz.dal.dao" )
 public class CardequityPromotionApplication {
 
 	public static void main(String[] args) {
