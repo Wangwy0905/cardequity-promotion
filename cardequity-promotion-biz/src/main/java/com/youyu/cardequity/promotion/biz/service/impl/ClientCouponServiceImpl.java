@@ -131,7 +131,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("该券获取方式错误"));
             }
         }
-
+        //  productList  相关商品明细，用于判断是否满足使用阶梯门槛    GetUseEnableCouponReq   订单使用或获取可用优惠券请求体
         GetUseEnableCouponReq checkreq = BeanPropertiesUtils.copyProperties(req, GetUseEnableCouponReq.class);
         //如果需要校验相关联产品
         if (!CommonUtils.isEmptyorNull(req.getProductId())) {
@@ -163,12 +163,21 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         }
 
         //1.校验券基本信息是否允许领取：
+
         CommonBoolDto<ProductCouponEntity> fristdto = checkCouponFrist(entity, checkreq, false);
         if (!fristdto.getSuccess()) {
             BeanPropertiesUtils.copyProperties(fristdto, dto);
             return dto;
         }
+        //商品优惠劵信息
         ProductCouponEntity coupon = fristdto.getData();
+
+        //如果券必须是新用户才能领
+        if (UsedStage.Register.getDictValue().equals(coupon.getGetStage())) {
+            if (!CommonDict.IF_YES.getCode().equals(req.getNewRegisterFlag())) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("该券只能新注册用户才能领取"));
+            }
+        }
 
         //2.校验券的额度限制是否满足
         //检查指定客户的额度信息
@@ -191,7 +200,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         if (coupon.getAllowUseBeginDate() != null && LocalDate.now().isBefore(coupon.getAllowUseBeginDate().toLocalDate())) {
             entity.setValidStartDate(coupon.getAllowUseBeginDate());
         } else {
-            entity.setValidStartDate(LocalDateTime.now());
+            entity.setValidStartDate(LocalDateTime.now());  //有效起始日
         }
         //默认有效时间1个月
         LocalDateTime validEndDate = entity.getValidStartDate().plusMonths(1);
@@ -222,7 +231,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             entity.setCouponShortDesc(coupon.getCouponShortDesc());
             entity.setTriggerByType(TriggerByType.NUMBER.getDictValue());
             entity.setBeginValue(BigDecimal.ZERO);
-            entity.setEndValue(CommonConstant.IGNOREVALUE);
+            entity.setEndValue(CommonConstant.IGNOREVALUE); //数值参数的边界有效上限
         }
 
         //entity.setBusinDate(LocalDate.now());//使用时候才填入

@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
+import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq;
@@ -32,8 +33,7 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      */
     List<ProductCouponEntity> findEnableGetCouponListByCommon(@Param("productId") String productId,
                                                               @Param("entrustWay") String entrustWay,
-                                                              @Param("clientType") String clientType,
-                                                              @Param("lastMonth") String lastMonth);
+                                                              @Param("clientType") String clientType);
 
 
     /**
@@ -47,8 +47,8 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      */
     List<ProductCouponEntity> findEnableGetCouponList(@Param("productId") String productId,
                                                               @Param("entrustWay") String entrustWay,
-                                                              @Param("clientType") String clientType,
-                                                              @Param("lastMonth") String lastMonth);
+                                                              @Param("clientType") String clientType
+                                                              );
 
     /**
      * 根据指定券，获取到券的基本信息
@@ -153,9 +153,9 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
      * @return
      */
     List<ProductCouponEntity> findSpacifyMonthEnableGetCouponsByCommon(@Param("productId") String productId,
-                                                                       @Param("entrustWay") String entrustWay,
-                                                                       @Param("clientType") String clientType,
-                                                                       @Param("monthNum") int monthNum);
+                                                                   @Param("entrustWay") String entrustWay,
+                                                                   @Param("clientType") String clientType,
+                                                                   @Param("monthNum") int monthNum);
 }
 
 
