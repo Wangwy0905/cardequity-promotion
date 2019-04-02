@@ -1144,10 +1144,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<ObtainCouponViewDto> overresult = new ArrayList<>();
 
         //1.获取当月可领取的优惠券
-        Calendar cale = null;
-        cale = Calendar.getInstance();
-        int monthNum = cale.get(Calendar.MONTH) + 1;
-        List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(),monthNum);
+
+        List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(),0);
 
         //当天可领的
         // List<CouponDetailDto> enableGetCoupon = findEnableGetCoupon(req);
@@ -1267,12 +1265,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //monthNumFlag   截止第几月或指定第几月标志 0-截止第几月 1-指定第几月
         //monthNum        第几月可领的券的指定月数
         if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
+
             //当月可领的
-            Calendar cale = null;
-            cale = Calendar.getInstance();
-            int monthNum = cale.get(Calendar.MONTH) + 1;
-            //当月可领的
-            List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(),monthNum);
+            List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(),0);
             //当天可领的
             // List<CouponDetailDto> enableGetCoupon = findEnableGetCoupon(req);
             List<CouponDetailDto> couponDetailDtos = combinationCoupon(nextMonthEntities);
