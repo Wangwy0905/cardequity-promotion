@@ -210,10 +210,12 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             }
 
 
-            //检查适用商品是否重复在不同活动配置中
-            CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(item.getProductList(), profit);
-            if (!boolDto.getSuccess()) {
-                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
+            if (!ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
+                //检查适用商品是否重复在不同活动配置中
+                CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(item.getProductList(), profit);
+                if (!boolDto.getSuccess()) {
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
+                }
             }
 
             if (!CommonUtils.isGtZeroDecimal(profit.getProfitValue())) {
