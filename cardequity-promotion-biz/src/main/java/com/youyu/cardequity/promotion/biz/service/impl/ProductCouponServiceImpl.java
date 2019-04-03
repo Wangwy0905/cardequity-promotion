@@ -1248,22 +1248,24 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //monthNumFlag   截止第几月或指定第几月标志 0-截止第几月 1-指定第几月
         //monthNum        第几月可领的券的指定月数
         if (req.getMonthNum() == 0 || req.getMonthNumFlag() == 0) {
-            //当月可领的
+            //*************当月可领的***********
             List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(),0,lastMonthDay());
-            //当天可领的
+            //1.其他数据补充
             // List<CouponDetailDto> enableGetCoupon = findEnableGetCoupon(req);
             List<CouponDetailDto> couponDetailDtos = combinationCoupon(nextMonthEntities);
-            //消费券排前面,2级券排前面  当月可领取的
+
+            //2.排序：消费券排前面,2级券排前面  当月可领取的
             Collections.sort(couponDetailDtos, new Comparator<CouponDetailDto>() {
                 @Override
                 public int compare(CouponDetailDto entity1, CouponDetailDto entity2) {//如果是折扣、任选、优惠价从小到大
                     return myCompare(entity1,entity2);
                 }
             });
+
+            //3.转换视图
             for (CouponDetailDto item : couponDetailDtos) {
                 if (!ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()))
                     continue;
-
                 //获得优惠卷视图
                 ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
                 viewDto.setProductList(item.getProductList());
@@ -1280,9 +1282,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 result.add(viewDto);
             }
 
-            //当月已领的          //去掉过期未使用的优惠卷   3
+            //***********当月已领的 ;去掉过期未使用的优惠卷***************************
             List<ClientCouponEntity> obtainCoupon = clientCouponMapper.findCurrMonthObtainCoupon(req.getClientId(), "");
 
+            //1.排序
             Collections.sort(obtainCoupon, new Comparator<ClientCouponEntity>() {
                 @Override
                 public int compare(ClientCouponEntity entity1, ClientCouponEntity entity2) {//如果是折扣、任选、优惠价从小到大
@@ -1290,8 +1293,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
             });
 
+            //2.补充数据
             List<FullClientCouponRsp> fullClientCouponRsps = clientCouponService.combClientFullObtainCouponList(obtainCoupon);
-            //当月已领的
+
+            //3.视图转换及过滤
             List<ObtainCouponViewDto> resultDto = new ArrayList<>();
             for (FullClientCouponRsp item : fullClientCouponRsps) {
                 if (!ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet()))
@@ -1314,7 +1319,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
             }
             resultDto.addAll(overresult);
-            resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
+            //resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
             result.addAll(resultDto);
         }/* else {//查询指定月可以领的券
 
