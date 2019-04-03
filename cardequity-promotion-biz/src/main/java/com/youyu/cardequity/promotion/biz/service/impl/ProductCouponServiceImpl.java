@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.base.util.StringUtil;
+import com.youyu.cardequity.common.base.util.UuidUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
@@ -38,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.promotion.enums.ResultCode.NET_ERROR;
@@ -1138,8 +1140,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         int retInt = req.getPageSize() <= 0 ? 999 : req.getPageSize();
         //获得优惠卷视图
         List<ObtainCouponViewDto> result = new ArrayList<>();
-        //显示数据集合   改动
-        List<ObtainCouponViewDto> fiveResult=new ArrayList<>();
         //已使用过的券  改动
         List<ObtainCouponViewDto> overresult = new ArrayList<>();
 
@@ -1183,6 +1183,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             result.add(item);
         }
 
+        int size = result.size();
+        if(size>=5){
+            return result.subList(0,5);
+        }
         //2.获取已领取的优惠券
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
@@ -1211,30 +1215,16 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
         });
         resultDto.addAll(overresult);
+        //刪除resultDto和result的重复值
+        resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
         result.addAll(resultDto);
-        if(result.size()<=retInt){
-            for (int i=0;i<result.size();i++){
-                fiveResult.add(result.get(i));
-            }
 
-        }else{
-            for (int i=0;i<retInt;i++){
-                fiveResult.add(result.get(i));
-            }
-
+        if(result.size()>=5){
+            return result.subList(0,5);
         }
-        return fiveResult;
-
-     /*   //返回数据不足需要
-        t = resultDto.size() >= retInt ? retInt : resultDto.size();
-        for (int i = 0; i < t; i++) {
-            result.add(resultDto.get(i));
-        }
-        resultDto.clear();
-        resultDto=null;
-        return result;*/
-
+        return result;
     }
+
     /**
      * 查询H5指定月会员专享可领优惠券
      *
