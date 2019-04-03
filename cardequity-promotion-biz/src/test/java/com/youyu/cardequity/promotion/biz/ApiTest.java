@@ -75,7 +75,7 @@ public class ApiTest {
     @Test
   public void test2(){
 
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+      /*  SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
         String firstDay,lastDay;
         Calendar calendar=null;
         //当前月的第一天
@@ -89,10 +89,18 @@ public class ApiTest {
         cale.add(Calendar.MONTH,1);
         cale.set(Calendar.DAY_OF_MONTH,0);
         lastDay=sdf.format(cale.getTime());
+
         System.out.println(lastDay);
 
 
-        System.out.println(firstDay);
+        System.out.println(firstDay);*/
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        Calendar cale=Calendar.getInstance();
+        cale.add(Calendar.MONTH,1);
+        cale.set(Calendar.DAY_OF_MONTH,0);
+        String lastDay=sdf.format(cale.getTime());
+        System.out.println(lastDay);
+
 
 
 
