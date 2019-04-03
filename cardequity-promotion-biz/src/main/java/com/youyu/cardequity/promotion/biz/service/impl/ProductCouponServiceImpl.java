@@ -1183,10 +1183,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             result.add(item);
         }
 
-        int size = result.size();
+     /*   int size = result.size();
         if(size>=5){
             return result.subList(0,5);
-        }
+        }*/
         //2.获取已领取的优惠券
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
@@ -1291,7 +1291,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             });
 
             List<FullClientCouponRsp> fullClientCouponRsps = clientCouponService.combClientFullObtainCouponList(obtainCoupon);
-
+            //当月已领的
+            List<ObtainCouponViewDto> resultDto = new ArrayList<>();
             for (FullClientCouponRsp item : fullClientCouponRsps) {
                 if (!ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet()))
                     continue;
@@ -1306,12 +1307,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 //改动
                 if(!CommonConstant.OBTAIN_STATE_OVERDUE.equals(viewDto.getObtainState())){
                     if(!CommonConstant.OBTAIN_STATE_USE.equals(viewDto.getObtainState())){
-                        result.add(viewDto);
+                        resultDto.add(viewDto);
                     }else{
                         overresult.add(viewDto);
                     }
                 }
             }
+            resultDto.addAll(overresult);
+            resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
             result.addAll(overresult);
         }/* else {//查询指定月可以领的券
 
