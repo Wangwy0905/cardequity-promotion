@@ -1316,7 +1316,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             resultDto.addAll(overresult);
             resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
             result.addAll(resultDto);
-            result.addAll(overresult);
         }/* else {//查询指定月可以领的券
 
             List<ProductCouponEntity> nextMonthEntities = productCouponMapper.findSpacifyMonthEnableGetCouponsByCommon(req.getProductId(), req.getEntrustWay(), req.getClientType(), 1);
