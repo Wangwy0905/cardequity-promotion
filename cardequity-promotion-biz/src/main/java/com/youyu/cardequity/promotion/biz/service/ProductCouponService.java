@@ -148,6 +148,14 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      */
      List<ObtainCouponViewDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req);
 
+    /**
+     * 查询每月份的最后一天
+     *
+     * @param
+     * @return
+     */
+     public String lastMonthDay();
+
 }
 
 

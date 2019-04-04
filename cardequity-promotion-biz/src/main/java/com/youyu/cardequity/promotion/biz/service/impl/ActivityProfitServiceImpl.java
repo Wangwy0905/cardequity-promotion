@@ -216,6 +216,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
                 throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
             }
 
+
             if (!CommonUtils.isGtZeroDecimal(profit.getProfitValue())) {
                 //保护为阶梯中的优惠值
                 if (item.getStageList() != null && item.getStageList().size() == 1) {
@@ -415,24 +416,25 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             //        if (!productReqs.isEmpty())
             //            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("编辑活动有效日期区间时导致原配置的商品在某一时间点同时存在于两个活动中"));
             //} else {
+            if (!ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
+                List<BaseProductReq> checkproductList = item.getProductList();
+                if (item.getProductList() == null) {
+                    checkproductList = new ArrayList<>();
+                    //如果适用日期区间有变化时需要再次检查适用商品的
+                    List<ActivityRefProductEntity> byActivityId = activityRefProductMapper.findByActivityId(profit.getId());
+                    for (ActivityRefProductEntity refItem : byActivityId) {
+                        BaseProductReq refreq = new BaseProductReq();
+                        refreq.setProductId(refItem.getProductId());
+                        refreq.setSkuId(refItem.getSkuId());
+                        checkproductList.add(refreq);
+                    }
+                }
 
-            List<BaseProductReq> checkproductList = item.getProductList();
-            if (item.getProductList() == null) {
-                checkproductList = new ArrayList<>();
-                //如果适用日期区间有变化时需要再次检查适用商品的
-                List<ActivityRefProductEntity> byActivityId = activityRefProductMapper.findByActivityId(profit.getId());
-                for (ActivityRefProductEntity refItem : byActivityId) {
-                    BaseProductReq refreq = new BaseProductReq();
-                    refreq.setProductId(refItem.getProductId());
-                    refreq.setSkuId(refItem.getSkuId());
-                    checkproductList.add(refreq);
+                CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(checkproductList, profit);
+                if (!boolDto.getSuccess()) {
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
                 }
             }
-            CommonBoolDto<List<ActivityRefProductEntity>> boolDto = activityRefProductService.checkProductReUse(checkproductList, profit);
-            if (!boolDto.getSuccess()) {
-                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc(boolDto.getDesc()));
-            }
-            //}
 
             if (!CommonUtils.isGtZeroDecimal(profit.getProfitValue())) {
                 //保护为阶梯中的优惠值
@@ -537,22 +539,24 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
             }
 
             //5.配置适用商品
-            if (item.getProductList() != null) {
-                if (!StringUtil.isEmpty(item.getActivityProfit().getId()))
-                    configProductActivityIds.add(item.getActivityProfit().getId());
-                for (BaseProductReq product : item.getProductList()) {
-                    ActivityRefProductEntity refProductEntity = BeanPropertiesUtils.copyProperties(product, ActivityRefProductEntity.class);
-                    refProductEntity.setUpdateAuthor(req.getOperator());
-                    refProductEntity.setCreateAuthor(req.getOperator());
-                    refProductEntity.setActivityId(profitEntity.getId());
-                    refProductEntity.setId(CommonUtils.getUUID());
-                    refProductEntity.setIsEnable(CommonDict.IF_YES.getCode());
-                    refProductList.add(refProductEntity);
+            if (!ActivityCouponType.PRICE.getDictValue().equals(profit.getActivityCouponType())) {
+                if (item.getProductList() != null) {
+                    if (!StringUtil.isEmpty(item.getActivityProfit().getId()))
+                        configProductActivityIds.add(item.getActivityProfit().getId());
+                    for (BaseProductReq product : item.getProductList()) {
+                        ActivityRefProductEntity refProductEntity = BeanPropertiesUtils.copyProperties(product, ActivityRefProductEntity.class);
+                        refProductEntity.setUpdateAuthor(req.getOperator());
+                        refProductEntity.setCreateAuthor(req.getOperator());
+                        refProductEntity.setActivityId(profitEntity.getId());
+                        refProductEntity.setId(CommonUtils.getUUID());
+                        refProductEntity.setIsEnable(CommonDict.IF_YES.getCode());
+                        refProductList.add(refProductEntity);
+                    }
                 }
             }
 
-            if(item.getDelProductList() !=null){
-                for (BaseProductReq delProduct : item.getDelProductList()){
+            if (item.getDelProductList() != null) {
+                for (BaseProductReq delProduct : item.getDelProductList()) {
                     delActivityProductIds.add(delProduct.getProductId());
                     delActivityProductIds.add(profit.getId());
 
@@ -563,7 +567,6 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         //数据库操作
         if (!activityList.isEmpty())
             batchService.batchDispose(activityList, ActivityProfitMapper.class, "updateByPrimaryKey");
-
 
 
         if (!activityIds.isEmpty()) {
@@ -588,7 +591,7 @@ public class ActivityProfitServiceImpl extends AbstractService<String, ActivityP
         if (!refProductList.isEmpty())
             batchService.batchDispose(refProductList, ActivityRefProductMapper.class, "insert");
 
-        if (!delActivityProductIds.isEmpty()){
+        if (!delActivityProductIds.isEmpty()) {
             batchService.batchDispose(delActivityProductIds, ActivityRefProductMapper.class, "deleteByProductId");
 
         }
