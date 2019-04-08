@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
@@ -1236,6 +1237,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     //已使用过的劵不显示， 显示所有起始时间在本月的劵    排序
     @Override
     public List<ObtainCouponViewDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req) {
+        log.info("优惠券请求参数:[{}]"+JSONObject.toJSONString(req));
         if (req == null)
             req = new FindEnableObtainCouponByMonthReq();
         if (req.getMonthNum() < 0)

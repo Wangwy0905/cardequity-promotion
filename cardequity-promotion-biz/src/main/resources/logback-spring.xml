@@ -59,7 +59,7 @@
         <logger name="org.springboot.sample" level="INFO">
             <appender-ref ref="LOGSTASH_SOCKET"/>
         </logger>
-        <logger name="com.youyu.cardequity.promotion.biz" level="INFO">
+        <logger name="com.youyu.cardequity.promotion.biz" level="DEBUG">
             <appender-ref ref="LOGSTASH_SOCKET"/>
         </logger>
     </springProfile>
