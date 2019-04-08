@@ -1287,6 +1287,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     viewDto.setValidEndDate(LocalDateTime.now().plusDays(viewDto.getValIdTerm()));
                 }
                 result.add(viewDto);
+                log.info("转换视图后的优惠券信息:{}" + JSONObject.toJSONString(result));
             }
 
             //***********当月已领的 ;去掉过期未使用的优惠卷***************************
@@ -1327,7 +1328,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
             resultDto.addAll(overresult);
 
-            resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
+            log.info("已领取的优惠券信息:{}" + JSONObject.toJSONString(resultDto));
+
+//            resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
+
 
             result.addAll(resultDto);
 
