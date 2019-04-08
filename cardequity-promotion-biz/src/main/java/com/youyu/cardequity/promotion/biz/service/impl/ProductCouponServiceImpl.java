@@ -6,7 +6,6 @@ import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.base.util.StringUtil;
-import com.youyu.cardequity.common.base.util.UuidUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
@@ -17,10 +16,12 @@ import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.biz.utils.SnowflakeIdWorker;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.*;
-import com.youyu.cardequity.promotion.dto.other.*;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
+import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
+import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
-import com.youyu.cardequity.promotion.vo.DateParam.DateParam;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
@@ -28,7 +29,6 @@ import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
-import javafx.beans.binding.ObjectBinding;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Predicate;
 
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.promotion.enums.ResultCode.NET_ERROR;
@@ -203,7 +202,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
         }
 
+        log.info("可领取的优惠券List:[{}]" + JSONObject.toJSONString(finnalCouponlist));
         result = combinationCoupon(finnalCouponlist);
+        log.info("可领取的优惠券结果:[{}]" + JSONObject.toJSONString(result));
         for (CouponDetailDto item : result) {
             if (finnalStageMap.get(item.getProductCouponDto().getId()) != null) {
                 item.setStageList(finnalStageMap.get(item.getProductCouponDto().getId()));
@@ -211,7 +212,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
         //清除缓存
         finnalStageMap.clear();
-
+        log.info("最终可领取的优惠券结果:[{}]" + JSONObject.toJSONString(result));
         return result;
 
     }
@@ -1046,6 +1047,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //清除缓存
         result.clear();
         result = null;
+
+        log.info("判断后的优惠券结果:[{}]" + JSONObject.toJSONString(resultList));
         return resultList;
 
     }
