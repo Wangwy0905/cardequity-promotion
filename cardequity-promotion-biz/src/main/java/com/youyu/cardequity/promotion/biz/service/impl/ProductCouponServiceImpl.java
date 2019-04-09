@@ -1080,7 +1080,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         List<CouponGetOrUseFreqRuleEntity> freqRuleEntities = couponGetOrUseFreqRuleMapper.findByCouponId(entity.getId());
         result.setFreqRuleList(BeanPropertiesConverter.copyPropertiesOfList(freqRuleEntities, CouponGetOrUseFreqRuleDto.class));
 
-        //查询子券信息
+        //查询子券信息（优惠劵阶梯规则表）
         List<CouponStageRuleEntity> stageRuleEntities = couponStageRuleMapper.findStageByCouponId(entity.getId());
         result.setStageList(BeanPropertiesConverter.copyPropertiesOfList(stageRuleEntities, CouponStageRuleDto.class));
         return result;
@@ -1271,7 +1271,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
             //3.转换视图
             for (CouponDetailDto item : enableGetCoupon) {
-                if (ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()) || StringUtil.eq("*", item.getProductCouponDto().getClientTypeSet())) {
+               // if (ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()) || StringUtil.eq("*", item.getProductCouponDto().getClientTypeSet())) {}
+                 if(! ClientType.COMMON.getDictValue().equals(item.getProductCouponDto().getClientTypeSet())) continue;
                     //获得优惠卷视图
                     ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
                     viewDto.setProductList(item.getProductList());
@@ -1287,7 +1288,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     }
                     result.add(viewDto);
                     log.info("转换视图后的优惠券信息:{}" + JSONObject.toJSONString(result));
-                }
+
             }
 
             //***********当月已领的 ;去掉过期未使用的优惠卷***************************
@@ -1307,8 +1308,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             //3.视图转换及过滤
             List<ObtainCouponViewDto> resultDto = new ArrayList<>();
             for (FullClientCouponRsp item : fullClientCouponRsps) {
-                if (ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet()) ||
-                        StringUtil.eq("*", item.getCoupon().getProductCouponDto().getClientTypeSet())) {
+               // if (ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet()) ||
+                 //       StringUtil.eq("*", item.getCoupon().getProductCouponDto().getClientTypeSet())) {}
+                if (! ClientType.COMMON.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet())) continue;
                     ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.getCoupon().switchToView(), ObtainCouponViewDto.class);
 
                     viewDto.setProductList(item.getCoupon().getProductList());
@@ -1325,13 +1327,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                             overresult.add(viewDto);
                         }
                     }
-                }
+
             }
             resultDto.addAll(overresult);
 
             log.info("已领取的优惠券信息:{}" + JSONObject.toJSONString(resultDto));
 
-//            resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
+            resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
 
 
             result.addAll(resultDto);
