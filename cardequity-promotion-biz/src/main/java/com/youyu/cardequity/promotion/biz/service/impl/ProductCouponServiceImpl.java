@@ -1269,7 +1269,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
             });
 
-            //3.转换视图
+             //3.转换视图
             for (CouponDetailDto item : enableGetCoupon) {
                // if (ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()) || StringUtil.eq("*", item.getProductCouponDto().getClientTypeSet())) {}
                  if(ClientType.COMMON.getDictValue().equals(item.getProductCouponDto().getClientTypeSet())) continue;
