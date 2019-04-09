@@ -1272,7 +1272,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             //3.转换视图
             for (CouponDetailDto item : enableGetCoupon) {
                // if (ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()) || StringUtil.eq("*", item.getProductCouponDto().getClientTypeSet())) {}
-                 if(! ClientType.COMMON.getDictValue().equals(item.getProductCouponDto().getClientTypeSet())) continue;
+                 if(ClientType.COMMON.getDictValue().equals(item.getProductCouponDto().getClientTypeSet())) continue;
                     //获得优惠卷视图
                     ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
                     viewDto.setProductList(item.getProductList());
@@ -1310,7 +1310,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             for (FullClientCouponRsp item : fullClientCouponRsps) {
                // if (ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet()) ||
                  //       StringUtil.eq("*", item.getCoupon().getProductCouponDto().getClientTypeSet())) {}
-                if (! ClientType.COMMON.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet())) continue;
+                if (ClientType.COMMON.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet())) continue;
                     ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.getCoupon().switchToView(), ObtainCouponViewDto.class);
 
                     viewDto.setProductList(item.getCoupon().getProductList());
