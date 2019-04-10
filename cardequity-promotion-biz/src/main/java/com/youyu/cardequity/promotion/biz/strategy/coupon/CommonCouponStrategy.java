@@ -117,9 +117,7 @@ public class CommonCouponStrategy extends CouponStrategy {
                 rsp.setProfitAmount(totalRealAmount);
             if (totalRealAmount.compareTo(BigDecimal.ZERO)>0) {
                 //每种商品优惠的金额是按适用金额比例来的，如果是免邮券getProfitAmount是0
-                for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount,4, RoundingMode.DOWN)));
-                }
+                distributeProfitAmount(rsp.getProfitAmount(), totalRealAmount, rsp.getProductLsit());
             }
         }
         return rsp;
