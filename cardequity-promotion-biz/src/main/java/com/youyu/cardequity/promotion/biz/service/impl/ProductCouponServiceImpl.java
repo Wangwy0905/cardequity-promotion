@@ -1192,10 +1192,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             result.add(item);
         }
 
-     /*   int size = result.size();
+       int size = result.size();
         if(size>=5){
             return result.subList(0,5);
-        }*/
+        }
         //2.获取已领取的优惠券
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
