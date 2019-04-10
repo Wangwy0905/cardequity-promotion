@@ -1,12 +1,15 @@
 package com.youyu.cardequity.promotion.dto;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
+import com.youyu.cardequity.common.base.util.LocalDateUtils;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
@@ -15,6 +18,10 @@ import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiModel;
+
+import static com.youyu.cardequity.common.base.util.LocalDateUtils.*;
+import static com.youyu.cardequity.common.base.util.LocalDateUtils.string2LocalDateTime;
+import static java.time.LocalDate.*;
 
 
 /**
@@ -142,12 +149,14 @@ public class ClientCouponDto implements IBaseDto<String>{
         if (CouponUseStatus.USED.getDictValue().equals(status) ||
                 CouponUseStatus.USING.getDictValue().equals(status)) {
             return CommonConstant.OBTAIN_STATE_USE;
-        } else if (validEndDate.compareTo(LocalDateTime.now()) < 0 ) {
+        } else if (validEndDate.compareTo(timestamp2LocalDateTime(localDate2TimeStamp(now()))) < 0 ) {
             return  CommonConstant.OBTAIN_STATE_OVERDUE;
-        }else if (validStartDate.compareTo(LocalDateTime.now()) > 0 ){
+        }else if (validStartDate.compareTo(timestamp2LocalDateTime(localDate2TimeStamp(now()))) > 0 ){
             return CommonConstant.OBTAIN_STATE_UNSTART;
         }
+
         return CommonConstant.OBTAIN_STATE_YES;
     }
+
 }
 
