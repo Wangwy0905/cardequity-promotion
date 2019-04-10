@@ -249,7 +249,7 @@
         </if>
         <if test='"5"==obtainState'>
             and a.status='0'
-            and a.VALID_END_DATE &gt; curdate()
+            and a.VALID_END_DATE &gt;= curdate()
         </if>
         and concat(date_format(LAST_DAY(now()), '%Y-%m-'), '01') &lt;= a.CREATE_TIME
     </select>
