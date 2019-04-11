@@ -8,6 +8,7 @@ import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.CouponApplyProductStage;
+import com.youyu.cardequity.promotion.enums.dict.CouponType;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+
+import static com.youyu.cardequity.promotion.enums.dict.CouponType.*;
 
 /**
  * 用于普通优惠券：门槛优惠券、无门槛优惠券、随机优惠券
@@ -109,13 +112,16 @@ public class CommonCouponStrategy extends CouponStrategy {
         //循环完后没有达到门槛的返回空
         if (!successFlg) {
             return null;
-        }else{
+        }else {
             BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             rsp.setTotalAmount(totalRealAmount);
-            //无门槛券可能出现优惠金额>总金额
-            if (rsp.getProfitAmount().compareTo(totalRealAmount)>0)
+            //无门槛券可能出现优惠金额>总金额,故优惠金额=max(优惠金额,商品总价),特殊地,运费券不和商品关联
+            if (!TRANSFERFARE.getDictValue().equals(clientCoupon.getCouponType()) &&
+                    rsp.getProfitAmount().compareTo(totalRealAmount) > 0) {
                 rsp.setProfitAmount(totalRealAmount);
-            if (totalRealAmount.compareTo(BigDecimal.ZERO)>0) {
+            }
+            // 适配优惠金额
+            if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
                 //每种商品优惠的金额是按适用金额比例来的，如果是免邮券getProfitAmount是0
                 distributeProfitAmount(rsp.getProfitAmount(), totalRealAmount, rsp.getProductLsit());
             }
