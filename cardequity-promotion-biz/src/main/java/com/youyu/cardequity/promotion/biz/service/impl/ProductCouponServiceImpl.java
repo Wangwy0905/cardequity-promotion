@@ -1308,6 +1308,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             });
 
             //2.补充数据
+            log.info("已领取组装参数"+obtainCoupon);
             List<FullClientCouponRsp> fullClientCouponRsps = clientCouponService.combClientFullObtainCouponList(obtainCoupon);
 
             //3.视图转换及过滤
@@ -1315,7 +1316,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             for (FullClientCouponRsp item : fullClientCouponRsps) {
                // if (ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet()) ||
                  //       StringUtil.eq("*", item.getCoupon().getProductCouponDto().getClientTypeSet())) {}
+                log.info("视图转换后的值"+item);
                 if ( ! ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet())) continue;
+
                     ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.getCoupon().switchToView(), ObtainCouponViewDto.class);
 
                     viewDto.setProductList(item.getCoupon().getProductList());

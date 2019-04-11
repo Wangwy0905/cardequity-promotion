@@ -1276,6 +1276,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
         if (!ids.isEmpty()) {
                 //优惠详情表
+            log.info("优惠券的ids值"+ids);
             List<CouponDetailDto> detailDtos = productCouponService.findCouponListByIds(ids);
             for (FullClientCouponRsp item : result) {
                 for (CouponDetailDto dto : detailDtos) {

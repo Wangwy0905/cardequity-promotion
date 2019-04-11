@@ -145,7 +145,7 @@ public class ClientCouponDto implements IBaseDto<String>{
      * @return
      */
     public String refreshObtainState(){
-        //领取了但是是无效的
+         //领取了但是是无效的
         if (CouponUseStatus.USED.getDictValue().equals(status) ||
                 CouponUseStatus.USING.getDictValue().equals(status)) {
             return CommonConstant.OBTAIN_STATE_USE;
