@@ -98,6 +98,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     public List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq) {
         List<ProductCouponEntity> productCouponlist = null;
         List<CouponDetailDto> result = new ArrayList<>();
+
+        if ("12".equals(qryProfitCommonReq.getClientType())){
+            qryProfitCommonReq.setClientType("11");
+        }
         // DateParam dateParam=getMaxMonthDate();
         if (CommonConstant.EXCLUSIONFLAG_ALL.equals(qryProfitCommonReq.getExclusionFlag())) {
             //获取满足条件的优惠券：1.满足对应商品属性(指定商品或组)、客户属性(指定客户类型)、订单属性(指定客户类型)；2.满足券额度(券每日领取池，券总金额池，券总量池)
@@ -1188,10 +1192,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             result.add(item);
         }
 
-     /*   int size = result.size();
+       int size = result.size();
         if(size>=5){
             return result.subList(0,5);
-        }*/
+        }
         //2.获取已领取的优惠券
         QryComonClientCouponReq innerReq = new QryComonClientCouponReq();
         innerReq.setClientId(req.getClientId());
@@ -1221,7 +1225,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         });
         resultDto.addAll(overresult);
         //刪除resultDto和result的重复值
-        resultDto.stream().forEach(r -> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
+      //  resultDto.stream().forEach(r -> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
         result.addAll(resultDto);
 
         if (result.size() >= 5) {
@@ -1272,7 +1276,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
              //3.转换视图
             for (CouponDetailDto item : enableGetCoupon) {
                // if (ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()) || StringUtil.eq("*", item.getProductCouponDto().getClientTypeSet())) {}
-                 if(ClientType.COMMON.getDictValue().equals(item.getProductCouponDto().getClientTypeSet())) continue;
+                 if(! ClientType.MEMBER.getDictValue().equals(item.getProductCouponDto().getClientTypeSet()))
+                     continue;
                     //获得优惠卷视图
                     ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.switchToView(), ObtainCouponViewDto.class);
                     viewDto.setProductList(item.getProductList());
@@ -1310,7 +1315,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             for (FullClientCouponRsp item : fullClientCouponRsps) {
                // if (ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet()) ||
                  //       StringUtil.eq("*", item.getCoupon().getProductCouponDto().getClientTypeSet())) {}
-                if (ClientType.COMMON.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet())) continue;
+                if ( ! ClientType.MEMBER.getDictValue().equals(item.getCoupon().getProductCouponDto().getClientTypeSet())) continue;
                     ObtainCouponViewDto viewDto = BeanPropertiesUtils.copyProperties(item.getCoupon().switchToView(), ObtainCouponViewDto.class);
 
                     viewDto.setProductList(item.getCoupon().getProductList());
@@ -1333,7 +1338,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
             log.info("已领取的优惠券信息:{}" + JSONObject.toJSONString(resultDto));
 
-            resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
+          //  resultDto.stream().forEach(r-> result.removeIf(obtainCouponViewDto -> obtainCouponViewDto.getUuid().equals(r.getUuid())));
 
 
             result.addAll(resultDto);

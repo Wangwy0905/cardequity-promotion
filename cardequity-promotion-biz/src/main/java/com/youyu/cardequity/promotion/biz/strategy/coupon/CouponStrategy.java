@@ -13,12 +13,17 @@ import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.ApplyProductFlag;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.COUPON_NOT_EXISTS;
 import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
+import static java.math.BigDecimal.ZERO;
+import static org.apache.commons.collections.CollectionUtils.*;
 
 /**
  * Created by caiyi on 2018/12/26.
@@ -100,5 +105,30 @@ public abstract class CouponStrategy {
         }
 
         return true;
+    }
+
+    /**
+     * 优惠金额分配
+     *
+     * @param totalProfitAmount 优惠金额
+     * @param totalProductAmount 适配商品总价
+     * @param orderProducts 适配商品明细
+     */
+    protected void distributeProfitAmount(BigDecimal totalProfitAmount, BigDecimal totalProductAmount, List<OrderProductDetailDto> orderProducts) {
+
+        if (isEmpty(orderProducts)) {
+            return;
+        }
+
+        BigDecimal subTotalProfitAmount = ZERO; // 已适配优惠金额
+        OrderProductDetailDto product;
+        for (int i = 0; i < orderProducts.size() - 1; i++) {
+            product = orderProducts.get(i);
+            product.setProfitAmount(totalProfitAmount.multiply(product.getTotalAmount().divide(totalProductAmount, 2, RoundingMode.DOWN)));
+            subTotalProfitAmount = subTotalProfitAmount.add(product.getProfitAmount());
+        }
+        //最后一个商品的优惠金额=优惠金额-已适配优惠金额
+        product = orderProducts.get(orderProducts.size() - 1);
+        product.setProfitAmount(totalProfitAmount.subtract(subTotalProfitAmount));
     }
 }

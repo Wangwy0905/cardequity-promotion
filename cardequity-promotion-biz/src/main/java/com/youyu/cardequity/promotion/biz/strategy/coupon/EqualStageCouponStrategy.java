@@ -108,13 +108,8 @@ public class EqualStageCouponStrategy extends CouponStrategy {
             BigDecimal totalProfitAmount = applyNum.multiply(clientCoupon.getCouponAmout());
             rsp.setProfitAmount(totalProfitAmount);
             rsp.setTotalAmount(amountCondition);
-
             //每种商品优惠的金额是按适用金额比例来的
-            if (amountCondition.compareTo(BigDecimal.ZERO) > 0) {
-                for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(amountCondition,4, RoundingMode.DOWN)));
-                }
-            }
+            distributeProfitAmount(rsp.getProfitAmount(), amountCondition, rsp.getProductLsit());
             return rsp;
         }
         return rsp;

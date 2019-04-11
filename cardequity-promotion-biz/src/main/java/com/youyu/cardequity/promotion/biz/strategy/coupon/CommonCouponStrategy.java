@@ -8,6 +8,7 @@ import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.other.OrderProductDetailDto;
 import com.youyu.cardequity.promotion.enums.dict.CouponApplyProductStage;
+import com.youyu.cardequity.promotion.enums.dict.CouponType;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+
+import static com.youyu.cardequity.common.base.util.CommonUtils.*;
+import static com.youyu.cardequity.promotion.enums.dict.CouponType.*;
 
 /**
  * 用于普通优惠券：门槛优惠券、无门槛优惠券、随机优惠券
@@ -29,7 +33,7 @@ public class CommonCouponStrategy extends CouponStrategy {
 
     @Override
     public UseCouponRsp applyCoupon(ClientCouponEntity clientCoupon, ProductCouponEntity coupon, List<OrderProductDetailDto> productList) {
-        log.info("进入普通满减优惠券处理策略，领取编号{}，优惠券编号为{}",clientCoupon.getId(),coupon.getId());
+        log.info("进入普通满减优惠券处理策略，领取编号{}，优惠券编号为{}", clientCoupon.getId(), coupon.getId());
         //装箱返回数据
         UseCouponRsp rsp = new UseCouponRsp();
         ClientCouponDto clientCouponDto = new ClientCouponDto();
@@ -40,14 +44,14 @@ public class CommonCouponStrategy extends CouponStrategy {
 
         //保护一下如果券下面只有一个阶梯，算作使用该券
         CouponStageRuleEntity stage = protectCompletion(clientCoupon);
-        if (stage!=null && CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
+        if (stage != null && CommonUtils.isEmptyorNull(clientCoupon.getStageId())) {
             clientCouponDto.setStageId(stage.getId());
             clientCoupon.setStageId(stage.getId());
         }
 
         //临时变量
         boolean successFlg = false;
-        String applyStage=CouponApplyProductStage.ALL.getDictValue();
+        String applyStage = CouponApplyProductStage.ALL.getDictValue();
         // TODO: 2018/12/27 应取自配置项
 
         BigDecimal countCondition = BigDecimal.ZERO;
@@ -77,7 +81,7 @@ public class CommonCouponStrategy extends CouponStrategy {
                 if (TriggerByType.NUMBER.getDictValue().equals(clientCoupon.getTriggerByType())) {
                     diff = stage.getBeginValue().subtract(countCondition);
                     if (applyNum.compareTo(diff) >= 0) {
-                        successFlg=true;
+                        successFlg = true;
                         //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品,不许要下面if处理
                         if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
                             applyNum = diff;
@@ -89,17 +93,17 @@ public class CommonCouponStrategy extends CouponStrategy {
                     diff = stage.getBeginValue().subtract(amountCondition);
                     //满足门槛条件情况下
                     if (product.getTotalAmount().compareTo(diff) >= 0) {
-                        successFlg=true;
+                        successFlg = true;
                         //默认策略：折扣优惠值是平摊订单涉及到的券定义时适用范围内所有商品,不许要下面if处理；适用范围=向上取整(门槛差额/价格)
                         if (CouponApplyProductStage.CONDITION.getDictValue().equals(applyStage)) {
-                            applyNum = diff.divide(product.getPrice(),0, RoundingMode.UP);
+                            applyNum = diff.divide(product.getPrice(), 0, RoundingMode.UP);
                             product.setProfitCount(applyNum);
                             break;
                         }
                     }
                 }
-            }else {
-                successFlg=true;
+            } else {
+                successFlg = true;
             }
 
             product.setProfitCount(applyNum);
@@ -109,17 +113,18 @@ public class CommonCouponStrategy extends CouponStrategy {
         //循环完后没有达到门槛的返回空
         if (!successFlg) {
             return null;
-        }else{
+        } else {
             BigDecimal totalRealAmount = rsp.getProductLsit().stream().map(OrderProductDetailDto::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             rsp.setTotalAmount(totalRealAmount);
-            //无门槛券可能出现优惠金额>总金额
-            if (rsp.getProfitAmount().compareTo(totalRealAmount)>0)
+            //无门槛券可能出现优惠金额>总金额,故优惠金额=max(优惠金额,商品总价),特殊地,运费券、免邮券不和商品关联
+            if (!matches(clientCoupon.getCouponType(), TRANSFERFARE.getDictValue(), FREETRANSFERFARE.getDictValue()) &&
+                    rsp.getProfitAmount().compareTo(totalRealAmount) > 0) {
                 rsp.setProfitAmount(totalRealAmount);
-            if (totalRealAmount.compareTo(BigDecimal.ZERO)>0) {
+            }
+            // 适配优惠金额
+            if (totalRealAmount.compareTo(BigDecimal.ZERO) > 0) {
                 //每种商品优惠的金额是按适用金额比例来的，如果是免邮券getProfitAmount是0
-                for (OrderProductDetailDto product : rsp.getProductLsit()) {
-                    product.setProfitAmount(rsp.getProfitAmount().multiply(product.getTotalAmount().divide(totalRealAmount,4, RoundingMode.DOWN)));
-                }
+                distributeProfitAmount(rsp.getProfitAmount(), totalRealAmount, rsp.getProductLsit());
             }
         }
         return rsp;

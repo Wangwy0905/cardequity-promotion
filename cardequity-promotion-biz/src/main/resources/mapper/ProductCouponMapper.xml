@@ -5,7 +5,7 @@
 <!-- -->
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper">
 
-    <select id="findEnableGetCouponListByCommon"
+   <select id="findEnableGetCouponListByCommon2"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
         select a.*
         from TB_PRODUCT_COUPON a
@@ -25,6 +25,58 @@
         <if test="clientType != null and clientType!=''">
             and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
             #{clientType,jdbcType=VARCHAR})&gt;0)
+        </if>
+        and a.ALLOW_USE_END_DATE &gt;= curdate()
+        and a.ALLOW_GET_BEGIN_DATE &lt;=curdate()
+        and a.ALLOW_GET_END_DATE &gt;= curdate()
+        and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
+        (select ifnull(sum(ifnull(d.COUPON_AMOUT, 0)),0)
+        from TB_CLIENT_COUPON d
+        where ifnull(d.IS_ENABLE, '1') = '1'
+        and d.COUPON_ID = a.UUID
+        and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)
+        and d.CREATE_TIME &gt;= curdate()))
+        and (ifnull(b.MAX_AMOUNT,999999999)>=999999999 or b.MAX_AMOUNT &gt;
+        (select ifnull(sum(ifnull(d.COUPON_AMOUT, 0)),0)
+        from TB_CLIENT_COUPON d
+        where ifnull(d.IS_ENABLE, '1') = '1'
+        and d.COUPON_ID = a.UUID
+        and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)))
+        and (ifnull(b.MAX_COUNT,999999999)>=999999999 or b.MAX_COUNT &gt;
+        (select ifnull(count(ifnull(d.UUID, 0)),0)
+        from TB_CLIENT_COUPON d
+        where ifnull(d.IS_ENABLE, '1') = '1'
+        and d.COUPON_ID = a.UUID
+        and (d.STATUS in ('1', '2') or curdate() &lt;= d.VALID_END_DATE)))
+        Order by a.CREATE_TIME desc
+    </select>
+    <select id="findEnableGetCouponListByCommon"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
+        select a.*
+        from TB_PRODUCT_COUPON a
+        left join TB_COUPON_QUOTA_RULE b on a.UUID = b.COUPON_ID and IFNULL(b.IS_ENABLE, '1') = '1'
+        where if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
+        and a.STATUS='1'
+        and if(length(a.GET_TYPE),a.GET_TYPE,'1') = '1'
+        <if test="productId != null and productId!=''">
+            and (if(length(a.APPLY_PRODUCT_FLAG),a.APPLY_PRODUCT_FLAG,'0') = '1' or
+            EXISTS (select 1 from TB_COUPON_REF_PRODUCT b where b.COUPON_ID=a.UUID and
+            b.PRODUCT_ID=#{productId,jdbcType=VARCHAR}))
+        </if>
+        <if test="entrustWay != null and entrustWay!=''">
+            and (if(length(a.ENTRUST_WAY_SET),a.ENTRUST_WAY_SET,'*') = '*' or instr(ENTRUST_WAY_SET,
+            #{entrustWay,jdbcType=VARCHAR})&gt;0)
+        </if>
+        <if test="clientType != null and clientType!=''">
+            <choose>
+                <when test="clientType == '10'.toString()">
+                    and  if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*'
+                </when>
+                <when test="clientType == '11'.toString()">
+                    and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
+                    #{clientType,jdbcType=VARCHAR})&gt;0)
+                </when>
+            </choose>
         </if>
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and a.ALLOW_GET_BEGIN_DATE &lt;=curdate()
@@ -70,9 +122,16 @@
             #{entrustWay,jdbcType=VARCHAR})&gt;0)
         </if>
         <if test="clientType != null and clientType!=''">
+            <choose>
+                <when test="clientType == '10'.toString()">
+                    and  if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*'
+                </when>
+                <when test="clientType == '11'.toString()">
+                    and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
+                    #{clientType,jdbcType=VARCHAR})&gt;0)
+                </when>
+            </choose>
 
-            and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
-            #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
         and a.ALLOW_USE_END_DATE &gt;= curdate()
         and a.ALLOW_GET_BEGIN_DATE &lt;= curdate()
