@@ -13,6 +13,7 @@ public class CouponIssueTriggerStrategy4Job extends CouponIssueTriggerStrategy {
     @Override
     protected void doIssueTask(CouponIssueEntity couponIssue) {
         // TODO: 2019/4/24
+        System.out.println("触发逻辑...");
     }
 
 }

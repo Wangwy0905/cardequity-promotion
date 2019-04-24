@@ -2,7 +2,6 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.LocalDateUtils;
-import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponQuotaRuleMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
@@ -48,8 +47,11 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     @Override
     @Transactional
     public void createIssue(CouponIssueReqDto couponIssueReq) {
-        checkCoupon(couponIssueReq);
-        CouponIssueEntity couponIssue = createCouponIssueEntity(couponIssueReq);
+        String couponId = couponIssueReq.getCouponId();
+        ProductCouponEntity productCoupon = productCouponMapper.selectByPrimaryKey(couponId);
+
+        checkCoupon(couponIssueReq, productCoupon);
+        CouponIssueEntity couponIssue = createCouponIssueEntity(couponIssueReq, productCoupon);
         triggerIssueTask(couponIssue);
 
         couponIssueMapper.insertSelective(couponIssue);
@@ -59,11 +61,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * 发放优惠券规则检验
      *
      * @param couponIssueReq
+     * @param productCoupon
      */
-    private void checkCoupon(CouponIssueReqDto couponIssueReq) {
-        String couponId = couponIssueReq.getCouponId();
-        ProductCouponEntity productCoupon = productCouponMapper.selectByPrimaryKey(couponId);
-
+    private void checkCoupon(CouponIssueReqDto couponIssueReq, ProductCouponEntity productCoupon) {
         ProductCouponStatusEnum productCouponStatusEnum = getCardequityEnum(ProductCouponStatusEnum.class, productCoupon.getStatus());
         if (!productCouponStatusEnum.isVisible()) {
             throw new BizException(INVISIBLE_COUPON_CANNOT_BE_ISSUED);
@@ -86,12 +86,12 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             throw new BizException(ISSUE_TIME_MUST_GREATER_CURRENT_TIME);
         }
 
-        LocalDateTime nowLocalDateTime = LocalDateUtils.date2LocalDateTime(now);
+        LocalDateTime nowLocalDateTime = LocalDateUtils.date2LocalDateTime(issueTime);
         if (nowLocalDateTime.isAfter(productCoupon.getAllowUseEndDate())) {
             throw new BizException(COUPON_END_DATE_MUST_GREATER_CURRENT_DATE);
         }
 
-        CouponQuotaRuleEntity couponQuotaRule = couponQuotaRuleMapper.selectByPrimaryKey(couponId);
+        CouponQuotaRuleEntity couponQuotaRule = couponQuotaRuleMapper.selectByPrimaryKey(couponIssueReq.getCouponId());
         Integer issueQuantity = couponQuotaRule.getMaxCount();
         if (nonNull(issueQuantity) && issueQuantity <= 0) {
             throw new BizException(COUPON_ISSUE_QUANTITY_CANNOT_LESS_ZERO);
@@ -102,15 +102,16 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * 创建发放优惠券对象
      *
      * @param couponIssueReq
+     * @param productCoupon
      * @return
      */
-    private CouponIssueEntity createCouponIssueEntity(CouponIssueReqDto couponIssueReq) {
+    private CouponIssueEntity createCouponIssueEntity(CouponIssueReqDto couponIssueReq, ProductCouponEntity productCoupon) {
         CouponIssueEntity couponIssueEntity = new CouponIssueEntity();
         couponIssueEntity.setCouponIssueId(uidGenerator.getUID2());
         couponIssueEntity.setCouponId(couponIssueReq.getCouponId());
-        couponIssueEntity.setCouponName(couponIssueReq.getCouponName());
+        couponIssueEntity.setCouponName(productCoupon.getCouponName());
         couponIssueEntity.setIssueTime(couponIssueReq.getIssueTime());
-        couponIssueEntity.setIssueType(couponIssueReq.getIssueType());
+        couponIssueEntity.setObjectType(couponIssueReq.getObjectType());
         couponIssueEntity.setIsVisible(INVISIBLE.getCode());
         couponIssueEntity.setIssueStatus(NOT_ISSUE.getCode());
         couponIssueEntity.setTriggerType(DELAY_JOB_TRIGGER_TYPE.getCode());
