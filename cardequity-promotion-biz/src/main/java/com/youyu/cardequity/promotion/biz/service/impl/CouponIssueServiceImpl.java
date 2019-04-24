@@ -3,8 +3,10 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.LocalDateUtils;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueMapper;
+import com.youyu.cardequity.promotion.biz.dal.dao.CouponQuotaRuleMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity;
+import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponGetTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
@@ -26,6 +28,7 @@ import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.NOT_ISS
 import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DELAY_JOB_TRIGGER_TYPE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
+import static java.util.Objects.nonNull;
 
 @Service
 public class CouponIssueServiceImpl implements CouponIssueService {
@@ -34,6 +37,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     private CouponIssueMapper couponIssueMapper;
     @Autowired
     private ProductCouponMapper productCouponMapper;
+    @Autowired
+    private CouponQuotaRuleMapper couponQuotaRuleMapper;
 
     @Autowired
     private UidGenerator uidGenerator;
@@ -82,6 +87,12 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         LocalDateTime nowLocalDateTime = LocalDateUtils.date2LocalDateTime(now);
         if (nowLocalDateTime.isAfter(productCoupon.getAllowUseEndDate())) {
             throw new BizException(COUPON_END_DATE_MUST_GREATER_CURRENT_DATE);
+        }
+
+        CouponQuotaRuleEntity couponQuotaRule = couponQuotaRuleMapper.selectByPrimaryKey(couponId);
+        Integer issueQuantity = couponQuotaRule.getMaxCount();
+        if (nonNull(issueQuantity) && issueQuantity <= 0) {
+            throw new BizException(COUPON_ISSUE_QUANTITY_CANNOT_LESS_ZERO);
         }
     }
 

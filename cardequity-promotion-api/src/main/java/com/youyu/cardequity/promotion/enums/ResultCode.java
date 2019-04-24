@@ -58,7 +58,8 @@ public enum ResultCode implements CardequityIBaseResultCode {
     COUPON_HAS_EXPIRED("0028", "优惠券已过期!"),
     MANUAL_COUPON_CANNOT_BE_ISSUED("0029", "手动领取方式优惠券不能发放!"),
     ISSUE_TIME_MUST_GREATER_CURRENT_TIME("0030", "发放时间要大于当前时间!"),
-    COUPON_END_DATE_MUST_GREATER_CURRENT_DATE("0031","优惠券结束日要大于当前日期");
+    COUPON_END_DATE_MUST_GREATER_CURRENT_DATE("0031", "优惠券结束日要大于当前日期!"),
+    COUPON_ISSUE_QUANTITY_CANNOT_LESS_ZERO("0032", "优惠券发行数量不能小于等于0!");
 
     /**
      * 返回错误码
