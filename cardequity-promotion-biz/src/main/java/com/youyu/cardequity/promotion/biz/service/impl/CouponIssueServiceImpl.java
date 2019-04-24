@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.LocalDateUtils;
+import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponQuotaRuleMapper;
 import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
@@ -29,6 +30,7 @@ import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DE
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.join;
 
 @Service
 public class CouponIssueServiceImpl implements CouponIssueService {
@@ -112,7 +114,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueEntity.setIsVisible(INVISIBLE.getCode());
         couponIssueEntity.setIssueStatus(NOT_ISSUE.getCode());
         couponIssueEntity.setTriggerType(DELAY_JOB_TRIGGER_TYPE.getCode());
-        couponIssueEntity.setIssueIds(couponIssueReq.getIssueIds());
+        couponIssueEntity.setIssueIds(join(couponIssueReq.getIssueIds(), ","));
         return couponIssueEntity;
     }
 

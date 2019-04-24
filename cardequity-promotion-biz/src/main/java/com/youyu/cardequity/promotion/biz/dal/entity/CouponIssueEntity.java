@@ -41,7 +41,7 @@ public class CouponIssueEntity extends BaseEntity<String> {
     private String triggerType;
 
     @Column(name = "ISSUE_IDS")
-    private List<String> issueIds = new ArrayList<>();
+    private String issueIds;
 
     public CouponIssueEntity() {
     }
