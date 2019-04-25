@@ -9,6 +9,7 @@ import com.youyu.common.dto.IBaseDto;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiModel;
+import org.springframework.context.annotation.Bean;
 
 
 /**
@@ -79,6 +80,9 @@ public class ProductCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "有效期限:以天为单位")
     private Integer valIdTerm;
 
+    @ApiModelProperty(value="有效期限：当月有效 ")
+    private Boolean monthValid;
+
     @ApiModelProperty(value = "有效期限是否控制在不超过优惠结束日:0-否:有效结束日=实际领取日+期限 1-是：有效结束日=min(优惠结束日,(实际领取日+期限))")
     private String useGeEndDateFlag;
 
@@ -101,7 +105,7 @@ public class ProductCouponDto implements IBaseDto<String>{
     @ApiModelProperty(value = "获取阶段:0-付后 1-即时 2-确认收货后 3-注册 4-推荐 5-分享 6-平台指定发放")
     private String getStage;
 
-    @ApiModelProperty(value = "领取方式:0-自动 1-手动 ")
+    @ApiModelProperty(value = "领取方式:0-自动（后台发放） 1-手动 ")
     private String getType;
 
     @ApiModelProperty(value = "备注")

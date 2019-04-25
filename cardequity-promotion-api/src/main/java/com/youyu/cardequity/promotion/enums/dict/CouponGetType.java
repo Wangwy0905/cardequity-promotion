@@ -4,9 +4,9 @@ package com.youyu.cardequity.promotion.enums.dict;
  * Created by caiyi on 2019/3/4.
  */
 public enum CouponGetType {
-    AUTO("0", "自动"),
+    AUTO("0", "后台发放（自动发送）"),
     HANLD("1", "手动"),
-    GRANT("2", "平台发放"),
+    GRANT("2", "指定平台发放"),
             ;
 
     public static final String DICTID = "100179";

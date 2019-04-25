@@ -30,7 +30,7 @@ public class CouponDetailDto {
     @ApiModelProperty(value = "优惠券需要删除的商品")
     private List<BaseProductReq> delProductList;
 
-    @ApiModelProperty(value = "领取或使用规则")
+    @ApiModelProperty(value = "领取或使用频率规则")
     private List<CouponGetOrUseFreqRuleDto> freqRuleList;
 
     @ApiModelProperty(value = "额度规则")
@@ -81,10 +81,28 @@ public class CouponDetailDto {
 
         }
         //规则额度
-        if (quotaRule != null) {
-            dto.setMaxCount(quotaRule.getMaxCount());//最大发放数量(券池数量):优惠券数量池
-        }else{
-            dto.setMaxCount(CommonConstant.IGNOREINTVALUE);// 数值参数的边界有效上限````
+        if("1".equals(productCouponDto.getGetType())){
+            if (quotaRule != null) {
+                dto.setMaxCount(quotaRule.getMaxCount());//最大发放数量(券池数量):优惠券数量池
+            }else{
+                dto.setMaxCount(CommonConstant.IGNOREINTVALUE);// 数值参数的边界有效上限````
+            }
+            //领取或使用规则
+
+            if (freqRuleList != null && freqRuleList.size() > 0){
+                for (CouponGetOrUseFreqRuleDto freq : freqRuleList) {
+                    //使用
+                    if (OpCouponType.USERULE.getDictValue().equals(freq.getOpCouponType()))
+                        continue;
+                    dto.setFreqId(freq.getUuid());
+                    //频率周期
+                    dto.setUnit(freq.getUnit());
+                    //周期内允许数量
+                    dto.setAllowCount(freq.getAllowCount());
+                    //客户获取总数/客户每次使用数
+                    dto.setPersonTotalNum(freq.getPersonTotalNum());
+                }
+            }
         }
         //使用门槛
         dto.setConditionValue(BigDecimal.ZERO);
@@ -112,21 +130,7 @@ public class CouponDetailDto {
 
         }
 
-        //领取或使用规则
-        if (freqRuleList != null && freqRuleList.size() > 0){
-            for (CouponGetOrUseFreqRuleDto freq : freqRuleList) {
-                //使用
-                if (OpCouponType.USERULE.getDictValue().equals(freq.getOpCouponType()))
-                    continue;
-                dto.setFreqId(freq.getUuid());
-                //频率周期
-                dto.setUnit(freq.getUnit());
-                //周期内允许数量
-                dto.setAllowCount(freq.getAllowCount());
-                //客户获取总数/客户每次使用数
-                dto.setPersonTotalNum(freq.getPersonTotalNum());
-            }
-        }
+
         dto.setProductList(productList);
         return dto;
     }
