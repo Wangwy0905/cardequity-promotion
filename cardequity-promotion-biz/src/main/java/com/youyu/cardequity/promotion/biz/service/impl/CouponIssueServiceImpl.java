@@ -50,8 +50,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         String couponId = couponIssueReq.getCouponId();
         ProductCouponEntity productCoupon = productCouponMapper.selectByPrimaryKey(couponId);
 
-        checkCoupon(couponIssueReq, productCoupon);
         CouponIssueEntity couponIssue = createCouponIssueEntity(couponIssueReq, productCoupon);
+        checkCoupon(couponIssue, productCoupon);
+
         triggerIssueTask(couponIssue);
 
         couponIssueMapper.insertSelective(couponIssue);
@@ -60,10 +61,10 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     /**
      * 发放优惠券规则检验
      *
-     * @param couponIssueReq
+     * @param couponIssue
      * @param productCoupon
      */
-    private void checkCoupon(CouponIssueReqDto couponIssueReq, ProductCouponEntity productCoupon) {
+    private void checkCoupon(CouponIssueEntity couponIssue, ProductCouponEntity productCoupon) {
         ProductCouponStatusEnum productCouponStatusEnum = getCardequityEnum(ProductCouponStatusEnum.class, productCoupon.getStatus());
         if (!productCouponStatusEnum.isVisible()) {
             throw new BizException(INVISIBLE_COUPON_CANNOT_BE_ISSUED);
@@ -80,7 +81,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             throw new BizException(MANUAL_COUPON_CANNOT_BE_ISSUED);
         }
 
-        Date issueTime = string2Date(couponIssueReq.getIssueTime(), YYYY_MM_DD_HH_MM);
+        Date issueTime = string2Date(couponIssue.getIssueTime(), YYYY_MM_DD_HH_MM);
         Date now = now();
         if (now.after(issueTime)) {
             throw new BizException(ISSUE_TIME_MUST_GREATER_CURRENT_TIME);
@@ -91,7 +92,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             throw new BizException(COUPON_END_DATE_MUST_GREATER_CURRENT_DATE);
         }
 
-        CouponQuotaRuleEntity couponQuotaRule = couponQuotaRuleMapper.selectByPrimaryKey(couponIssueReq.getCouponId());
+        CouponQuotaRuleEntity couponQuotaRule = couponQuotaRuleMapper.selectByPrimaryKey(couponIssue.getCouponId());
         Integer issueQuantity = couponQuotaRule.getMaxCount();
         if (nonNull(issueQuantity) && issueQuantity <= 0) {
             throw new BizException(COUPON_ISSUE_QUANTITY_CANNOT_LESS_ZERO);
