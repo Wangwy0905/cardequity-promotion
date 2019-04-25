@@ -10,7 +10,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class CouponIssueReqDto implements Serializable {
+public class CouponIssueReq implements Serializable {
 
     private static final long serialVersionUID = 3768737223941098951L;
 

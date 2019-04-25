@@ -12,7 +12,7 @@ import com.youyu.cardequity.promotion.biz.enums.ProductCouponGetTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.biz.strategy.couponissue.CouponIssueTriggerStrategy;
-import com.youyu.cardequity.promotion.dto.req.CouponIssueReqDto;
+import com.youyu.cardequity.promotion.dto.req.CouponIssueReq;
 import com.youyu.common.exception.BizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,6 @@ import java.util.Date;
 import static com.youyu.cardequity.common.base.bean.CustomHandler.getBeanInstance;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
-import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.ISSUING;
 import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.NOT_ISSUE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DELAY_JOB_TRIGGER_TYPE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
@@ -47,7 +46,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
     @Override
     @Transactional
-    public void createIssue(CouponIssueReqDto couponIssueReq) {
+    public void createIssue(CouponIssueReq couponIssueReq) {
         String couponId = couponIssueReq.getCouponId();
         ProductCouponEntity productCoupon = productCouponMapper.selectByPrimaryKey(couponId);
 
@@ -107,7 +106,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * @param productCoupon
      * @return
      */
-    private CouponIssueEntity createCouponIssueEntity(CouponIssueReqDto couponIssueReq, ProductCouponEntity productCoupon) {
+    private CouponIssueEntity createCouponIssueEntity(CouponIssueReq couponIssueReq, ProductCouponEntity productCoupon) {
         CouponIssueEntity couponIssueEntity = new CouponIssueEntity();
         couponIssueEntity.setCouponIssueId(uidGenerator.getUID2());
         couponIssueEntity.setCouponId(couponIssueReq.getCouponId());
@@ -122,7 +121,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     }
 
     /**
-     * 执行触发优惠券任务的前置处理
+     * 执行触发优惠券任务
      *
      * @param couponIssue
      */
