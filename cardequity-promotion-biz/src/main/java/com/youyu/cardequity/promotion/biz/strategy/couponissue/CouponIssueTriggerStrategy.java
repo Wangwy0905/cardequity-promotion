@@ -8,9 +8,10 @@ public abstract class CouponIssueTriggerStrategy {
 
 
     public void issueTask(CouponIssueEntity couponIssue) {
-        checkCouponIssue(couponIssue);
-        doIssueTask(couponIssue);
-        couponIssue.setIssueStatus(ISSUING.getCode());
+        //todo
+//        checkCouponIssue(couponIssue);
+        issueTaskPreProcess(couponIssue);
+        //todo
     }
 
     private void checkCouponIssue(CouponIssueEntity couponIssue) {
@@ -18,4 +19,11 @@ public abstract class CouponIssueTriggerStrategy {
     }
 
     protected abstract void doIssueTask(CouponIssueEntity couponIssue);
+
+    /**
+     * 执行发放任务的前置处理
+     *
+     * @param couponIssueEntity
+     */
+    protected abstract void issueTaskPreProcess(CouponIssueEntity couponIssueEntity);
 }

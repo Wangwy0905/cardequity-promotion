@@ -24,6 +24,7 @@ import java.util.Date;
 import static com.youyu.cardequity.common.base.bean.CustomHandler.getBeanInstance;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
+import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.ISSUING;
 import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.NOT_ISSUE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DELAY_JOB_TRIGGER_TYPE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
@@ -54,6 +55,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         CouponIssueEntity couponIssue = createCouponIssueEntity(couponIssueReq, productCoupon);
         triggerIssueTask(couponIssue);
 
+        couponIssue.setIssueStatus(ISSUING.getCode());
         couponIssueMapper.insertSelective(couponIssue);
     }
 
@@ -120,7 +122,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     }
 
     /**
-     * 执行触发优惠券任务
+     * 执行触发优惠券任务的前置处理
      *
      * @param couponIssue
      */
