@@ -15,7 +15,7 @@ import javax.persistence.Table;
  */
 @Getter
 @Setter
-@Table(name = "TB_COUPON_ISSUE")
+@Table(name = "TB_COUPON_ISSUE_JOB")
 public class CouponIssueJobEntity extends BaseEntity<String> {
     /**
      * 优惠券发放任务的触发器ID

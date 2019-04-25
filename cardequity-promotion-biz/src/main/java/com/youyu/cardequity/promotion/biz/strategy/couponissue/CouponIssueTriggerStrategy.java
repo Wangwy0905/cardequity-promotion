@@ -2,8 +2,6 @@ package com.youyu.cardequity.promotion.biz.strategy.couponissue;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity;
 
-import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.ISSUING;
-
 public abstract class CouponIssueTriggerStrategy {
 
 
@@ -11,7 +9,9 @@ public abstract class CouponIssueTriggerStrategy {
         //todo
 //        checkCouponIssue(couponIssue);
         issueTaskPreProcess(couponIssue);
-        //todo
+
+        //todo 预留拓展空间
+//        doIssueTask(couponIssue);
     }
 
     private void checkCouponIssue(CouponIssueEntity couponIssue) {
