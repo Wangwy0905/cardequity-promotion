@@ -11,7 +11,6 @@ import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponGetTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
-import com.youyu.cardequity.promotion.biz.strategy.couponissue.CouponIssueTriggerStrategy;
 import com.youyu.cardequity.promotion.dto.req.CouponIssueReq;
 import com.youyu.common.exception.BizException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import static com.youyu.cardequity.common.base.bean.CustomHandler.getBeanInstance;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.NOT_ISSUE;
@@ -31,6 +29,12 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.join;
 
+/**
+ * @author panqingqing
+ * @version v1.0
+ * @date 2019年04月25日 15:00:00
+ * @work 优惠券发放service 实现
+ */
 @Service
 public class CouponIssueServiceImpl implements CouponIssueService {
 
@@ -52,8 +56,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
         CouponIssueEntity couponIssue = createCouponIssueEntity(couponIssueReq, productCoupon);
         checkCoupon(couponIssue, productCoupon);
-
-        triggerIssueTask(couponIssue);
 
         couponIssueMapper.insertSelective(couponIssue);
     }
@@ -118,17 +120,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueEntity.setTriggerType(DELAY_JOB_TRIGGER_TYPE.getCode());
         couponIssueEntity.setIssueIds(join(couponIssueReq.getIssueIds(), ","));
         return couponIssueEntity;
-    }
-
-    /**
-     * 执行触发优惠券任务
-     *
-     * @param couponIssue
-     */
-    private void triggerIssueTask(CouponIssueEntity couponIssue) {
-        String triggerType = couponIssue.getTriggerType();
-        CouponIssueTriggerStrategy couponIssueTriggerStrategy = getBeanInstance(CouponIssueTriggerStrategy.class, triggerType);
-        couponIssueTriggerStrategy.issueTask(couponIssue);
     }
 
 }

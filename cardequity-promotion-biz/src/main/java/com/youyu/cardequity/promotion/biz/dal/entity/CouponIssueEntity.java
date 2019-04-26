@@ -8,6 +8,12 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * @author panqingqing
+ * @version v1.0
+ * @date 2019年04月25日 15:00:00
+ * @work 优惠券发放实体
+ */
 @Getter
 @Setter
 @Table(name = "TB_COUPON_ISSUE")
