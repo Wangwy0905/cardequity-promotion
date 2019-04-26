@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
@@ -12,6 +13,7 @@ import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity;
@@ -32,7 +34,7 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
  * @date 2018-12-20
  */
 @Service
-public class CouponRefProductServiceImpl extends AbstractService<String, CouponRefProductDto, CouponRefProductEntity, CouponRefProductMapper> implements CouponRefProductService {
+public class CouponRefProductServiceImpl extends AbstractService<String, CouponRefProductDto, CouponRefProductEntity, CouponRefProductMapper> implements CouponRefProductService{
     @Autowired
     private CouponRefProductMapper couponRefProductMapper;
 
@@ -80,6 +82,8 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
         return dto;
     }
 
+
+
     /**
      * 删除取消配置优惠的适用商品
      * @param req
@@ -111,6 +115,42 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
         return delDto;
     }
 
+    /**
+     * 配置所有商品到优惠券
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public CommonBoolDto<Integer> batchAddCouponRefAllProduct(BatchRefProductReq req) {
+        if (req == null || CommonUtils.isEmptyorNull(req.getId())) {
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定优惠券id 参数"));
+        }
+        CommonBoolDto<Integer> commonBoolDtoDto =new CommonBoolDto<>(true);
+        CouponRefProductEntity couponRefProductEntity = BeanPropertiesUtils.copyProperties(req, CouponRefProductEntity.class);
+        List<CouponRefProductEntity> productList = new ArrayList<>();
+        //判断此优惠券中是否已有商品
+        List<CouponRefProductEntity> couponRefProductEntities = couponRefProductMapper.select(couponRefProductEntity);
+        if(couponRefProductEntities !=null && couponRefProductEntities.size()!=0){
+            batchService.batchDispose(couponRefProductEntities,CouponRefProductMapper.class,"delete");
+        }
+
+        if (req.getProductList() != null) {
+
+            for (BaseProductReq item : req.getProductList()) {
+                CouponRefProductEntity addEntity = new CouponRefProductEntity();
+                addEntity.setCouponId(req.getId());
+                addEntity.setProductId(item.getProductId());
+                addEntity.setSkuId(item.getSkuId());
+                addEntity.setId(CommonUtils.getUUID());
+                addEntity.setIsEnable(CommonDict.IF_YES.getCode());
+                productList.add(addEntity);
+            }
+            batchService.batchDispose(productList, CouponRefProductMapper.class, "insert");
+            commonBoolDtoDto.setData(req.getProductList().size());
+        }
+        return commonBoolDtoDto;
+    }
 
     /**
      * 查询优惠券配置的商品信息

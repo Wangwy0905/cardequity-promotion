@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.api.CouponRefProductApi;
 import com.youyu.cardequity.promotion.biz.service.CouponRefProductService;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.CouponRefProductDto;
+import com.youyu.cardequity.promotion.vo.req.CouponRefAllProductReq;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
 import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
@@ -37,6 +38,13 @@ public class CouponRefProductController implements CouponRefProductApi {
     @PostMapping(path = "/addProductRefCoupon")
     public Result<CommonBoolDto<Integer>> addProductRefCoupon(@RequestBody BatchRefProductReq req){
         return Result.ok(couponRefProductService.batchAddCouponRefProduct(req));
+    }
+
+    @Override
+    @ApiOperation(value = "【后台】添加优惠券关联所有商品")
+    @PostMapping(path = "/addAllProductRefCoupon")
+    public Result<CommonBoolDto<Integer>> addAllProductRefCoupon(BatchRefProductReq req) {
+        return Result.ok(couponRefProductService.batchAddCouponRefAllProduct(req));
     }
 
 

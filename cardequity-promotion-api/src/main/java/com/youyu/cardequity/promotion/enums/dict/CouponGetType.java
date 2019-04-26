@@ -8,7 +8,6 @@ public enum CouponGetType {
     HANLD("1", "手动"),
     GRANT("2", "指定平台发放"),
             ;
-
     public static final String DICTID = "100179";
     public static final String DICTNAME = "CouponGetType";
     public static final String DICTKIND = "2";

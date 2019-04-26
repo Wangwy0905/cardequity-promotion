@@ -11,7 +11,7 @@ public class BaseQryCouponReq {
     @ApiModelProperty(value = "指定优惠券id")
     private String couponId;
 
-    @ApiModelProperty(value = "券状态:0-未开始 1-有效中 2-已过期 3-未过期 4-按天数/当月有效")
+    @ApiModelProperty(value = "券状态:0-未开始 1-有效中 2-已过期 3-按天数/当月有效")
     private String couponStatus;
 
     @ApiModelProperty(value = "上架状态:0-下架 1-上架")
@@ -19,9 +19,10 @@ public class BaseQryCouponReq {
 
     @ApiModelProperty(value = "优惠券名称：可模糊")
     private String couponName;
-    @ApiModelProperty(value = "领取方式:0-后台发放 1-手动领取")
+    @ApiModelProperty(value = "当月有效")
     private String monthValid;
-
+    @ApiModelProperty(value = "领取方式 ：0-自动发放  1-手动领取")
+    private String getType;
     @ApiModelProperty(value = "商品id")
     private String productId;
 

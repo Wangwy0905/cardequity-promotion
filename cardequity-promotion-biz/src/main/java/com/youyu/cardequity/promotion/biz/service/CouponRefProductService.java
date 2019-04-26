@@ -1,18 +1,16 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity;
-import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.CouponRefProductDto;
+import com.youyu.cardequity.promotion.vo.req.CouponRefAllProductReq;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
 import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.service.IService;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  *  代码生成器
@@ -27,6 +25,13 @@ public interface CouponRefProductService extends IService<CouponRefProductDto, C
      * @return
      */
      CommonBoolDto<Integer> batchAddCouponRefProduct(BatchRefProductReq req);
+
+    /**
+     * 配置所有商品到优惠券
+     * @param req
+     * @return
+     */
+    CommonBoolDto<Integer> batchAddCouponRefAllProduct(BatchRefProductReq req);
 
     /**
      * 删除不需要的适用商品

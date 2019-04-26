@@ -36,14 +36,13 @@ import java.util.SimpleTimeZone;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ApiTest {
-    @Autowired
+  /*  @Autowired
     ProductCouponController productCouponController;
-
     @Autowired
     ActivityProfitController activityProfitController;
 
     @Autowired
-    ClientCouponController clientCouponController;
+    ClientCouponController clientCouponController;*/
     @Autowired
     ProductCouponService productCouponService;
     @Autowired

@@ -32,6 +32,7 @@ import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,8 +46,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
-import static com.youyu.cardequity.promotion.enums.ResultCode.NET_ERROR;
-import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
+import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 
 
 /**
@@ -472,11 +472,16 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if(dto.getAllowUseBeginDate()==null || dto.getAllowUseEndDate()==null) {
             if (dto.getMonthValid()) {
                 dto.setAllowUseBeginDate(LocalDateTime.now());
-                //月末时间
+                //当月有效时间
+
                 dto.setAllowUseEndDate(lastMonthDay());
+                dto.setMonthValid(true);
             } else if (dto.getValIdTerm() != null) {
                 dto.setAllowUseBeginDate(LocalDateTime.now());
                 //天数限制
+             /*   if(dto.getAllowGetEndDate().compareTo(numToDate(req))<0){
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("设置有效日期超过优惠券的领取日期"));
+                }*/
                 dto.setAllowUseEndDate(numToDate(req));
             }else{
                 dto.setAllowUseBeginDate(dto.getAllowGetBeginDate());
@@ -579,6 +584,16 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 dto.setAllowGetBeginDate(LocalDateTime.now());
                 dto.setAllowGetEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
             }
+            if(dto.getAllowGetEndDate().compareTo(lastMonthDay())<0){
+                    dto.setAllowUseEndDate(dto.getAllowGetEndDate());
+            }else{
+                    dto.setAllowUseEndDate(lastMonthDay());
+            }
+
+            if(dto.getAllowUseBeginDate().compareTo(dto.getAllowGetEndDate())<0 || dto.getAllowUseEndDate().compareTo(dto.getAllowGetEndDate())>0){
+                throw new BizException(DISCOUNT_DATE_INVALID);
+            }
+
             if (dto.getAllowGetEndDate().compareTo(dto.getAllowGetBeginDate()) < 0) {
                 result.setDesc("优惠券领取日期无效：起始值" + dto.getAllowGetBeginDate() + "；结束值" + dto.getAllowGetEndDate());
                 return result;
@@ -890,18 +905,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         BatchRefProductReq refProductReq = new BatchRefProductReq();
         refProductReq.setId(dto.getId());
-        if (req.getProductList() != null && req.getDelProductList() != null) {
-            //批量关联商品
-            refProductReq.setProductList(req.getProductList());
-            refProductReq.setDelProductList(req.getDelProductList());
-            couponRefProductService.batchDeleteCouponRefProduct(refProductReq);
-            couponRefProductService.batchAddCouponRefProduct(refProductReq);
-        } else if (req.getProductList() != null && req.getDelProductList() == null) {
-
+       if (req.getProductList() != null) {
             refProductReq.setProductList(req.getProductList());
             couponRefProductService.batchAddCouponRefProduct(refProductReq);
-
-        } else if (req.getProductList() == null && req.getDelProductList() != null) {
+        } else if ( req.getDelProductList() != null) {
             refProductReq.setDelProductList(req.getDelProductList());
             couponRefProductService.batchDeleteCouponRefProduct(refProductReq);
         } else {

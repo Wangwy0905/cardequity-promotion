@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.api;
 
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.CouponRefProductDto;
+import com.youyu.cardequity.promotion.vo.req.CouponRefAllProductReq;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseProductReq;
 import com.youyu.cardequity.promotion.vo.req.BatchRefProductReq;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 优惠券关联商品管理
@@ -40,6 +40,18 @@ public interface CouponRefProductApi {
     @ApiOperation(value = "【后台】添加优惠券关联商品")
     @PostMapping(path = "/addProductRefCoupon")
     Result<CommonBoolDto<Integer>> addProductRefCoupon(@RequestBody BatchRefProductReq req);
+
+    /**
+     * *********************************【后台接口】************************
+     * 优惠券关联所有商品的添加操作
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "【后台】优惠券关联所有商品的添加操作")
+    @PostMapping(path = "/addAllProductRefCoupon")
+    Result<CommonBoolDto<Integer>> addAllProductRefCoupon(@RequestBody BatchRefProductReq req);
+
 
     /**
      * 查询商品的活动数量
