@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueMapper">
+
+    <select id="getCouponIssueQuery" parameterType="com.youyu.cardequity.promotion.dto.req.CouponIssueQueryReq"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity">
+        select
+            COUPON_ISSUE_ID couponIssueId,
+            COUPON_ID couponId,
+            COUPON_NAME couponName,
+            OBJECT_TYPE objectType,
+            IS_VISIBLE isVisible,
+            ISSUE_TIME issueTime,
+            ISSUE_STATUS issueStatus,
+            CREATE_AUTHOR createAuthor,
+            UPDATE_AUTHOR updateAuthor
+        from TB_COUPON_ISSUE
+        <where>
+            <if test="searchCondition != null">
+                (COUPON_ISSUE_ID = #{searchCondition,jdbcType=VARCHAR} or COUPON_NAME =
+                #{searchCondition,jdbcType=VARCHAR})
+            </if>
+            <if test="objectType != null">
+                and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+            </if>
+            <if test="isVisible != null">
+                and IS_VISIBLE = #{isVisible,jdbcType=VARCHAR}
+            </if>
+            <if test="issueStatus != null">
+                and ISSUE_STATUS #{issueStatus,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="getCouponIssueDetail" parameterType="com.youyu.cardequity.promotion.dto.req.CouponIssueDetailReq"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity">
+        select
+            COUPON_ID couponId,
+            COUPON_NAME couponName,
+            OBJECT_TYPE objectType,
+            ISSUE_TIME issueTime,
+            ISSUE_IDS issueIds,
+            ISSUE_STATUS issueStatus
+        from TB_COUPON_ISSUE
+        <where>
+            <if test="couponIssueId != null">
+                COUPON_ISSUE_ID = #{couponIssueId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

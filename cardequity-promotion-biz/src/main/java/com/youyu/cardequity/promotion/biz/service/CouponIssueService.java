@@ -1,6 +1,9 @@
 package com.youyu.cardequity.promotion.biz.service;
 
-import com.youyu.cardequity.promotion.dto.req.CouponIssueReq;
+import com.youyu.cardequity.promotion.dto.req.*;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
+import com.youyu.common.api.PageData;
 
 /**
  * @author panqingqing
@@ -17,4 +20,35 @@ public interface CouponIssueService {
      * @return
      */
     void createIssue(CouponIssueReq couponIssueReq);
+
+    /**
+     * 根据查询条件查询优惠券发放列表
+     *
+     * @return
+     */
+    PageData<CouponIssueQueryRsp> getCouponIssueQuery(CouponIssueQueryReq couponIssueQueryReq);
+
+    /**
+     * 根据查询条件查询发放明细
+     *
+     * @param couponIssueDetailReq
+     * @return
+     */
+    CouponIssueDetailRsp getCouponIssueDetail(CouponIssueDetailReq couponIssueDetailReq);
+
+    /**
+     * 根据条件删除
+     *
+     * @param couponIssueDeleteReq
+     * @return
+     */
+    void delete(CouponIssueDeleteReq couponIssueDeleteReq);
+
+    /**
+     * 设置优惠券上下架
+     *
+     * @param couponIssueVisibleReq
+     */
+    void setVisible(CouponIssueVisibleReq couponIssueVisibleReq);
+
 }
