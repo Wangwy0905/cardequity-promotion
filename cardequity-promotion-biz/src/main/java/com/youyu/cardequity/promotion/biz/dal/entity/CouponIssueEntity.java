@@ -8,6 +8,14 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
+/**
+ * @author panqingqing
+ * @version v1.0
+ * @date 2019年04月25日 15:00:00
+ * @work 优惠券发放实体
+ */
 @Getter
 @Setter
 @Table(name = "TB_COUPON_ISSUE")
@@ -52,5 +60,9 @@ public class CouponIssueEntity extends BaseEntity<String> {
     @Override
     public void setId(String couponIssueId) {
         this.couponIssueId = couponIssueId;
+    }
+
+    public String getOperator() {
+        return isBlank(getUpdateAuthor()) ? getCreateAuthor() : getUpdateAuthor();
     }
 }

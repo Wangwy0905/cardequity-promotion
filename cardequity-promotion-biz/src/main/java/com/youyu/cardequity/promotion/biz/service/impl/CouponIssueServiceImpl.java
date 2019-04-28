@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.LocalDateUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
@@ -18,6 +19,10 @@ import com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum;
 import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.enums.dict.UseGeEndDateFlag;
+import com.youyu.cardequity.promotion.dto.req.*;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
+import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +35,31 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import java.util.Optional;
 
+import static com.github.pagehelper.page.PageMethod.startPage;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
+import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
+import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.NOT_ISSUE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DELAY_JOB_TRIGGER_TYPE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.GRANT;
+
+import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.split;
 
+/**
+ * @author panqingqing
+ * @version v1.0
+ * @date 2019年04月25日 15:00:00
+ * @work 优惠券发放service 实现
+ */
 @Service
 @Slf4j
 public class CouponIssueServiceImpl implements CouponIssueService {
@@ -69,7 +87,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
         CouponIssueEntity couponIssue = createCouponIssueEntity(couponIssueReq, productCouponEntity);
         checkCoupon(couponIssue, productCouponEntity);
-
         couponIssueMapper.insertSelective(couponIssue);
     }
 
@@ -265,6 +282,60 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     }
 
 
+    @Override
+    public PageData<CouponIssueQueryRsp> getCouponIssueQuery(CouponIssueQueryReq couponIssueQueryReq) {
+        startPage(couponIssueQueryReq.getPageNo(), couponIssueQueryReq.getPageSize());
+
+        List<CouponIssueEntity> couponIssueEntities = couponIssueMapper.getCouponIssueQuery(couponIssueQueryReq);
+        PageInfo<CouponIssueEntity> pageInfo = new PageInfo<>(couponIssueEntities);
+
+        return convert(pageInfo, CouponIssueQueryRsp.class);
+    }
+
+    @Override
+    public CouponIssueDetailRsp getCouponIssueDetail(CouponIssueDetailReq couponIssueDetailReq) {
+        CouponIssueEntity couponIssue = couponIssueMapper.getCouponIssueDetail(couponIssueDetailReq);
+        ProductCouponEntity productCoupon = productCouponMapper.selectByPrimaryKey(couponIssue.getCouponId());
+        return getCouponIssueDetailRsp(couponIssue, productCoupon);
+    }
+
+    @Override
+    @Transactional
+    public void delete(CouponIssueDeleteReq couponIssueDeleteReq) {
+        List<String> couponIssueIds = couponIssueDeleteReq.getCouponIssueIds();
+
+        doDelete(couponIssueIds);
+    }
+
+    @Override
+    public void setVisible(CouponIssueVisibleReq couponIssueVisibleReq) {
+        CouponIssueEntity couponIssue = new CouponIssueEntity();
+        couponIssue.setCouponIssueId(couponIssueVisibleReq.getCouponIssueId());
+        couponIssue.setIsVisible(couponIssueVisibleReq.getIsVisible());
+
+        couponIssueMapper.updateByPrimaryKeySelective(couponIssue);
+    }
+
+    /**
+     * @param couponIssue
+     * @param productCoupon
+     * @return
+     */
+    private CouponIssueDetailRsp getCouponIssueDetailRsp(CouponIssueEntity couponIssue, ProductCouponEntity productCoupon) {
+        Date issueDate = string2Date(couponIssue.getIssueTime(), YYYY_MM_DD_HH_MM);
+
+        CouponIssueDetailRsp couponIssueDetailRsp = new CouponIssueDetailRsp();
+        couponIssueDetailRsp.setCouponId(couponIssue.getCouponId());
+        couponIssueDetailRsp.setCouponName(couponIssue.getCouponName());
+        couponIssueDetailRsp.setCouponType(productCoupon.getCouponType());
+        couponIssueDetailRsp.setCouponStatus(productCoupon.getStatus());
+        couponIssueDetailRsp.setIssueDate(date2String(issueDate, YYYY_MM_DD));
+        couponIssueDetailRsp.setIssueTime(date2String(issueDate, HH_MM_SS));
+        couponIssueDetailRsp.setObjectType(couponIssue.getTargetType());
+        couponIssueDetailRsp.setIssueIds(asList(split(couponIssue.getIssueIds(), ",")));
+        return couponIssueDetailRsp;
+    }
+
     /**
      * 发放优惠券规则检验
      *
@@ -327,5 +398,23 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         return couponIssueEntity;
     }
 
+    /**
+     * 删除
+     *
+     * @param couponIssueIds
+     */
+    private void doDelete(List<String> couponIssueIds) {
+        CouponIssueDetailReq couponIssueDetailReq = null;
+        for (String couponIssueId : couponIssueIds) {
+            couponIssueDetailReq = new CouponIssueDetailReq();
+            couponIssueDetailReq.setCouponIssueId(couponIssueId);
+
+            CouponIssueEntity couponIssue = couponIssueMapper.getCouponIssueDetail(couponIssueDetailReq);
+            if (!eq(NOT_ISSUE.getCode(), couponIssue.getIssueStatus())) {
+                throw new BizException(COUPON_NOT_ISSUE_STATUS_CAN_DELETE);
+            }
+            couponIssueMapper.deleteByPrimaryKey(couponIssueDetailReq.getCouponIssueId());
+        }
+    }
 
 }
