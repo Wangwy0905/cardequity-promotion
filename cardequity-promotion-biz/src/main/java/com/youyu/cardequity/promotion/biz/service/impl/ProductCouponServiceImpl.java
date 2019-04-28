@@ -588,12 +588,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }else{
                     dto.setAllowUseEndDate(lastMonthDay());
             }
-            if (dto.getAllowGetEndDate().compareTo(dto.getAllowUseEndDate())<0){
-                dto.setAllowUseEndDate(dto.getAllowGetEndDate());
-            }
-
-            if(dto.getAllowUseBeginDate().compareTo(dto.getAllowGetBeginDate())<0 || dto.getAllowUseEndDate().compareTo(dto.getAllowGetEndDate())>=0){
-                throw new BizException(DISCOUNT_DATE_INVALID);
+            if(dto.getAllowUseBeginDate().compareTo(dto.getAllowGetBeginDate())<0 || dto.getAllowUseEndDate().compareTo(dto.getAllowGetEndDate())<0){
+                   result.setDesc("优惠券领取有效日期范围判断错误");
+                   return result;
             }
 
             if (dto.getAllowGetEndDate().compareTo(dto.getAllowGetBeginDate()) < 0) {
