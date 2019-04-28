@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.api.CouponIssueApi;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
@@ -59,5 +60,11 @@ public class CouponIssueController implements CouponIssueApi {
     public Result setVisible(@RequestBody CouponIssueVisibleReq couponIssueVisibleReq) {
         couponIssueService.setVisible(couponIssueVisibleReq);
         return ok();
+    }
+
+    @Override
+    @PostMapping(path = "/edit")
+    public Result<CouponIssueEditRsp> edit(@RequestBody CouponIssueEditReq couponIssueEditReq) {
+        return ok(couponIssueService.edit(couponIssueEditReq));
     }
 }

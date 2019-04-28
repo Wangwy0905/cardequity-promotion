@@ -11,17 +11,15 @@ import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
-import com.youyu.cardequity.promotion.dto.req.CouponIssueMsgDetailsReq;
-import com.youyu.cardequity.promotion.dto.req.CouponIssueReq;
-import com.youyu.cardequity.promotion.dto.req.UserInfo4CouponIssueDto;
+import com.youyu.cardequity.promotion.dto.req.*;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum;
 import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.enums.dict.UseGeEndDateFlag;
-import com.youyu.cardequity.promotion.dto.req.*;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +33,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import java.util.Optional;
 
 import static com.github.pagehelper.page.PageMethod.startPage;
@@ -48,7 +45,6 @@ import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DE
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.GRANT;
-
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.join;
@@ -316,6 +312,19 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueMapper.updateByPrimaryKeySelective(couponIssue);
     }
 
+    @Override
+    public CouponIssueEditRsp edit(CouponIssueEditReq couponIssueEditReq) {
+        CouponIssueEntity originalCouponIssueEntity = couponIssueMapper.selectByPrimaryKey(couponIssueEditReq.getCouponIssueId());
+
+        String couponId = couponIssueEditReq.getCouponId();
+        ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponId);
+
+        CouponIssueEntity couponIssueEntity = createCouponIssueEntity(couponIssueEditReq, productCouponEntity);
+        checkCoupon(couponIssueEntity, productCouponEntity);
+        couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+        return getCouponIssueEditRsp(originalCouponIssueEntity, couponIssueEntity);
+    }
+
     /**
      * @param couponIssue
      * @param productCoupon
@@ -417,4 +426,37 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         }
     }
 
+    /**
+     * 获取优惠券发放编辑对象
+     *
+     * @param couponIssueEditReq
+     * @param productCouponEntity
+     * @return
+     */
+    private CouponIssueEntity createCouponIssueEntity(CouponIssueEditReq couponIssueEditReq, ProductCouponEntity productCouponEntity) {
+        CouponIssueEntity couponIssueEntity = new CouponIssueEntity();
+        couponIssueEntity.setCouponIssueId(couponIssueEditReq.getCouponIssueId());
+        couponIssueEntity.setCouponId(couponIssueEditReq.getCouponId());
+        couponIssueEntity.setCouponName(productCouponEntity.getCouponName());
+        couponIssueEntity.setIssueTime(couponIssueEditReq.getIssueTime());
+        couponIssueEntity.setTargetType(couponIssueEditReq.getTargetType());
+        couponIssueEntity.setIsVisible(couponIssueEditReq.getIsVisible());
+        couponIssueEntity.setTriggerType(couponIssueEditReq.getObjectType());
+        couponIssueEntity.setIssueIds(join(couponIssueEditReq.getIssueIds(), ","));
+        return couponIssueEntity;
+    }
+
+    /**
+     * 获取优惠券编辑返回
+     *
+     * @param originalCouponIssueEntity
+     * @param couponIssueEntity
+     * @return
+     */
+    private CouponIssueEditRsp getCouponIssueEditRsp(CouponIssueEntity originalCouponIssueEntity, CouponIssueEntity couponIssueEntity) {
+        CouponIssueEditRsp couponIssueEditRsp = new CouponIssueEditRsp();
+        couponIssueEditRsp.setIssueTime(couponIssueEntity.getIssueTime());
+        couponIssueEditRsp.setIssueTimeModifyFlag(!eq(originalCouponIssueEntity.getIssueTime(), couponIssueEntity.getIssueTime()));
+        return couponIssueEditRsp;
+    }
 }

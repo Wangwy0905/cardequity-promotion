@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.api;
 
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
@@ -71,4 +72,14 @@ public interface CouponIssueApi {
     @ApiOperation(value = "设置优惠券上下架")
     @PostMapping(path = "/setVisible")
     Result setVisible(@RequestBody CouponIssueVisibleReq couponIssueVisibleReq);
+
+    /**
+     * 优惠券发放编辑
+     *
+     * @param couponIssueEditReq
+     * @return
+     */
+    @ApiOperation(value = "优惠券发放编辑")
+    @PostMapping(path = "/edit")
+    Result<CouponIssueEditRsp> edit(@RequestBody CouponIssueEditReq couponIssueEditReq);
 }

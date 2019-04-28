@@ -2,6 +2,7 @@ package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
 import com.youyu.common.api.PageData;
 
@@ -59,4 +60,11 @@ public interface CouponIssueService {
      */
     void setVisible(CouponIssueVisibleReq couponIssueVisibleReq);
 
+    /**
+     * 优惠券发放编辑
+     *
+     * @param couponIssueEditReq
+     * @return
+     */
+    CouponIssueEditRsp edit(CouponIssueEditReq couponIssueEditReq);
 }
