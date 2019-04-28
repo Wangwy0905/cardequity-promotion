@@ -90,7 +90,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponId);
 
         CouponIssueEntity couponIssue = createCouponIssueEntity(couponIssueReq, productCouponEntity);
-        checkCoupon(couponIssue, productCouponEntity);
+        checkCreateCoupon(couponIssue, productCouponEntity);
         couponIssueMapper.insertSelective(couponIssue);
     }
 
@@ -460,6 +460,21 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         }
     }
 
+    /**
+     * 优惠券发放创建规则检验
+     *
+     * @param couponIssueEntity
+     * @param productCouponEntity
+     */
+    private void checkCreateCoupon(CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity) {
+        checkCoupon(couponIssueEntity, productCouponEntity);
+
+        Date issueTime = string2Date(couponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
+        Date now = now();
+        if (now.after(issueTime)) {
+            throw new BizException(ISSUE_TIME_MUST_GREATER_CURRENT_TIME);
+        }
+    }
 
     /**
      * 发放优惠券规则检验
@@ -485,11 +500,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         }
 
         Date issueTime = string2Date(couponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
-        Date now = now();
-        if (now.after(issueTime)) {
-            throw new BizException(ISSUE_TIME_MUST_GREATER_CURRENT_TIME);
-        }
-
         LocalDateTime nowLocalDateTime = LocalDateUtils.date2LocalDateTime(issueTime);
         if (nowLocalDateTime.isAfter(productCouponEntity.getAllowUseEndDate())) {
             throw new BizException(COUPON_END_DATE_MUST_GREATER_CURRENT_DATE);
