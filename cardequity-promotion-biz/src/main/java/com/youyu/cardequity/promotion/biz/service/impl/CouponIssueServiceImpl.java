@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.github.pagehelper.page.PageMethod.startPage;
+import static com.youyu.cardequity.common.base.util.CollectionUtils.isEmpty;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
@@ -307,12 +308,18 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     }
 
     @Override
+    @Transactional
     public void setVisible(CouponIssueVisibleReq couponIssueVisibleReq) {
-        CouponIssueEntity couponIssue = new CouponIssueEntity();
-        couponIssue.setCouponIssueId(couponIssueVisibleReq.getCouponIssueId());
-        couponIssue.setIsVisible(couponIssueVisibleReq.getIsVisible());
+        List<CouponIssueEntity> couponIssueEntities = new ArrayList<>();
 
-        couponIssueMapper.updateByPrimaryKeySelective(couponIssue);
+        List<String> couponIssueIds = couponIssueVisibleReq.getCouponIssueIds();
+        for (String couponIssueId : couponIssueIds) {
+            CouponIssueEntity couponIssueEntity = new CouponIssueEntity();
+            couponIssueEntity.setCouponIssueId(couponIssueId);
+            couponIssueEntity.setIsVisible(couponIssueVisibleReq.getIsVisible());
+            couponIssueEntities.add(couponIssueEntity);
+        }
+        batchService.batchDispose(couponIssueEntities, CouponIssueMapper.class, "updateByPrimaryKeySelective");
     }
 
     @Override
@@ -456,6 +463,10 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * @param couponIssueQueryRsps
      */
     private void fillEditDeleteFlag(List<CouponIssueQueryRsp> couponIssueQueryRsps) {
+        if (isEmpty(couponIssueQueryRsps)) {
+            return;
+        }
+
         for (CouponIssueQueryRsp couponIssueQueryRsp : couponIssueQueryRsps) {
             couponIssueQueryRsp.setDeleteFlag(!eq(couponIssueQueryRsp.getIssueStatus(), NOT_ISSUE.getCode()));
 
