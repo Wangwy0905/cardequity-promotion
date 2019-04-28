@@ -43,4 +43,10 @@ public class CouponIssueQueryRsp implements Serializable {
 
     @ApiModelProperty("操作者")
     private String operator;
+
+    @ApiModelProperty("编辑标志 true:不显示 false:显示")
+    private Boolean editFlag;
+
+    @ApiModelProperty("删除标志 true:不显示 false:显示")
+    private Boolean deleteFlag;
 }

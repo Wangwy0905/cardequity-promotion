@@ -286,7 +286,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         List<CouponIssueEntity> couponIssueEntities = couponIssueMapper.getCouponIssueQuery(couponIssueQueryReq);
         PageInfo<CouponIssueEntity> pageInfo = new PageInfo<>(couponIssueEntities);
 
-        return convert(pageInfo, CouponIssueQueryRsp.class);
+        PageData<CouponIssueQueryRsp> pageData = convert(pageInfo, CouponIssueQueryRsp.class);
+        fillEditDeleteFlag(pageData.getRows());
+        return pageData;
     }
 
     @Override
@@ -446,6 +448,20 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueEntity.setIssueIds(join(couponIssueEditReq.getIssueIds(), ","));
         couponIssueEntity.setLogicDelete(false);
         return couponIssueEntity;
+    }
+
+    /**
+     * 填充编辑和删除标志
+     *
+     * @param couponIssueQueryRsps
+     */
+    private void fillEditDeleteFlag(List<CouponIssueQueryRsp> couponIssueQueryRsps) {
+        for (CouponIssueQueryRsp couponIssueQueryRsp : couponIssueQueryRsps) {
+            couponIssueQueryRsp.setDeleteFlag(!eq(couponIssueQueryRsp.getIssueStatus(), NOT_ISSUE.getCode()));
+
+            Date issueDate = string2Date(couponIssueQueryRsp.getIssueTime(), YYYY_MM_DD_HH_MM);
+            couponIssueQueryRsp.setEditFlag(now().after(addHours(issueDate, -1)));
+        }
     }
 
     /**
