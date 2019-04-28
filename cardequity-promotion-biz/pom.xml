@@ -51,7 +51,10 @@
             <groupId>com.youyu.platform</groupId>
             <artifactId>common-dao</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.youyu.platform</groupId>
+            <artifactId>common-dts</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.youyu.platform</groupId>
             <artifactId>common-feign</artifactId>

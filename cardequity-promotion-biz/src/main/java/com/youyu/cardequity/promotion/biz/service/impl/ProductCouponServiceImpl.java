@@ -3,7 +3,10 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
+import com.youyu.cardequity.common.base.converter.OrikaBeanPropertiesConverter;
+import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
 import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
@@ -13,7 +16,6 @@ import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.service.CouponRefProductService;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
-import com.youyu.cardequity.promotion.biz.utils.SnowflakeIdWorker;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.*;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
@@ -30,6 +32,7 @@ import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,11 +42,11 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
-import static com.youyu.cardequity.promotion.enums.ResultCode.NET_ERROR;
-import static com.youyu.cardequity.promotion.enums.ResultCode.PARAM_ERROR;
+import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 
 
 /**
@@ -84,6 +87,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
     @Autowired
     private ClientCouponService clientCouponService;
+
+    @Autowired
+    private UidGenerator uidGenerator;
 
     /**
      * 1004259-徐长焕-20181210 新增
@@ -227,11 +233,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      * @param req 优惠券详情
      * @return 执行数量
      */
-    @Override
+   // @Override
     @Transactional(rollbackFor = Exception.class)
-    public CommonBoolDto<CouponDetailDto> addCoupon(CouponDetailDto req) {
+    public CommonBoolDto<CouponDetailDto> addCoupon2(CouponDetailDto req) {
         //权益中心标志为3，活动表标识为1，ProductCoupon表标识为2
-        SnowflakeIdWorker stageWorker = new SnowflakeIdWorker(3, 2);
+        //SnowflakeIdWorker stageWorker = new SnowflakeIdWorker(3, 2);
         CommonBoolDto<CouponDetailDto> result = new CommonBoolDto<>(false);
         result.setCode(PARAM_ERROR.getCode());
         List<CouponStageRuleEntity> stageList = new ArrayList<>();
@@ -265,10 +271,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if (dto.getAllowUseBeginDate() == null) {
             dto.setAllowUseBeginDate(LocalDateTime.now());
         }
-        if (dto.getAllowUseEndDate() == null) {
+      /*  if (dto.getAllowUseEndDate() == null) {
             dto.setAllowUseEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
-        }
-
+        }*/
         //参数保护，默认使用日期为最大
         if (dto.getAllowUseEndDate() == null) {
             dto.setAllowUseEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
@@ -343,8 +348,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             dto.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
         }
         //生成优惠编号
-        dto.setId(stageWorker.nextId() + "");
-
+        //dto.setId(stageWorker.nextId() + "");
+        dto.setId(uidGenerator.getUID2());
         //【处理阶梯】
         if (req.getStageList() != null && !req.getStageList().isEmpty()) {
 
@@ -378,7 +383,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //【处理频率】
-        //逻辑删除  通过优惠id
+        //逻辑删除  通过优惠id  更改IsEnable值为0
         couponGetOrUseFreqRuleMapper.logicDelByCouponId(dto.getId());
         if (req.getFreqRuleList() != null) {
             for (CouponGetOrUseFreqRuleDto item : req.getFreqRuleList()) {
@@ -417,6 +422,215 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
         }
 
+        //【配置适用商品】
+        if (req.getProductList() != null) {
+            BatchRefProductReq refProductReq = new BatchRefProductReq();
+            refProductReq.setId(dto.getId());//将先生成的id设置到商品
+            refProductReq.setProductList(req.getProductList());
+            couponRefProductService.batchAddCouponRefProduct(refProductReq);
+        }
+
+        //【基本信息】
+        ProductCouponEntity entity = BeanPropertiesUtils.copyProperties(dto, ProductCouponEntity.class);
+        entity.setCouponLable(dto.getLabelDto().getId());
+        entity.setUpdateAuthor(req.getOperator());
+        entity.setCreateAuthor(req.getOperator());
+        entity.setIsEnable(CommonDict.IF_YES.getCode());
+        sqlresult = productCouponMapper.insert(entity);
+        if (sqlresult <= 0) {
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("新增优惠信息错误，编号" + entity.getId()));
+        }
+        result.setSuccess(true);
+        result.setCode(NET_ERROR.getCode());
+        result.setData(req);
+
+        return result;
+    }
+
+    /**
+     * 添加优惠券
+     *
+     * @param req 优惠券详情
+     * @return 执行数量
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonBoolDto<CouponDetailDto> addCoupon(CouponDetailDto req) {
+        //权益中心标志为3，活动表标识为1，ProductCoupon表标识为2
+        //SnowflakeIdWorker stageWorker = new SnowflakeIdWorker(3, 2);
+        CommonBoolDto<CouponDetailDto> result = new CommonBoolDto<>(false);
+        result.setCode(PARAM_ERROR.getCode());
+        List<CouponStageRuleEntity> stageList = new ArrayList<>();
+        List<CouponGetOrUseFreqRuleEntity> freqRuleList = new ArrayList<>();
+        int sqlresult = 0;
+        ProductCouponDto dto = req.getProductCouponDto();
+        if (dto == null) {
+            result.setDesc("没有指定编辑信息");
+            return result;
+        }
+        //有效时间的生成
+        if(dto.getAllowUseBeginDate()==null || dto.getAllowUseEndDate()==null) {
+            if (dto.getMonthValid()) {
+                dto.setAllowUseBeginDate(LocalDateTime.now());
+                //当月有效时间
+                dto.setAllowUseEndDate(lastMonthDay());
+                dto.setMonthValid(true);
+            } else if (dto.getValIdTerm() != null) {
+                dto.setAllowUseBeginDate(LocalDateTime.now());
+                //天数限制
+             /*   if(dto.getAllowGetEndDate().compareTo(numToDate(req))<0){
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("设置有效日期超过优惠券的领取日期"));
+                }*/
+                dto.setAllowUseEndDate(numToDate(req));
+            }else{
+                dto.setAllowUseBeginDate(dto.getAllowGetBeginDate());
+                dto.setAllowUseEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
+            }
+
+        }
+        if (dto.getAllowUseEndDate().compareTo(dto.getAllowUseBeginDate()) < 0) {
+            result.setDesc("优惠券使用日期无效：起始值" + dto.getAllowUseBeginDate() + "；结束值" + dto.getAllowUseEndDate());
+            return result;
+        }
+        //参数保护，实际有效日期=领取日+期限
+        if (dto.getUseGeEndDateFlag() == null)
+            dto.setUseGeEndDateFlag(UseGeEndDateFlag.NO.getDictValue());
+
+        if (StringUtil.isEmpty(dto.getUsedStage()))
+            dto.setUsedStage(UsedStage.AfterPay.getDictValue());
+
+        if (StringUtil.isEmpty(dto.getGetStage()))
+            dto.setGetStage(UsedStage.Other.getDictValue());
+
+        if (StringUtil.isEmpty(dto.getGetType()))
+            dto.setGetType(CouponGetType.HANLD.getDictValue());
+        if (CouponType.FREETRANSFERFARE.getDictValue().equals(dto.getCouponType()) || CouponType.TRANSFERFARE.getDictValue().equals(dto.getCouponType())) {
+            dto.setCouponLevel(CouponActivityLevel.GLOBAL.getDictValue());
+            dto.setApplyProductFlag(ApplyProductFlag.ALL.getDictValue());
+        } else if (dto.getCouponLevel() == null) {
+            result.setDesc("优惠券等级参数为空：参数值" + dto.getCouponLevel());
+            return result;
+        }
+
+        if (dto.getCouponStrategyType() == null) {
+            result.setDesc("优惠券策略类型没有设置：参数值" + dto.getCouponStrategyType());
+            return result;
+        }
+
+        if (CouponStrategyType.discount.getDictValue().equals(dto.getCouponStrategyType())) {
+            if (BigDecimal.ONE.compareTo(dto.getProfitValue()) <= 0) {
+                result.setDesc("折扣优惠券优惠折扣不能高于1，参数值" + dto.getProfitValue());
+                return result;
+            }
+        }
+        if (!CommonUtils.isGtZeroDecimal(dto.getProfitValue())) {
+            result.setDesc("折扣优惠券优惠折扣不能低于0，参数值" + dto.getProfitValue());
+            return result;
+        }
+
+        if (dto.getLabelDto() == null) {
+            result.setDesc("没有指定标签");
+            return result;
+        }
+        CouponAndActivityLabelEntity labelById = couponAndActivityLabelMapper.findLabelById(dto.getLabelDto().getId());
+        if (labelById == null) {
+            result.setDesc("指定标签不存在" + dto.getLabelDto().getId());
+            return result;
+        }
+
+        //如果指定商品集合，默认为自定义配置
+        if (req.getProductList() != null && !req.getProductList().isEmpty()) {
+            dto.setApplyProductFlag(ApplyProductFlag.APPOINTPRODUCT.getDictValue());
+        }
+        //生成优惠编号
+        //dto.setId(stageWorker.nextId() + "");
+        dto.setId(uidGenerator.getUID2());
+        //【处理阶梯】
+        if (req.getStageList() != null && !req.getStageList().isEmpty()) {
+
+            //组装子券信息
+            for (CouponStageRuleDto stage : req.getStageList()) {
+                if (stage.getBeginValue() == null)
+                    stage.setBeginValue(BigDecimal.ZERO);
+                if (!CommonUtils.isGtZeroDecimal(stage.getEndValue())) {
+                    stage.setEndValue(CommonConstant.IGNOREVALUE);
+                }
+                if (!CommonUtils.isGtZeroDecimal(stage.getCouponValue()) && CommonUtils.isGtZeroDecimal(dto.getProfitValue())) {
+                    stage.setCouponValue(dto.getProfitValue());
+                }
+                stage.setCouponId(dto.getId());//将先生成的id设置到门槛阶梯
+                if (CommonUtils.isEmptyorNull(stage.getCouponShortDesc())) {
+                    stage.setCouponShortDesc(dto.getCouponShortDesc());
+                }
+                if (CommonUtils.isEmptyorNull(stage.getTriggerByType())) {
+                    stage.setTriggerByType(TriggerByType.CAPITAL.getDictValue());
+                }
+
+                CouponStageRuleEntity stageRuleEntity = BeanPropertiesUtils.copyProperties(stage, CouponStageRuleEntity.class);
+                stageRuleEntity.setCreateAuthor(req.getOperator());
+                stageRuleEntity.setUpdateAuthor(req.getOperator());
+                stageRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+                stageRuleEntity.setId(CommonUtils.getUUID());
+                stage.setId(stageRuleEntity.getId());
+                stageList.add(stageRuleEntity);
+            }
+            batchService.batchDispose(stageList, CouponStageRuleMapper.class, "insert");
+        }
+        //手动领取的优惠券要进行领取频率、领取额度、及领取时间的判断
+        if(CouponGetType.HANLD.getDictValue().equals(dto.getGetType())){
+            //处理领取时间
+            if (dto.getAllowGetBeginDate()==null || dto.getAllowUseEndDate()==null){
+                dto.setAllowGetBeginDate(LocalDateTime.now());
+                dto.setAllowGetEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
+            }
+            if(dto.getAllowUseBeginDate().compareTo(dto.getAllowGetBeginDate())<0 || dto.getAllowUseEndDate().compareTo(dto.getAllowGetEndDate())<0){
+                   result.setDesc("优惠券领取日期范围判断错误");
+                   return result;
+            }
+            if (dto.getAllowGetEndDate().compareTo(dto.getAllowGetBeginDate()) < 0) {
+                   result.setDesc("优惠券领取日期无效：起始值" + dto.getAllowGetBeginDate() + "；结束值" + dto.getAllowGetEndDate());
+                   return result;
+            }
+            //【处理频率】
+            //逻辑删除  通过优惠id
+            couponGetOrUseFreqRuleMapper.logicDelByCouponId(dto.getId());
+            if (req.getFreqRuleList() != null) {
+                for (CouponGetOrUseFreqRuleDto item : req.getFreqRuleList()) {
+                    item.setValue(1);//默认不支持多频率
+                    item.setCouponId(dto.getId());//将先生成的id设置到门槛阶梯
+                    if (CommonUtils.isEmptyorNull(item.getOpCouponType()))
+                        item.setOpCouponType(OpCouponType.GETRULE.getDictValue());
+
+                    if (CommonUtils.isEmptyorNull(item.getStageId())) {
+                        if (req.getStageList() != null && req.getStageList().size() == 1) {
+                            item.setStageId(req.getStageList().get(0).getId());
+                        }
+                    }
+
+                    CouponGetOrUseFreqRuleEntity freqRuleEntity = BeanPropertiesUtils.copyProperties(item, CouponGetOrUseFreqRuleEntity.class);
+                    freqRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+                    freqRuleEntity.setId(CommonUtils.getUUID());
+                    item.setId(freqRuleEntity.getId());//返回生成的id
+                    freqRuleList.add(freqRuleEntity);
+
+                }
+                batchService.batchDispose(freqRuleList, CouponGetOrUseFreqRuleMapper.class, "insert");
+            }
+            //【处理限额】
+            if (req.getQuotaRule() != null) {
+                req.getQuotaRule().setCouponId(dto.getId());//将先生成的id设置到额度
+
+                CouponQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(req.getQuotaRule(), CouponQuotaRuleEntity.class);
+                quotaRuleEntity.setCreateAuthor(req.getOperator());
+                quotaRuleEntity.setUpdateAuthor(req.getOperator());
+                quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+                sqlresult = couponQuotaRuleMapper.insert(quotaRuleEntity);
+                if (sqlresult <= 0) {
+                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("新增优惠额度信息错误，编号" + quotaRuleEntity.getId()));
+                }
+            }
+
+        }
         //【配置适用商品】
         if (req.getProductList() != null) {
             BatchRefProductReq refProductReq = new BatchRefProductReq();
@@ -680,23 +894,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         //商品优惠券Dto
         // ProductCouponDto dto = req.getProductCouponDto();
-        //改动
 
-        //改动
         BatchRefProductReq refProductReq = new BatchRefProductReq();
         refProductReq.setId(dto.getId());
-        if (req.getProductList() != null && req.getDelProductList() != null) {
-            //批量关联商品
-            refProductReq.setProductList(req.getProductList());
-            refProductReq.setDelProductList(req.getDelProductList());
-            couponRefProductService.batchDeleteCouponRefProduct(refProductReq);
-            couponRefProductService.batchAddCouponRefProduct(refProductReq);
-        } else if (req.getProductList() != null && req.getDelProductList() == null) {
-
+       if (req.getProductList() != null) {
             refProductReq.setProductList(req.getProductList());
             couponRefProductService.batchAddCouponRefProduct(refProductReq);
-
-        } else if (req.getProductList() == null && req.getDelProductList() != null) {
+        } else if ( req.getDelProductList() != null) {
             refProductReq.setDelProductList(req.getDelProductList());
             couponRefProductService.batchDeleteCouponRefProduct(refProductReq);
         } else {
@@ -802,6 +1006,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             dealList.add(item);
         }
         batchService.batchDispose(dealList, ProductCouponMapper.class, "updateByPrimaryKeySelective");
+        System.out.println(result+"111111111111111");
 
         return result;
     }
@@ -920,12 +1125,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         // 获取活动分页信息
         PageInfo<ProductCouponEntity> entitiesPage = new PageInfo<>(productCouponMapper.findCouponList(req));
         List<CouponDetailDto> dtoList = combinationCoupon(entitiesPage.getList());
-
         PageData<CouponDetailDto> pageresult = convert(entitiesPage, dtoList);
         result.setResult(pageresult);
 
         List<GatherInfoRsp> gatherInfoRspList = productCouponMapper.findGatherCouponList(req);
         result.setGatherResult(gatherInfoRspList);
+
         return result;
     }
 
@@ -992,6 +1197,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         Map<String, CouponDetailDto> result = new LinkedHashMap();
         List<String> labelIdList = new ArrayList<>();
         for (ProductCouponEntity item : entities) {
+            System.out.println(item+"-----------------");
             CouponDetailDto detailDto = new CouponDetailDto();
 
             ProductCouponDto productCouponDto = BeanPropertiesUtils.copyProperties(item, ProductCouponDto.class);
@@ -1053,6 +1259,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         result = null;
 
         log.info("判断后的优惠券结果:[{}]" + JSONObject.toJSONString(resultList));
+        System.out.println(resultList+"=====");
         return resultList;
 
     }
@@ -1395,17 +1602,41 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      * 查询每月份的最后一天
      *
      * @param
-     * @return
+     * @return LocalTimeDate
      */
-    public String lastMonthDay() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    public  LocalDateTime lastMonthDay() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         Calendar cale = Calendar.getInstance();
         cale.add(Calendar.MONTH, 1);
         cale.set(Calendar.DAY_OF_MONTH, 0);
-        String lastDay = sdf.format(cale.getTime());
+        LocalDateTime ldt=LocalDateTime.parse(sdf.format(cale.getTime()),df);
+        LocalDateTime localDateTime = OrikaBeanPropertiesConverter.copyProperties(ldt, LocalDateTime.class);
 
-        return lastDay;
+        return localDateTime;
     }
+    /**
+     * 生效日期+天数=截止日期
+     * @param  req
+     * @return LocalDateTime
+     */
+    public  LocalDateTime numToDate(CouponDetailDto req){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Date date=new Date();
+        String currdate = format.format(date);
+        Calendar cale = null;
+        cale = Calendar.getInstance();
+        cale.add(Calendar.DATE,req.getProductCouponDto().getValIdTerm());
+        date=cale.getTime();
+        String enddate = format.format(date);
+        LocalDateTime localDateTime=LocalDateTime.parse(format.format(cale.getTime()),df);
+        LocalDateTime localDateTime1 = OrikaBeanPropertiesConverter.copyProperties(localDateTime, LocalDateTime.class);
+
+        return localDateTime1;
+
+    }
+
 
 }
 
