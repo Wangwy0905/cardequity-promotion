@@ -29,7 +29,7 @@
                 and IS_VISIBLE = #{isVisible,jdbcType=VARCHAR}
             </if>
             <if test="issueStatus != null">
-                and ISSUE_STATUS #{issueStatus,jdbcType=VARCHAR}
+                and ISSUE_STATUS = #{issueStatus,jdbcType=VARCHAR}
             </if>
             and LOGIC_DELETE = '0'
         </where>
