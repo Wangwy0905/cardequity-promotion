@@ -49,6 +49,9 @@ public class CouponIssueEntity extends BaseEntity<String> {
     @Column(name = "ISSUE_IDS")
     private String issueIds;
 
+    @Column(name = "LOGIC_DELETE")
+    private Boolean logicDelete;
+
     public CouponIssueEntity() {
     }
 

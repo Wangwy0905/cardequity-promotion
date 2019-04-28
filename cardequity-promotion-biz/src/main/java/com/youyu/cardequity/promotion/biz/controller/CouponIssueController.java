@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.api.CouponIssueApi;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
@@ -28,7 +29,6 @@ public class CouponIssueController implements CouponIssueApi {
     @Autowired
     private CouponIssueService couponIssueService;
 
-
     @Override
     @PostMapping(path = "/createIssue")
     public Result createIssue(@RequestBody CouponIssueReq couponIssueReq) {
@@ -49,14 +49,22 @@ public class CouponIssueController implements CouponIssueApi {
     }
 
     @Override
+    @PostMapping(path = "/delete")
     public Result delete(@RequestBody CouponIssueDeleteReq couponIssueDeleteReq) {
         couponIssueService.delete(couponIssueDeleteReq);
         return ok();
     }
 
     @Override
+    @PostMapping(path = "/setVisible")
     public Result setVisible(@RequestBody CouponIssueVisibleReq couponIssueVisibleReq) {
         couponIssueService.setVisible(couponIssueVisibleReq);
         return ok();
+    }
+
+    @Override
+    @PostMapping(path = "/edit")
+    public Result<CouponIssueEditRsp> edit(@RequestBody CouponIssueEditReq couponIssueEditReq) {
+        return ok(couponIssueService.edit(couponIssueEditReq));
     }
 }

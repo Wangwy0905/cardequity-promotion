@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author panqingqing
@@ -20,8 +22,8 @@ public class CouponIssueVisibleReq implements Serializable {
 
     private static final long serialVersionUID = -6584456797812712409L;
 
-    @ApiModelProperty("发放id")
-    private String couponIssueId;
+    @ApiModelProperty("发放id列表")
+    private List<String> couponIssueIds = new ArrayList<>();
 
     @ApiModelProperty("上下架 0:上架 1:下架")
     private String isVisible;
