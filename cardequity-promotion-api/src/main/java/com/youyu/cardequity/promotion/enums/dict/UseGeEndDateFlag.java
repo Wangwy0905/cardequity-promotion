@@ -3,6 +3,8 @@ package com.youyu.cardequity.promotion.enums.dict;
 /**
  * Created by caiyi on 2018/12/13.
  */
+
+//todo rename this enum
 public enum UseGeEndDateFlag {
 
     NO("0", "否:有效结束日=实际领取日+期限"),

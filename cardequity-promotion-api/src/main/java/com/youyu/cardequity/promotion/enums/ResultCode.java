@@ -51,9 +51,20 @@ public enum ResultCode implements CardequityIBaseResultCode {
     COUPON_NOT_ALLOW_BANKCODE("0022", "该银行不能使用此券,BANKCODE={0}"),
     COUPON_NOT_ALLOW_PAYTYPE("0023", "该支付方式不能使用此券,PAYTYPE={0}"),
     COUPON_FAIL_COUNT_PERDATEQUOTA("0024", "超过该优惠所有客户当日可领取优惠总数量,券当日可领优惠数量{0},券当日已领优惠数量{1},优惠编号{2}"),
-    COUPON_FAIL_COUNT_PERACCANDDATEQUOTA("0006", "超过该优惠每日可领取优惠金额,每日可领优惠金额{0},当日已领优惠金额{1},优惠编号{2}"),
-    COUPON_FAIL_COUNT_PERACCQUOTA("0007", "超过该优惠每人可领取数量,可领优惠数量{0},已领优惠数量{1},优惠编号{2}"),
-    ;
+    COUPON_FAIL_COUNT_PERACCANDDATEQUOTA("0025", "超过该优惠每日可领取优惠金额,每日可领优惠金额{0},当日已领优惠金额{1},优惠编号{2}"),
+    COUPON_FAIL_COUNT_PERACCQUOTA("0026", "超过该优惠每人可领取数量,可领优惠数量{0},已领优惠数量{1},优惠编号{2}"),
+
+    //后台发放优惠券
+    INVISIBLE_COUPON_CANNOT_BE_ISSUED("0027", "已下架的优惠券不能发放!"),
+    COUPON_HAS_EXPIRED("0028", "优惠券已过期!"),
+    MANUAL_COUPON_CANNOT_BE_ISSUED("0029", "手动领取方式优惠券不能发放!"),
+    ISSUE_TIME_MUST_GREATER_CURRENT_TIME("0030", "发放时间要大于当前时间!"),
+    COUPON_END_DATE_MUST_GREATER_CURRENT_DATE("0031", "优惠券结束日要大于当前日期!"),
+    COUPON_ISSUE_QUANTITY_CANNOT_LESS_ZERO("0032", "优惠券发行数量不能小于等于0!"),
+    INVISIBLE_COUPON_ISSUE_TASK_CANNOT_BE_ISSUED("0033", "优惠券发放任务已经下架，不能实施优惠券发放"),
+    COUPON_NOT_ISSUE_STATUS_CAN_DELETE("0034", "未发放状态的优惠券发放才可以删除!"),
+    COUPON_ISSUE_TIMEOUT_INVALID_OPERATION("0035", "优惠券发放超时操作无效!");
+
 
     /**
      * 返回错误码
@@ -73,7 +84,7 @@ public enum ResultCode implements CardequityIBaseResultCode {
 
     @Override
     public String getCode() {
-        return CodeConstant.CODE_PREFIX+CodeConstant.PROMOTION_CENTER+code;
+        return CodeConstant.CODE_PREFIX + CodeConstant.PROMOTION_CENTER + code;
     }
 
 
