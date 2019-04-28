@@ -473,7 +473,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             if (dto.getMonthValid()) {
                 dto.setAllowUseBeginDate(LocalDateTime.now());
                 //当月有效时间
-
                 dto.setAllowUseEndDate(lastMonthDay());
                 dto.setMonthValid(true);
             } else if (dto.getValIdTerm() != null) {
@@ -589,8 +588,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }else{
                     dto.setAllowUseEndDate(lastMonthDay());
             }
+            if (dto.getAllowGetEndDate().compareTo(dto.getAllowUseEndDate())<0){
+                dto.setAllowUseEndDate(dto.getAllowGetEndDate());
+            }
 
-            if(dto.getAllowUseBeginDate().compareTo(dto.getAllowGetEndDate())<0 || dto.getAllowUseEndDate().compareTo(dto.getAllowGetEndDate())>0){
+            if(dto.getAllowUseBeginDate().compareTo(dto.getAllowGetBeginDate())<0 || dto.getAllowUseEndDate().compareTo(dto.getAllowGetEndDate())>=0){
                 throw new BizException(DISCOUNT_DATE_INVALID);
             }
 
@@ -598,7 +600,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 result.setDesc("优惠券领取日期无效：起始值" + dto.getAllowGetBeginDate() + "；结束值" + dto.getAllowGetEndDate());
                 return result;
             }
-
             //【处理频率】
             //逻辑删除  通过优惠id
             couponGetOrUseFreqRuleMapper.logicDelByCouponId(dto.getId());

@@ -31,7 +31,7 @@ public interface CouponRefProductService extends IService<CouponRefProductDto, C
      * @param req
      * @return
      */
-    CommonBoolDto<Integer> batchAddCouponRefAllProduct(BatchRefProductReq req);
+    CommonBoolDto<Integer> batchAddAllProductRefCoupon(BatchRefProductReq req);
 
     /**
      * 删除不需要的适用商品

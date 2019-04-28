@@ -122,16 +122,19 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
      * @return
      */
     @Override
-    public CommonBoolDto<Integer> batchAddCouponRefAllProduct(BatchRefProductReq req) {
+    public CommonBoolDto<Integer> batchAddAllProductRefCoupon(BatchRefProductReq req) {
         if (req == null || CommonUtils.isEmptyorNull(req.getId())) {
-            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定优惠券id 参数"));
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定优惠券id参数"));
         }
-        CommonBoolDto<Integer> commonBoolDtoDto =new CommonBoolDto<>(true);
-        CouponRefProductEntity couponRefProductEntity = BeanPropertiesUtils.copyProperties(req, CouponRefProductEntity.class);
+        CommonBoolDto<Integer> data =new CommonBoolDto<>(true);
+        //CouponRefProductEntity couponRefProductEntity = BeanPropertiesUtils.copyProperties(req, CouponRefProductEntity.class);
+        CouponRefProductEntity couponRefProductEntity=new CouponRefProductEntity();
+        couponRefProductEntity.setCouponId(req.getId());
         List<CouponRefProductEntity> productList = new ArrayList<>();
         //判断此优惠券中是否已有商品
         List<CouponRefProductEntity> couponRefProductEntities = couponRefProductMapper.select(couponRefProductEntity);
         if(couponRefProductEntities !=null && couponRefProductEntities.size()!=0){
+
             batchService.batchDispose(couponRefProductEntities,CouponRefProductMapper.class,"delete");
         }
 
@@ -146,10 +149,11 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
                 addEntity.setIsEnable(CommonDict.IF_YES.getCode());
                 productList.add(addEntity);
             }
+
             batchService.batchDispose(productList, CouponRefProductMapper.class, "insert");
-            commonBoolDtoDto.setData(req.getProductList().size());
+            data.setData(req.getProductList().size());
         }
-        return commonBoolDtoDto;
+        return data;
     }
 
     /**
