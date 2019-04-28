@@ -37,6 +37,7 @@ public interface CouponIssueApi {
     /**
      * 根据查询条件查询优惠券发放列表
      *
+     * @param couponIssueQueryReq
      * @return
      */
     @ApiOperation(value = "根据查询条件查询优惠券发放列表")
