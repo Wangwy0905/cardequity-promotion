@@ -38,6 +38,7 @@
     <select id="getCouponIssueDetail" parameterType="com.youyu.cardequity.promotion.dto.req.CouponIssueDetailReq"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity">
         select
+            COUPON_ISSUE_ID couponIssueId,
             COUPON_ID couponId,
             COUPON_NAME couponName,
             TARGET_TYPE targetType,
