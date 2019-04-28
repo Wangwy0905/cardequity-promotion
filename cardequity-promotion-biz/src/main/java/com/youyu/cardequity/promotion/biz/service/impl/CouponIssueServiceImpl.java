@@ -11,17 +11,14 @@ import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
-import com.youyu.cardequity.promotion.dto.req.CouponIssueMsgDetailsReq;
-import com.youyu.cardequity.promotion.dto.req.CouponIssueReq;
-import com.youyu.cardequity.promotion.dto.req.UserInfo4CouponIssueDto;
+import com.youyu.cardequity.promotion.dto.req.*;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum;
 import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.enums.dict.UseGeEndDateFlag;
-import com.youyu.cardequity.promotion.dto.req.*;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import lombok.extern.slf4j.Slf4j;
@@ -35,20 +32,22 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.github.pagehelper.page.PageMethod.startPage;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
+import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
+import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_SUCCESSED;
+import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.ISSUED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.NOT_ISSUE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DELAY_JOB_TRIGGER_TYPE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.GRANT;
-
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.join;
@@ -76,8 +75,10 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
     @Autowired
     private BatchService batchService;
+
     @Autowired
     private CouponStageRuleMapper couponStageRuleMapper;
+
 
     @Override
     @Transactional
@@ -98,31 +99,112 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponIssueMsgDetailsReq.getCouponId());
         CouponIssueEntity couponIssueEntity = couponIssueMapper.selectByPrimaryKey(couponIssueMsgDetailsReq.getCouponIssueId());
 
-        checkCoupon(couponIssueEntity, productCouponEntity);
+        checkCoupon(couponIssueEntity, productCouponEntity, couponIssueEntity.getIsVisible());
 
-        //检查券的上下架
-        if (CouponIssueVisibleEnum.INVISIBLE.getCode().equals(couponIssueEntity.getIsVisible())) {
-            throw new BizException(INVISIBLE_COUPON_ISSUE_TASK_CANNOT_BE_ISSUED);
-        }
+        //确认最终发券的clientID
+        List<UserInfo4CouponIssueDto> resultIssueClientCouponList = confirmIssueClient(couponIssueMsgDetailsReq, productCouponEntity);
+
+        //发券
+        List<ClientCouponEntity> clientCouponEntityList = createClientCouponEntityList(resultIssueClientCouponList, productCouponEntity);
+        batchService.batchDispose(clientCouponEntityList, ClientCouponMapper.class, "insertSelective");
+
+        //写入发放流水
+        insertIssueHistory(couponIssueMsgDetailsReq, clientCouponEntityList);
 
 
+        //更新状态为：已发券
+        couponIssueEntity.setIssueStatus(ISSUED.getCode());
+        couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+    }
+
+
+    /**
+     * 确认最终发券的clientID集合
+     *
+     * @param couponIssueMsgDetailsReq
+     * @param productCouponEntity
+     * @return
+     */
+    private List<UserInfo4CouponIssueDto> confirmIssueClient(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq, ProductCouponEntity productCouponEntity) {
         List<UserInfo4CouponIssueDto> eligibleUserList = filterAndGetEligibleUser(
                 couponIssueMsgDetailsReq.getUserInfo4CouponIssueDtoList(), productCouponEntity.getClientTypeSet());
 
-
         // 根据用户ID正序sort 并选取前部分用户发券
-        List<UserInfo4CouponIssueDto> issueClientCouponList = confirmIssueClientAndGetIssueList(eligibleUserList, couponIssueMsgDetailsReq.getCouponId());
-
-
-        //发券
-        List<ClientCouponEntity> clientCouponEntityList = createClientCouponEntityList(issueClientCouponList, productCouponEntity);
-        batchService.batchDispose(clientCouponEntityList, ClientCouponMapper.class, "insertSelective");
-
-        //todo 写入发放流水
-
+        return confirmIssueClientAndGetIssueList(eligibleUserList, couponIssueMsgDetailsReq.getCouponId());
 
     }
 
+
+    /**
+     * 插入发放流水
+     *
+     * @param couponIssueMsgDetailsReq
+     * @param clientCouponEntityList
+     */
+    private void insertIssueHistory(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq, List<ClientCouponEntity> clientCouponEntityList) {
+        List<String> preparedIssueClientIdList = couponIssueMsgDetailsReq.getUserInfo4CouponIssueDtoList()
+                .stream()
+                .map(UserInfo4CouponIssueDto::getClientId)
+                .collect(Collectors.toList());
+
+        List<CouponIssueHistoryEntity> couponIssueHistoryEntityList =
+                createCouponIssueHistoryEntityList(clientCouponEntityList, preparedIssueClientIdList, couponIssueMsgDetailsReq.getCouponIssueId());
+        batchService.batchDispose(couponIssueHistoryEntityList, CouponIssueHistoryMapper.class, "insertSelective");
+
+    }
+
+    private List<CouponIssueHistoryEntity> createCouponIssueHistoryEntityList(
+            List<ClientCouponEntity> issuedClientCouponEntityList, List<String> preparedIssueClientIdList, String couponIssueId) {
+
+        //分别筛选出成功发放和未发放券的用户ID
+        List<String> issuedClientIdList = issuedClientCouponEntityList.stream()
+                .map(ClientCouponEntity::getClientId)
+                .collect(Collectors.toList());
+
+        List<String> unIssuedClientIdList = preparedIssueClientIdList.stream()
+                .filter(preparedIssueClientId -> !issuedClientIdList.contains(preparedIssueClientId))
+                .collect(Collectors.toList());
+
+        //分别对成功发放和未发放券的用户进行entity拼装
+        List<CouponIssueHistoryEntity> result = new ArrayList<>();
+        issuedClientIdList.forEach(issuedClientId -> {
+            CouponIssueHistoryEntity couponIssueHistoryEntity = new CouponIssueHistoryEntity();
+            couponIssueHistoryEntity.setCouponIssueHistoryId(uidGenerator.getUID2());
+            couponIssueHistoryEntity.setClientId(issuedClientId);
+            couponIssueHistoryEntity.setCouponIssueId(couponIssueId);
+            couponIssueHistoryEntity.setIssueResult(ISSUED_SUCCESSED.getCode());
+
+            result.add(couponIssueHistoryEntity);
+        });
+        unIssuedClientIdList.forEach(unIssuedClientId -> {
+            CouponIssueHistoryEntity couponIssueHistoryEntity = new CouponIssueHistoryEntity();
+            couponIssueHistoryEntity.setCouponIssueHistoryId(uidGenerator.getUID2());
+            couponIssueHistoryEntity.setClientId(unIssuedClientId);
+            couponIssueHistoryEntity.setCouponIssueId(couponIssueId);
+            couponIssueHistoryEntity.setIssueResult(ISSUED_FAILED.getCode());
+            result.add(couponIssueHistoryEntity);
+        });
+
+        //根据用户ID进行增序排序，并填入此次发券任务的序列号
+        result.sort((a, b) -> Integer.compare(a.getClientId().compareTo(b.getClientId()), 0));
+
+        int sequenceNumber = 1;
+        //补充序列号ID
+        for (CouponIssueHistoryEntity couponIssueHistoryEntity : result) {
+            couponIssueHistoryEntity.setSequenceNumber(Integer.toString(sequenceNumber));
+            sequenceNumber++;
+        }
+        return result;
+
+    }
+
+    /**
+     * 根据用户身份筛选出符合发放条件的用户集合
+     *
+     * @param userInfo4CouponIssueDtoList
+     * @param clientTypeSet
+     * @return
+     */
     private List<UserInfo4CouponIssueDto> filterAndGetEligibleUser(List<UserInfo4CouponIssueDto> userInfo4CouponIssueDtoList, String clientTypeSet) {
         List<UserInfo4CouponIssueDto> eligibleUserList = new ArrayList<>();
 
@@ -153,6 +235,10 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             throw new BizException("");
         }
 
+
+        if (eligibleUserList.size() < couponMaxIssueCount) {
+            return eligibleUserList;
+        }
         return eligibleUserList.subList(0, couponMaxIssueCount);
     }
 
@@ -162,8 +248,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         List<ClientCouponEntity> clientCouponEntityList = new ArrayList<>();
 
         issueUserList.forEach(eligibleUser -> {
-            //todo
             ClientCouponEntity clientCouponEntity = new ClientCouponEntity();
+            //todo split check and get
 
             //券阶梯信息set
             Optional<CouponStageRuleEntity> couponStageEntityOpt = checkAndGetCouponStageEntityOpt(couponEntity.getId());
@@ -335,6 +421,23 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueDetailRsp.setIssueIds(asList(split(couponIssue.getIssueIds(), ",")));
         return couponIssueDetailRsp;
     }
+
+
+    /**
+     * 发放优惠券规则检验
+     *
+     * @param couponIssueEntity
+     * @param productCouponEntity
+     * @param isVisible
+     */
+    private void checkCoupon(CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity, String isVisible) {
+        checkCoupon(couponIssueEntity, productCouponEntity);
+        //检查券的上下架
+        if (CouponIssueVisibleEnum.INVISIBLE.getCode().equals(isVisible)) {
+            throw new BizException(INVISIBLE_COUPON_ISSUE_TASK_CANNOT_BE_ISSUED);
+        }
+    }
+
 
     /**
      * 发放优惠券规则检验
