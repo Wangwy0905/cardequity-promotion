@@ -15,6 +15,7 @@ import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum;
 import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
@@ -85,13 +86,14 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
     @Override
     @Transactional
-    public void createIssue(CouponIssueReq couponIssueReq) {
+    public CouponIssueRsp createIssue(CouponIssueReq couponIssueReq) {
         String couponId = couponIssueReq.getCouponId();
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponId);
 
-        CouponIssueEntity couponIssue = createCouponIssueEntity(couponIssueReq, productCouponEntity);
-        checkCreateCoupon(couponIssue, productCouponEntity);
-        couponIssueMapper.insertSelective(couponIssue);
+        CouponIssueEntity couponIssueEntity = createCouponIssueEntity(couponIssueReq, productCouponEntity);
+        checkCreateCoupon(couponIssueEntity, productCouponEntity);
+        couponIssueMapper.insertSelective(couponIssueEntity);
+        return getCouponIssueRsp(couponIssueEntity.getCouponIssueId());
     }
 
     //todo take care of transaction
@@ -622,5 +624,17 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueEditRsp.setIssueTime(couponIssueEntity.getIssueTime());
         couponIssueEditRsp.setIssueTimeModifyFlag(!eq(originalCouponIssueEntity.getIssueTime(), couponIssueEntity.getIssueTime()));
         return couponIssueEditRsp;
+    }
+
+    /**
+     * 获取创建id
+     *
+     * @param couponIssueId
+     * @return
+     */
+    private CouponIssueRsp getCouponIssueRsp(String couponIssueId) {
+        CouponIssueRsp couponIssueRsp = new CouponIssueRsp();
+        couponIssueRsp.setCouponIssueId(couponIssueId);
+        return couponIssueRsp;
     }
 }

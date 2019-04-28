@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
@@ -32,7 +33,7 @@ public interface CouponIssueApi {
      */
     @ApiOperation(value = "创建发放优惠券")
     @PostMapping(path = "/createIssue")
-    Result createIssue(@RequestBody CouponIssueReq couponIssueReq);
+    Result<CouponIssueRsp> createIssue(@RequestBody CouponIssueReq couponIssueReq);
 
     /**
      * 根据查询条件查询优惠券发放列表

@@ -4,6 +4,7 @@ import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
 import com.youyu.common.api.PageData;
 
 
@@ -21,7 +22,7 @@ public interface CouponIssueService {
      * @param couponIssueReq
      * @return
      */
-    void createIssue(CouponIssueReq couponIssueReq);
+    CouponIssueRsp createIssue(CouponIssueReq couponIssueReq);
 
     /**
      * 触发器到点正式执行发券操作
