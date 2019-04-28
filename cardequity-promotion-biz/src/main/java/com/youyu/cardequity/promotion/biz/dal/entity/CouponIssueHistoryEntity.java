@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * @Auther: zjm
@@ -15,6 +16,7 @@ import javax.persistence.Id;
 
 @Setter
 @Getter
+@Table(name = "TB_COUPON_ISSUE_HISTORY")
 public class CouponIssueHistoryEntity extends BaseEntity<String> {
     @Id
     @Column(name = "COUPON_ISSUE_HISTORY_ID")

@@ -16,7 +16,7 @@ import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
 import com.youyu.cardequity.promotion.enums.CommonDict;
-import com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum;
+import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
 import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
 import com.youyu.cardequity.promotion.enums.dict.UseGeEndDateFlag;
@@ -44,8 +44,7 @@ import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_SUCCESSED;
-import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.ISSUED;
-import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.NOT_ISSUE;
+import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.*;
 import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DELAY_JOB_TRIGGER_TYPE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
@@ -99,10 +98,16 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     @Transactional
     public void processIssue(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq) {
 
+
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponIssueMsgDetailsReq.getCouponId());
         CouponIssueEntity couponIssueEntity = couponIssueMapper.selectByPrimaryKey(couponIssueMsgDetailsReq.getCouponIssueId());
 
-        checkCoupon(couponIssueEntity, productCouponEntity, couponIssueEntity.getIsVisible());
+        checkCoupon(couponIssueEntity, productCouponEntity, productCouponEntity.getStatus());
+
+        //更新发放状态为发放中
+        couponIssueEntity.setIssueStatus(ISSUING.getCode());
+        couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+
 
         //确认最终发券的clientID
         List<UserInfo4CouponIssueDto> resultIssueClientCouponList = confirmIssueClient(couponIssueMsgDetailsReq, productCouponEntity);
@@ -160,11 +165,13 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             List<ClientCouponEntity> issuedClientCouponEntityList, List<String> preparedIssueClientIdList, String couponIssueId) {
 
         //分别筛选出成功发放和未发放券的用户ID
-        List<String> issuedClientIdList = issuedClientCouponEntityList.stream()
+        List<String> issuedClientIdList = issuedClientCouponEntityList
+                .stream()
                 .map(ClientCouponEntity::getClientId)
                 .collect(Collectors.toList());
 
-        List<String> unIssuedClientIdList = preparedIssueClientIdList.stream()
+        List<String> unIssuedClientIdList = preparedIssueClientIdList
+                .stream()
                 .filter(preparedIssueClientId -> !issuedClientIdList.contains(preparedIssueClientId))
                 .collect(Collectors.toList());
 
@@ -223,8 +230,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     private List<UserInfo4CouponIssueDto> confirmIssueClientAndGetIssueList(List<UserInfo4CouponIssueDto> eligibleUserList, String couponId) {
         CouponQuotaRuleEntity couponQuotaRuleEntity = couponQuotaRuleMapper.findCouponQuotaRuleById(couponId);
         if (couponQuotaRuleEntity == null || couponQuotaRuleEntity.getMaxCount() <= 0) {
-            //todo
-            throw new BizException("");
+            log.info(COUPON_ISSUE_NO_CAPACITY_CANNOT_BE_ISSUED.getDesc());
+            throw new BizException(COUPON_ISSUE_NO_CAPACITY_CANNOT_BE_ISSUED);
         }
 
         //发放顺序按照用户ID进行顺序发放，这里先排序
@@ -234,8 +241,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         Integer couponMaxIssueCount = couponQuotaRuleEntity.getMaxCount();
         if (couponMaxIssueCount <= 0) {
             log.info("券库存剩余容量为0，无法实施发券操作。券ID为：{},准备发放的用户为：{}", couponId, eligibleUserList);
-            //todo
-            throw new BizException("");
+            throw new BizException(COUPON_ISSUE_NO_CAPACITY_CANNOT_BE_ISSUED);
         }
 
 
@@ -252,11 +258,16 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
         issueUserList.forEach(eligibleUser -> {
             ClientCouponEntity clientCouponEntity = new ClientCouponEntity();
-            //todo split check and get
 
             //券阶梯信息set
             Optional<CouponStageRuleEntity> couponStageEntityOpt = checkAndGetCouponStageEntityOpt(couponEntity.getId());
+            clientCouponEntity.setCouponAmout(couponEntity.getProfitValue());
+            clientCouponEntity.setCouponShortDesc(couponEntity.getCouponShortDesc());
+            clientCouponEntity.setTriggerByType(TriggerByType.NUMBER.getDictValue());
+            clientCouponEntity.setBeginValue(BigDecimal.ZERO);
+            clientCouponEntity.setEndValue(CommonConstant.IGNOREVALUE); //数值参数的边界有效上限
             couponStageEntityOpt.ifPresent(couponStageRuleEntity -> {
+                //todo stageID set?
                 clientCouponEntity.setCouponAmout(couponStageRuleEntity.getCouponValue());
                 clientCouponEntity.setCouponShortDesc(couponStageRuleEntity.getCouponShortDesc());
                 clientCouponEntity.setTriggerByType(couponStageRuleEntity.getTriggerByType());
@@ -280,11 +291,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
                             couponEntity.getValIdTerm(), couponEntity.getUseGeEndDateFlag()));
 
 
-            clientCouponEntity.setCouponAmout(couponEntity.getProfitValue());
-            clientCouponEntity.setCouponShortDesc(couponEntity.getCouponShortDesc());
-            clientCouponEntity.setTriggerByType(TriggerByType.NUMBER.getDictValue());
-            clientCouponEntity.setBeginValue(BigDecimal.ZERO);
-            clientCouponEntity.setEndValue(CommonConstant.IGNOREVALUE); //数值参数的边界有效上限
             clientCouponEntity.setGetType(couponEntity.getGetType());
             clientCouponEntity.setApplyProductFlag(couponEntity.getApplyProductFlag());
             clientCouponEntity.setCouponStrategyType(couponEntity.getCouponStrategyType());
@@ -301,8 +307,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             clientCouponEntity.setIsEnable(CommonDict.IF_YES.getCode());
             clientCouponEntity.setStatus(CouponUseStatus.NORMAL.getDictValue());
             //todo
-//        entity.setJoinOrderId(req.getActivityId());
+//        clientCouponEntity.setJoinOrderId(req.getActivityId());
             clientCouponEntityList.add(clientCouponEntity);
+
         });
 
 
@@ -362,8 +369,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             return Optional.empty();
         }
         if (couponStageEntityList.size() > 1) {
-            //todo 确认下这里的逻辑
-            log.warn("StageId不为空,但该券却有多个子券无法确定领取的券(后台发放券操作)，券ID为：{}", couponId);
+            log.warn("StageId不为空,但该券却有多个阶梯，无法确定领取的券(后台发放券操作)，券ID为：{}", couponId);
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("StageId不为空,但该券却有多个子券无法确定领取的券"));
         }
 
@@ -450,12 +456,12 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      *
      * @param couponIssueEntity
      * @param productCouponEntity
-     * @param isVisible
+     * @param couponIsVisible
      */
-    private void checkCoupon(CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity, String isVisible) {
+    private void checkCoupon(CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity, String couponIsVisible) {
         checkCoupon(couponIssueEntity, productCouponEntity);
         //检查券的上下架
-        if (CouponIssueVisibleEnum.INVISIBLE.getCode().equals(isVisible)) {
+        if (CouponStatus.NO.getDictValue().equals(couponIsVisible)) {
             throw new BizException(INVISIBLE_COUPON_ISSUE_TASK_CANNOT_BE_ISSUED);
         }
     }
