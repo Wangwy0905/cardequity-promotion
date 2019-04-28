@@ -583,19 +583,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 dto.setAllowGetBeginDate(LocalDateTime.now());
                 dto.setAllowGetEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
             }
-            if(dto.getAllowGetEndDate().compareTo(lastMonthDay())<0){
-                    dto.setAllowUseEndDate(dto.getAllowGetEndDate());
-            }else{
-                    dto.setAllowUseEndDate(lastMonthDay());
-            }
             if(dto.getAllowUseBeginDate().compareTo(dto.getAllowGetBeginDate())<0 || dto.getAllowUseEndDate().compareTo(dto.getAllowGetEndDate())<0){
-                   result.setDesc("优惠券领取有效日期范围判断错误");
+                   result.setDesc("优惠券领取日期范围判断错误");
                    return result;
             }
-
             if (dto.getAllowGetEndDate().compareTo(dto.getAllowGetBeginDate()) < 0) {
-                result.setDesc("优惠券领取日期无效：起始值" + dto.getAllowGetBeginDate() + "；结束值" + dto.getAllowGetEndDate());
-                return result;
+                   result.setDesc("优惠券领取日期无效：起始值" + dto.getAllowGetBeginDate() + "；结束值" + dto.getAllowGetEndDate());
+                   return result;
             }
             //【处理频率】
             //逻辑删除  通过优惠id
