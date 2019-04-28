@@ -28,7 +28,6 @@ public class CouponIssueController implements CouponIssueApi {
     @Autowired
     private CouponIssueService couponIssueService;
 
-
     @Override
     @PostMapping(path = "/createIssue")
     public Result createIssue(@RequestBody CouponIssueReq couponIssueReq) {
@@ -49,12 +48,14 @@ public class CouponIssueController implements CouponIssueApi {
     }
 
     @Override
+    @PostMapping(path = "/delete")
     public Result delete(@RequestBody CouponIssueDeleteReq couponIssueDeleteReq) {
         couponIssueService.delete(couponIssueDeleteReq);
         return ok();
     }
 
     @Override
+    @PostMapping(path = "/setVisible")
     public Result setVisible(@RequestBody CouponIssueVisibleReq couponIssueVisibleReq) {
         couponIssueService.setVisible(couponIssueVisibleReq);
         return ok();
