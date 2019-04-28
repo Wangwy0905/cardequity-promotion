@@ -6,6 +6,7 @@ import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,8 @@ public class CouponIssueController implements CouponIssueApi {
 
     @Override
     @PostMapping(path = "/createIssue")
-    public Result createIssue(@RequestBody CouponIssueReq couponIssueReq) {
-        couponIssueService.createIssue(couponIssueReq);
-        return ok();
+    public Result<CouponIssueRsp> createIssue(@RequestBody CouponIssueReq couponIssueReq) {
+        return ok(couponIssueService.createIssue(couponIssueReq));
     }
 
     @Override

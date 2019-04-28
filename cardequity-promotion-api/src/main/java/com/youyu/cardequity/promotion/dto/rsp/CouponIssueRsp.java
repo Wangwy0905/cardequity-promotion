@@ -20,4 +20,7 @@ public class CouponIssueRsp implements Serializable {
 
     private static final long serialVersionUID = 2740882892871271699L;
 
+    @ApiModelProperty("优惠券发放id")
+    private String couponIssueId;
+
 }

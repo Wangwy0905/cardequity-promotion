@@ -1,5 +1,7 @@
 package com.youyu.cardequity.promotion.biz;
 
+import com.youyu.cardequity.common.base.converter.OrikaBeanPropertiesConverter;
+import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.DateUtil;
 import com.youyu.cardequity.promotion.biz.controller.ActivityProfitController;
 import com.youyu.cardequity.promotion.biz.controller.ClientCouponController;
@@ -9,6 +11,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.vo.DateParam.DateParam;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
 import com.youyu.common.api.Result;
+import org.apache.tomcat.jni.Local;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +20,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.SimpleTimeZone;
 
 /**
@@ -26,16 +36,17 @@ import java.util.SimpleTimeZone;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ApiTest {
-    @Autowired
+  /*  @Autowired
     ProductCouponController productCouponController;
-
     @Autowired
     ActivityProfitController activityProfitController;
 
     @Autowired
-    ClientCouponController clientCouponController;
+    ClientCouponController clientCouponController;*/
     @Autowired
     ProductCouponService productCouponService;
+    @Autowired
+    UidGenerator uidGenerator;
 
     @Test
     public  void test() {
@@ -122,7 +133,90 @@ public class ApiTest {
      */
     @Test
     public  void testCoupon(){
+        LocalTime localTime=LocalTime.now();
 
+        System.out.println( LocalDateTime.now());
+        System.out.println( LocalDateTime.now().truncatedTo(ChronoUnit.DAYS));
+        System.out.println(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS));
+        System.out.println(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+
+    }
+    @Test
+    public void testSerialGenerate() {
+        // Generate UID
+      //  long uid = uidGenerator.getUID();
+
+        // Parse UID into [Timestamp, WorkerId, Sequence]
+        // {"UID":"180363646902239241","parsed":{    "timestamp":"2017-01-19 12:15:46",    "workerId":"4",    "sequence":"9"        }}
+        //System.out.println(uidGenerator.parseUID(uid));
+
+        String Uid=uidGenerator.getUID2();
+
+        System.out.println(Uid+"----");
+
+    }
+
+    @Test
+    public static LocalDateTime testNumToDate(){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Date date=new Date();
+        String currdate = format.format(date);
+        System.out.println("现在的日期是：" + currdate);
+        Calendar cale = null;
+        cale = Calendar.getInstance();
+        cale.add(Calendar.DATE,18);
+        date=cale.getTime();
+        String enddate = format.format(date);
+
+        System.out.println("增加天数以后的日期：" + enddate);
+        LocalDateTime localDateTime=LocalDateTime.parse(format.format(cale.getTime()),df);
+        LocalDateTime localDateTime1 = OrikaBeanPropertiesConverter.copyProperties(localDateTime, LocalDateTime.class);
+        LocalDate localDate = localDateTime1.toLocalDate();
+
+        System.out.println(localDate+"======");
+        return localDateTime1;
+
+    }
+    @Test
+    public static LocalDateTime testCurrentMonth(){
+/*        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 1);
+        cale.set(Calendar.DAY_OF_MONTH, 0);
+        try {
+            Date date=new java.sql.Date(sdf.parse(sdf.format(cale.getTime())).getTime());
+            LocalDateTime parse = LocalDateTime.parse(sdf.format(cale.getTime()));
+
+            System.out.println(parse+"1111111111");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }*/
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Calendar cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 1);
+        cale.set(Calendar.DAY_OF_MONTH, 0);
+        LocalDateTime localDateTime=LocalDateTime.parse(sdf.format(cale.getTime()),df);
+        LocalDateTime localDateTime1 = OrikaBeanPropertiesConverter.copyProperties(localDateTime, LocalDateTime.class);
+        LocalDate localDate = localDateTime1.toLocalDate();
+        System.out.println(localDateTime1);
+        System.out.println(LocalDateTime.now());
+        System.out.println(localDate+"555555");
+        return localDateTime1;
+
+
+    }
+
+    public static void main(String[] args) {
+        LocalDateTime localDateTime = testCurrentMonth();
+        System.out.println(localDateTime+"111");
+
+        LocalDateTime localDateTime1 = testNumToDate();
+
+        System.out.println(localDateTime1+"2222");
     }
 
 }

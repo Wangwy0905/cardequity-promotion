@@ -15,6 +15,7 @@ import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
 import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
+import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
@@ -84,13 +85,14 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
     @Override
     @Transactional
-    public void createIssue(CouponIssueReq couponIssueReq) {
+    public CouponIssueRsp createIssue(CouponIssueReq couponIssueReq) {
         String couponId = couponIssueReq.getCouponId();
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponId);
 
-        CouponIssueEntity couponIssue = createCouponIssueEntity(couponIssueReq, productCouponEntity);
-        checkCoupon(couponIssue, productCouponEntity);
-        couponIssueMapper.insertSelective(couponIssue);
+        CouponIssueEntity couponIssueEntity = createCouponIssueEntity(couponIssueReq, productCouponEntity);
+        checkCreateCoupon(couponIssueEntity, productCouponEntity);
+        couponIssueMapper.insertSelective(couponIssueEntity);
+        return getCouponIssueRsp(couponIssueEntity.getCouponIssueId());
     }
 
     //todo take care of transaction
@@ -466,6 +468,21 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         }
     }
 
+    /**
+     * 优惠券发放创建规则检验
+     *
+     * @param couponIssueEntity
+     * @param productCouponEntity
+     */
+    private void checkCreateCoupon(CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity) {
+        checkCoupon(couponIssueEntity, productCouponEntity);
+
+        Date issueTime = string2Date(couponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
+        Date now = now();
+        if (now.after(issueTime)) {
+            throw new BizException(ISSUE_TIME_MUST_GREATER_CURRENT_TIME);
+        }
+    }
 
     /**
      * 发放优惠券规则检验
@@ -491,11 +508,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         }
 
         Date issueTime = string2Date(couponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
-        Date now = now();
-        if (now.after(issueTime)) {
-            throw new BizException(ISSUE_TIME_MUST_GREATER_CURRENT_TIME);
-        }
-
         LocalDateTime nowLocalDateTime = LocalDateUtils.date2LocalDateTime(issueTime);
         if (nowLocalDateTime.isAfter(productCouponEntity.getAllowUseEndDate())) {
             throw new BizException(COUPON_END_DATE_MUST_GREATER_CURRENT_DATE);
@@ -618,5 +630,17 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueEditRsp.setIssueTime(couponIssueEntity.getIssueTime());
         couponIssueEditRsp.setIssueTimeModifyFlag(!eq(originalCouponIssueEntity.getIssueTime(), couponIssueEntity.getIssueTime()));
         return couponIssueEditRsp;
+    }
+
+    /**
+     * 获取创建id
+     *
+     * @param couponIssueId
+     * @return
+     */
+    private CouponIssueRsp getCouponIssueRsp(String couponIssueId) {
+        CouponIssueRsp couponIssueRsp = new CouponIssueRsp();
+        couponIssueRsp.setCouponIssueId(couponIssueId);
+        return couponIssueRsp;
     }
 }

@@ -11,6 +11,8 @@ import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.service.IService;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -154,7 +156,14 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param
      * @return
      */
-     public String lastMonthDay();
+     public  LocalDateTime lastMonthDay();
+
+    /**
+     * 生效日期+天数=截止日期
+     * @param  req
+     * @return LocalDateTime
+     */
+    public  LocalDateTime  numToDate(CouponDetailDto req);
 
 }
 

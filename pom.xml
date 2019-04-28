@@ -25,6 +25,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<common-parent.version>2.0.2.RELEASE</common-parent.version>
 		<java.version>1.8</java.version>
+		<redisson.version>3.8.2</redisson.version>
 		<spring-boot.version>2.0.1.RELEASE</spring-boot.version>
 		<cardequity-common-base.version>0.0.1-SNAPSHOT</cardequity-common-base.version>
 		<cardequity-common-spring.version>0.0.1-SNAPSHOT</cardequity-common-spring.version>

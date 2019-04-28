@@ -248,6 +248,9 @@
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="2"'>
             and a.ALLOW_USE_END_DATE &lt;curdate()
         </if>
+        <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="3"'>
+            and (a.VAL_ID_TERM != '0' or a.MONTH_VALID  == '1')
+        </if>
         <if test="!@com.youyu.cardequity.promotion.biz.utils.CommonUtils@isEmptyorNull(commonQry.couponId)">
             and ( a.UUID=#{commonQry.couponId,jdbcType=VARCHAR} or
             a.COUPON_NAME like CONCAT('%',#{commonQry.couponName,jdbcType=VARCHAR},'%') or
@@ -290,6 +293,16 @@
         <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='2'.toString()">
             and ALLOW_GET_END_DATE &lt;curdate()
         </if>
+        <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='3'.toString()">
+            and a.GET_TYPE='0'
+        </if>
+        <if test="commonQry.getType !=null and commonQry.getType =='1'.toString()">
+            and a.GET_TYPE='1'
+        </if>
+        <if test="commonQry.getType !=null and commonQry.getType =='0'.toString()">
+            and a.GET_TYPE='0'
+        </if>
+
         Order by a.CREATE_TIME desc
     </select>
 

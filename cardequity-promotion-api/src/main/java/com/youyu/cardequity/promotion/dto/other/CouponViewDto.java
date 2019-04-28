@@ -74,6 +74,9 @@ public class CouponViewDto {
     @ApiModelProperty(value = "领取结束日:")
     private LocalDateTime allowGetEndDate;
 
+    @ApiModelProperty(value = "领取方式 0-自动发送  1-手动领取")
+    private String getType;
+
     @ApiModelProperty(value = "频率id:前台不展示")
     private String freqId;
 
@@ -115,7 +118,7 @@ public class CouponViewDto {
         //couponDto.getLabelDto().setId(this.getCouponLable());
 
         //***********获取方式:商品详情不展示的领取方式是发放的************
-        couponDto.setGetType(CouponGetType.HANLD.getDictValue());
+        //couponDto.setGetType(CouponGetType.HANLD.getDictValue());
         if (CommonDict.IF_NO.getCode().equals(productDetailShowFlag))
             couponDto.setGetType(CouponGetType.GRANT.getDictValue());
 
