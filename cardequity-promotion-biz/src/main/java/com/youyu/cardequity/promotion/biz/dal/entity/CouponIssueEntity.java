@@ -23,8 +23,8 @@ public class CouponIssueEntity extends BaseEntity<String> {
     @Column(name = "COUPON_NAME")
     private String couponName;
 
-    @Column(name = "OBJECT_TYPE")
-    private String objectType;
+    @Column(name = "TARGET_TYPE")
+    private String targetType;
 
     @Column(name = "IS_VISIBLE")
     private String isVisible;

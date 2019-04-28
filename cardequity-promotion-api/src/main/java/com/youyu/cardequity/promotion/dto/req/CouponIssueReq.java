@@ -17,8 +17,8 @@ public class CouponIssueReq implements Serializable {
     @ApiModelProperty("优惠券id")
     private String couponId;
 
-    @ApiModelProperty("对象类型 1:用户id 2:活动id")
-    private String objectType;
+    @ApiModelProperty("目标对象类型 1:用户id 2:活动id")
+    private String targetType;
 
     @ApiModelProperty("优惠券发放时间")
     private String issueTime;

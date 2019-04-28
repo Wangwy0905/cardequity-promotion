@@ -29,7 +29,7 @@ public class CouponIssueServiceImplTest {
         couponIssueReq.setCouponId("3149027277917069312");
         couponIssueReq.setIssueIds(Arrays.asList("1", "2", "3", "4"));
         couponIssueReq.setIssueTime("2019-09-9 14:00");
-        couponIssueReq.setObjectType("1");
+        couponIssueReq.setTargetType("1");
 
         couponIssueService.createIssue(couponIssueReq);
     }
