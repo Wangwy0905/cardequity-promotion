@@ -49,6 +49,7 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.apache.commons.lang3.StringUtils.split;
+import static org.apache.commons.lang3.time.DateUtils.addHours;
 
 /**
  * @author panqingqing
@@ -315,14 +316,12 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     @Override
     public CouponIssueEditRsp edit(CouponIssueEditReq couponIssueEditReq) {
         CouponIssueEntity originalCouponIssueEntity = couponIssueMapper.selectByPrimaryKey(couponIssueEditReq.getCouponIssueId());
+        Date issueDate = string2Date(originalCouponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
+        if (now().after(addHours(issueDate, -1))) {
+            throw new BizException(COUPON_ISSUE_TIMEOUT_INVALID_OPERATION);
+        }
 
-        String couponId = couponIssueEditReq.getCouponId();
-        ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponId);
-
-        CouponIssueEntity couponIssueEntity = createCouponIssueEntity(couponIssueEditReq, productCouponEntity);
-        checkCoupon(couponIssueEntity, productCouponEntity);
-        couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
-        return getCouponIssueEditRsp(originalCouponIssueEntity, couponIssueEntity);
+        return doEdit(couponIssueEditReq, originalCouponIssueEntity);
     }
 
     /**
@@ -340,7 +339,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueDetailRsp.setCouponStatus(productCoupon.getStatus());
         couponIssueDetailRsp.setIssueDate(date2String(issueDate, YYYY_MM_DD));
         couponIssueDetailRsp.setIssueTime(date2String(issueDate, HH_MM_SS));
-        couponIssueDetailRsp.setObjectType(couponIssue.getTargetType());
+        couponIssueDetailRsp.setTargetType(couponIssue.getTargetType());
         couponIssueDetailRsp.setIssueIds(asList(split(couponIssue.getIssueIds(), ",")));
         return couponIssueDetailRsp;
     }
@@ -404,6 +403,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueEntity.setIssueStatus(NOT_ISSUE.getCode());
         couponIssueEntity.setTriggerType(DELAY_JOB_TRIGGER_TYPE.getCode());
         couponIssueEntity.setIssueIds(join(couponIssueReq.getIssueIds(), ","));
+        couponIssueEntity.setLogicDelete(false);
         return couponIssueEntity;
     }
 
@@ -418,11 +418,12 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             couponIssueDetailReq = new CouponIssueDetailReq();
             couponIssueDetailReq.setCouponIssueId(couponIssueId);
 
-            CouponIssueEntity couponIssue = couponIssueMapper.getCouponIssueDetail(couponIssueDetailReq);
-            if (!eq(NOT_ISSUE.getCode(), couponIssue.getIssueStatus())) {
+            CouponIssueEntity couponIssueEntity = couponIssueMapper.getCouponIssueDetail(couponIssueDetailReq);
+            if (!eq(NOT_ISSUE.getCode(), couponIssueEntity.getIssueStatus())) {
                 throw new BizException(COUPON_NOT_ISSUE_STATUS_CAN_DELETE);
             }
-            couponIssueMapper.deleteByPrimaryKey(couponIssueDetailReq.getCouponIssueId());
+            couponIssueEntity.setLogicDelete(true);
+            couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
         }
     }
 
@@ -443,7 +444,25 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueEntity.setIsVisible(couponIssueEditReq.getIsVisible());
         couponIssueEntity.setTriggerType(couponIssueEditReq.getObjectType());
         couponIssueEntity.setIssueIds(join(couponIssueEditReq.getIssueIds(), ","));
+        couponIssueEntity.setLogicDelete(false);
         return couponIssueEntity;
+    }
+
+    /**
+     * 执行编辑操作
+     *
+     * @param couponIssueEditReq
+     * @param originalCouponIssueEntity
+     * @return
+     */
+    private CouponIssueEditRsp doEdit(CouponIssueEditReq couponIssueEditReq, CouponIssueEntity originalCouponIssueEntity) {
+        String couponId = couponIssueEditReq.getCouponId();
+        ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponId);
+
+        CouponIssueEntity couponIssueEntity = createCouponIssueEntity(couponIssueEditReq, productCouponEntity);
+        checkCoupon(couponIssueEntity, productCouponEntity);
+        couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+        return getCouponIssueEditRsp(originalCouponIssueEntity, couponIssueEntity);
     }
 
     /**

@@ -41,7 +41,7 @@ public class CouponIssueDetailRsp implements Serializable {
     private String issueTime;
 
     @ApiModelProperty("对象类型 1:用户id 2:活动id")
-    private String objectType;
+    private String targetType;
 
     @ApiModelProperty("优惠券发放对象id")
     private List<String> issueIds = new ArrayList<>();

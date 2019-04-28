@@ -30,7 +30,7 @@ public class CouponIssueQueryRsp implements Serializable {
     private String couponName;
 
     @ApiModelProperty("对象类型 1:用户id 2:活动id")
-    private String objectType;
+    private String targetType;
 
     @ApiModelProperty("上下架 0:上架 1:下架")
     private String isVisible;
