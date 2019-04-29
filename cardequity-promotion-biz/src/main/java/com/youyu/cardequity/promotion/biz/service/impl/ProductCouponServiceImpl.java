@@ -8,6 +8,8 @@ import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.converter.OrikaBeanPropertiesConverter;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
+import com.youyu.cardequity.common.base.util.DateUtil;
+import com.youyu.cardequity.common.base.util.LocalDateUtils;
 import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
@@ -34,6 +36,7 @@ import com.youyu.common.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,11 +45,17 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.youyu.cardequity.common.base.util.LocalDateUtils.*;
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
+import static java.time.LocalDateTime.now;
+import static java.util.Objects.*;
+import static org.apache.commons.lang3.time.DateUtils.addDays;
 
 
 /**
@@ -252,7 +261,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         if (dto.getAllowGetBeginDate() == null) {
             if (dto.getAllowUseBeginDate() == null) {
-                dto.setAllowUseBeginDate(LocalDateTime.now());
+                dto.setAllowUseBeginDate(now());
             }
             dto.setAllowGetBeginDate(dto.getAllowUseBeginDate());
         } else {
@@ -263,13 +272,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         if (dto.getAllowGetBeginDate() == null) {
-            dto.setAllowGetBeginDate(LocalDateTime.now());
+            dto.setAllowGetBeginDate(now());
         }
         if (dto.getAllowGetEndDate() == null) {
             dto.setAllowGetEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
         }
         if (dto.getAllowUseBeginDate() == null) {
-            dto.setAllowUseBeginDate(LocalDateTime.now());
+            dto.setAllowUseBeginDate(now());
         }
       /*  if (dto.getAllowUseEndDate() == null) {
             dto.setAllowUseEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
@@ -473,7 +482,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                     dto.setAllowUseBeginDate(dto.getAllowGetBeginDate());
                     dto.setAllowUseEndDate(numToDate(req));
                 }
-                if(dto.getAllowGetBeginDate().compareTo(LocalDateTime.now())<0){
+                if(dto.getAllowGetBeginDate().compareTo(now())<0){
                     throw new BizException(DATA_CHECK_FAILED);
                 }
             }
@@ -482,13 +491,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         if(CouponGetType.AUTO.getDictValue().equals(dto.getGetType())){
             //按天数
             if (dto.getMonthValid()) {
-                dto.setAllowUseBeginDate(LocalDateTime.now());
+                dto.setAllowUseBeginDate(now());
                 dto.setAllowUseEndDate(lastMonthDay());
 
             }
             //按当月有效
             if (dto.getValIdTerm() != null) {
-                dto.setAllowUseBeginDate(LocalDateTime.now());
+                dto.setAllowUseBeginDate(now());
                 dto.setAllowUseEndDate(numToDate(req));
 
             }
@@ -703,7 +712,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         if (dto.getAllowGetBeginDate() == null) {
             if (dto.getAllowUseBeginDate() == null) {
-                dto.setAllowUseBeginDate(LocalDateTime.now());
+                dto.setAllowUseBeginDate(now());
             }
             dto.setAllowGetBeginDate(dto.getAllowUseBeginDate());
         } else {
@@ -1412,8 +1421,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 item.setValidStartDate(dto.getAllowUseBeginDate());
                 item.setValidEndDate(dto.getAllowUseEndDate());
             } else {
-                item.setValidStartDate(LocalDateTime.now());
-                item.setValidEndDate(LocalDateTime.now().plusDays(dto.getValIdTerm()));
+                item.setValidStartDate(now());
+                item.setValidEndDate(now().plusDays(dto.getValIdTerm()));
             }
             item.setProductList(enableGetCoupon.get(i).getProductList());
             //result  获得优惠卷视图list
@@ -1516,8 +1525,8 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                         viewDto.setValidStartDate(item.getProductCouponDto().getAllowUseBeginDate());   //起始时间
                         viewDto.setValidEndDate(item.getProductCouponDto().getAllowUseEndDate());       //结束时间
                     } else {
-                        viewDto.setValidStartDate(LocalDateTime.now());
-                        viewDto.setValidEndDate(LocalDateTime.now().plusDays(viewDto.getValIdTerm()));
+                        viewDto.setValidStartDate(now());
+                        viewDto.setValidEndDate(now().plusDays(viewDto.getValIdTerm()));
                     }
                     result.add(viewDto);
                     log.info("转换视图后的优惠券信息:{}" + JSONObject.toJSONString(result));
@@ -1642,22 +1651,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      * @return LocalDateTime
      */
     public  LocalDateTime numToDate(CouponDetailDto req){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        Date date=new Date();
-        String currdate = format.format(date);
-        Calendar cale = null;
-        cale = Calendar.getInstance();
-        cale.add(Calendar.DATE,req.getProductCouponDto().getValIdTerm());
-        date=cale.getTime();
-        String enddate = format.format(date);
-        LocalDateTime localDateTime=LocalDateTime.parse(format.format(cale.getTime()),df);
-        LocalDateTime localDateTime1 = OrikaBeanPropertiesConverter.copyProperties(localDateTime, LocalDateTime.class);
 
-        return localDateTime1;
-
+        LocalDateTime allowGetBeginDate = req.getProductCouponDto().getAllowGetBeginDate();
+        if(isNull(allowGetBeginDate)){
+            allowGetBeginDate = now();
+        }
+        return date2LocalDateTime(addDays(localDateTime2Date(allowGetBeginDate),req.getProductCouponDto().getValIdTerm()));
     }
-
 
 }
 
