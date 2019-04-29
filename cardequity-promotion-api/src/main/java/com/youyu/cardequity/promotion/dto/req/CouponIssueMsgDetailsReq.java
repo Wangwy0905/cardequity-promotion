@@ -26,9 +26,6 @@ public class CouponIssueMsgDetailsReq implements Serializable {
     @ApiModelProperty("预发放目标用户的相关信息，包括：用户类型，用户ID等标识")
     private List<UserInfo4CouponIssueDto> userInfo4CouponIssueDtoList;
 
-    @ApiModelProperty("准备发放的券ID")
-    private String couponId;
-
     @ApiModelProperty("发放的目标对象：1.用户ID；2.活动ID")
     private String targetType;
 }

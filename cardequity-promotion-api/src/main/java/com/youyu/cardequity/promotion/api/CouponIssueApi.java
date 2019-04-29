@@ -84,4 +84,9 @@ public interface CouponIssueApi {
     @ApiOperation(value = "优惠券发放编辑")
     @PostMapping(path = "/edit")
     Result<CouponIssueEditRsp> edit(@RequestBody CouponIssueEditReq couponIssueEditReq);
+
+
+    @ApiOperation(value = "优惠券发放任务执行")
+    @PostMapping(path = "/processIssue")
+    Result processIssue(@RequestBody CouponIssueMsgDetailsReq couponIssueMsgDetailsReq);
 }

@@ -100,9 +100,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     @Transactional
     public void processIssue(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq) {
 
-
-        ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponIssueMsgDetailsReq.getCouponId());
         CouponIssueEntity couponIssueEntity = couponIssueMapper.selectByPrimaryKey(couponIssueMsgDetailsReq.getCouponIssueId());
+
+        ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponIssueEntity.getCouponId());
 
         checkCoupon(couponIssueEntity, productCouponEntity, productCouponEntity.getStatus());
 
@@ -140,7 +140,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
                 couponIssueMsgDetailsReq.getUserInfo4CouponIssueDtoList(), productCouponEntity.getClientTypeSet());
 
         // 根据用户ID正序sort 并选取前部分用户发券
-        return confirmIssueClientAndGetIssueList(eligibleUserList, couponIssueMsgDetailsReq.getCouponId());
+        return confirmIssueClientAndGetIssueList(eligibleUserList, productCouponEntity.getId());
 
     }
 

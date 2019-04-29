@@ -67,4 +67,11 @@ public class CouponIssueController implements CouponIssueApi {
     public Result<CouponIssueEditRsp> edit(@RequestBody CouponIssueEditReq couponIssueEditReq) {
         return ok(couponIssueService.edit(couponIssueEditReq));
     }
+
+
+    @PostMapping(path = "/processIssue")
+    public Result processIssue(@RequestBody CouponIssueMsgDetailsReq couponIssueMsgDetailsReq) {
+        couponIssueService.processIssue(couponIssueMsgDetailsReq);
+        return ok();
+    }
 }
