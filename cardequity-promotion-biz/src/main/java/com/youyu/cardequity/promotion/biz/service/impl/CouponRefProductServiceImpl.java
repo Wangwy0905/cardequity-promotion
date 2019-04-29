@@ -91,6 +91,7 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
      */
     //改动
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public  CommonBoolDto<Integer> batchDeleteCouponRefProduct(BatchRefProductReq req){
         if (req == null || CommonUtils.isEmptyorNull(req.getId())) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定优惠券id 参数"));
@@ -122,6 +123,7 @@ public class CouponRefProductServiceImpl extends AbstractService<String, CouponR
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonBoolDto<Integer> batchAddAllProductRefCoupon(BatchRefProductReq req) {
         if (req == null || CommonUtils.isEmptyorNull(req.getId())) {
             throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("没有指定优惠券id参数"));

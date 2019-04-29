@@ -448,6 +448,54 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     }
 
     /**
+     * 有效时间的检验
+     * @Param req 优惠券详情
+     * @return
+     */
+     public void  checkAllowUseDate(CouponDetailDto req){
+         ProductCouponDto dto = req.getProductCouponDto();
+         //处理领取时间 有效日期
+        if(CouponGetType.HANLD.getDictValue().equals(dto.getGetType())){
+            //按有效日期
+            Boolean flag=dto.getAllowUseBeginDate()!=null && dto.getAllowUseEndDate()!=null;
+            if (flag) {
+                if(dto.getAllowUseBeginDate().compareTo(dto.getAllowGetBeginDate())<0 || dto.getAllowUseEndDate().compareTo(dto.getAllowGetEndDate())<0){
+                    throw new  BizException(WRONG_DATE_SPECIFICATION);
+                }
+            }else{
+                //按天数
+                if (dto.getMonthValid()) {
+                    dto.setAllowUseBeginDate(dto.getAllowGetBeginDate());
+                    dto.setAllowUseEndDate(lastMonthDay());
+                }
+                //按当月有效
+                if (dto.getValIdTerm() != null) {
+                    dto.setAllowUseBeginDate(dto.getAllowGetBeginDate());
+                    dto.setAllowUseEndDate(numToDate(req));
+                }
+                if(dto.getAllowGetBeginDate().compareTo(LocalDateTime.now())<0){
+                    throw new BizException(DATA_CHECK_FAILED);
+                }
+            }
+
+        }
+        if(CouponGetType.AUTO.getDictValue().equals(dto.getGetType())){
+            //按天数
+            if (dto.getMonthValid()) {
+                dto.setAllowUseBeginDate(LocalDateTime.now());
+                dto.setAllowUseEndDate(lastMonthDay());
+
+            }
+            //按当月有效
+            if (dto.getValIdTerm() != null) {
+                dto.setAllowUseBeginDate(LocalDateTime.now());
+                dto.setAllowUseEndDate(numToDate(req));
+
+            }
+        }
+
+     }
+    /**
      * 添加优惠券
      *
      * @param req 优惠券详情
@@ -468,30 +516,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             result.setDesc("没有指定编辑信息");
             return result;
         }
-        //有效时间的生成
-        if(dto.getAllowUseBeginDate()==null || dto.getAllowUseEndDate()==null) {
-            if (dto.getMonthValid()) {
-                dto.setAllowUseBeginDate(LocalDateTime.now());
-                //当月有效时间
-                dto.setAllowUseEndDate(lastMonthDay());
-                dto.setMonthValid(true);
-            } else if (dto.getValIdTerm() != null) {
-                dto.setAllowUseBeginDate(LocalDateTime.now());
-                //天数限制
-             /*   if(dto.getAllowGetEndDate().compareTo(numToDate(req))<0){
-                    throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("设置有效日期超过优惠券的领取日期"));
-                }*/
-                dto.setAllowUseEndDate(numToDate(req));
-            }else{
-                dto.setAllowUseBeginDate(dto.getAllowGetBeginDate());
-                dto.setAllowUseEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
-            }
 
-        }
-        if (dto.getAllowUseEndDate().compareTo(dto.getAllowUseBeginDate()) < 0) {
-            result.setDesc("优惠券使用日期无效：起始值" + dto.getAllowUseBeginDate() + "；结束值" + dto.getAllowUseEndDate());
-            return result;
-        }
         //参数保护，实际有效日期=领取日+期限
         if (dto.getUseGeEndDateFlag() == null)
             dto.setUseGeEndDateFlag(UseGeEndDateFlag.NO.getDictValue());
@@ -576,23 +601,14 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             }
             batchService.batchDispose(stageList, CouponStageRuleMapper.class, "insert");
         }
+
+        //领取时间，有效时间校验
+        checkAllowUseDate(req);
+
         //手动领取的优惠券要进行领取频率、领取额度、及领取时间的判断
         if(CouponGetType.HANLD.getDictValue().equals(dto.getGetType())){
-            //处理领取时间
-            if (dto.getAllowGetBeginDate()==null || dto.getAllowUseEndDate()==null){
-                dto.setAllowGetBeginDate(LocalDateTime.now());
-                dto.setAllowGetEndDate(LocalDateTime.of(2099, 12, 31, 0, 0, 0));
-            }
-            if(dto.getAllowUseBeginDate().compareTo(dto.getAllowGetBeginDate())<0 || dto.getAllowUseEndDate().compareTo(dto.getAllowGetEndDate())<0){
-                   result.setDesc("优惠券领取日期范围判断错误");
-                   return result;
-            }
-            if (dto.getAllowGetEndDate().compareTo(dto.getAllowGetBeginDate()) < 0) {
-                   result.setDesc("优惠券领取日期无效：起始值" + dto.getAllowGetBeginDate() + "；结束值" + dto.getAllowGetEndDate());
-                   return result;
-            }
-            //【处理频率】
-            //逻辑删除  通过优惠id
+
+              //【处理频率】逻辑删除  通过优惠id
             couponGetOrUseFreqRuleMapper.logicDelByCouponId(dto.getId());
             if (req.getFreqRuleList() != null) {
                 for (CouponGetOrUseFreqRuleDto item : req.getFreqRuleList()) {
@@ -630,6 +646,11 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 }
             }
 
+        }
+
+        if (dto.getAllowUseEndDate().compareTo(dto.getAllowUseBeginDate()) < 0) {
+            result.setDesc("优惠券使用日期无效：起始值" + dto.getAllowUseBeginDate() + "；结束值" + dto.getAllowUseEndDate());
+            return result;
         }
         //【配置适用商品】
         if (req.getProductList() != null) {
