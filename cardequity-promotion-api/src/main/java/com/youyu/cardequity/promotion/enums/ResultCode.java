@@ -64,8 +64,11 @@ public enum ResultCode implements CardequityIBaseResultCode {
     INVISIBLE_COUPON_ISSUE_TASK_CANNOT_BE_ISSUED("0033", "优惠券发放任务已经下架，不能实施优惠券发放"),
     COUPON_NOT_ISSUE_STATUS_CAN_DELETE("0034", "未发放状态的优惠券发放才可以删除!"),
     COUPON_ISSUE_TIMEOUT_INVALID_OPERATION("0035", "优惠券发放超时操作无效!"),
+    COUPON_ISSUE_NO_CAPACITY_CANNOT_BE_ISSUED("0036","券的额度规则为空或者券库存剩余容量为0，此时不能发券"),
+    DATA_CHECK_FAILED("0037","日期校验错误:按天或按月时，有效开始时间（当前时间）应小于领取开始时间"),
+    WRONG_DATE_SPECIFICATION("0038","领取日期与有效日期与规范化冲突，时间范围错误")
+    ;
 
-    COUPON_ISSUE_NO_CAPACITY_CANNOT_BE_ISSUED("0036","券的额度规则为空或者券库存剩余容量为0，此时不能发券");
 
 
     /**

@@ -70,7 +70,7 @@ public interface CouponRefProductApi {
      * @param req
      * @return
      */
-    @ApiOperation(value = "【通用】查询优惠券关联的商品列表")
+    @ApiOperation( value = "【通用】查询优惠券关联的商品列表")
     @PostMapping(path = "/findJoinProductByCoupon")
     Result<List<CouponRefProductDto>> findJoinProductByCoupon(@RequestBody BaseCouponReq req);
 

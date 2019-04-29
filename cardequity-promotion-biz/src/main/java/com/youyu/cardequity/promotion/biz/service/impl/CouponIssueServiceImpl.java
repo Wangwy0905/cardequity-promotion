@@ -46,6 +46,7 @@ import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_SUCCESSED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.*;
+import static com.youyu.cardequity.promotion.enums.CouponIssueTargetTypeEnum.ACTIVITY_ID;
 import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DELAY_JOB_TRIGGER_TYPE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
@@ -627,7 +628,13 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      */
     private CouponIssueEditRsp getCouponIssueEditRsp(CouponIssueEntity originalCouponIssueEntity, CouponIssueEntity couponIssueEntity) {
         CouponIssueEditRsp couponIssueEditRsp = new CouponIssueEditRsp();
+
         couponIssueEditRsp.setIssueTime(couponIssueEntity.getIssueTime());
+        if (eq(couponIssueEntity.getTargetType(), ACTIVITY_ID.getCode())) {
+            couponIssueEditRsp.setIssueTimeModifyFlag(false);
+            return couponIssueEditRsp;
+        }
+
         couponIssueEditRsp.setIssueTimeModifyFlag(!eq(originalCouponIssueEntity.getIssueTime(), couponIssueEntity.getIssueTime()));
         return couponIssueEditRsp;
     }
