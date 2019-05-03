@@ -1,10 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.dto.req.*;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
+import com.youyu.cardequity.promotion.dto.rsp.*;
 import com.youyu.common.api.PageData;
 
 
@@ -28,6 +25,14 @@ public interface CouponIssueService {
      * 触发器到点正式执行发券操作
      */
     void processIssue(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq);
+
+    /**
+     * 查询优惠券发放流水
+     *
+     * @param couponIssueHistoryQueryReq
+     * @return
+     */
+    PageData<CouponIssueHistoryQueryRep> getCouponIssueHistory(CouponIssueHistoryQueryReq couponIssueHistoryQueryReq);
 
 
     /**

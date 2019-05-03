@@ -3,10 +3,7 @@ package com.youyu.cardequity.promotion.biz.controller;
 import com.youyu.cardequity.promotion.api.CouponIssueApi;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.dto.req.*;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
+import com.youyu.cardequity.promotion.dto.rsp.*;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,4 +71,10 @@ public class CouponIssueController implements CouponIssueApi {
         couponIssueService.processIssue(couponIssueMsgDetailsReq);
         return ok();
     }
+
+    @PostMapping(path = "/getCouponHistory")
+    public Result<PageData<CouponIssueHistoryQueryRep>> getCouponIssueHistory(@RequestBody CouponIssueHistoryQueryReq couponIssueHistoryQueryReq) {
+        return ok(couponIssueService.getCouponIssueHistory(couponIssueHistoryQueryReq));
+    }
+
 }

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueHistoryMapper">
+
+
+    <select id="getCouponIssueHistoryDetails"
+            parameterType="com.youyu.cardequity.promotion.dto.CouponIssueHistoryQueryDto"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueHistoryDetailsEntity">
+        SELECT
+        history.COUPON_ISSUE_HISTORY_ID couponIssueHistoryId,
+        history.COUPON_ISSUE_ID couponIssueId,
+        history.SEQUENCE_NUMBER sequenceNumber,
+        history.CLIENT_ID clientId,
+        history.ISSUE_RESULT issueResult,
+        clientCoupon.STATUS couponUseStatus,
+        clientCoupon.BUSIN_DATE usedDate,
+        clientCoupon.JOIN_ORDER_ID orderId,
+        clientCoupon.VALID_END_DATE validEndDate
+        FROM TB_COUPON_ISSUE_HISTORY history
+        LEFT JOIN TB_CLIENT_COUPON clientCoupon
+        ON history.CLIENT_ID=clientCoupon.CLIENT_ID AND history.COUPON_ISSUE_ID=clientCoupon.COUPON_ISSUE_ID
+        WHERE history.COUPON_ISSUE_ID=#{couponIssueHistoryQueryDto.couponIssueId,jdbcType=VARCHAR}
+
+        <if test="couponIssueHistoryQueryDto.searchCondition != null and couponIssueHistoryQueryDto.searchCondition !=''">
+            AND history.CLIENT_ID=#{couponIssueHistoryQueryDto.searchCondition,jdbcType=VARCHAR}
+        </if>
+        <!--筛选条件是未使用或已使用-->
+        <if test='couponIssueHistoryQueryDto.clientCouponUseStatus != null
+        and couponIssueHistoryQueryDto.clientCouponUseStatus == "0" || couponIssueHistoryQueryDto.clientCouponUseStatus == "2"'>
+            AND clientCoupon.STATUS=#{couponIssueHistoryQueryDto.clientCouponUseStatus,jdbcType=VARCHAR}
+            AND clientCoupon.VALID_END_DATE &gt; sysdate()
+        </if>
+        <!--筛选条件是已过期,并且已经使用的不能被查出-->
+        <if test='couponIssueHistoryQueryDto.couponInValid != null
+        and couponIssueHistoryQueryDto.couponInValid == "1"'>
+            AND clientCoupon.VALID_END_DATE &lt; sysdate()
+            AND clientCoupon.STATUS != '2'
+        </if>
+
+        <!--筛选条件是未发放或已发放-->
+        <if test='couponIssueHistoryQueryDto.issueResult != null
+         and couponIssueHistoryQueryDto.issueResult == "2"'>
+            AND history.ISSUE_RESULT=#{couponIssueHistoryQueryDto.issueResult,jdbcType=VARCHAR}
+        </if>
+        ORDER BY history.SEQUENCE_NUMBER ASC
+    </select>
+</mapper>

@@ -4,18 +4,18 @@ import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.LocalDateUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
+import com.youyu.cardequity.promotion.biz.constant.ClientCouponStatusConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponGetTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
+import com.youyu.cardequity.promotion.biz.enums.dict.CouponHistoryQueryStatusMapping;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
+import com.youyu.cardequity.promotion.dto.CouponIssueHistoryQueryDto;
 import com.youyu.cardequity.promotion.dto.req.*;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
+import com.youyu.cardequity.promotion.dto.rsp.*;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
@@ -24,6 +24,8 @@ import com.youyu.cardequity.promotion.enums.dict.UseGeEndDateFlag;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,6 +85,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     @Autowired
     private CouponStageRuleMapper couponStageRuleMapper;
 
+    @Autowired
+    private CouponIssueHistoryMapper couponIssueHistoryMapper;
+
 
     @Override
     @Transactional
@@ -96,7 +101,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         return getCouponIssueRsp(couponIssueEntity.getCouponIssueId());
     }
 
-    //todo take care of transaction
     @Override
     @Transactional
     public void processIssue(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq) {
@@ -116,7 +120,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         List<UserInfo4CouponIssueDto> resultIssueClientCouponList = confirmIssueClient(couponIssueMsgDetailsReq, productCouponEntity);
 
         //发券
-        List<ClientCouponEntity> clientCouponEntityList = createClientCouponEntityList(resultIssueClientCouponList, productCouponEntity);
+        List<ClientCouponEntity> clientCouponEntityList =
+                createClientCouponEntityList(resultIssueClientCouponList, productCouponEntity, couponIssueMsgDetailsReq.getCouponIssueId());
         batchService.batchDispose(clientCouponEntityList, ClientCouponMapper.class, "insertSelective");
 
         //写入发放流水
@@ -126,6 +131,86 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         //更新状态为：已发券
         couponIssueEntity.setIssueStatus(ISSUED.getCode());
         couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+    }
+
+
+    @Override
+    public PageData<CouponIssueHistoryQueryRep> getCouponIssueHistory(CouponIssueHistoryQueryReq couponIssueHistoryQueryReq) {
+        CouponIssueEntity couponIssueEntity = couponIssueMapper.selectByPrimaryKey(couponIssueHistoryQueryReq.getCouponIssueId());
+        if (couponIssueEntity == null) {
+            throw new BizException(COUPON_ISSUE_RECORD_IS_REMOVED);
+        }
+        startPage(couponIssueHistoryQueryReq.getPageNo(), couponIssueHistoryQueryReq.getPageSize());
+
+        List<CouponIssueHistoryDetailsEntity> couponIssueEntities = couponIssueHistoryMapper.getCouponIssueHistoryDetails(
+                createQueryDto(couponIssueHistoryQueryReq));
+
+        PageInfo<CouponIssueHistoryQueryRep> pageInfo = new PageInfo<>(getCouponIssueHistoryQueryRep(couponIssueEntities, couponIssueHistoryQueryReq.getClientCouponStatus()));
+        return convert(pageInfo, CouponIssueHistoryQueryRep.class);
+    }
+
+    private CouponIssueHistoryQueryDto createQueryDto(CouponIssueHistoryQueryReq couponIssueHistoryQueryReq) {
+        CouponIssueHistoryQueryDto queryDto = new CouponIssueHistoryQueryDto();
+        BeanUtils.copyProperties(couponIssueHistoryQueryReq, queryDto);
+
+
+        String clientCouponStatusCondition = couponIssueHistoryQueryReq.getClientCouponStatus();
+
+        //状态映射转换
+        if (ClientCouponStatusConstant.COUPON_NOT_USED.equals(clientCouponStatusCondition)
+                || ClientCouponStatusConstant.COUPON_IS_USED.equals(clientCouponStatusCondition)) {
+            queryDto.setClientCouponUseStatus(CouponHistoryQueryStatusMapping.requestCodeToDtoCode(clientCouponStatusCondition));
+        }
+
+        if (ClientCouponStatusConstant.ISSUED_FAILED_OR_NOTISSUED.equals(clientCouponStatusCondition)) {
+            queryDto.setIssueResult(CouponHistoryQueryStatusMapping.requestCodeToDtoCode(clientCouponStatusCondition));
+        }
+        //过期
+        if (ClientCouponStatusConstant.COUPON_IS_INVALID.equals(couponIssueHistoryQueryReq.getClientCouponStatus())) {
+            //todo
+            queryDto.setCouponInValid("1");
+        }
+
+        return queryDto;
+
+    }
+
+    private List<CouponIssueHistoryQueryRep> getCouponIssueHistoryQueryRep(
+            List<CouponIssueHistoryDetailsEntity> couponIssueHistoryDetailsEntityList, String couponStatus) {
+        //mapping
+        List<CouponIssueHistoryQueryRep> response = new ArrayList<>(couponIssueHistoryDetailsEntityList.size());
+        couponIssueHistoryDetailsEntityList.forEach(couponIssueHistoryDetailsEntity -> {
+            CouponIssueHistoryQueryRep responseDto = new CouponIssueHistoryQueryRep();
+            BeanUtils.copyProperties(couponIssueHistoryDetailsEntity, responseDto);
+            clientCouponStatusSetting(couponIssueHistoryDetailsEntity, responseDto);
+            response.add(responseDto);
+        });
+        return response;
+    }
+
+
+    private void clientCouponStatusSetting(CouponIssueHistoryDetailsEntity couponIssueHistoryDetailsEntity, CouponIssueHistoryQueryRep responseDto) {
+        //发券：未发券，已发券
+        if (StringUtils.isNoneBlank(couponIssueHistoryDetailsEntity.getIssueResult())) {
+            responseDto.setClientCouponStatus(
+                    CouponHistoryQueryStatusMapping.dtoCodeToResponseCode(
+                            couponIssueHistoryDetailsEntity.getIssueResult(), CouponHistoryQueryStatusMapping.ISSUE_RESULT));
+        }
+
+
+        //使用状态：券状态：0-未使用；2-已使用
+        if (StringUtils.isNoneBlank(couponIssueHistoryDetailsEntity.getCouponUseStatus())) {
+            responseDto.setClientCouponStatus(
+                    CouponHistoryQueryStatusMapping.dtoCodeToResponseCode(
+                            couponIssueHistoryDetailsEntity.getCouponUseStatus(), CouponHistoryQueryStatusMapping.USE_STATUS));
+        }
+
+        //券过期
+        Date validEndDate = couponIssueHistoryDetailsEntity.getValidEndDate();
+        if (validEndDate != null && now().after(validEndDate)) {
+            responseDto.setClientCouponStatus(ClientCouponStatusConstant.COUPON_IS_INVALID);
+        }
+
     }
 
 
@@ -256,7 +341,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
 
     private List<ClientCouponEntity> createClientCouponEntityList(
-            List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity) {
+            List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId) {
         List<ClientCouponEntity> clientCouponEntityList = new ArrayList<>();
 
         issueUserList.forEach(eligibleUser -> {
@@ -279,6 +364,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             });
 
             clientCouponEntity.setId(CommonUtils.getUUID());
+            clientCouponEntity.setCouponId(couponEntity.getId());
+            clientCouponEntity.setCouponIssueId(couponIssueId);
 
             clientCouponEntity.setClientId(eligibleUser.getClientId());
             //平台发放
@@ -650,4 +737,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueRsp.setCouponIssueId(couponIssueId);
         return couponIssueRsp;
     }
+
+
 }

@@ -30,4 +30,5 @@ public interface CouponIssueMapper extends YyMapper<CouponIssueEntity> {
      * @return
      */
     CouponIssueEntity getCouponIssueDetail(CouponIssueDetailReq couponIssueDetailReq);
+
 }

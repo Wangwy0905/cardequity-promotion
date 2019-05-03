@@ -1,10 +1,7 @@
 package com.youyu.cardequity.promotion.api;
 
 import com.youyu.cardequity.promotion.dto.req.*;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
+import com.youyu.cardequity.promotion.dto.rsp.*;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
@@ -89,4 +86,10 @@ public interface CouponIssueApi {
     @ApiOperation(value = "优惠券发放任务执行")
     @PostMapping(path = "/processIssue")
     Result processIssue(@RequestBody CouponIssueMsgDetailsReq couponIssueMsgDetailsReq);
+
+
+    @ApiOperation(value = "获取优惠券发放流水")
+    @PostMapping(path = "/getCouponHistory")
+    Result<PageData<CouponIssueHistoryQueryRep>> getCouponIssueHistory(CouponIssueHistoryQueryReq couponIssueHistoryQueryReq);
+
 }
