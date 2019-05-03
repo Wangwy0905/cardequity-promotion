@@ -52,4 +52,19 @@
             </if>
         </where>
     </select>
+
+    <select id="getCouponIssueByActivityIdCouponId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity">
+        select
+            COUPON_ISSUE_ID couponIssueId,
+            COUPON_ID couponId,
+            COUPON_NAME couponName,
+            TARGET_TYPE targetType,
+            ISSUE_TIME issueTime,
+            ISSUE_IDS issueIds,
+            ISSUE_STATUS issueStatus
+        from TB_COUPON_ISSUE
+        where TARGET_TYPE = '2'
+        and COUPON_ID = #{couponId,jdbcType=VARCHAR}
+        and ISSUE_IDS = #{activityId,jdbcType=VARCHAR}
+    </select>
 </mapper>

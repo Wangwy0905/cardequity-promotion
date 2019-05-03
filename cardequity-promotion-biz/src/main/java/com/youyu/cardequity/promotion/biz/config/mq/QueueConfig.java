@@ -23,4 +23,20 @@ public class QueueConfig {
     public Queue orderCouponQueue() {
         return new Queue(orderCouponQueue, true);
     }
+
+    /**
+     * 优惠券活动发放queue name
+     */
+    @Value("${rabbit.activityCouponAcquireQueue:rabbit_activity_coupon_acquire_queue}")
+    private String activityCouponAcquireQueue;
+
+    /**
+     * 优惠券活动发放queue
+     *
+     * @return
+     */
+    @Bean("activityCouponAcquireQueue")
+    public Queue activityCouponAcquireQueue() {
+        return new Queue(activityCouponAcquireQueue, true);
+    }
 }
