@@ -377,7 +377,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             clientCouponEntity.setValidStartDate(validStartDateTime);
 
             clientCouponEntity.setValidEndDate(
-                    computeValidEndDate(validStartDateTime, couponEntity.getAllowGetEndDate(),
+                    computeValidEndDate(validStartDateTime, couponEntity.getAllowUseEndDate(),
                             couponEntity.getValIdTerm(), couponEntity.getUseGeEndDateFlag()));
 
 
