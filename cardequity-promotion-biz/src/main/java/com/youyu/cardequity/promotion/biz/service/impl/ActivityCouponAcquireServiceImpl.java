@@ -31,9 +31,12 @@ import java.util.List;
 import static com.alibaba.fastjson.JSON.parseObject;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
+import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.biz.constant.RedissonKeyConstant.CARDEQUITY_ACTIVITY_COUPON_ACTIVITY_CLIENT_COUPON;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_SUCCESSED;
+import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.ISSUED;
+import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static java.text.MessageFormat.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -196,6 +199,14 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
         CouponQuotaRuleEntity couponQuotaRule = couponQuotaRuleMapper.selectByPrimaryKey(couponIssueEntity.getCouponId());
         Integer issueQuantity = couponQuotaRule.getMaxCount();
         if (nonNull(issueQuantity) && issueQuantity <= 0) {
+            return false;
+        }
+
+        if (eq(couponIssueEntity.getIssueStatus(), ISSUED.getCode())) {
+            return false;
+        }
+
+        if (eq(couponIssueEntity.getIsVisible(), INVISIBLE.getCode())) {
             return false;
         }
 

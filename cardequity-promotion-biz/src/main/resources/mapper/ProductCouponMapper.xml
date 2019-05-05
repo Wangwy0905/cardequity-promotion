@@ -302,7 +302,22 @@
         <if test="commonQry.getType !=null and commonQry.getType =='0'.toString()">
             and a.GET_TYPE='0'
         </if>
-
+        <if test="commonQry.couponStatusList != null and commonQry.couponStatusList.size() > 0">
+            <foreach collection="commonQry.couponStatusList" item="couponStatus" open="AND (" close=")" separator="or">
+                <if test='couponStatus == "0"'>
+                    a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+                </if>
+                <if test='couponStatus == "1"'>
+                    ( a.ALLOW_USE_BEGIN_DATE &lt;=curdate() and a.ALLOW_USE_END_DATE &gt;=curdate() )
+                </if>
+                <if test='couponStatus == "2"'>
+                    a.ALLOW_USE_END_DATE &lt;curdate()
+                </if>
+                <if test='couponStatus == "3"'>
+                    (a.VAL_ID_TERM != '0' or a.MONTH_VALID  == '1')
+                </if>
+            </foreach>
+        </if>
         Order by a.CREATE_TIME desc
     </select>
 
