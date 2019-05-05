@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
+import com.youyu.cardequity.common.base.distributed.DistributedLockHandler;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.LocalDateUtils;
 import com.youyu.cardequity.common.spring.service.RabbitConsumerService;
@@ -13,7 +14,9 @@ import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponGetTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
+import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.dto.message.ActivityCouponAcquireDto;
+import com.youyu.cardequity.promotion.dto.req.UserInfo4CouponIssueDto;
 import com.youyu.cardequity.promotion.enums.CouponIssueResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +24,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.alibaba.fastjson.JSON.parseObject;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
+import static com.youyu.cardequity.promotion.biz.constant.RedissonKeyConstant.CARDEQUITY_ACTIVITY_COUPON_ACTIVITY_CLIENT_COUPON;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_SUCCESSED;
+import static java.text.MessageFormat.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -51,7 +58,12 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
     private CouponIssueHistoryMapper couponIssueHistoryMapper;
 
     @Autowired
+    private ClientCouponService clientCouponService;
+
+    @Autowired
     private UidGenerator uidGenerator;
+    @Autowired
+    private DistributedLockHandler distributedLockHandler;
 
     @Override
     @Transactional
@@ -65,6 +77,23 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
 
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponIssueEntity.getCouponId());
         boolean issueFlag = canIssueActivityCoupon(couponIssueEntity, productCouponEntity);
+
+        String lockKey = format(CARDEQUITY_ACTIVITY_COUPON_ACTIVITY_CLIENT_COUPON, activityCouponAcquire.getActivityId(), activityCouponAcquire.getClientId(), activityCouponAcquire.getCouponId()).intern();
+        distributedLockHandler.tryLock(lockKey, () -> {
+            doCreateIssueCoupon(activityCouponAcquire, couponIssueEntity, productCouponEntity, issueFlag);
+            return null;
+        });
+    }
+
+    /**
+     * 创建优惠券发放
+     *
+     * @param activityCouponAcquire
+     * @param couponIssueEntity
+     * @param productCouponEntity
+     * @param issueFlag
+     */
+    private void doCreateIssueCoupon(ActivityCouponAcquireDto activityCouponAcquire, CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity, boolean issueFlag) {
         if (issueFlag) {
             doIssueCouponSuccess(activityCouponAcquire, couponIssueEntity, productCouponEntity);
             return;
@@ -81,7 +110,24 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
      */
     private void doIssueCouponSuccess(ActivityCouponAcquireDto activityCouponAcquire, CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity) {
         createCouponIssueHistoryEntity(activityCouponAcquire, couponIssueEntity, ISSUED_SUCCESSED);
-        // TODO: 2019/5/3 创建客户成功的流水
+
+        List<UserInfo4CouponIssueDto> issueUserList = getIssueUserList(activityCouponAcquire);
+        clientCouponService.createClientCouponEntityList(issueUserList, productCouponEntity, couponIssueEntity.getCouponIssueId());
+    }
+
+    /**
+     * 创建用户发放的集合
+     *
+     * @param activityCouponAcquire
+     * @return
+     */
+    private List<UserInfo4CouponIssueDto> getIssueUserList(ActivityCouponAcquireDto activityCouponAcquire) {
+        List<UserInfo4CouponIssueDto> userInfo4CouponIssues = new ArrayList<>();
+
+        UserInfo4CouponIssueDto userInfo4CouponIssueDto = new UserInfo4CouponIssueDto();
+        userInfo4CouponIssueDto.setClientId(activityCouponAcquire.getClientId());
+        userInfo4CouponIssues.add(userInfo4CouponIssueDto);
+        return userInfo4CouponIssues;
     }
 
     /**
