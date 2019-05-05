@@ -1365,7 +1365,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
     @Override
     @Transactional
-    public List<ClientCouponEntity> createClientCouponEntityList(List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId) {
+    public List<ClientCouponEntity> insertClientCoupon(List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId) {
         List<ClientCouponEntity> clientCouponEntityList = doCreateClientCouponEntityList(issueUserList, couponEntity, couponIssueId);
         batchService.batchDispose(clientCouponEntityList, ClientCouponMapper.class, "insertSelective");
         return clientCouponEntityList;

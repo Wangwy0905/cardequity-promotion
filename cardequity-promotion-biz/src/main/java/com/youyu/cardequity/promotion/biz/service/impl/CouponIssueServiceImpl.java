@@ -15,7 +15,7 @@ import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
 import com.youyu.cardequity.promotion.biz.enums.dict.CouponHistoryQueryStatusMapping;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
-import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
+import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.CouponIssueHistoryQueryDto;
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.*;
@@ -113,7 +113,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         //确认最终发券的clientID
         List<UserInfo4CouponIssueDto> resultIssueClientCouponList = confirmIssueClient(couponIssueMsgDetailsReq, productCouponEntity);
 
-        List<ClientCouponEntity> clientCouponEntityList = clientCouponService.createClientCouponEntityList(resultIssueClientCouponList, productCouponEntity, couponIssueMsgDetailsReq.getCouponIssueId());
+        //写入clientCoupon
+        List<ClientCouponEntity> clientCouponEntityList = clientCouponService.insertClientCoupon(resultIssueClientCouponList, productCouponEntity, couponIssueMsgDetailsReq.getCouponIssueId());
+
         //写入发放流水
         insertIssueHistory(couponIssueMsgDetailsReq, clientCouponEntityList);
 
@@ -212,7 +214,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * @return
      */
     private List<UserInfo4CouponIssueDto> confirmIssueClient(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq, ProductCouponEntity productCouponEntity) {
-        List<UserInfo4CouponIssueDto> eligibleUserList = filterAndGetEligibleUser(
+        List<UserInfo4CouponIssueDto> eligibleUserList = filterAndGetEligibleClientByClientType(
                 couponIssueMsgDetailsReq.getUserInfo4CouponIssueDtoList(), productCouponEntity.getClientTypeSet());
 
         // 根据用户ID正序sort 并选取前部分用户发券
@@ -293,16 +295,32 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * @param clientTypeSet
      * @return
      */
-    private List<UserInfo4CouponIssueDto> filterAndGetEligibleUser(List<UserInfo4CouponIssueDto> userInfo4CouponIssueDtoList, String clientTypeSet) {
+    private List<UserInfo4CouponIssueDto> filterAndGetEligibleClientByClientType(List<UserInfo4CouponIssueDto> userInfo4CouponIssueDtoList, String clientTypeSet) {
         List<UserInfo4CouponIssueDto> eligibleUserList = new ArrayList<>();
 
         //发放类型检验
         userInfo4CouponIssueDtoList.forEach(userInfo4CouponIssueDto -> {
-            if (CommonUtils.isEmptyIgnoreOrWildcardOrContains(clientTypeSet, userInfo4CouponIssueDto.getUserType())) {
+            if (checkClientTypeEligibleIssue(clientTypeSet, userInfo4CouponIssueDto.getUserType())) {
                 eligibleUserList.add(userInfo4CouponIssueDto);
             }
         });
         return eligibleUserList;
+    }
+
+    /**
+     * 检查用户的类型是否符合领券
+     *
+     * @param couponClientTypeSet
+     * @param clientTypeSet
+     * @return
+     */
+    private boolean checkClientTypeEligibleIssue(String couponClientTypeSet, String clientTypeSet) {
+        if (couponClientTypeSet.equals(CommonConstant.WILDCARD)
+                || StringUtils.isBlank(couponClientTypeSet)
+                || StringUtils.isBlank(clientTypeSet)) {
+            return true;
+        }
+        return couponClientTypeSet.contains(clientTypeSet);
     }
 
     private List<UserInfo4CouponIssueDto> confirmIssueClientAndGetIssueList(List<UserInfo4CouponIssueDto> eligibleUserList, String couponId) {

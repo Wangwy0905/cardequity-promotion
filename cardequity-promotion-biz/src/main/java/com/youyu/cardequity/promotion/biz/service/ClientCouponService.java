@@ -184,7 +184,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @param couponIssueId
      * @return
      */
-    List<ClientCouponEntity> createClientCouponEntityList(List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId);
+    List<ClientCouponEntity> insertClientCoupon(List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId);
 }
 
 
