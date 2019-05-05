@@ -5,22 +5,21 @@ import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.LocalDateUtils;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.constant.ClientCouponStatusConstant;
-import com.youyu.cardequity.promotion.biz.dal.dao.*;
+import com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueHistoryMapper;
+import com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueMapper;
+import com.youyu.cardequity.promotion.biz.dal.dao.CouponQuotaRuleMapper;
+import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponGetTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
 import com.youyu.cardequity.promotion.biz.enums.dict.CouponHistoryQueryStatusMapping;
+import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
-import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.CouponIssueHistoryQueryDto;
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.*;
-import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
-import com.youyu.cardequity.promotion.enums.dict.CouponUseStatus;
-import com.youyu.cardequity.promotion.enums.dict.TriggerByType;
-import com.youyu.cardequity.promotion.enums.dict.UseGeEndDateFlag;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.github.pagehelper.page.PageMethod.startPage;
@@ -52,7 +48,6 @@ import static com.youyu.cardequity.promotion.enums.CouponIssueTargetTypeEnum.ACT
 import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DELAY_JOB_TRIGGER_TYPE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
-import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.GRANT;
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.join;
@@ -81,9 +76,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
     @Autowired
     private BatchService batchService;
-
     @Autowired
-    private CouponStageRuleMapper couponStageRuleMapper;
+    private ClientCouponService clientCouponService;
 
     @Autowired
     private CouponIssueHistoryMapper couponIssueHistoryMapper;
@@ -119,11 +113,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         //确认最终发券的clientID
         List<UserInfo4CouponIssueDto> resultIssueClientCouponList = confirmIssueClient(couponIssueMsgDetailsReq, productCouponEntity);
 
-        //发券
-        List<ClientCouponEntity> clientCouponEntityList =
-                createClientCouponEntityList(resultIssueClientCouponList, productCouponEntity, couponIssueMsgDetailsReq.getCouponIssueId());
-        batchService.batchDispose(clientCouponEntityList, ClientCouponMapper.class, "insertSelective");
-
+        List<ClientCouponEntity> clientCouponEntityList = clientCouponService.createClientCouponEntityList(resultIssueClientCouponList, productCouponEntity, couponIssueMsgDetailsReq.getCouponIssueId());
         //写入发放流水
         insertIssueHistory(couponIssueMsgDetailsReq, clientCouponEntityList);
 
@@ -339,134 +329,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         return eligibleUserList.subList(0, couponMaxIssueCount);
     }
 
-
-    private List<ClientCouponEntity> createClientCouponEntityList(
-            List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId) {
-        List<ClientCouponEntity> clientCouponEntityList = new ArrayList<>();
-
-        issueUserList.forEach(eligibleUser -> {
-            ClientCouponEntity clientCouponEntity = new ClientCouponEntity();
-
-            //券阶梯信息set
-            Optional<CouponStageRuleEntity> couponStageEntityOpt = checkAndGetCouponStageEntityOpt(couponEntity.getId());
-            clientCouponEntity.setCouponAmout(couponEntity.getProfitValue());
-            clientCouponEntity.setCouponShortDesc(couponEntity.getCouponShortDesc());
-            clientCouponEntity.setTriggerByType(TriggerByType.NUMBER.getDictValue());
-            clientCouponEntity.setBeginValue(BigDecimal.ZERO);
-            clientCouponEntity.setEndValue(CommonConstant.IGNOREVALUE); //数值参数的边界有效上限
-            couponStageEntityOpt.ifPresent(couponStageRuleEntity -> {
-                //todo stageID set?
-                clientCouponEntity.setCouponAmout(couponStageRuleEntity.getCouponValue());
-                clientCouponEntity.setCouponShortDesc(couponStageRuleEntity.getCouponShortDesc());
-                clientCouponEntity.setTriggerByType(couponStageRuleEntity.getTriggerByType());
-                clientCouponEntity.setBeginValue(couponStageRuleEntity.getBeginValue());
-                clientCouponEntity.setEndValue(couponStageRuleEntity.getEndValue());
-            });
-
-            clientCouponEntity.setId(CommonUtils.getUUID());
-            clientCouponEntity.setCouponId(couponEntity.getId());
-            clientCouponEntity.setCouponIssueId(couponIssueId);
-
-            clientCouponEntity.setClientId(eligibleUser.getClientId());
-            //平台发放
-            clientCouponEntity.setGetType(GRANT.getDictValue());
-
-
-            //有效时间边界set
-            LocalDateTime validStartDateTime = computeValidStartTime(couponEntity.getAllowUseBeginDate());
-            clientCouponEntity.setValidStartDate(validStartDateTime);
-
-            clientCouponEntity.setValidEndDate(
-                    computeValidEndDate(validStartDateTime, couponEntity.getAllowUseEndDate(),
-                            couponEntity.getValIdTerm(), couponEntity.getUseGeEndDateFlag()));
-
-
-            clientCouponEntity.setGetType(couponEntity.getGetType());
-            clientCouponEntity.setApplyProductFlag(couponEntity.getApplyProductFlag());
-            clientCouponEntity.setCouponStrategyType(couponEntity.getCouponStrategyType());
-            clientCouponEntity.setCouponShortDesc(couponEntity.getCouponShortDesc());
-            clientCouponEntity.setCouponType(couponEntity.getCouponType());
-            clientCouponEntity.setCouponLable(couponEntity.getCouponLable());
-            clientCouponEntity.setCouponLevel(couponEntity.getCouponLevel());
-
-            //todo
-  /*          clientCouponEntity.setUpdateAuthor(req.getOperator());
-            clientCouponEntity.setCreateAuthor(req.getOperator());*/
-
-            clientCouponEntity.setNewFlag(CommonDict.IF_YES.getCode());
-            clientCouponEntity.setIsEnable(CommonDict.IF_YES.getCode());
-            clientCouponEntity.setStatus(CouponUseStatus.NORMAL.getDictValue());
-            //todo
-//        clientCouponEntity.setJoinOrderId(req.getActivityId());
-            clientCouponEntityList.add(clientCouponEntity);
-
-        });
-
-
-        return clientCouponEntityList;
-    }
-
-    private LocalDateTime computeValidStartTime(LocalDateTime allowUseBeginDateTime) {
-        if (allowUseBeginDateTime == null || LocalDate.now().isAfter(allowUseBeginDateTime.toLocalDate())) {
-            return LocalDateTime.now();
-        }
-        return allowUseBeginDateTime;
-
-    }
-
-    private LocalDateTime computeValidEndDate(LocalDateTime validStartDateTime, LocalDateTime allowUseEndDate,
-                                              Integer validTimeTerm, String useMinDateFlag) {
-        //term无效，则以allowUserEndDate为准：allowUserEndDate为空，则默认时间一个月
-        LocalDateTime validEndDate = validStartDateTime.plusMonths(1);
-        if (validTimeTerm == null || validTimeTerm <= 0) {
-            if (allowUseEndDate == null) {
-                return validEndDate;
-            }
-            return allowUseEndDate;
-        }
-
-
-        validEndDate = validStartDateTime.plusDays(validTimeTerm);
-
-        //若定义了最早结束时间标志，则判断最终结束时间与计算出来的结束时间谁更小
-        if (UseGeEndDateFlag.YES.getDictValue().equals(useMinDateFlag)) {
-            if (allowUseEndDate != null && validEndDate.isAfter(allowUseEndDate)) {
-                return allowUseEndDate;
-            } else if (allowUseEndDate == null) {
-                return validEndDate;
-            }
-            return validEndDate;
-
-        }
-
-        if (allowUseEndDate != null) {
-            return allowUseEndDate;
-        }
-        return validEndDate;
-    }
-
-
-    /**
-     * 获取此券的stage
-     *
-     * @param couponId
-     * @return
-     */
-    private Optional<CouponStageRuleEntity> checkAndGetCouponStageEntityOpt(String couponId) {
-        //保护一下如果没有传入StageId，且该券下只有一个id则自动补全
-        List<CouponStageRuleEntity> couponStageEntityList = couponStageRuleMapper.findStageByCouponId(couponId);
-        if (couponStageEntityList == null || couponStageEntityList.isEmpty()) {
-            return Optional.empty();
-        }
-        if (couponStageEntityList.size() > 1) {
-            log.warn("StageId不为空,但该券却有多个阶梯，无法确定领取的券(后台发放券操作)，券ID为：{}", couponId);
-            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("StageId不为空,但该券却有多个子券无法确定领取的券"));
-        }
-
-        return Optional.of(couponStageEntityList.get(0));
-    }
-
-
     @Override
     public PageData<CouponIssueQueryRsp> getCouponIssueQuery(CouponIssueQueryReq couponIssueQueryReq) {
         startPage(couponIssueQueryReq.getPageNo(), couponIssueQueryReq.getPageSize());
@@ -665,7 +527,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueEntity.setIssueTime(couponIssueEditReq.getIssueTime());
         couponIssueEntity.setTargetType(couponIssueEditReq.getTargetType());
         couponIssueEntity.setIsVisible(couponIssueEditReq.getIsVisible());
-        couponIssueEntity.setTriggerType(couponIssueEditReq.getObjectType());
         couponIssueEntity.setIssueIds(join(couponIssueEditReq.getIssueIds(), ","));
         couponIssueEntity.setLogicDelete(false);
         return couponIssueEntity;

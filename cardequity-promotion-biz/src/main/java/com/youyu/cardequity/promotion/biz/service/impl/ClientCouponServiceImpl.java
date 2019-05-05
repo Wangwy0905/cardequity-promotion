@@ -3,7 +3,9 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
+import com.youyu.cardequity.common.base.util.CollectionUtils;
 import com.youyu.cardequity.common.base.util.StringUtil;
+import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.constant.BusinessCode;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
@@ -12,8 +14,9 @@ import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
 import com.youyu.cardequity.promotion.biz.strategy.coupon.CouponStrategy;
 import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
-import com.youyu.cardequity.promotion.dto.*;
+import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.other.*;
+import com.youyu.cardequity.promotion.dto.req.UserInfo4CouponIssueDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
@@ -24,8 +27,6 @@ import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
+import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.GRANT;
 
 
 /**
@@ -81,6 +83,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
     @Autowired
     private ProductCouponService productCouponService;
+    @Autowired
+    private BatchService batchService;
 
     /**
      * 获取客户已领取的券,含：已使用(status=1和2)，未使用（status=0且有效期内），已过期（status=0且未在有效期内）
@@ -1359,6 +1363,124 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         return combClientObtainCouponList(clientCouponEnts);
     }
 
+    @Override
+    @Transactional
+    public List<ClientCouponEntity> createClientCouponEntityList(List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId) {
+        List<ClientCouponEntity> clientCouponEntityList = doCreateClientCouponEntityList(issueUserList, couponEntity, couponIssueId);
+        batchService.batchDispose(clientCouponEntityList, ClientCouponMapper.class, "insertSelective");
+        return clientCouponEntityList;
+    }
+
+    private List<ClientCouponEntity> doCreateClientCouponEntityList(
+            List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId) {
+        List<ClientCouponEntity> clientCouponEntityList = new ArrayList<>();
+
+        issueUserList.forEach(eligibleUser -> {
+            ClientCouponEntity clientCouponEntity = new ClientCouponEntity();
+
+            //券阶梯信息set
+            Optional<CouponStageRuleEntity> couponStageEntityOpt = checkAndGetCouponStageEntityOpt(couponEntity.getId());
+            clientCouponEntity.setCouponAmout(couponEntity.getProfitValue());
+            clientCouponEntity.setCouponShortDesc(couponEntity.getCouponShortDesc());
+            clientCouponEntity.setTriggerByType(TriggerByType.NUMBER.getDictValue());
+            clientCouponEntity.setBeginValue(BigDecimal.ZERO);
+            clientCouponEntity.setEndValue(CommonConstant.IGNOREVALUE); //数值参数的边界有效上限
+            couponStageEntityOpt.ifPresent(couponStageRuleEntity -> {
+                //todo stageID set?
+                clientCouponEntity.setCouponAmout(couponStageRuleEntity.getCouponValue());
+                clientCouponEntity.setCouponShortDesc(couponStageRuleEntity.getCouponShortDesc());
+                clientCouponEntity.setTriggerByType(couponStageRuleEntity.getTriggerByType());
+                clientCouponEntity.setBeginValue(couponStageRuleEntity.getBeginValue());
+                clientCouponEntity.setEndValue(couponStageRuleEntity.getEndValue());
+            });
+
+            clientCouponEntity.setId(CommonUtils.getUUID());
+            clientCouponEntity.setCouponId(couponEntity.getId());
+            clientCouponEntity.setCouponIssueId(couponIssueId);
+
+            clientCouponEntity.setClientId(eligibleUser.getClientId());
+            //平台发放
+            clientCouponEntity.setGetType(GRANT.getDictValue());
+
+
+            //有效时间边界set
+            LocalDateTime validStartDateTime = computeValidStartTime(couponEntity.getAllowUseBeginDate());
+            clientCouponEntity.setValidStartDate(validStartDateTime);
+
+            clientCouponEntity.setValidEndDate(
+                    computeValidEndDate(validStartDateTime, couponEntity.getAllowUseEndDate(),
+                            couponEntity.getValIdTerm(), couponEntity.getUseGeEndDateFlag()));
+            clientCouponEntity.setGetType(couponEntity.getGetType());
+            clientCouponEntity.setApplyProductFlag(couponEntity.getApplyProductFlag());
+            clientCouponEntity.setCouponStrategyType(couponEntity.getCouponStrategyType());
+            clientCouponEntity.setCouponShortDesc(couponEntity.getCouponShortDesc());
+            clientCouponEntity.setCouponType(couponEntity.getCouponType());
+            clientCouponEntity.setCouponLable(couponEntity.getCouponLable());
+            clientCouponEntity.setCouponLevel(couponEntity.getCouponLevel());
+            clientCouponEntity.setNewFlag(CommonDict.IF_YES.getCode());
+            clientCouponEntity.setIsEnable(CommonDict.IF_YES.getCode());
+            clientCouponEntity.setStatus(CouponUseStatus.NORMAL.getDictValue());
+
+            clientCouponEntityList.add(clientCouponEntity);
+
+        });
+        return clientCouponEntityList;
+    }
+
+    /**
+     * 获取此券的stage
+     *
+     * @param couponId
+     * @return
+     */
+    private Optional<CouponStageRuleEntity> checkAndGetCouponStageEntityOpt(String couponId) {
+        //保护一下如果没有传入StageId，且该券下只有一个id则自动补全
+        List<CouponStageRuleEntity> couponStageEntityList = couponStageRuleMapper.findStageByCouponId(couponId);
+        if (couponStageEntityList == null || couponStageEntityList.isEmpty()) {
+            return Optional.empty();
+        }
+        if (couponStageEntityList.size() > 1) {
+            log.warn("StageId不为空,但该券却有多个阶梯，无法确定领取的券(后台发放券操作)，券ID为：{}", couponId);
+            throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("StageId不为空,但该券却有多个子券无法确定领取的券"));
+        }
+
+        return Optional.of(couponStageEntityList.get(0));
+    }
+
+    private LocalDateTime computeValidStartTime(LocalDateTime allowUseBeginDateTime) {
+        if (allowUseBeginDateTime == null || LocalDate.now().isAfter(allowUseBeginDateTime.toLocalDate())) {
+            return LocalDateTime.now();
+        }
+        return allowUseBeginDateTime;
+
+    }
+
+    private LocalDateTime computeValidEndDate(LocalDateTime validStartDateTime, LocalDateTime allowUseEndDate,
+                                              Integer validTimeTerm, String useMinDateFlag) {
+        //term无效，则以allowUserEndDate为准：allowUserEndDate为空，则默认时间一个月
+        LocalDateTime validEndDate = validStartDateTime.plusMonths(1);
+        if (validTimeTerm == null || validTimeTerm <= 0) {
+            if (allowUseEndDate == null) {
+                return validEndDate;
+            }
+            return allowUseEndDate;
+        }
+        validEndDate = validStartDateTime.plusDays(validTimeTerm);
+        //若定义了最早结束时间标志，则判断最终结束时间与计算出来的结束时间谁更小
+        if (UseGeEndDateFlag.YES.getDictValue().equals(useMinDateFlag)) {
+            if (allowUseEndDate != null && validEndDate.isAfter(allowUseEndDate)) {
+                return allowUseEndDate;
+            } else if (allowUseEndDate == null) {
+                return validEndDate;
+            }
+            return validEndDate;
+
+        }
+        if (allowUseEndDate != null) {
+            return allowUseEndDate;
+        }
+        return validEndDate;
+    }
 }
 
 

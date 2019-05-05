@@ -34,6 +34,7 @@ public interface CouponIssueMapper extends YyMapper<CouponIssueEntity> {
 
     /**
      * 根据活动id和优惠券id查询优惠券发放
+     * 注:默认目标类型是活动id
      *
      * @param activityId
      * @param couponId
