@@ -533,6 +533,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueDetailRsp.setCouponName(couponIssue.getCouponName());
         couponIssueDetailRsp.setCouponType(productCoupon.getCouponType());
         couponIssueDetailRsp.setCouponStatus(productCoupon.getStatus());
+        couponIssueDetailRsp.setIssueStatus(couponIssue.getIssueStatus());
         couponIssueDetailRsp.setIssueDate(date2String(issueDate, YYYY_MM_DD));
         couponIssueDetailRsp.setIssueTime(date2String(issueDate, HH_MM_SS));
         couponIssueDetailRsp.setTargetType(couponIssue.getTargetType());
