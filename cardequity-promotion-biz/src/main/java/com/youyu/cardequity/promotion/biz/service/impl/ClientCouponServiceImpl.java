@@ -3,7 +3,6 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.youyu.cardequity.common.base.bean.CustomHandler;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
-import com.youyu.cardequity.common.base.util.CollectionUtils;
 import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.constant.BusinessCode;
@@ -695,7 +694,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             if (item.getCouponId().equals(couponId) &&
                     ((!CommonUtils.isEmptyorNull(item.getStageId()) && item.getStageId().equals(stageId)) ||
                             (CommonUtils.isEmptyorNull(item.getStageId()) && CommonUtils.isEmptyorNull(stageId)))
-                    ) {
+            ) {
                 dto.setSuccess(false);
                 dto.setCode(COUPON_FAIL_OP_FREQ.getCode());
                 dto.setDesc(String.format("优惠券编号%s,阶梯编号%s超使用或获取频率限额", couponId, item.getStageId()));
@@ -1279,8 +1278,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
         }
 
         if (!ids.isEmpty()) {
-                //优惠详情表
-            log.info("优惠券的ids值"+ids);
+            //优惠详情表
+            log.info("优惠券的ids值" + ids);
             List<CouponDetailDto> detailDtos = productCouponService.findCouponListByIds(ids);
             for (FullClientCouponRsp item : result) {
                 for (CouponDetailDto dto : detailDtos) {
@@ -1386,7 +1385,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             clientCouponEntity.setBeginValue(BigDecimal.ZERO);
             clientCouponEntity.setEndValue(CommonConstant.IGNOREVALUE); //数值参数的边界有效上限
             couponStageEntityOpt.ifPresent(couponStageRuleEntity -> {
-                //todo stageID set?
+                clientCouponEntity.setStageId(couponStageRuleEntity.getId());
                 clientCouponEntity.setCouponAmout(couponStageRuleEntity.getCouponValue());
                 clientCouponEntity.setCouponShortDesc(couponStageRuleEntity.getCouponShortDesc());
                 clientCouponEntity.setTriggerByType(couponStageRuleEntity.getTriggerByType());
@@ -1397,8 +1396,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             clientCouponEntity.setId(CommonUtils.getUUID());
             clientCouponEntity.setCouponId(couponEntity.getId());
             clientCouponEntity.setCouponIssueId(couponIssueId);
-
             clientCouponEntity.setClientId(eligibleUser.getClientId());
+
             //平台发放
             clientCouponEntity.setGetType(GRANT.getDictValue());
 
@@ -1410,6 +1409,7 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             clientCouponEntity.setValidEndDate(
                     computeValidEndDate(validStartDateTime, couponEntity.getAllowUseEndDate(),
                             couponEntity.getValIdTerm(), couponEntity.getUseGeEndDateFlag()));
+
             clientCouponEntity.setGetType(couponEntity.getGetType());
             clientCouponEntity.setApplyProductFlag(couponEntity.getApplyProductFlag());
             clientCouponEntity.setCouponStrategyType(couponEntity.getCouponStrategyType());

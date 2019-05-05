@@ -25,6 +25,6 @@ public class CouponIssueHistoryQueryDto extends CouponIssueHistoryQueryReq {
     /**
      * 是否过期：0-未过期；1-过期
      */
-    private String couponInValid;
+    private String couponInvalid;
 
 }

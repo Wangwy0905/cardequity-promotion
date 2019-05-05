@@ -63,6 +63,8 @@ import static org.apache.commons.lang3.time.DateUtils.addHours;
 @Service
 @Slf4j
 public class CouponIssueServiceImpl implements CouponIssueService {
+    private static final String IS_INVALID = "1";
+
 
     @Autowired
     private CouponIssueMapper couponIssueMapper;
@@ -137,7 +139,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         List<CouponIssueHistoryDetailsEntity> couponIssueEntities = couponIssueHistoryMapper.getCouponIssueHistoryDetails(
                 createQueryDto(couponIssueHistoryQueryReq));
 
-        PageInfo<CouponIssueHistoryQueryRep> pageInfo = new PageInfo<>(getCouponIssueHistoryQueryRep(couponIssueEntities, couponIssueHistoryQueryReq.getClientCouponStatus()));
+        PageInfo<CouponIssueHistoryQueryRep> pageInfo = new PageInfo<>(getCouponIssueHistoryQueryRep(couponIssueEntities));
         return convert(pageInfo, CouponIssueHistoryQueryRep.class);
     }
 
@@ -158,9 +160,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             queryDto.setIssueResult(CouponHistoryQueryStatusMapping.requestCodeToDtoCode(clientCouponStatusCondition));
         }
         //过期
-        if (ClientCouponStatusConstant.COUPON_IS_INVALID.equals(couponIssueHistoryQueryReq.getClientCouponStatus())) {
-            //todo
-            queryDto.setCouponInValid("1");
+        if (ClientCouponStatusConstant.COUPON_IS_INVALID.equals(clientCouponStatusCondition)) {
+            queryDto.setCouponInvalid(IS_INVALID);
         }
 
         return queryDto;
@@ -168,7 +169,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     }
 
     private List<CouponIssueHistoryQueryRep> getCouponIssueHistoryQueryRep(
-            List<CouponIssueHistoryDetailsEntity> couponIssueHistoryDetailsEntityList, String couponStatus) {
+            List<CouponIssueHistoryDetailsEntity> couponIssueHistoryDetailsEntityList) {
         //mapping
         List<CouponIssueHistoryQueryRep> response = new ArrayList<>(couponIssueHistoryDetailsEntityList.size());
         couponIssueHistoryDetailsEntityList.forEach(couponIssueHistoryDetailsEntity -> {
@@ -177,6 +178,13 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             clientCouponStatusSetting(couponIssueHistoryDetailsEntity, responseDto);
             response.add(responseDto);
         });
+        //根据sequenceNumber升序排序
+        response.sort((a, b) -> Integer.compare(a.getSequenceNumber().compareTo(b.getSequenceNumber()), 0));
+        int sequenceNumber = 1;
+        for (CouponIssueHistoryQueryRep entity : response) {
+            entity.setSequenceNumber(String.valueOf(sequenceNumber));
+            sequenceNumber++;
+        }
         return response;
     }
 
