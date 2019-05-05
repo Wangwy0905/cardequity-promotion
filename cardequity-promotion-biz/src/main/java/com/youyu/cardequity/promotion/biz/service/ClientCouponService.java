@@ -2,19 +2,17 @@ package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
-import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
+import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
+import com.youyu.cardequity.promotion.dto.req.UserInfo4CouponIssueDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
 import com.youyu.cardequity.promotion.vo.rsp.FullClientCouponRsp;
 import com.youyu.cardequity.promotion.vo.rsp.UseCouponRsp;
-import com.youyu.common.api.Result;
 import com.youyu.common.service.IService;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -177,6 +175,16 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 返回已领取的券
      */
     List<ObtainCouponViewDto> findClientCouponForProduct(FindClientCouponForProductReq req);
+
+    /**
+     * 创建客户优惠券集合
+     *
+     * @param issueUserList
+     * @param couponEntity
+     * @param couponIssueId
+     * @return
+     */
+    List<ClientCouponEntity> createClientCouponEntityList(List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId);
 }
 
 
