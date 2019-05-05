@@ -18,6 +18,8 @@ import java.io.Serializable;
 @ApiModel("活动发放用户优惠券消息dto")
 public class ActivityCouponAcquireDto implements Serializable {
 
+    private static final long serialVersionUID = 4258780906798927696L;
+
     @ApiModelProperty("活动id")
     private String activityId;
 
