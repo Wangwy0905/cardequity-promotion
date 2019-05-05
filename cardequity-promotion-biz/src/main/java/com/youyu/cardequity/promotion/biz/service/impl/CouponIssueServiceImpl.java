@@ -178,13 +178,14 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             clientCouponStatusSetting(couponIssueHistoryDetailsEntity, responseDto);
             response.add(responseDto);
         });
-        //根据sequenceNumber升序排序
+        //暂时保留，数据库内字段sequenceNumber暂时用不到，所以这里也暂时不用
+        /*//根据sequenceNumber升序排序
         response.sort((a, b) -> Integer.compare(a.getSequenceNumber().compareTo(b.getSequenceNumber()), 0));
         int sequenceNumber = 1;
         for (CouponIssueHistoryQueryRep entity : response) {
             entity.setSequenceNumber(String.valueOf(sequenceNumber));
             sequenceNumber++;
-        }
+        }*/
         return response;
     }
 
@@ -283,7 +284,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             result.add(couponIssueHistoryEntity);
         });
 
-        //根据用户ID进行增序排序，并填入此次发券任务的序列号
+        //由于数据库内字段sequenceNumber暂时不用，所以这里的逻辑也取消
+       /* //根据用户ID进行增序排序，并填入此次发券任务的序列号
         result.sort((a, b) -> Integer.compare(a.getClientId().compareTo(b.getClientId()), 0));
 
         int sequenceNumber = 1;
@@ -291,7 +293,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         for (CouponIssueHistoryEntity couponIssueHistoryEntity : result) {
             couponIssueHistoryEntity.setSequenceNumber(Integer.toString(sequenceNumber));
             sequenceNumber++;
-        }
+        }*/
         return result;
 
     }

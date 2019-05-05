@@ -11,7 +11,7 @@
         SELECT
         history.COUPON_ISSUE_HISTORY_ID couponIssueHistoryId,
         history.COUPON_ISSUE_ID couponIssueId,
-        history.SEQUENCE_NUMBER sequenceNumber,
+--         history.SEQUENCE_NUMBER sequenceNumber,
         history.CLIENT_ID clientId,
         history.ISSUE_RESULT issueResult,
         clientCoupon.STATUS couponUseStatus,
@@ -44,6 +44,6 @@
          and couponIssueHistoryQueryDto.issueResult == "2"'>
             AND history.ISSUE_RESULT=#{couponIssueHistoryQueryDto.issueResult,jdbcType=VARCHAR}
         </if>
-        ORDER BY history.SEQUENCE_NUMBER ASC
+        ORDER BY history.CREATE_TIME,history.CLIENT_ID ASC
     </select>
 </mapper>
