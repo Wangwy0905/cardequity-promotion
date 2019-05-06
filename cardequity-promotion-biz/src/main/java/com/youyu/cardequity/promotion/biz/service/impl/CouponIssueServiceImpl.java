@@ -2,7 +2,7 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
-import com.youyu.cardequity.common.base.util.LocalDateUtils;
+import com.youyu.cardequity.common.base.util.DateUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.constant.ClientCouponStatusConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueHistoryMapper;
@@ -39,6 +39,7 @@ import static com.github.pagehelper.page.PageMethod.startPage;
 import static com.youyu.cardequity.common.base.util.CollectionUtils.isEmpty;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
+import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDateTime;
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
@@ -48,6 +49,7 @@ import static com.youyu.cardequity.promotion.enums.CouponIssueTargetTypeEnum.ACT
 import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DELAY_JOB_TRIGGER_TYPE;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
+import static com.youyu.cardequity.promotion.enums.dict.CouponType.TRANSFERFARE;
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.join;
@@ -64,6 +66,23 @@ import static org.apache.commons.lang3.time.DateUtils.addHours;
 @Slf4j
 public class CouponIssueServiceImpl implements CouponIssueService {
     private static final String IS_INVALID = "1";
+
+    /**
+     * 小鱼券级别
+     */
+    private static final String COUPON_LEVEL_TIDDLER = "0";
+    /**
+     * 小鱼券
+     */
+    private static final String COUPON_TIDDLER = "小鱼券";
+    /**
+     * 大鱼券
+     */
+    private static final String COUPON_LUNKER = "大鱼券";
+    /**
+     * 破折号
+     */
+    private static final String DASH = "——";
 
 
     @Autowired
@@ -432,9 +451,10 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         couponIssueDetailRsp.setIssueTime(date2String(issueDate, HH_MM_SS));
         couponIssueDetailRsp.setTargetType(couponIssue.getTargetType());
         couponIssueDetailRsp.setIssueIds(asList(split(couponIssue.getIssueIds(), ",")));
+        couponIssueDetailRsp.setCouponTypeValue(getCouponTypeValue(productCoupon));
+        couponIssueDetailRsp.setCouponStatusValue(getCouponStatusValue(productCoupon));
         return couponIssueDetailRsp;
     }
-
 
     /**
      * 发放优惠券规则检验
@@ -491,7 +511,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         }
 
         Date issueTime = string2Date(couponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
-        LocalDateTime nowLocalDateTime = LocalDateUtils.date2LocalDateTime(issueTime);
+        LocalDateTime nowLocalDateTime = date2LocalDateTime(issueTime);
         if (nowLocalDateTime.isAfter(productCouponEntity.getAllowUseEndDate())) {
             throw new BizException(COUPON_END_DATE_MUST_GREATER_CURRENT_DATE);
         }
@@ -632,5 +652,48 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         return couponIssueRsp;
     }
 
+    /**
+     * 获取优惠券类型值
+     *
+     * @param productCoupon
+     * @return
+     */
+    private String getCouponTypeValue(ProductCouponEntity productCoupon) {
+        String couponType = productCoupon.getCouponType();
+        if (eq(couponType, TRANSFERFARE.getDictValue())) {
+            return TRANSFERFARE.getDictComment();
+        }
 
+        String couponLevel = productCoupon.getCouponLevel();
+        return eq(couponLevel, COUPON_LEVEL_TIDDLER) ? COUPON_TIDDLER : COUPON_LUNKER;
+    }
+
+    /**
+     * 获取优惠券状态值
+     *
+     * @param productCoupon
+     * @return
+     */
+    private String getCouponStatusValue(ProductCouponEntity productCoupon) {
+        Integer valIdTerm = productCoupon.getValIdTerm();
+        if (nonNull(valIdTerm) && valIdTerm > 0) {
+            return DASH;
+        }
+
+        Boolean monthValid = productCoupon.getMonthValid();
+        if (nonNull(monthValid) && monthValid) {
+            return DASH;
+        }
+
+        LocalDateTime nowDateTime = date2LocalDateTime(DateUtil.now());
+        if (nowDateTime.isBefore(productCoupon.getAllowUseBeginDate())) {
+            return "未开始";
+        }
+
+        if (nowDateTime.isAfter(productCoupon.getAllowUseEndDate())) {
+            return "已过期";
+        }
+
+        return "有效中";
+    }
 }

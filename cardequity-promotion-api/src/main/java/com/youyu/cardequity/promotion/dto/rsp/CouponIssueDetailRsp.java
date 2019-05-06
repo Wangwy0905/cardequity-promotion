@@ -49,4 +49,10 @@ public class CouponIssueDetailRsp implements Serializable {
     @ApiModelProperty("优惠券发放对象id")
     private List<String> issueIds = new ArrayList<>();
 
+    @ApiModelProperty("优惠券类型值")
+    private String couponTypeValue;
+
+    @ApiModelProperty("优惠券状态值")
+    private String couponStatusValue;
+
 }
