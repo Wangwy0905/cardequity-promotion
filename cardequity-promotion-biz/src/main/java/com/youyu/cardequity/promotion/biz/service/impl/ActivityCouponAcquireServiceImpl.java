@@ -157,8 +157,6 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
         couponIssueHistoryEntity.setCouponIssueId(couponIssueEntity.getCouponIssueId());
         couponIssueHistoryEntity.setClientId(activityCouponAcquire.getClientId());
         couponIssueHistoryEntity.setIssueResult(couponIssueResultEnum.getCode());
-        //todo
-        couponIssueHistoryEntity.setSequenceNumber("");
         couponIssueHistoryMapper.insertSelective(couponIssueHistoryEntity);
     }
 

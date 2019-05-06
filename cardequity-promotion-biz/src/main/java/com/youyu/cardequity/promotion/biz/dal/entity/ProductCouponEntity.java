@@ -194,6 +194,12 @@ public class ProductCouponEntity extends com.youyu.common.entity.BaseEntity<Stri
     @Column(name = "IS_ENABLE")
     private String isEnable;
 
+    /**
+     * true:当月有效 false:排除该项
+     */
+    @Column(name = "MONTH_VALID")
+    private Boolean monthValid;
+
     @Override
     public String getId() {
         return uuid;

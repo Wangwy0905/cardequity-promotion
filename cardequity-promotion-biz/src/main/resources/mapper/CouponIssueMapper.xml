@@ -20,7 +20,8 @@
         <where>
             <if test="searchCondition != null">
                 (COUPON_ISSUE_ID = #{searchCondition,jdbcType=VARCHAR}
-                or COUPON_NAME = #{searchCondition,jdbcType=VARCHAR})
+                or COUPON_NAME = #{searchCondition,jdbcType=VARCHAR}
+                or COUPON_ID = #{searchCondition,jdbcType=VARCHAR})
             </if>
             <if test="targetType != null">
                 and TARGET_TYPE = #{targetType,jdbcType=VARCHAR}
