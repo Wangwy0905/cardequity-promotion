@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Setter
 @Getter
-@ApiModel("优惠券发放明细响应Req")
+@ApiModel("优惠券发放明细响应Rsp")
 public class CouponIssueDetailRsp implements Serializable {
 
     private static final long serialVersionUID = 5595991731261020607L;
