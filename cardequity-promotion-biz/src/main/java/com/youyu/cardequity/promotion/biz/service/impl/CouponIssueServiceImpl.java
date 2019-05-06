@@ -16,9 +16,12 @@ import com.youyu.cardequity.promotion.biz.enums.dict.CouponHistoryQueryStatusMap
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
+import com.youyu.cardequity.promotion.dto.CouponIssueCompensateDto;
 import com.youyu.cardequity.promotion.dto.CouponIssueHistoryQueryDto;
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.*;
+import com.youyu.cardequity.promotion.enums.CouponIssueTargetTypeEnum;
+import com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum;
 import com.youyu.cardequity.promotion.enums.dict.CouponStatus;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
@@ -63,6 +66,7 @@ import static org.apache.commons.lang3.time.DateUtils.addHours;
 @Service
 @Slf4j
 public class CouponIssueServiceImpl implements CouponIssueService {
+    private static final long TWO_MINUTES = 2;
     private static final String IS_INVALID = "1";
 
 
@@ -372,6 +376,41 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         fillEditDeleteFlag(pageData.getRows());
         return pageData;
     }
+
+    @Override
+    public List<CouponIssueQueryRsp> getCouponIssueCompensate() {
+        List<CouponIssueEntity> couponIssueCompensateList =
+                couponIssueMapper.getCouponIssueCompensate(createCouponIssueCompensateDto());
+
+        return getCouponIssueQueryRsp(couponIssueCompensateList);
+
+    }
+
+    private List<CouponIssueQueryRsp> getCouponIssueQueryRsp(List<CouponIssueEntity> couponIssueCompensateList) {
+        List<CouponIssueQueryRsp> result = new ArrayList<>();
+        couponIssueCompensateList.forEach(couponIssueEntity -> {
+            CouponIssueQueryRsp rsp = new CouponIssueQueryRsp();
+            BeanUtils.copyProperties(couponIssueEntity, rsp);
+            result.add(rsp);
+        });
+        return result;
+    }
+
+    private CouponIssueCompensateDto createCouponIssueCompensateDto() {
+        CouponIssueCompensateDto couponIssueCompensateDto = new CouponIssueCompensateDto();
+        couponIssueCompensateDto.setIssueStatus(NOT_ISSUE.getCode());
+        couponIssueCompensateDto.setIsVisible(CouponIssueVisibleEnum.VISIBLE.getCode());
+        couponIssueCompensateDto.setTargetType(CouponIssueTargetTypeEnum.CLIENT_ID.getCode());
+
+        couponIssueCompensateDto.setDateLine(computeDateLine());
+        return couponIssueCompensateDto;
+    }
+
+    private static LocalDateTime computeDateLine() {
+        LocalDateTime now = LocalDateTime.now();
+        return now.minusMinutes(TWO_MINUTES);
+    }
+
 
     @Override
     public CouponIssueDetailRsp getCouponIssueDetail(CouponIssueDetailReq couponIssueDetailReq) {

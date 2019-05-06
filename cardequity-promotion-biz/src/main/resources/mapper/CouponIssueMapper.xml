@@ -7,15 +7,15 @@
     <select id="getCouponIssueQuery" parameterType="com.youyu.cardequity.promotion.dto.req.CouponIssueQueryReq"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity">
         select
-            COUPON_ISSUE_ID couponIssueId,
-            COUPON_ID couponId,
-            COUPON_NAME couponName,
-            TARGET_TYPE targetType,
-            IS_VISIBLE isVisible,
-            ISSUE_TIME issueTime,
-            ISSUE_STATUS issueStatus,
-            CREATE_AUTHOR createAuthor,
-            UPDATE_AUTHOR updateAuthor
+        COUPON_ISSUE_ID couponIssueId,
+        COUPON_ID couponId,
+        COUPON_NAME couponName,
+        TARGET_TYPE targetType,
+        IS_VISIBLE isVisible,
+        ISSUE_TIME issueTime,
+        ISSUE_STATUS issueStatus,
+        CREATE_AUTHOR createAuthor,
+        UPDATE_AUTHOR updateAuthor
         from TB_COUPON_ISSUE
         <where>
             <if test="searchCondition != null">
@@ -38,13 +38,13 @@
     <select id="getCouponIssueDetail" parameterType="com.youyu.cardequity.promotion.dto.req.CouponIssueDetailReq"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity">
         select
-            COUPON_ISSUE_ID couponIssueId,
-            COUPON_ID couponId,
-            COUPON_NAME couponName,
-            TARGET_TYPE targetType,
-            ISSUE_TIME issueTime,
-            ISSUE_IDS issueIds,
-            ISSUE_STATUS issueStatus
+        COUPON_ISSUE_ID couponIssueId,
+        COUPON_ID couponId,
+        COUPON_NAME couponName,
+        TARGET_TYPE targetType,
+        ISSUE_TIME issueTime,
+        ISSUE_IDS issueIds,
+        ISSUE_STATUS issueStatus
         from TB_COUPON_ISSUE
         <where>
             <if test="couponIssueId != null">
@@ -53,7 +53,8 @@
         </where>
     </select>
 
-    <select id="getCouponIssueByActivityIdCouponId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity">
+    <select id="getCouponIssueByActivityIdCouponId"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity">
         select
             COUPON_ISSUE_ID couponIssueId,
             COUPON_ID couponId,
@@ -67,4 +68,31 @@
         and COUPON_ID = #{couponId,jdbcType=VARCHAR}
         and ISSUE_IDS = #{activityId,jdbcType=VARCHAR}
     </select>
+
+
+    <select id="getCouponIssueCompensate"
+            parameterType="com.youyu.cardequity.promotion.dto.CouponIssueCompensateDto"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity">
+        SELECT
+        COUPON_ISSUE_ID couponIssueId,
+        COUPON_ID couponId,
+        COUPON_NAME couponName,
+        TARGET_TYPE targetType,
+        IS_VISIBLE isVisible,
+        ISSUE_TIME issueTime,
+        ISSUE_STATUS issueStatus
+        FROM TB_COUPON_ISSUE
+
+        WHERE
+        TARGET_TYPE = #{targetType,jdbcType=VARCHAR}
+
+        AND IS_VISIBLE = #{isVisible,jdbcType=VARCHAR}
+        AND ISSUE_STATUS = #{issueStatus,jdbcType=VARCHAR}
+        
+        <!-- 记录创建时间要小于或等于时间线-->
+        AND DATE_FORMAT(ISSUE_TIME ,'%Y-%m-%d %H:%i') &lt;= DATE_FORMAT(#{dateLine,jdbcType=DATE},'%Y-%m-%d %H:%i')
+        AND LOGIC_DELETE=0
+    </select>
+
+
 </mapper>

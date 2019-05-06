@@ -7,9 +7,12 @@ import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 /**
  * @author panqingqing
@@ -41,6 +44,11 @@ public interface CouponIssueApi {
     @ApiOperation(value = "根据查询条件查询优惠券发放列表")
     @PostMapping(path = "/getCouponIssueQuery")
     Result<PageData<CouponIssueQueryRsp>> getCouponIssueQuery(@RequestBody CouponIssueQueryReq couponIssueQueryReq);
+
+
+    @ApiOperation(value = "【后台】定时任务查看发放记录中应被补偿发放的列表")
+    @GetMapping(path = "/getCouponIssueCompensate")
+    Result<List<CouponIssueQueryRsp>> getCouponIssueCompensate();
 
     /**
      * 根据查询条件查询发放明细

@@ -4,6 +4,8 @@ import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.*;
 import com.youyu.common.api.PageData;
 
+import java.util.List;
+
 
 /**
  * @author panqingqing
@@ -42,6 +44,14 @@ public interface CouponIssueService {
      * @return
      */
     PageData<CouponIssueQueryRsp> getCouponIssueQuery(CouponIssueQueryReq couponIssueQueryReq);
+
+    /**
+     * 拿到优惠券发放记录中应该被补偿的列表
+     *
+     * @return
+     */
+    List<CouponIssueQueryRsp> getCouponIssueCompensate();
+
 
     /**
      * 根据查询条件查询发放明细

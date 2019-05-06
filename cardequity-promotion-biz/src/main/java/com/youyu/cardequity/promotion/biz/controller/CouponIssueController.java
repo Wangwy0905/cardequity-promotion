@@ -7,10 +7,9 @@ import com.youyu.cardequity.promotion.dto.rsp.*;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.youyu.common.api.Result.ok;
 
@@ -37,6 +36,12 @@ public class CouponIssueController implements CouponIssueApi {
     @PostMapping(path = "/getCouponIssueQuery")
     public Result<PageData<CouponIssueQueryRsp>> getCouponIssueQuery(@RequestBody CouponIssueQueryReq couponIssueQueryReq) {
         return ok(couponIssueService.getCouponIssueQuery(couponIssueQueryReq));
+    }
+
+    @Override
+    @GetMapping(path = "/getCouponIssueCompensate")
+    public Result<List<CouponIssueQueryRsp>> getCouponIssueCompensate() {
+        return ok(couponIssueService.getCouponIssueCompensate());
     }
 
     @Override

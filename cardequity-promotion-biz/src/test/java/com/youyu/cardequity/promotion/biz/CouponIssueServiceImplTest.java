@@ -65,4 +65,9 @@ public class CouponIssueServiceImplTest {
 
         couponIssueService.processIssue(couponIssueMsgDetailsReq);
     }
+
+    @Test
+    public void getCouponIssueCompensateTest(){
+        couponIssueService.getCouponIssueCompensate();
+    }
 }

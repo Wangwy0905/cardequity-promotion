@@ -1,11 +1,13 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity;
+import com.youyu.cardequity.promotion.dto.CouponIssueCompensateDto;
 import com.youyu.cardequity.promotion.dto.req.CouponIssueDetailReq;
 import com.youyu.cardequity.promotion.dto.req.CouponIssueQueryReq;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +25,9 @@ public interface CouponIssueMapper extends YyMapper<CouponIssueEntity> {
      * @return
      */
     List<CouponIssueEntity> getCouponIssueQuery(CouponIssueQueryReq couponIssueQueryReq);
+
+
+    List<CouponIssueEntity> getCouponIssueCompensate(CouponIssueCompensateDto couponIssueCompensateDto);
 
     /**
      * 根据couponIssueDetailReq查询优惠券发放明细
