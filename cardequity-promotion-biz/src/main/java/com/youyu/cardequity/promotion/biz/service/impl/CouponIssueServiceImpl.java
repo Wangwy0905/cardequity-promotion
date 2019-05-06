@@ -139,7 +139,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         List<CouponIssueHistoryDetailsEntity> couponIssueEntities = couponIssueHistoryMapper.getCouponIssueHistoryDetails(
                 createQueryDto(couponIssueHistoryQueryReq));
 
-        PageInfo<CouponIssueHistoryQueryRep> pageInfo = new PageInfo<>(getCouponIssueHistoryQueryRep(couponIssueEntities));
+        int pageNo = couponIssueHistoryQueryReq.getPageNo() == 0 ? 1 : couponIssueHistoryQueryReq.getPageNo();
+        int sequenceNumberStart = (pageNo - 1) * couponIssueHistoryQueryReq.getPageSize() + 1;
+        PageInfo<CouponIssueHistoryQueryRep> pageInfo = new PageInfo<>(getCouponIssueHistoryQueryRep(couponIssueEntities, sequenceNumberStart));
         return convert(pageInfo, CouponIssueHistoryQueryRep.class);
     }
 
@@ -169,7 +171,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     }
 
     private List<CouponIssueHistoryQueryRep> getCouponIssueHistoryQueryRep(
-            List<CouponIssueHistoryDetailsEntity> couponIssueHistoryDetailsEntityList) {
+            List<CouponIssueHistoryDetailsEntity> couponIssueHistoryDetailsEntityList, int sequenceNumberStart) {
         //mapping
         List<CouponIssueHistoryQueryRep> response = new ArrayList<>(couponIssueHistoryDetailsEntityList.size());
         couponIssueHistoryDetailsEntityList.forEach(couponIssueHistoryDetailsEntity -> {
@@ -182,10 +184,12 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         /*//根据sequenceNumber升序排序
         response.sort((a, b) -> Integer.compare(a.getSequenceNumber().compareTo(b.getSequenceNumber()), 0));
         int sequenceNumber = 1;
+        */
+        int sequenceNumber = sequenceNumberStart;
         for (CouponIssueHistoryQueryRep entity : response) {
             entity.setSequenceNumber(String.valueOf(sequenceNumber));
             sequenceNumber++;
-        }*/
+        }
         return response;
     }
 
