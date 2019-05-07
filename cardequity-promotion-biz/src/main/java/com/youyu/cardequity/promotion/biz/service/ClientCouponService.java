@@ -1,12 +1,12 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
+import com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueHistoryEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
-import com.youyu.cardequity.promotion.dto.req.UserInfo4CouponIssueDto;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq;
 import com.youyu.cardequity.promotion.vo.rsp.FindCouponListByOrderDetailRsp;
@@ -17,7 +17,7 @@ import com.youyu.common.service.IService;
 import java.util.List;
 
 /**
- *  代码生成器
+ * 代码生成器
  *
  * @author 技术平台
  * @date 2018-12-07
@@ -68,28 +68,29 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
 
     /**
      * 根据指定的优惠券进行校验其适用情况，并变动其状态和使用记录
+     *
      * @param req
      * @return
      */
-     List<UseCouponRsp> combCouponRefProductAndUse(GetUseEnableCouponReq req);
+    List<UseCouponRsp> combCouponRefProductAndUse(GetUseEnableCouponReq req);
 
     /**
      * 使用优惠券数据库处理：内部服务
      *
-     * @param orderId  订单编号
-     * @param rsps 优惠券的使用情况
+     * @param orderId 订单编号
+     * @param rsps    优惠券的使用情况
      * @return 是否处理成功
      */
-    CommonBoolDto takeInCoupon(String orderId, String operator,List<UseCouponRsp> rsps);
+    CommonBoolDto takeInCoupon(String orderId, String operator, List<UseCouponRsp> rsps);
 
 
     /**
      * 撤销使用优惠券数据库处理：内部服务
      *
-     * @param req  订单情况
+     * @param req 订单情况
      * @return 是否处理成功
      */
-     CommonBoolDto<Integer> cancelTakeInCoupon(BaseOrderInPromotionReq req);
+    CommonBoolDto<Integer> cancelTakeInCoupon(BaseOrderInPromotionReq req);
 
     /**
      * 获取客户当前有效的券
@@ -102,6 +103,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
 
     /**
      * 获取订单可用和不可用的优惠券
+     *
      * @param req
      * @return
      */
@@ -109,6 +111,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
 
     /**
      * 组合对象
+     *
      * @param clientCouponEnts
      * @return
      */
@@ -116,6 +119,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
 
     /**
      * 组合对象
+     *
      * @param item
      * @return
      */
@@ -123,6 +127,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
 
     /**
      * 组合详情列表
+     *
      * @param clientCouponEnts
      * @return
      */
@@ -130,6 +135,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
 
     /**
      * 组合详情
+     *
      * @param clientCoupon
      * @return
      */
@@ -143,12 +149,12 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
-     CommonBoolDto checkCouponPersonQuota(CouponQuotaRuleEntity quota,String clientId);
+    CommonBoolDto checkCouponPersonQuota(CouponQuotaRuleEntity quota, String clientId);
 
     /**
      * 校验所有客户的优惠限额
      *
-     * @param quota    优惠券额度信息
+     * @param quota 优惠券额度信息
      * @return 开发日志
      * 1004258-徐长焕-20181213 新增
      */
@@ -156,6 +162,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
 
     /**
      * 查询客户领取券统计数量
+     *
      * @param req
      * @return
      */
@@ -163,6 +170,7 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
 
     /**
      * 【App】客户领取券变更new标识
+     *
      * @param req
      * @return
      */
@@ -179,12 +187,11 @@ public interface ClientCouponService extends IService<ClientCouponDto, ClientCou
     /**
      * 创建客户优惠券集合
      *
-     * @param issueUserList
      * @param couponEntity
      * @param couponIssueId
      * @return
      */
-    List<ClientCouponEntity> insertClientCoupon(List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId);
+    List<ClientCouponEntity> insertClientCoupon(List<CouponIssueHistoryEntity> issueSuccessedHistoryList, ProductCouponEntity couponEntity, String couponIssueId);
 }
 
 

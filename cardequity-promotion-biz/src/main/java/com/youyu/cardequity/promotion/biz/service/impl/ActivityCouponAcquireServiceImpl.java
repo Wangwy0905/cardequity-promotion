@@ -115,7 +115,7 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
         createCouponIssueHistoryEntity(activityCouponAcquire, couponIssueEntity, ISSUED_SUCCESSED);
 
         List<UserInfo4CouponIssueDto> issueUserList = getIssueUserList(activityCouponAcquire);
-        clientCouponService.insertClientCoupon(issueUserList, productCouponEntity, couponIssueEntity.getCouponIssueId());
+//        clientCouponService.insertClientCoupon(issueUserList, productCouponEntity, couponIssueEntity.getCouponIssueId());
     }
 
     /**

@@ -17,6 +17,7 @@ import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.other.*;
 import com.youyu.cardequity.promotion.dto.req.UserInfo4CouponIssueDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
+import com.youyu.cardequity.promotion.enums.CouponIssueResultEnum;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.FindClientCouponNumReq;
@@ -36,6 +37,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.GRANT;
@@ -1364,17 +1366,27 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
     @Override
     @Transactional
-    public List<ClientCouponEntity> insertClientCoupon(List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId) {
-        List<ClientCouponEntity> clientCouponEntityList = doCreateClientCouponEntityList(issueUserList, couponEntity, couponIssueId);
+    public List<ClientCouponEntity> insertClientCoupon(List<CouponIssueHistoryEntity> historyEntityList,
+                                                       ProductCouponEntity couponEntity, String couponIssueId) {
+
+        List<CouponIssueHistoryEntity> issueStatusSuccessedHistorys = getIssueStatusSuccessedHistorys(historyEntityList);
+        List<ClientCouponEntity> clientCouponEntityList = doCreateClientCouponEntityList(issueStatusSuccessedHistorys, couponEntity, couponIssueId);
         batchService.batchDispose(clientCouponEntityList, ClientCouponMapper.class, "insertSelective");
         return clientCouponEntityList;
     }
 
+    private List<CouponIssueHistoryEntity> getIssueStatusSuccessedHistorys(List<CouponIssueHistoryEntity> historyEntityList) {
+        return historyEntityList
+                .stream()
+                .filter(historyEntity -> CouponIssueResultEnum.ISSUED_SUCCESSED.getCode().equals(historyEntity.getIssueResult()))
+                .sorted((a, b) -> Integer.compare(a.getClientId().compareTo(b.getClientId()), 0)).collect(Collectors.toList());
+    }
+
     private List<ClientCouponEntity> doCreateClientCouponEntityList(
-            List<UserInfo4CouponIssueDto> issueUserList, ProductCouponEntity couponEntity, String couponIssueId) {
+            List<CouponIssueHistoryEntity> issueStatusSuccessHistoryList, ProductCouponEntity couponEntity, String couponIssueId) {
         List<ClientCouponEntity> clientCouponEntityList = new ArrayList<>();
 
-        issueUserList.forEach(eligibleUser -> {
+        issueStatusSuccessHistoryList.forEach(historyEntity -> {
             ClientCouponEntity clientCouponEntity = new ClientCouponEntity();
 
             //券阶梯信息set
@@ -1396,7 +1408,8 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
             clientCouponEntity.setId(CommonUtils.getUUID());
             clientCouponEntity.setCouponId(couponEntity.getId());
             clientCouponEntity.setCouponIssueId(couponIssueId);
-            clientCouponEntity.setClientId(eligibleUser.getClientId());
+            clientCouponEntity.setClientId(historyEntity.getClientId());
+            clientCouponEntity.setCouponIssueHistoryId(historyEntity.getId());
 
             //平台发放
             clientCouponEntity.setGetType(GRANT.getDictValue());

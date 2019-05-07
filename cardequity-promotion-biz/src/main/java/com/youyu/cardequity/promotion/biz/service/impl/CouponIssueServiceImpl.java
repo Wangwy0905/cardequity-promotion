@@ -36,7 +36,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import static com.github.pagehelper.page.PageMethod.startPage;
 import static com.youyu.cardequity.common.base.util.CollectionUtils.isEmpty;
@@ -55,6 +55,7 @@ import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static com.youyu.cardequity.promotion.enums.dict.CouponType.TRANSFERFARE;
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.apache.commons.lang3.StringUtils.split;
 import static org.apache.commons.lang3.time.DateUtils.addHours;
@@ -138,11 +139,14 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         //确认最终发券的clientID
         List<UserInfo4CouponIssueDto> resultIssueClientCouponList = confirmIssueClient(couponIssueMsgDetailsReq, productCouponEntity);
 
-        //写入clientCoupon
-        List<ClientCouponEntity> clientCouponEntityList = clientCouponService.insertClientCoupon(resultIssueClientCouponList, productCouponEntity, couponIssueMsgDetailsReq.getCouponIssueId());
 
         //写入发放流水
-        insertIssueHistory(couponIssueMsgDetailsReq, clientCouponEntityList);
+        List<CouponIssueHistoryEntity> historyEntityList = insertIssueHistory(couponIssueMsgDetailsReq, resultIssueClientCouponList);
+
+
+        //写入clientCoupon
+        clientCouponService.insertClientCoupon(historyEntityList, productCouponEntity,
+                couponIssueMsgDetailsReq.getCouponIssueId());
 
 
         //更新状态为：已发券
@@ -162,11 +166,38 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         List<CouponIssueHistoryDetailsEntity> couponIssueEntities = couponIssueHistoryMapper.getCouponIssueHistoryDetails(
                 createQueryDto(couponIssueHistoryQueryReq));
 
-        int pageNo = couponIssueHistoryQueryReq.getPageNo() == 0 ? 1 : couponIssueHistoryQueryReq.getPageNo();
-        int sequenceNumberStart = (pageNo - 1) * couponIssueHistoryQueryReq.getPageSize() + 1;
-        PageInfo<CouponIssueHistoryQueryRep> pageInfo = new PageInfo<>(getCouponIssueHistoryQueryRep(couponIssueEntities, sequenceNumberStart));
-        return convert(pageInfo, CouponIssueHistoryQueryRep.class);
+        PageInfo<CouponIssueHistoryDetailsEntity> pageInfo = new PageInfo<>(couponIssueEntities);
+
+        return convert(pageInfo, createResponse(couponIssueEntities, couponIssueHistoryQueryReq.getPageNo(), couponIssueHistoryQueryReq.getPageSize()));
     }
+
+
+    private List<CouponIssueHistoryQueryRep> createResponse(List<CouponIssueHistoryDetailsEntity> couponIssueEntities, int pageNo, int pageSize) {
+        int pageNoTemp = pageNo == 0 ? 1 : pageNo;
+        int startIndex = (pageNoTemp - 1) * pageSize + 1;
+
+        List<CouponIssueHistoryQueryRep> result = new ArrayList<>(couponIssueEntities.size());
+        for (CouponIssueHistoryDetailsEntity entity : couponIssueEntities) {
+            CouponIssueHistoryQueryRep rep = couponIssueHistoryQueryRepBuilder().apply(entity);
+            rep.setSequenceNumber(String.valueOf(startIndex));
+            result.add(rep);
+            startIndex++;
+        }
+
+        return result;
+    }
+
+    private Function<CouponIssueHistoryDetailsEntity, CouponIssueHistoryQueryRep> couponIssueHistoryQueryRepBuilder() {
+        return entity -> {
+            CouponIssueHistoryQueryRep rep = new CouponIssueHistoryQueryRep();
+            rep.setClientId(entity.getClientId());
+            rep.setOrderId(entity.getOrderId());
+            rep.setUsedDate(entity.getUsedDate());
+            clientCouponStatusSetting(entity, rep);
+            return rep;
+        };
+    }
+
 
     private CouponIssueHistoryQueryDto createQueryDto(CouponIssueHistoryQueryReq couponIssueHistoryQueryReq) {
         CouponIssueHistoryQueryDto queryDto = new CouponIssueHistoryQueryDto();
@@ -263,37 +294,39 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * 插入发放流水
      *
      * @param couponIssueMsgDetailsReq
-     * @param clientCouponEntityList
+     * @param resultIssueClientCouponList
      */
-    private void insertIssueHistory(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq, List<ClientCouponEntity> clientCouponEntityList) {
+    private List<CouponIssueHistoryEntity> insertIssueHistory(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq, List<UserInfo4CouponIssueDto> resultIssueClientCouponList) {
         List<String> preparedIssueClientIdList = couponIssueMsgDetailsReq.getUserInfo4CouponIssueDtoList()
                 .stream()
                 .map(UserInfo4CouponIssueDto::getClientId)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         List<CouponIssueHistoryEntity> couponIssueHistoryEntityList =
-                createCouponIssueHistoryEntityList(clientCouponEntityList, preparedIssueClientIdList, couponIssueMsgDetailsReq.getCouponIssueId());
+                createCouponIssueHistoryEntityList(resultIssueClientCouponList, preparedIssueClientIdList, couponIssueMsgDetailsReq.getCouponIssueId());
         batchService.batchDispose(couponIssueHistoryEntityList, CouponIssueHistoryMapper.class, "insertSelective");
 
+        return couponIssueHistoryEntityList;
     }
 
     private List<CouponIssueHistoryEntity> createCouponIssueHistoryEntityList(
-            List<ClientCouponEntity> issuedClientCouponEntityList, List<String> preparedIssueClientIdList, String couponIssueId) {
+            List<UserInfo4CouponIssueDto> resultIssueClientCouponList, List<String> preparedIssueClientIdList, String couponIssueId) {
 
-        //分别筛选出成功发放和未发放券的用户ID
-        List<String> issuedClientIdList = issuedClientCouponEntityList
+        //应被成功发放
+        List<String> issuedSuccessClientIdList = resultIssueClientCouponList
                 .stream()
-                .map(ClientCouponEntity::getClientId)
-                .collect(Collectors.toList());
+                .map(UserInfo4CouponIssueDto::getClientId)
+                .collect(toList());
 
-        List<String> unIssuedClientIdList = preparedIssueClientIdList
+        //未被成功发放券的用户ID
+        List<String> issueFailedClientIdList = preparedIssueClientIdList
                 .stream()
-                .filter(preparedIssueClientId -> !issuedClientIdList.contains(preparedIssueClientId))
-                .collect(Collectors.toList());
+                .filter(preparedIssueClientId -> !issuedSuccessClientIdList.contains(preparedIssueClientId))
+                .collect(toList());
 
         //分别对成功发放和未发放券的用户进行entity拼装
         List<CouponIssueHistoryEntity> result = new ArrayList<>();
-        issuedClientIdList.forEach(issuedClientId -> {
+        issuedSuccessClientIdList.forEach(issuedClientId -> {
             CouponIssueHistoryEntity couponIssueHistoryEntity = new CouponIssueHistoryEntity();
             couponIssueHistoryEntity.setCouponIssueHistoryId(uidGenerator.getUID2());
             couponIssueHistoryEntity.setClientId(issuedClientId);
@@ -302,7 +335,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
             result.add(couponIssueHistoryEntity);
         });
-        unIssuedClientIdList.forEach(unIssuedClientId -> {
+        issueFailedClientIdList.forEach(unIssuedClientId -> {
             CouponIssueHistoryEntity couponIssueHistoryEntity = new CouponIssueHistoryEntity();
             couponIssueHistoryEntity.setCouponIssueHistoryId(uidGenerator.getUID2());
             couponIssueHistoryEntity.setClientId(unIssuedClientId);
@@ -508,6 +541,11 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         if (CouponStatus.NO.getDictValue().equals(couponIsVisible)) {
             throw new BizException(INVISIBLE_COUPON_ISSUE_TASK_CANNOT_BE_ISSUED);
         }
+        //检查对用户类型的发放是否已经在进行或者已完成
+        if (!NOT_ISSUE.getCode().equals(couponIssueEntity.getIssueStatus())) {
+            throw new BizException(COUPON_ISSUE_STATUS_INCORRECT);
+        }
+
     }
 
     /**

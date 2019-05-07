@@ -40,6 +40,11 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
     private String couponIssueId;
 
     /**
+     * 优惠券发放流水ID
+     */
+    @Column(name = "COUPON_ISSUE_HISTORY_ID")
+    private String couponIssueHistoryId;
+    /**
      * 优惠策略类型:0-折扣券(该表不会出现) 1-阶梯优惠券(满多少减多少)  2-定额优惠券（该券无阶梯优惠固定金额）
      */
     @Column(name = "COUPON_STRATEGY_TYPE")

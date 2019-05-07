@@ -11,7 +11,7 @@
         SELECT
         history.COUPON_ISSUE_HISTORY_ID couponIssueHistoryId,
         history.COUPON_ISSUE_ID couponIssueId,
---         history.SEQUENCE_NUMBER sequenceNumber,
+        -- history.SEQUENCE_NUMBER sequenceNumber,
         history.CLIENT_ID clientId,
         history.ISSUE_RESULT issueResult,
         clientCoupon.STATUS couponUseStatus,
@@ -20,7 +20,7 @@
         clientCoupon.VALID_END_DATE validEndDate
         FROM TB_COUPON_ISSUE_HISTORY history
         LEFT JOIN TB_CLIENT_COUPON clientCoupon
-        ON history.CLIENT_ID=clientCoupon.CLIENT_ID AND history.COUPON_ISSUE_ID=clientCoupon.COUPON_ISSUE_ID
+        ON history.COUPON_ISSUE_HISTORY_ID=clientCoupon.COUPON_ISSUE_HISTORY_ID
         WHERE history.COUPON_ISSUE_ID=#{couponIssueHistoryQueryDto.couponIssueId,jdbcType=VARCHAR}
 
         <if test="couponIssueHistoryQueryDto.searchCondition != null and couponIssueHistoryQueryDto.searchCondition !=''">
