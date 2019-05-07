@@ -16,7 +16,6 @@ import com.youyu.cardequity.promotion.biz.enums.ProductCouponGetTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.dto.message.ActivityCouponAcquireDto;
-import com.youyu.cardequity.promotion.dto.req.UserInfo4CouponIssueDto;
 import com.youyu.cardequity.promotion.enums.CouponIssueResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +83,7 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
         String lockKey = format(CARDEQUITY_ACTIVITY_COUPON_ACTIVITY_CLIENT_COUPON, activityCouponAcquire.getActivityId(), activityCouponAcquire.getClientId(), activityCouponAcquire.getCouponId()).intern();
         distributedLockHandler.tryLock(lockKey, () -> {
             doCreateIssueCoupon(activityCouponAcquire, couponIssueEntity, productCouponEntity, issueFlag);
+            // TODO: 2019/5/7 发放中 
             return null;
         });
     }
@@ -97,11 +97,12 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
      * @param issueFlag
      */
     private void doCreateIssueCoupon(ActivityCouponAcquireDto activityCouponAcquire, CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity, boolean issueFlag) {
+        String couponIssueHistoryId = uidGenerator.getUID2();
         if (issueFlag) {
-            doIssueCouponSuccess(activityCouponAcquire, couponIssueEntity, productCouponEntity);
+            doIssueCouponSuccess(activityCouponAcquire, couponIssueEntity, productCouponEntity, couponIssueHistoryId);
             return;
         }
-        doIssueCouponFail(activityCouponAcquire, couponIssueEntity);
+        doIssueCouponFail(activityCouponAcquire, couponIssueEntity, couponIssueHistoryId);
     }
 
     /**
@@ -110,27 +111,28 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
      * @param activityCouponAcquire
      * @param couponIssueEntity
      * @param productCouponEntity
+     * @param couponIssueHistoryId
      */
-    private void doIssueCouponSuccess(ActivityCouponAcquireDto activityCouponAcquire, CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity) {
-        createCouponIssueHistoryEntity(activityCouponAcquire, couponIssueEntity, ISSUED_SUCCESSED);
+    private void doIssueCouponSuccess(ActivityCouponAcquireDto activityCouponAcquire, CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity, String couponIssueHistoryId) {
+        createCouponIssueHistoryEntity(activityCouponAcquire, couponIssueEntity, ISSUED_SUCCESSED, couponIssueHistoryId);
 
-        List<UserInfo4CouponIssueDto> issueUserList = getIssueUserList(activityCouponAcquire);
-//        clientCouponService.insertClientCoupon(issueUserList, productCouponEntity, couponIssueEntity.getCouponIssueId());
+        List<CouponIssueHistoryEntity> issueSuccessedHistoryList = getIssueSuccessedHistoryList(activityCouponAcquire, couponIssueHistoryId);
+        clientCouponService.insertClientCoupon(issueSuccessedHistoryList, productCouponEntity, couponIssueEntity.getCouponIssueId());
     }
 
     /**
      * 创建用户发放的集合
      *
      * @param activityCouponAcquire
+     * @param couponIssueHistoryId
      * @return
      */
-    private List<UserInfo4CouponIssueDto> getIssueUserList(ActivityCouponAcquireDto activityCouponAcquire) {
-        List<UserInfo4CouponIssueDto> userInfo4CouponIssues = new ArrayList<>();
-
-        UserInfo4CouponIssueDto userInfo4CouponIssueDto = new UserInfo4CouponIssueDto();
-        userInfo4CouponIssueDto.setClientId(activityCouponAcquire.getClientId());
-        userInfo4CouponIssues.add(userInfo4CouponIssueDto);
-        return userInfo4CouponIssues;
+    private List<CouponIssueHistoryEntity> getIssueSuccessedHistoryList(ActivityCouponAcquireDto activityCouponAcquire, String couponIssueHistoryId) {
+        List<CouponIssueHistoryEntity> couponIssueHistoryEntities = new ArrayList<>();
+        CouponIssueHistoryEntity couponIssueHistoryEntity = new CouponIssueHistoryEntity();
+        couponIssueHistoryEntity.setClientId(activityCouponAcquire.getClientId());
+        couponIssueHistoryEntity.setCouponIssueHistoryId(couponIssueHistoryId);
+        return couponIssueHistoryEntities;
     }
 
     /**
@@ -138,9 +140,10 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
      *
      * @param activityCouponAcquire
      * @param couponIssueEntity
+     * @param couponIssueHistoryId
      */
-    private void doIssueCouponFail(ActivityCouponAcquireDto activityCouponAcquire, CouponIssueEntity couponIssueEntity) {
-        createCouponIssueHistoryEntity(activityCouponAcquire, couponIssueEntity, ISSUED_FAILED);
+    private void doIssueCouponFail(ActivityCouponAcquireDto activityCouponAcquire, CouponIssueEntity couponIssueEntity, String couponIssueHistoryId) {
+        createCouponIssueHistoryEntity(activityCouponAcquire, couponIssueEntity, ISSUED_FAILED, couponIssueHistoryId);
     }
 
     /**
@@ -149,11 +152,12 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
      * @param activityCouponAcquire
      * @param couponIssueEntity
      * @param couponIssueResultEnum
+     * @param couponIssueHistoryId
      * @return
      */
-    private void createCouponIssueHistoryEntity(ActivityCouponAcquireDto activityCouponAcquire, CouponIssueEntity couponIssueEntity, CouponIssueResultEnum couponIssueResultEnum) {
+    private void createCouponIssueHistoryEntity(ActivityCouponAcquireDto activityCouponAcquire, CouponIssueEntity couponIssueEntity, CouponIssueResultEnum couponIssueResultEnum, String couponIssueHistoryId) {
         CouponIssueHistoryEntity couponIssueHistoryEntity = new CouponIssueHistoryEntity();
-        couponIssueHistoryEntity.setCouponIssueHistoryId(uidGenerator.getUID2());
+        couponIssueHistoryEntity.setCouponIssueHistoryId(couponIssueHistoryId);
         couponIssueHistoryEntity.setCouponIssueId(couponIssueEntity.getCouponIssueId());
         couponIssueHistoryEntity.setClientId(activityCouponAcquire.getClientId());
         couponIssueHistoryEntity.setIssueResult(couponIssueResultEnum.getCode());
