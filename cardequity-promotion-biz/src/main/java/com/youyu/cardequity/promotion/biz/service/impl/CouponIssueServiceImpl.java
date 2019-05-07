@@ -430,7 +430,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     }
 
     @Override
-    public List<CouponIssueQueryRsp> getCouponIssueCompensate() {
+    public List<CouponIssueDetailRsp> getCouponIssueCompensate() {
         List<CouponIssueEntity> couponIssueCompensateList =
                 couponIssueMapper.getCouponIssueCompensate(createCouponIssueCompensateDto());
 
@@ -438,11 +438,12 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
     }
 
-    private List<CouponIssueQueryRsp> getCouponIssueQueryRsp(List<CouponIssueEntity> couponIssueCompensateList) {
-        List<CouponIssueQueryRsp> result = new ArrayList<>();
+    private List<CouponIssueDetailRsp> getCouponIssueQueryRsp(List<CouponIssueEntity> couponIssueCompensateList) {
+        List<CouponIssueDetailRsp> result = new ArrayList<>();
         couponIssueCompensateList.forEach(couponIssueEntity -> {
-            CouponIssueQueryRsp rsp = new CouponIssueQueryRsp();
+            CouponIssueDetailRsp rsp = new CouponIssueDetailRsp();
             BeanUtils.copyProperties(couponIssueEntity, rsp);
+            rsp.setIssueIds(asList(split(couponIssueEntity.getIssueIds(), ",")));
             result.add(rsp);
         });
         return result;

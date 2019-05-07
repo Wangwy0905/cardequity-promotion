@@ -79,6 +79,7 @@
         COUPON_ID couponId,
         COUPON_NAME couponName,
         TARGET_TYPE targetType,
+        ISSUE_IDS issueIds,
         IS_VISIBLE isVisible,
         ISSUE_TIME issueTime,
         ISSUE_STATUS issueStatus
@@ -89,7 +90,7 @@
 
         AND IS_VISIBLE = #{isVisible,jdbcType=VARCHAR}
         AND ISSUE_STATUS = #{issueStatus,jdbcType=VARCHAR}
-        
+
         <!-- 记录创建时间要小于或等于时间线-->
         AND DATE_FORMAT(ISSUE_TIME ,'%Y-%m-%d %H:%i') &lt;= DATE_FORMAT(#{dateLine,jdbcType=DATE},'%Y-%m-%d %H:%i')
         AND LOGIC_DELETE=0

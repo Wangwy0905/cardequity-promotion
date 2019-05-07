@@ -40,7 +40,7 @@ public class CouponIssueController implements CouponIssueApi {
 
     @Override
     @GetMapping(path = "/getCouponIssueCompensate")
-    public Result<List<CouponIssueQueryRsp>> getCouponIssueCompensate() {
+    public Result<List<CouponIssueDetailRsp>> getCouponIssueCompensate() {
         return ok(couponIssueService.getCouponIssueCompensate());
     }
 

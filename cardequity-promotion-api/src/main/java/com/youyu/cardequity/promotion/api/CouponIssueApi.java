@@ -48,7 +48,7 @@ public interface CouponIssueApi {
 
     @ApiOperation(value = "【后台】定时任务查看发放记录中应被补偿发放的列表")
     @GetMapping(path = "/getCouponIssueCompensate")
-    Result<List<CouponIssueQueryRsp>> getCouponIssueCompensate();
+    Result<List<CouponIssueDetailRsp>> getCouponIssueCompensate();
 
     /**
      * 根据查询条件查询发放明细

@@ -50,7 +50,7 @@ public interface CouponIssueService {
      *
      * @return
      */
-    List<CouponIssueQueryRsp> getCouponIssueCompensate();
+    List<CouponIssueDetailRsp> getCouponIssueCompensate();
 
 
     /**
