@@ -80,13 +80,20 @@ public class CouponDetailDto {
                 dto.setProductDetailShowFlag(CommonDict.IF_NO.getCode());
 
         }
+
+        if (quotaRule != null) {
+            dto.setMaxCount(quotaRule.getMaxCount());//最大发放数量(券池数量):优惠券数量池
+        }else{
+            dto.setMaxCount(CommonConstant.IGNOREINTVALUE);// 数值参数的边界有效上限````
+        }
+
         //规则额度
         if("1".equals(productCouponDto.getGetType())){
-            if (quotaRule != null) {
+            /*if (quotaRule != null) {
                 dto.setMaxCount(quotaRule.getMaxCount());//最大发放数量(券池数量):优惠券数量池
             }else{
                 dto.setMaxCount(CommonConstant.IGNOREINTVALUE);// 数值参数的边界有效上限````
-            }
+            }*/
             //领取或使用规则
 
             if (freqRuleList != null && freqRuleList.size() > 0){
