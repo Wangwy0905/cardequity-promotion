@@ -632,20 +632,33 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 batchService.batchDispose(freqRuleList, CouponGetOrUseFreqRuleMapper.class, "insert");
             }
             //【处理限额】
-            if (req.getQuotaRule() != null) {
+            /*if (req.getQuotaRule() != null) {
                 req.getQuotaRule().setCouponId(dto.getId());//将先生成的id设置到额度
 
                 CouponQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(req.getQuotaRule(), CouponQuotaRuleEntity.class);
                 quotaRuleEntity.setCreateAuthor(req.getOperator());
                 quotaRuleEntity.setUpdateAuthor(req.getOperator());
                 quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
-                log.info("发行优惠券数量数据:[{}]", JSONObject.toJSONString(quotaRuleEntity));
                 sqlresult = couponQuotaRuleMapper.insert(quotaRuleEntity);
                 if (sqlresult <= 0) {
                     throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("新增优惠额度信息错误，编号" + quotaRuleEntity.getId()));
                 }
-            }
+            }*/
 
+        }
+
+        //【处理限额】
+        if (req.getQuotaRule() != null) {
+            req.getQuotaRule().setCouponId(dto.getId());//将先生成的id设置到额度
+
+            CouponQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(req.getQuotaRule(), CouponQuotaRuleEntity.class);
+            quotaRuleEntity.setCreateAuthor(req.getOperator());
+            quotaRuleEntity.setUpdateAuthor(req.getOperator());
+            quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+            sqlresult = couponQuotaRuleMapper.insert(quotaRuleEntity);
+            if (sqlresult <= 0) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("新增优惠额度信息错误，编号" + quotaRuleEntity.getId()));
+            }
         }
 
         if (dto.getAllowUseEndDate().compareTo(dto.getAllowUseBeginDate()) < 0) {
