@@ -129,7 +129,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponIssueEntity.getCouponId());
 
-        checkCoupon(couponIssueEntity, productCouponEntity, productCouponEntity.getStatus());
+        checkCoupon(couponIssueEntity, productCouponEntity, couponIssueEntity.getIsVisible());
 
         //更新发放状态为发放中
         couponIssueEntity.setIssueStatus(ISSUING.getCode());
@@ -538,8 +538,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      */
     private void checkCoupon(CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity, String couponIsVisible) {
         checkCoupon(couponIssueEntity, productCouponEntity);
-        //检查券的上下架
-        if (CouponStatus.NO.getDictValue().equals(couponIsVisible)) {
+        //检查发放的上下架
+        if (CouponIssueVisibleEnum.INVISIBLE.getCode().equals(couponIsVisible)) {
             throw new BizException(INVISIBLE_COUPON_ISSUE_TASK_CANNOT_BE_ISSUED);
         }
         //检查对用户类型的发放是否已经在进行或者已完成
