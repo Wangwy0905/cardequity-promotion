@@ -3,7 +3,6 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.converter.OrikaBeanPropertiesConverter;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
@@ -32,7 +31,6 @@ import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -495,6 +493,13 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
      }
+
+    public static void main(String[] args) {
+        String str = "{\"productCouponDto\":{\"couponStrategyType\":\"1\",\"couponType\":\"1\",\"couponName\":\"测试发行量666666\",\"labelDto\":{\"uuid\":\"24fe65db7c21433f90fd624f4a2438d8\",\"id\":\"24fe65db7c21433f90fd624f4a2438d8\"},\"couponShortDesc\":\"111\",\"couponLevel\":\"0\",\"clientTypeSet\":\"11\",\"monthValid\":true,\"profitValue\":111,\"status\":\"0\",\"getStage\":\"6\",\"getType\":\"0\"},\"quotaRule\":{\"perMaxAmount\":999999999,\"perDateAndAccMaxAmount\":999999999,\"perDateMaxAmount\":999999999,\"personMaxAmount\":999999999,\"maxAmount\":999999999,\"maxCount\":111},\"stageList\":[{\"couponShortDesc\":\"111\",\"triggerByType\":\"0\",\"beginValue\":11,\"endValue\":999999999,\"couponValue\":111}]}";
+        CouponDetailDto couponDetailDto = JSONObject.parseObject(str, CouponDetailDto.class);
+        System.out.println(couponDetailDto);
+    }
+
     /**
      * 添加优惠券
      *
@@ -640,6 +645,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 quotaRuleEntity.setCreateAuthor(req.getOperator());
                 quotaRuleEntity.setUpdateAuthor(req.getOperator());
                 quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+                log.info("发行优惠券数量数据:[{}]", JSONObject.toJSONString(quotaRuleEntity));
                 sqlresult = couponQuotaRuleMapper.insert(quotaRuleEntity);
                 if (sqlresult <= 0) {
                     throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("新增优惠额度信息错误，编号" + quotaRuleEntity.getId()));
