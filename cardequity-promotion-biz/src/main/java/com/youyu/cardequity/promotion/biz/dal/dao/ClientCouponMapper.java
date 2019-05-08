@@ -199,6 +199,14 @@ public interface ClientCouponMapper extends YyMapper<ClientCouponEntity> {
                                                        @Param("skuId") String skuId,
                                                        @Param("status") String status,
                                                        @Param("termStatus") String termStatus);
+
+    /**
+     * 统计优惠券已发放数量
+     *
+     * @param couponId
+     * @return
+     */
+    Integer getCountByCouponId(@Param("couponId") String couponId);
 }
 
 

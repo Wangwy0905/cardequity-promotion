@@ -324,4 +324,9 @@
         order by COUPON_AMOUT desc,VALID_END_DATE
     </select>
 
+    <select id="getCountByCouponId" parameterType="string" resultType="java.lang.Integer">
+        select count(1) from tb_client_coupon
+        where COUPON_ID = #{couponId,jdbcType=VARCHAR}
+    </select>
+
 </mapper>
