@@ -494,12 +494,6 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
      }
 
-    public static void main(String[] args) {
-        String str = "{\"productCouponDto\":{\"couponStrategyType\":\"1\",\"couponType\":\"1\",\"couponName\":\"测试发行量666666\",\"labelDto\":{\"uuid\":\"24fe65db7c21433f90fd624f4a2438d8\",\"id\":\"24fe65db7c21433f90fd624f4a2438d8\"},\"couponShortDesc\":\"111\",\"couponLevel\":\"0\",\"clientTypeSet\":\"11\",\"monthValid\":true,\"profitValue\":111,\"status\":\"0\",\"getStage\":\"6\",\"getType\":\"0\"},\"quotaRule\":{\"perMaxAmount\":999999999,\"perDateAndAccMaxAmount\":999999999,\"perDateMaxAmount\":999999999,\"personMaxAmount\":999999999,\"maxAmount\":999999999,\"maxCount\":111},\"stageList\":[{\"couponShortDesc\":\"111\",\"triggerByType\":\"0\",\"beginValue\":11,\"endValue\":999999999,\"couponValue\":111}]}";
-        CouponDetailDto couponDetailDto = JSONObject.parseObject(str, CouponDetailDto.class);
-        System.out.println(couponDetailDto);
-    }
-
     /**
      * 添加优惠券
      *
