@@ -31,7 +31,7 @@ import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.biz.constant.RedissonKeyConstant.CARDEQUITY_ACTIVITY_COUPON_ACTIVITY_CLIENT_COUPON;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_SUCCESSED;
-import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.ISSUED;
+import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.*;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static java.text.MessageFormat.format;
 import static java.util.Objects.isNull;
@@ -81,9 +81,23 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
 
         String lockKey = format(CARDEQUITY_ACTIVITY_COUPON_ACTIVITY_CLIENT_COUPON, activityCouponAcquire.getActivityId(), activityCouponAcquire.getClientId(), activityCouponAcquire.getCouponId()).intern();
         distributedLockHandler.tryLock(lockKey, () -> {
+            doIssueStatus(couponIssueEntity);
             doCreateIssueCoupon(activityCouponAcquire, couponIssueEntity, productCouponEntity, issueFlag);
             return null;
         });
+    }
+
+    /**
+     * 修改优惠券发放状态
+     *
+     * @param couponIssueEntity
+     */
+    private void doIssueStatus(CouponIssueEntity couponIssueEntity) {
+        String issueStatus = couponIssueEntity.getIssueStatus();
+        if (eq(issueStatus, NOT_ISSUE.getCode())) {
+            couponIssueEntity.setIssueStatus(ISSUING.getCode());
+            couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+        }
     }
 
     /**
