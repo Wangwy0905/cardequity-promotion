@@ -581,11 +581,11 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             throw new BizException(INVISIBLE_COUPON_CANNOT_BE_ISSUED);
         }
 
-        LocalDateTime nowTime = LocalDateTime.now();
+        /*LocalDateTime nowTime = LocalDateTime.now();
         boolean isValid = nowTime.isAfter(productCouponEntity.getAllowUseBeginDate()) && nowTime.isBefore(productCouponEntity.getAllowUseEndDate());
         if (!isValid) {
             throw new BizException(COUPON_HAS_EXPIRED);
-        }
+        }*/
 
         ProductCouponGetTypeEnum productCouponGetTypeEnum = getCardequityEnum(ProductCouponGetTypeEnum.class, productCouponEntity.getGetType());
         if (productCouponGetTypeEnum.isHanld()) {

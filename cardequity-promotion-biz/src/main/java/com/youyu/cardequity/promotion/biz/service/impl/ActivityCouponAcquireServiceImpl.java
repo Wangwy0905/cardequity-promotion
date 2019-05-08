@@ -4,10 +4,7 @@ import com.youyu.cardequity.common.base.distributed.DistributedLockHandler;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.LocalDateUtils;
 import com.youyu.cardequity.common.spring.service.RabbitConsumerService;
-import com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueHistoryMapper;
-import com.youyu.cardequity.promotion.biz.dal.dao.CouponIssueMapper;
-import com.youyu.cardequity.promotion.biz.dal.dao.CouponQuotaRuleMapper;
-import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
+import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueHistoryEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponQuotaRuleEntity;
@@ -34,7 +31,7 @@ import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.biz.constant.RedissonKeyConstant.CARDEQUITY_ACTIVITY_COUPON_ACTIVITY_CLIENT_COUPON;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_SUCCESSED;
-import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.ISSUED;
+import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.*;
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static java.text.MessageFormat.format;
 import static java.util.Objects.isNull;
@@ -58,6 +55,8 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
     private CouponQuotaRuleMapper couponQuotaRuleMapper;
     @Autowired
     private CouponIssueHistoryMapper couponIssueHistoryMapper;
+    @Autowired
+    private ClientCouponMapper clientCouponMapper;
 
     @Autowired
     private ClientCouponService clientCouponService;
@@ -82,10 +81,23 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
 
         String lockKey = format(CARDEQUITY_ACTIVITY_COUPON_ACTIVITY_CLIENT_COUPON, activityCouponAcquire.getActivityId(), activityCouponAcquire.getClientId(), activityCouponAcquire.getCouponId()).intern();
         distributedLockHandler.tryLock(lockKey, () -> {
+            doIssueStatus(couponIssueEntity);
             doCreateIssueCoupon(activityCouponAcquire, couponIssueEntity, productCouponEntity, issueFlag);
-            // TODO: 2019/5/7 发放中 
             return null;
         });
+    }
+
+    /**
+     * 修改优惠券发放状态
+     *
+     * @param couponIssueEntity
+     */
+    private void doIssueStatus(CouponIssueEntity couponIssueEntity) {
+        String issueStatus = couponIssueEntity.getIssueStatus();
+        if (eq(issueStatus, NOT_ISSUE.getCode())) {
+            couponIssueEntity.setIssueStatus(ISSUING.getCode());
+            couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+        }
     }
 
     /**
@@ -177,8 +189,8 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
             return false;
         }
 
-        LocalDateTime nowLocalDateTime = LocalDateUtils.date2LocalDateTime(issueTime);
-        if (nowLocalDateTime.isAfter(productCouponEntity.getAllowUseEndDate())) {
+        LocalDateTime issueTimeDateTime = LocalDateUtils.date2LocalDateTime(issueTime);
+        if (issueTimeDateTime.isAfter(productCouponEntity.getAllowUseEndDate())) {
             return false;
         }
 
@@ -187,11 +199,11 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
             return false;
         }
 
-        LocalDateTime nowTime = LocalDateTime.now();
+        /*LocalDateTime nowTime = LocalDateTime.now();
         boolean isValid = nowTime.isAfter(productCouponEntity.getAllowUseBeginDate()) && nowTime.isBefore(productCouponEntity.getAllowUseEndDate());
         if (!isValid) {
             return false;
-        }
+        }*/
 
         ProductCouponGetTypeEnum productCouponGetTypeEnum = getCardequityEnum(ProductCouponGetTypeEnum.class, productCouponEntity.getGetType());
         if (productCouponGetTypeEnum.isHanld()) {
@@ -199,7 +211,8 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
         }
 
         CouponQuotaRuleEntity couponQuotaRule = couponQuotaRuleMapper.selectByPrimaryKey(couponIssueEntity.getCouponId());
-        Integer issueQuantity = couponQuotaRule.getMaxCount();
+        Integer usedQuantity = clientCouponMapper.getCountByCouponId(couponIssueEntity.getCouponId());
+        int issueQuantity = couponQuotaRule.getMaxCount() - usedQuantity;
         if (nonNull(issueQuantity) && issueQuantity <= 0) {
             return false;
         }
