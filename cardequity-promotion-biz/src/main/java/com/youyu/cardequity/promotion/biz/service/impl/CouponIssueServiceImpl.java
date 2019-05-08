@@ -361,17 +361,17 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     /**
      * 根据用户身份筛选出符合发放条件的用户集合
      *
-     * @param userInfo4CouponIssueDtoList
+     * @param userInfoList
      * @param clientTypeSet
      * @return
      */
-    private List<UserInfo4CouponIssueDto> filterAndGetEligibleClientByClientType(List<UserInfo4CouponIssueDto> userInfo4CouponIssueDtoList, String clientTypeSet) {
+    private List<UserInfo4CouponIssueDto> filterAndGetEligibleClientByClientType(List<UserInfo4CouponIssueDto> userInfoList, String clientTypeSet) {
         List<UserInfo4CouponIssueDto> eligibleUserList = new ArrayList<>();
 
         //发放类型检验
-        userInfo4CouponIssueDtoList.forEach(userInfo4CouponIssueDto -> {
-            if (checkClientTypeEligibleIssue(clientTypeSet, userInfo4CouponIssueDto.getUserType())) {
-                eligibleUserList.add(userInfo4CouponIssueDto);
+        userInfoList.forEach(userInfo -> {
+            if (checkClientType(clientTypeSet, userInfo.getUserType())) {
+                eligibleUserList.add(userInfo);
             }
         });
         return eligibleUserList;
@@ -384,7 +384,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * @param clientTypeSet
      * @return
      */
-    private boolean checkClientTypeEligibleIssue(String couponClientTypeSet, String clientTypeSet) {
+    private boolean checkClientType(String couponClientTypeSet, String clientTypeSet) {
         if (couponClientTypeSet.equals(CommonConstant.WILDCARD)
                 || StringUtils.isBlank(couponClientTypeSet)
                 || StringUtils.isBlank(clientTypeSet)) {
@@ -545,6 +545,10 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         //检查对用户类型的发放是否已经在进行或者已完成
         if (!NOT_ISSUE.getCode().equals(couponIssueEntity.getIssueStatus())) {
             throw new BizException(COUPON_ISSUE_STATUS_INCORRECT);
+        }
+
+        if (!CouponIssueTargetTypeEnum.CLIENT_ID.getCode().equals(couponIssueEntity.getTargetType())) {
+            throw new BizException(TRIGGER_ISSUE_TARGET_NOT_CLIENT);
         }
 
     }

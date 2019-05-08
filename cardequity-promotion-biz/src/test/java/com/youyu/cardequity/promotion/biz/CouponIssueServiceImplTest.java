@@ -44,8 +44,7 @@ public class CouponIssueServiceImplTest {
     public void processIssue_test() {
 
         CouponIssueMsgDetailsReq couponIssueMsgDetailsReq = new CouponIssueMsgDetailsReq();
-        couponIssueMsgDetailsReq.setCouponIssueId("3207536139927199747");
-        couponIssueMsgDetailsReq.setTargetType("1");
+        couponIssueMsgDetailsReq.setCouponIssueId("3208045385609740313");
 
         UserInfo4CouponIssueDto userInfo4CouponIssueDto = new UserInfo4CouponIssueDto();
         userInfo4CouponIssueDto.setClientId("08cf7982cf3f466a8222d1c6f02a5791");
