@@ -23,3 +23,4 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
+!/cardequity-promotion-biz/src/test/java/com/youyu/cardequity/promotion/biz/CouponIssueServiceImplTest.java

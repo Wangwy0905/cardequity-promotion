@@ -3,17 +3,13 @@ package com.youyu.cardequity.promotion.biz.controller;
 import com.youyu.cardequity.promotion.api.CouponIssueApi;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
 import com.youyu.cardequity.promotion.dto.req.*;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
+import com.youyu.cardequity.promotion.dto.rsp.*;
 import com.youyu.common.api.PageData;
 import com.youyu.common.api.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.youyu.common.api.Result.ok;
 
@@ -43,6 +39,12 @@ public class CouponIssueController implements CouponIssueApi {
     }
 
     @Override
+    @GetMapping(path = "/getCouponIssueCompensate")
+    public Result<List<CouponIssueDetailRsp>> getCouponIssueCompensate() {
+        return ok(couponIssueService.getCouponIssueCompensate());
+    }
+
+    @Override
     @PostMapping(path = "/getCouponIssueDetail")
     public Result<CouponIssueDetailRsp> getCouponIssueDetail(@RequestBody CouponIssueDetailReq couponIssueDetailReq) {
         return ok(couponIssueService.getCouponIssueDetail(couponIssueDetailReq));
@@ -67,4 +69,17 @@ public class CouponIssueController implements CouponIssueApi {
     public Result<CouponIssueEditRsp> edit(@RequestBody CouponIssueEditReq couponIssueEditReq) {
         return ok(couponIssueService.edit(couponIssueEditReq));
     }
+
+
+    @PostMapping(path = "/processIssue")
+    public Result processIssue(@RequestBody CouponIssueMsgDetailsReq couponIssueMsgDetailsReq) {
+        couponIssueService.processIssue(couponIssueMsgDetailsReq);
+        return ok();
+    }
+
+    @PostMapping(path = "/getCouponHistory")
+    public Result<PageData<CouponIssueHistoryQueryRep>> getCouponIssueHistory(@RequestBody CouponIssueHistoryQueryReq couponIssueHistoryQueryReq) {
+        return ok(couponIssueService.getCouponIssueHistory(couponIssueHistoryQueryReq));
+    }
+
 }

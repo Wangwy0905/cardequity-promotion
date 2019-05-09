@@ -1,10 +1,13 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponIssueEntity;
+import com.youyu.cardequity.promotion.dto.CouponIssueCompensateDto;
 import com.youyu.cardequity.promotion.dto.req.CouponIssueDetailReq;
 import com.youyu.cardequity.promotion.dto.req.CouponIssueQueryReq;
 import com.youyu.common.mapper.YyMapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +26,9 @@ public interface CouponIssueMapper extends YyMapper<CouponIssueEntity> {
      */
     List<CouponIssueEntity> getCouponIssueQuery(CouponIssueQueryReq couponIssueQueryReq);
 
+
+    List<CouponIssueEntity> getCouponIssueCompensate(CouponIssueCompensateDto couponIssueCompensateDto);
+
     /**
      * 根据couponIssueDetailReq查询优惠券发放明细
      *
@@ -30,4 +36,14 @@ public interface CouponIssueMapper extends YyMapper<CouponIssueEntity> {
      * @return
      */
     CouponIssueEntity getCouponIssueDetail(CouponIssueDetailReq couponIssueDetailReq);
+
+    /**
+     * 根据活动id和优惠券id查询优惠券发放
+     * 注:默认目标类型是活动id
+     *
+     * @param activityId
+     * @param couponId
+     * @return
+     */
+    CouponIssueEntity getCouponIssueByActivityIdCouponId(@Param("activityId") String activityId, @Param("couponId") String couponId);
 }

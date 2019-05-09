@@ -3,6 +3,9 @@ package com.youyu.cardequity.promotion.vo.req;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by caiyi on 2019/1/2.
  */
@@ -43,4 +46,7 @@ public class BaseQryCouponReq {
 
     @ApiModelProperty(value = "每页数量：从1开始")
     private int pageSize;
+
+    @ApiModelProperty(value = "券状态:0-未开始 1-有效中 2-已过期 3-按天数/当月有效")
+    private List<String> couponStatusList = new ArrayList<>();
 }

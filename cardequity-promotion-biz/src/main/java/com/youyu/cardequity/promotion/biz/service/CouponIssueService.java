@@ -1,11 +1,10 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.dto.req.*;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueDetailRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueEditRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueQueryRsp;
-import com.youyu.cardequity.promotion.dto.rsp.CouponIssueRsp;
+import com.youyu.cardequity.promotion.dto.rsp.*;
 import com.youyu.common.api.PageData;
+
+import java.util.List;
 
 
 /**
@@ -29,6 +28,14 @@ public interface CouponIssueService {
      */
     void processIssue(CouponIssueMsgDetailsReq couponIssueMsgDetailsReq);
 
+    /**
+     * 查询优惠券发放流水
+     *
+     * @param couponIssueHistoryQueryReq
+     * @return
+     */
+    PageData<CouponIssueHistoryQueryRep> getCouponIssueHistory(CouponIssueHistoryQueryReq couponIssueHistoryQueryReq);
+
 
     /**
      * 根据查询条件查询优惠券发放列表
@@ -37,6 +44,14 @@ public interface CouponIssueService {
      * @return
      */
     PageData<CouponIssueQueryRsp> getCouponIssueQuery(CouponIssueQueryReq couponIssueQueryReq);
+
+    /**
+     * 拿到优惠券发放记录中应该被补偿的列表
+     *
+     * @return
+     */
+    List<CouponIssueDetailRsp> getCouponIssueCompensate();
+
 
     /**
      * 根据查询条件查询发放明细

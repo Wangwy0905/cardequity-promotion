@@ -1,13 +1,14 @@
 package com.youyu.cardequity.promotion.biz.dal.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.persistence.*;
-
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -32,6 +33,17 @@ public class ClientCouponEntity extends com.youyu.common.entity.BaseEntity<Strin
     @Column(name = "STAGE_ID")
     private String stageId;
 
+    /**
+     * 发放记录ID(记录同一批次后台自动发放的标识)
+     */
+    @Column(name = "COUPON_ISSUE_ID")
+    private String couponIssueId;
+
+    /**
+     * 优惠券发放流水ID
+     */
+    @Column(name = "COUPON_ISSUE_HISTORY_ID")
+    private String couponIssueHistoryId;
     /**
      * 优惠策略类型:0-折扣券(该表不会出现) 1-阶梯优惠券(满多少减多少)  2-定额优惠券（该券无阶梯优惠固定金额）
      */

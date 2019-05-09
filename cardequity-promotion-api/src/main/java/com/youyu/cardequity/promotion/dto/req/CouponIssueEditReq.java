@@ -34,9 +34,6 @@ public class CouponIssueEditReq implements Serializable {
     @ApiModelProperty("优惠券发放时间")
     private String issueTime;
 
-    @ApiModelProperty("对象类型 1:用户id 2:活动id")
-    private String objectType;
-
     @ApiModelProperty("上下架 0:上架 1:下架")
     private String isVisible;
 

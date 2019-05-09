@@ -3,7 +3,6 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.converter.OrikaBeanPropertiesConverter;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
@@ -34,7 +33,6 @@ import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import com.youyu.common.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -504,6 +502,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
      }
+
     /**
      * 添加优惠券
      *
@@ -642,7 +641,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 batchService.batchDispose(freqRuleList, CouponGetOrUseFreqRuleMapper.class, "insert");
             }
             //【处理限额】
-            if (req.getQuotaRule() != null) {
+            /*if (req.getQuotaRule() != null) {
                 req.getQuotaRule().setCouponId(dto.getId());//将先生成的id设置到额度
 
                 CouponQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(req.getQuotaRule(), CouponQuotaRuleEntity.class);
@@ -653,8 +652,22 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
                 if (sqlresult <= 0) {
                     throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("新增优惠额度信息错误，编号" + quotaRuleEntity.getId()));
                 }
-            }
+            }*/
 
+        }
+
+        //【处理限额】
+        if (req.getQuotaRule() != null) {
+            req.getQuotaRule().setCouponId(dto.getId());//将先生成的id设置到额度
+
+            CouponQuotaRuleEntity quotaRuleEntity = BeanPropertiesUtils.copyProperties(req.getQuotaRule(), CouponQuotaRuleEntity.class);
+            quotaRuleEntity.setCreateAuthor(req.getOperator());
+            quotaRuleEntity.setUpdateAuthor(req.getOperator());
+            quotaRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
+            sqlresult = couponQuotaRuleMapper.insert(quotaRuleEntity);
+            if (sqlresult <= 0) {
+                throw new BizException(PARAM_ERROR.getCode(), PARAM_ERROR.getFormatDesc("新增优惠额度信息错误，编号" + quotaRuleEntity.getId()));
+            }
         }
 
         if (dto.getAllowUseEndDate().compareTo(dto.getAllowUseBeginDate()) < 0) {
