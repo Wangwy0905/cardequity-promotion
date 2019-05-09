@@ -199,12 +199,6 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
             return false;
         }
 
-        /*LocalDateTime nowTime = LocalDateTime.now();
-        boolean isValid = nowTime.isAfter(productCouponEntity.getAllowUseBeginDate()) && nowTime.isBefore(productCouponEntity.getAllowUseEndDate());
-        if (!isValid) {
-            return false;
-        }*/
-
         ProductCouponGetTypeEnum productCouponGetTypeEnum = getCardequityEnum(ProductCouponGetTypeEnum.class, productCouponEntity.getGetType());
         if (productCouponGetTypeEnum.isHanld()) {
             return false;
