@@ -92,6 +92,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     private ProductCouponMapper productCouponMapper;
     @Autowired
     private CouponQuotaRuleMapper couponQuotaRuleMapper;
+    @Autowired
+    private ClientCouponMapper clientCouponMapper;
 
     @Autowired
     private UidGenerator uidGenerator;
@@ -558,13 +560,13 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * @param productCouponEntity
      */
     private void checkCreateCoupon(CouponIssueEntity couponIssueEntity, ProductCouponEntity productCouponEntity) {
-        checkCoupon(couponIssueEntity, productCouponEntity);
-
         Date issueTime = string2Date(couponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
         Date now = now();
         if (now.after(issueTime)) {
             throw new BizException(ISSUE_TIME_MUST_GREATER_CURRENT_TIME);
         }
+
+        checkCoupon(couponIssueEntity, productCouponEntity);
     }
 
     /**
@@ -579,12 +581,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             throw new BizException(INVISIBLE_COUPON_CANNOT_BE_ISSUED);
         }
 
-        /*LocalDateTime nowTime = LocalDateTime.now();
-        boolean isValid = nowTime.isAfter(productCouponEntity.getAllowUseBeginDate()) && nowTime.isBefore(productCouponEntity.getAllowUseEndDate());
-        if (!isValid) {
-            throw new BizException(COUPON_HAS_EXPIRED);
-        }*/
-
         ProductCouponGetTypeEnum productCouponGetTypeEnum = getCardequityEnum(ProductCouponGetTypeEnum.class, productCouponEntity.getGetType());
         if (productCouponGetTypeEnum.isHanld()) {
             throw new BizException(MANUAL_COUPON_CANNOT_BE_ISSUED);
@@ -597,7 +593,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         }
 
         CouponQuotaRuleEntity couponQuotaRule = couponQuotaRuleMapper.selectByPrimaryKey(couponIssueEntity.getCouponId());
-        Integer issueQuantity = couponQuotaRule.getMaxCount();
+        Integer usedQuantity = clientCouponMapper.getCountByCouponId(couponIssueEntity.getCouponId());
+        Integer issueQuantity = couponQuotaRule.getMaxCount() - usedQuantity;
         if (nonNull(issueQuantity) && issueQuantity <= 0) {
             throw new BizException(COUPON_ISSUE_QUANTITY_CANNOT_LESS_ZERO);
         }
@@ -695,7 +692,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponId);
 
         CouponIssueEntity couponIssueEntity = createCouponIssueEntity(couponIssueEditReq, productCouponEntity);
-        checkCoupon(couponIssueEntity, productCouponEntity);
+        checkCreateCoupon(couponIssueEntity, productCouponEntity);
+
+
         couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
         return getCouponIssueEditRsp(originalCouponIssueEntity, couponIssueEntity);
     }
