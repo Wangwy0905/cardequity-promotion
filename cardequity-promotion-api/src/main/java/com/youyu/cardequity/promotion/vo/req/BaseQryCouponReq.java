@@ -24,6 +24,7 @@ public class BaseQryCouponReq {
     private String couponName;
     @ApiModelProperty(value = "当月有效")
     private String monthValid;
+
     @ApiModelProperty(value = "领取方式 ：0-自动发放  1-手动领取")
     private String getType;
     @ApiModelProperty(value = "商品id")

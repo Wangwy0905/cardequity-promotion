@@ -1049,7 +1049,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             dealList.add(item);
         }
         batchService.batchDispose(dealList, ProductCouponMapper.class, "updateByPrimaryKeySelective");
-        System.out.println(result+"111111111111111");
+
 
         return result;
     }

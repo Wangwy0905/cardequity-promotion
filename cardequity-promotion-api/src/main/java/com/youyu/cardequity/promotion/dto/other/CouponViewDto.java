@@ -61,13 +61,12 @@ public class CouponViewDto {
 
     @ApiModelProperty(value = "优惠开始日:")
     private LocalDateTime allowUseBeginDate;
-
     @ApiModelProperty(value = "优惠结束日:")
     private LocalDateTime allowUseEndDate;
-
     @ApiModelProperty(value = "有效期限:以天为单位")
     private Integer valIdTerm;
-
+    @ApiModelProperty(value="当月有效")
+    private  Boolean monthValid;
     @ApiModelProperty(value = "领取开始日:到分秒级别")
     private LocalDateTime allowGetBeginDate;
 

@@ -79,8 +79,7 @@ public class ProductCouponDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "有效期限:以天为单位")
     private Integer valIdTerm;
-
-    @ApiModelProperty(value="有效期限：当月有效 ")
+    @ApiModelProperty(value="有效期限：当月有效")
     private Boolean monthValid;
 
     @ApiModelProperty(value = "有效期限是否控制在不超过优惠结束日:0-否:有效结束日=实际领取日+期限 1-是：有效结束日=min(优惠结束日,(实际领取日+期限))")
