@@ -691,7 +691,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponId);
 
         CouponIssueEntity couponIssueEntity = createCouponIssueEntity(couponIssueEditReq, productCouponEntity);
-        checkCoupon(couponIssueEntity, productCouponEntity);
+        checkCreateCoupon(couponIssueEntity, productCouponEntity);
+
+
         couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
         return getCouponIssueEditRsp(originalCouponIssueEntity, couponIssueEntity);
     }
