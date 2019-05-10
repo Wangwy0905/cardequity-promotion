@@ -24,7 +24,7 @@ import java.util.List;
  * V1.0-V1 1004244-徐长焕-20181207 新建代码，findEnableGetCoupon：获取客户可领取的券
  */
 @Api(tags = "优惠券信息管理：券的定义信息、使用规则、领取规则、额度设置等")
-@FeignClient(name = "cardequity-promotion"/*,url = "127.0.0.1:8084"*/)
+@FeignClient(name = "cardequity-promotion",url = "127.0.0.1:8084")
 @RequestMapping(path = "/productCoupon")
 public interface ProductCouponApi {
 
