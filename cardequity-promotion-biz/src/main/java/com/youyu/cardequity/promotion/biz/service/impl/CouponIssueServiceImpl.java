@@ -107,10 +107,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     private CouponIssueHistoryMapper couponIssueHistoryMapper;
 
 
-    @Autowired
-    private ClientCouponMapper clientCouponMapper;
-
-
     @Override
     @Transactional
     public CouponIssueRsp createIssue(CouponIssueReq couponIssueReq) {
@@ -709,7 +705,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     private CouponIssueEditRsp getCouponIssueEditRsp(CouponIssueEntity originalCouponIssueEntity, CouponIssueEntity couponIssueEntity) {
         CouponIssueEditRsp couponIssueEditRsp = new CouponIssueEditRsp();
 
-        couponIssueEditRsp.setIssueTime(couponIssueEntity.getIssueTime());
+        couponIssueEditRsp.setIssueTime(originalCouponIssueEntity.getIssueTime());
         if (eq(couponIssueEntity.getTargetType(), ACTIVITY_ID.getCode())) {
             couponIssueEditRsp.setIssueTimeModifyFlag(false);
             return couponIssueEditRsp;
