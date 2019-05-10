@@ -290,7 +290,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         }
 
         //参数保护，默认期限为无期限
-        if (dto.getValIdTerm() == null)
+       if (dto.getValIdTerm() == null)
             dto.setValIdTerm(0);
 
         //参数保护，实际有效日期=领取日+期限

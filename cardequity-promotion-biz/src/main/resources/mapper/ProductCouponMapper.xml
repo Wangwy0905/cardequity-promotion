@@ -238,7 +238,7 @@
         <if test="commonQry.upAndDownStatus!=null and commonQry.upAndDownStatus!=''">
            AND a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
         </if>
-        <if test='commonQry.couponStatus =="0" or commonQry.couponStatus =="1" or commonQry.couponStatus =="2"'>
+      <!--  <if test='commonQry.couponStatus =="0" or commonQry.couponStatus =="1" or commonQry.couponStatus =="2"'>
             <if test='commonQry.couponStatus=="0"'>
                 and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
             </if>
@@ -253,25 +253,23 @@
         </if>
         <if test='commonQry.couponStatus=="3"'>
             and (a.VAL_ID_TERM is not null or a.MONTH_VALID != '0')
+        </if>-->
+        <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
+            and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+            and a.VAL_ID_TERM ='0' and a.MONTH_VALID = '0'
         </if>
-
-        <!--<if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>-->
-            <!--and a.ALLOW_USE_BEGIN_DATE &gt;curdate()-->
-            <!--and (a.VAL_ID_TERM is null or a.MONTH_VALID == '0')-->
-        <!--</if>-->
-        <!--<if test='commonQry.couponStatus!=null and commonQry.couponStatus=="1"'>-->
-            <!--and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()-->
-            <!--and a.ALLOW_USE_END_DATE &gt;=curdate()-->
-            <!--and (a.VAL_ID_TERM is null or a.MONTH_VALID == '0')-->
-        <!--</if>-->
-        <!--<if test='commonQry.couponStatus!=null and commonQry.couponStatus=="2"'>-->
-            <!--and a.ALLOW_USE_END_DATE &lt;curdate()-->
-            <!--and (a.VAL_ID_TERM is null or a.MONTH_VALID == '0')-->
-        <!--</if>-->
-        <!--<if test='commonQry.couponStatus!=null and commonQry.couponStatus=="3"'>-->
-            <!--and (a.VAL_ID_TERM is not null or a.MONTH_VALID  != '0')-->
-        <!--</if>-->
-
+        <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="1"'>
+            and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
+            and a.ALLOW_USE_END_DATE &gt;=curdate()
+            and a.VAL_ID_TERM ='0' and a.MONTH_VALID = '0'
+        </if>
+        <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="2"'>
+            and a.ALLOW_USE_END_DATE &lt;curdate()
+            and a.VAL_ID_TERM ='0' and a.MONTH_VALID = '0'
+        </if>
+        <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="3"'>
+            and (a.VAL_ID_TERM !='0'or a.MONTH_VALID = '1')
+        </if>
 
         <if test="!@com.youyu.cardequity.promotion.biz.utils.CommonUtils@isEmptyorNull(commonQry.couponId)">
             and ( a.UUID=#{commonQry.couponId,jdbcType=VARCHAR} or
@@ -361,18 +359,23 @@
           and  a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
         </if>
 
-
- <!--       <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
+        <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+            and a.VAL_ID_TERM is null and a.MONTH_VALID ='0'
         </if>
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="1"'>
             and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
             and a.ALLOW_USE_END_DATE &gt;=curdate()
+            and a.VAL_ID_TERM is null and a.MONTH_VALID ='0' and a.VAL_ID_TERM =
         </if>
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="2"'>
             and a.ALLOW_USE_END_DATE &lt;curdate()
-        </if>-->
-        <if test='commonQry.couponStatus =="0" or commonQry.couponStatus =="1" or commonQry.couponStatus =="2"'>
+            and a.VAL_ID_TERM is null and a.MONTH_VALID ='0'
+        </if>
+        <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="3"'>
+            and (a.VAL_ID_TERM is not null or a.MONTH_VALID  != '0')
+        </if>
+      <!--  <if test='commonQry.couponStatus =="0" or commonQry.couponStatus =="1" or commonQry.couponStatus =="2"'>
             <if test='commonQry.couponStatus=="0"'>
                 and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
             </if>
@@ -386,8 +389,8 @@
             and (a.VAL_ID_TERM is null or a.MONTH_VALID == '0')
         </if>
         <if test='commonQry.couponStatus=="3"'>
-            and (a.VAL_ID_TERM is not null or a.MONTH_VALID != '0')
-        </if>
+            and (a.VAL_ID_TERM   is not null or a.MONTH_VALID != '0')
+        </if>-->
 
 
         <if test="!@com.youyu.cardequity.promotion.biz.utils.CommonUtils@isEmptyorNull(commonQry.couponId)">
