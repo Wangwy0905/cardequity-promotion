@@ -32,4 +32,7 @@ public class CouponIssueHistoryQueryRep implements Serializable {
 
     @ApiModelProperty("订单编号")
     private String orderId;
+
+    @ApiModelProperty("用户手机号码")
+    private String mobile;
 }
