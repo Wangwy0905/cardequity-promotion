@@ -221,30 +221,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
     }
 
-    private List<CouponIssueHistoryQueryRep> getCouponIssueHistoryQueryRep(
-            List<CouponIssueHistoryDetailsEntity> couponIssueHistoryDetailsEntityList, int sequenceNumberStart) {
-        //mapping
-        List<CouponIssueHistoryQueryRep> response = new ArrayList<>(couponIssueHistoryDetailsEntityList.size());
-        couponIssueHistoryDetailsEntityList.forEach(couponIssueHistoryDetailsEntity -> {
-            CouponIssueHistoryQueryRep responseDto = new CouponIssueHistoryQueryRep();
-            BeanUtils.copyProperties(couponIssueHistoryDetailsEntity, responseDto);
-            clientCouponStatusSetting(couponIssueHistoryDetailsEntity, responseDto);
-            response.add(responseDto);
-        });
-        //暂时保留，数据库内字段sequenceNumber暂时用不到，所以这里也暂时不用
-        /*//根据sequenceNumber升序排序
-        response.sort((a, b) -> Integer.compare(a.getSequenceNumber().compareTo(b.getSequenceNumber()), 0));
-        int sequenceNumber = 1;
-        */
-        int sequenceNumber = sequenceNumberStart;
-        for (CouponIssueHistoryQueryRep entity : response) {
-            entity.setSequenceNumber(String.valueOf(sequenceNumber));
-            sequenceNumber++;
-        }
-        return response;
-    }
-
-
     private void clientCouponStatusSetting(CouponIssueHistoryDetailsEntity couponIssueHistoryDetailsEntity, CouponIssueHistoryQueryRep responseDto) {
         //发券：未发券，已发券
         if (StringUtils.isNoneBlank(couponIssueHistoryDetailsEntity.getIssueResult())) {

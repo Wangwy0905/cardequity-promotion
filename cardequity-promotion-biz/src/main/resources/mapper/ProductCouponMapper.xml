@@ -5,7 +5,7 @@
 <!-- -->
 <mapper namespace="com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper">
 
-   <select id="findEnableGetCouponListByCommon2"
+    <select id="findEnableGetCouponListByCommon2"
             resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
         select a.*
         from TB_PRODUCT_COUPON a
@@ -70,7 +70,7 @@
         <if test="clientType != null and clientType!=''">
             <choose>
                 <when test="clientType == '10'.toString()">
-                    and  if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*'
+                    and if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*'
                 </when>
                 <when test="clientType == '11'.toString()">
                     and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
@@ -124,7 +124,7 @@
         <if test="clientType != null and clientType!=''">
             <choose>
                 <when test="clientType == '10'.toString()">
-                    and  if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*'
+                    and if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*'
                 </when>
                 <when test="clientType == '11'.toString()">
                     and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
@@ -152,7 +152,7 @@
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
         <if test="commonQry.upAndDownStatus!=null and commonQry.upAndDownStatus!=''">
-          AND  a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
+            AND a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
         </if>
         <if test="commonQry.couponId!=null and commonQry.couponId!=''">
             and a.UUID=#{commonQry.couponId,jdbcType=VARCHAR}
@@ -236,24 +236,24 @@
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
         <if test="commonQry.upAndDownStatus!=null and commonQry.upAndDownStatus!=''">
-           AND a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
+            AND a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
         </if>
-      <!--  <if test='commonQry.couponStatus =="0" or commonQry.couponStatus =="1" or commonQry.couponStatus =="2"'>
-            <if test='commonQry.couponStatus=="0"'>
-                and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
-            </if>
-            <if test='commonQry.couponStatus=="1"'>
-                and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
-                and a.ALLOW_USE_END_DATE &gt;=curdate()
-            </if>
-            <if test='commonQry.couponStatus=="2"'>
-                and a.ALLOW_USE_END_DATE &lt;curdate()
-            </if>
-            and (a.VAL_ID_TERM is null or a.MONTH_VALID == '0')
-        </if>
-        <if test='commonQry.couponStatus=="3"'>
-            and (a.VAL_ID_TERM is not null or a.MONTH_VALID != '0')
-        </if>-->
+        <!--  <if test='commonQry.couponStatus =="0" or commonQry.couponStatus =="1" or commonQry.couponStatus =="2"'>
+              <if test='commonQry.couponStatus=="0"'>
+                  and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+              </if>
+              <if test='commonQry.couponStatus=="1"'>
+                  and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
+                  and a.ALLOW_USE_END_DATE &gt;=curdate()
+              </if>
+              <if test='commonQry.couponStatus=="2"'>
+                  and a.ALLOW_USE_END_DATE &lt;curdate()
+              </if>
+              and (a.VAL_ID_TERM is null or a.MONTH_VALID == '0')
+          </if>
+          <if test='commonQry.couponStatus=="3"'>
+              and (a.VAL_ID_TERM is not null or a.MONTH_VALID != '0')
+          </if>-->
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
             and a.VAL_ID_TERM ='0' and a.MONTH_VALID = '0'
@@ -306,10 +306,12 @@
         </if>
         <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='0'.toString()">
             and ALLOW_GET_BEGIN_DATE &gt;curdate()
+            and a.GET_TYPE='1'
         </if>
-        <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='1'.toString()">
+        <if test='commonQry.sendStatus=="1"'>
             and ALLOW_GET_BEGIN_DATE &lt;=curdate()
             and a.ALLOW_GET_END_DATE &gt;=curdate()
+            and a.GET_TYPE='1'
         </if>
         <if test="commonQry.sendStatus!=null and commonQry.sendStatus=='2'.toString()">
             and ALLOW_GET_END_DATE &lt;curdate()
@@ -357,7 +359,7 @@
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
         <if test="commonQry.upAndDownStatus!=null and commonQry.upAndDownStatus!=''">
-          and  a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
+            and a.STATUS=#{commonQry.upAndDownStatus,jdbcType=VARCHAR}
         </if>
 
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
@@ -374,24 +376,24 @@
             and a.VAL_ID_TERM ='0' and a.MONTH_VALID ='0'
         </if>
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="3"'>
-            and (a.VAL_ID_TERM !='0' or a.MONTH_VALID  != '0')
+            and (a.VAL_ID_TERM !='0' or a.MONTH_VALID != '0')
         </if>
-      <!--  <if test='commonQry.couponStatus =="0" or commonQry.couponStatus =="1" or commonQry.couponStatus =="2"'>
-            <if test='commonQry.couponStatus=="0"'>
-                and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
-            </if>
-            <if test='commonQry.couponStatus=="1"'>
-                and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
-                and a.ALLOW_USE_END_DATE &gt;=curdate()
-            </if>
-            <if test='commonQry.couponStatus=="2"'>
-                and a.ALLOW_USE_END_DATE &lt;curdate()
-            </if>
-            and (a.VAL_ID_TERM is null or a.MONTH_VALID == '0')
-        </if>
-        <if test='commonQry.couponStatus=="3"'>
-            and (a.VAL_ID_TERM   is not null or a.MONTH_VALID != '0')
-        </if>-->
+        <!--  <if test='commonQry.couponStatus =="0" or commonQry.couponStatus =="1" or commonQry.couponStatus =="2"'>
+              <if test='commonQry.couponStatus=="0"'>
+                  and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+              </if>
+              <if test='commonQry.couponStatus=="1"'>
+                  and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
+                  and a.ALLOW_USE_END_DATE &gt;=curdate()
+              </if>
+              <if test='commonQry.couponStatus=="2"'>
+                  and a.ALLOW_USE_END_DATE &lt;curdate()
+              </if>
+              and (a.VAL_ID_TERM is null or a.MONTH_VALID == '0')
+          </if>
+          <if test='commonQry.couponStatus=="3"'>
+              and (a.VAL_ID_TERM   is not null or a.MONTH_VALID != '0')
+          </if>-->
 
 
         <if test="!@com.youyu.cardequity.promotion.biz.utils.CommonUtils@isEmptyorNull(commonQry.couponId)">
@@ -490,7 +492,7 @@
         from TB_PRODUCT_COUPON a
         where ifnull(a.IS_ENABLE, '1') = '1'
         <if test="obtainType!=null and obtainType!=''">
-        and if(length(a.GET_TYPE),a.GET_TYPE,'1') = #{obtainType,jdbcType=VARCHAR}
+            and if(length(a.GET_TYPE),a.GET_TYPE,'1') = #{obtainType,jdbcType=VARCHAR}
         </if>
         <if test="status!=null and status!=''">
             and a.STATUS=#{status,jdbcType=VARCHAR}
@@ -545,7 +547,8 @@
             and ( if(length(a.CLIENT_TYPE_SET),a.CLIENT_TYPE_SET,'*') = '*' or instr(CLIENT_TYPE_SET,
             #{clientType,jdbcType=VARCHAR})&gt;0)
         </if>
-        and a.ALLOW_GET_END_DATE &gt;= concat(date_format(LAST_DAY(date_add(NOW(), interval #{monthNum,jdbcType=INTEGER} MONTH)), '%Y-%m-'), '01')
+        and a.ALLOW_GET_END_DATE &gt;= concat(date_format(LAST_DAY(date_add(NOW(), interval #{monthNum,jdbcType=INTEGER}
+        MONTH)), '%Y-%m-'), '01')
         and ALLOW_GET_END_DATE &gt;= curdate()
         and (ifnull(b.PER_DATE_MAX_AMOUNT,999999999)>=999999999 or b.PER_DATE_MAX_AMOUNT &gt;
         (select ifnull(sum(ifnull(d.COUPON_AMOUT, 0)),0)
@@ -569,7 +572,8 @@
         Order by a.CREATE_TIME desc
     </select>
 
-    <select id="findInQuotaCouponListByProduct" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
+    <select id="findInQuotaCouponListByProduct"
+            resultType="com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity">
         select *
         from TB_PRODUCT_COUPON a
         left join TB_COUPON_QUOTA_RULE b on a.UUID = b.COUPON_ID and IFNULL(b.IS_ENABLE, '1') = '1'

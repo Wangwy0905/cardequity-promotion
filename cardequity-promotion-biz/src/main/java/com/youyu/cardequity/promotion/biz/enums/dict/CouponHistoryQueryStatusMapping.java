@@ -58,6 +58,7 @@ public class CouponHistoryQueryStatusMapping {
          * 发放成功（保留字段，暂时不对外展示）
          */
         ISSUE_SUCCESS("1", CouponIssueResultEnum.ISSUED_SUCCESSED.getCode(), ISSUE_RESULT),
+
         COUPON_NOT_USED("0", "0", USE_STATUS),
         COUPON_IS_USED("2", "2", USE_STATUS);
 
