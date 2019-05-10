@@ -144,6 +144,7 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
         CouponIssueHistoryEntity couponIssueHistoryEntity = new CouponIssueHistoryEntity();
         couponIssueHistoryEntity.setClientId(activityCouponAcquire.getClientId());
         couponIssueHistoryEntity.setCouponIssueHistoryId(couponIssueHistoryId);
+        couponIssueHistoryEntities.add(couponIssueHistoryEntity);
         return couponIssueHistoryEntities;
     }
 
