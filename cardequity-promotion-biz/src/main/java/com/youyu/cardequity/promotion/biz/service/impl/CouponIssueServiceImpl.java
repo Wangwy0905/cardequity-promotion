@@ -107,9 +107,6 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     private CouponIssueHistoryMapper couponIssueHistoryMapper;
 
 
-    @Autowired
-    private ClientCouponMapper clientCouponMapper;
-
 
     @Override
     @Transactional
