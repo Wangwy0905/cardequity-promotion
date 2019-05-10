@@ -19,9 +19,10 @@
         from TB_COUPON_ISSUE
         <where>
             <if test="searchCondition != null">
-                (COUPON_ISSUE_ID = #{searchCondition,jdbcType=VARCHAR}
-                or COUPON_NAME = #{searchCondition,jdbcType=VARCHAR}
-                or COUPON_ID = #{searchCondition,jdbcType=VARCHAR})
+                <bind name="condition" value="'%' + _parameter.getSearchCondition() + '%'" />
+                (COUPON_ISSUE_ID like #{condition,jdbcType=VARCHAR}
+                or COUPON_NAME like #{condition,jdbcType=VARCHAR}
+                or COUPON_ID like #{condition,jdbcType=VARCHAR})
             </if>
             <if test="targetType != null">
                 and TARGET_TYPE = #{targetType,jdbcType=VARCHAR}
