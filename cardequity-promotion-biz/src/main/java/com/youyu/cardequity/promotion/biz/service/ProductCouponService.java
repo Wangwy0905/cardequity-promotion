@@ -1,22 +1,21 @@
 package com.youyu.cardequity.promotion.biz.service;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
+import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
-import com.youyu.cardequity.promotion.dto.ProductCouponDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
-import com.youyu.cardequity.promotion.vo.DateParam.DateParam;
+import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.service.IService;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
- *  代码生成器
+ * 代码生成器
  *
  * @author 技术平台
  * @date 2018-12-07
@@ -26,10 +25,10 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
     /**
      * 1004259-徐长焕-20181210 新增
      * 功能：查询【有效期内、上架的】指定商品可领取的优惠券
+     *
      * @return
      */
-     List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq);
-
+    List<CouponDetailDto> findEnableGetCoupon(QryProfitCommonReq qryProfitCommonReq);
 
 
     /**
@@ -47,7 +46,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param req
      * @return
      */
-    CommonBoolDto<CouponDetailDto>  editCoupon(CouponDetailDto req);
+    CommonBoolDto<CouponDetailDto> editCoupon(CouponDetailDto req);
 
     /**
      * 批量删除优惠券
@@ -55,10 +54,11 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param req
      * @return
      */
-     CommonBoolDto<Integer> batchDelCoupon( BatchBaseCouponReq req);
+    CommonBoolDto<Integer> batchDelCoupon(BatchBaseCouponReq req);
 
     /**
      * 上架优惠券
+     *
      * @param req
      * @return
      */
@@ -66,6 +66,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
 
     /**
      * 下架
+     *
      * @param req
      * @return
      */
@@ -97,6 +98,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
 
     /**
      * 查询指定优惠券详情
+     *
      * @param req
      * @return
      */
@@ -129,6 +131,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
 
     /**
      * 拼装优惠券详情数据
+     *
      * @param entity
      * @return
      */
@@ -140,7 +143,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param req 查询请求体
      * @return
      */
-    List<ObtainCouponViewDto> findFirstPageVipCoupon(PageQryProfitCommonReq req) ;
+    List<ObtainCouponViewDto> findFirstPageVipCoupon(PageQryProfitCommonReq req);
 
     /**
      * 查询H5指定月可领优惠券
@@ -148,7 +151,7 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param req 查询请求体
      * @return
      */
-     List<ObtainCouponViewDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req);
+    List<ObtainCouponViewDto> findEnableObtainCouponByMonth(FindEnableObtainCouponByMonthReq req);
 
     /**
      * 查询每月份的最后一天
@@ -156,15 +159,22 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param
      * @return
      */
-     public  LocalDateTime lastMonthDay();
+    public LocalDateTime lastMonthDay();
 
     /**
      * 生效日期+天数=截止日期
-     * @param  req
+     *
+     * @param req
      * @return LocalDateTime
      */
-    public  LocalDateTime  numToDate(CouponDetailDto req);
+    public LocalDateTime numToDate(CouponDetailDto req);
 
+    /**
+     * 后台添加优惠券
+     *
+     * @param addCouponReq2
+     */
+    void addCoupon2(AddCouponReq2 addCouponReq2);
 }
 
 

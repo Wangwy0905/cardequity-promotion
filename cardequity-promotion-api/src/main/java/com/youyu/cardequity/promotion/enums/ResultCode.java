@@ -70,8 +70,8 @@ public enum ResultCode implements CardequityIBaseResultCode {
     COUPON_ISSUE_RECORD_IS_REMOVED("0039", "优惠券发放记录已经被删除，查询失败"),
     COUPON_ISSUE_STATUS_INCORRECT("0040", "优惠券发放记录的状态不是未发放，此次发放不能进行进行，应丢弃"),
     TRIGGER_ISSUE_TARGET_NOT_CLIENT("0041", "优惠券发放记录的发放目标类型不是用户类型,此次发放不能进行进行，应丢弃"),
-    COUPON_ISSUE_CLIENT_TYPE_SET_NULL("0042", "在后台发券时，券的clientType为空，无法发券");
-
+    COUPON_ISSUE_CLIENT_TYPE_SET_NULL("0042", "在后台发券时，券的clientType为空，无法发券"),
+    COLLECTION_TIME_SETTING_NOT_REASONABLE("0043", "领取时间设置不合理");
 
     /**
      * 返回错误码

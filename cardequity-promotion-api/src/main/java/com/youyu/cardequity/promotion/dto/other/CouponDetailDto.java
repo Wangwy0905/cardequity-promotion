@@ -36,7 +36,7 @@ public class CouponDetailDto {
     @ApiModelProperty(value = "额度规则")
     private CouponQuotaRuleDto quotaRule;
 
-    @ApiModelProperty(value = "子券信息")
+    @ApiModelProperty(value = "子 券信息")
     private List<CouponStageRuleDto> stageList;
 
     @ApiModelProperty(value = "操作者：用于更新产生者或更新者,一般存IP地址")
