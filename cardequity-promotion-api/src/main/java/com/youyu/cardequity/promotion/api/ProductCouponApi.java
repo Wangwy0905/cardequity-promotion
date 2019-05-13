@@ -2,16 +2,19 @@ package com.youyu.cardequity.promotion.api;
 
 
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
-import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
-import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
+import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
+import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
+import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
 import com.youyu.common.api.Result;
 import io.swagger.annotations.Api;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -74,6 +77,7 @@ public interface ProductCouponApi {
 
     /**
      * 查询指定优惠券详情
+     *
      * @param req
      * @return
      */
@@ -101,6 +105,16 @@ public interface ProductCouponApi {
     @ApiOperation(value = "【后台】添加优惠券：添加基本信息、领取频率、使用门槛、关联商品等")
     @PostMapping(path = "/addCoupon")
     Result<CommonBoolDto<CouponDetailDto>> addCoupon(@RequestBody CouponDetailDto req);
+
+    /**
+     * 后台添加优惠券
+     *
+     * @param addCouponReq2
+     * @return
+     */
+    @ApiOperation(value = "【后台】添加优惠券：添加基本信息、领取频率、使用门槛、关联商品等")
+    @PostMapping(path = "/addCoupon2")
+    Result addCoupon2(@RequestBody AddCouponReq2 addCouponReq2);
 
     /**
      * 编辑优惠券
@@ -155,21 +169,23 @@ public interface ProductCouponApi {
 
     /**
      * 【后台】上架优惠券
+     *
      * @param req
      * @return
      */
     @ApiOperation(value = "【后台】上架优惠券")
     @PostMapping(path = "/upCoupon")
-     Result<CommonBoolDto<Integer>> upCoupon(@RequestBody BatchBaseCouponReq req);
+    Result<CommonBoolDto<Integer>> upCoupon(@RequestBody BatchBaseCouponReq req);
 
 
     /**
      * 【后台】下架优惠券
+     *
      * @param req
      * @return
      */
     @ApiOperation(value = "【后台】下架优惠券")
     @PostMapping(path = "/downCoupon")
-     Result<CommonBoolDto<Integer>> downCoupon(@RequestBody BatchBaseCouponReq req);
+    Result<CommonBoolDto<Integer>> downCoupon(@RequestBody BatchBaseCouponReq req);
 
 }

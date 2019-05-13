@@ -200,6 +200,12 @@ public class ProductCouponEntity extends com.youyu.common.entity.BaseEntity<Stri
     @Column(name = "MONTH_VALID")
     private Boolean monthValid;
 
+    /**
+     * 有效时间类型
+     */
+    @Column(name = "VALID_TIME_TYPE")
+    private String validTimeType;
+
     @Override
     public String getId() {
         return uuid;
