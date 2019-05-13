@@ -1824,7 +1824,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
      */
     private void createCouponQuotaRuleEntity(AddCouponReq2 addCouponReq2, ProductCouponEntity productCouponEntity) {
         Integer maxCount = addCouponReq2.getMaxCount();
-        if (isNull(maxCount) && maxCount < 0) {
+        if (isNull(maxCount) || maxCount < 0) {
             return;
         }
 
