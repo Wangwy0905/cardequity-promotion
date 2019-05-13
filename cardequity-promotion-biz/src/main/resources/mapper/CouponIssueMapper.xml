@@ -33,8 +33,9 @@
             <if test="issueStatus != null">
                 and ISSUE_STATUS = #{issueStatus,jdbcType=VARCHAR}
             </if>
-            and LOGIC_DELETE = '0'
+            and LOGIC_DELETE = 0
         </where>
+        order by CREATE_TIME desc
     </select>
 
     <select id="getCouponIssueDetail" parameterType="com.youyu.cardequity.promotion.dto.req.CouponIssueDetailReq"
@@ -69,6 +70,7 @@
         where TARGET_TYPE = '2'
         and COUPON_ID = #{couponId,jdbcType=VARCHAR}
         and ISSUE_IDS = #{activityId,jdbcType=VARCHAR}
+        and LOGIC_DELETE = 0
     </select>
 
 
