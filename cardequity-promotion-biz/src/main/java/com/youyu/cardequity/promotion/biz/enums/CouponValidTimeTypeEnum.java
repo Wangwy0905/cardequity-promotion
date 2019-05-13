@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static com.youyu.cardequity.promotion.enums.ResultCode.COLLECTION_TIME_SETTING_NOT_REASONABLE;
+import static com.youyu.cardequity.promotion.enums.ResultCode.COUPON_START_TIME_GREATER_EQ_CURRENT_TIME;
 
 /**
  * @author panqingqing
@@ -116,8 +117,7 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
     private void checkValidDate(LocalDate allowGetBeginDate) {
         LocalDate nowLocalDate = LocalDate.now();
         if (allowGetBeginDate.isBefore(nowLocalDate)) {
-            // TODO: 2019/5/13
-            throw new BizException("");
+            throw new BizException(COUPON_START_TIME_GREATER_EQ_CURRENT_TIME);
         }
     }
 }
