@@ -359,8 +359,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         List<UserInfo4CouponIssueDto> eligibleUserList = new ArrayList<>();
 
         if (StringUtils.isBlank(clientTypeSet)) {
-            //todo
-            throw new BizException("");
+            throw new BizException(COUPON_ISSUE_CLIENT_TYPE_SET_NULL);
         }
 
         CouponGetRestrictEnum typeSet = CouponGetRestrictEnum.valuesOf(clientTypeSet);
