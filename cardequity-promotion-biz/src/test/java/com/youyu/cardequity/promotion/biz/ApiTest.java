@@ -12,6 +12,7 @@ import com.youyu.cardequity.promotion.biz.dal.dao.ProductCouponMapper;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
 import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
+import com.youyu.cardequity.promotion.enums.CouponGetRestrictEnum;
 import com.youyu.cardequity.promotion.vo.DateParam.DateParam;
 import com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq;
 import com.youyu.cardequity.promotion.vo.req.ClientObtainCouponReq;
@@ -235,6 +236,8 @@ public class ApiTest {
 //
 //        System.out.println(localDateTime1+"2222");
 //    }
-
+public static void main(String[] args) {
+    CouponGetRestrictEnum couponGetRestrictEnum=CouponGetRestrictEnum.valueOf("*");
+}
 }
 

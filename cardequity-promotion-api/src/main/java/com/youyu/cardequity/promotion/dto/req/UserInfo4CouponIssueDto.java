@@ -19,7 +19,7 @@ public class UserInfo4CouponIssueDto implements Serializable {
     @ApiModelProperty("用户类型:10-普通用户 11-会员用户 12-赠送会员用户")
     private String userType;
 
-    @ApiModelProperty("是否是新用户")
+    @ApiModelProperty("是否是新用户: 0-老用户 1-新用户")
     private String newUserFlag;
 
 

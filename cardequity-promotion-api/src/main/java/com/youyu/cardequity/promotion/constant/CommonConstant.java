@@ -9,38 +9,38 @@ public interface CommonConstant {
     /**
      * 数值参数的边界有效上限
      */
-    BigDecimal IGNOREVALUE=new BigDecimal("999999999");
+    BigDecimal IGNOREVALUE = new BigDecimal("999999999");
 
     /**
      * 数值参数的边界有效上限
      */
-    Integer IGNOREINTVALUE=new Integer("999999999");
+    Integer IGNOREINTVALUE = new Integer("999999999");
 
 
     /**
      * 业务中指定的通配符
      */
-    String WILDCARD="*";
+    String WILDCARD = "*";
 
     /**
      * 权益专属定义0-普通 1-会员专属 2-银行卡专属
      */
-    String PROMOTION_APPLYTYPE_COMMON="0";
-    String PROMOTION_APPLYTYPE_MEMBER="1";
-    String PROMOTION_APPLYTYPE_BANKCODE="2";
+    String PROMOTION_APPLYTYPE_COMMON = "0";
+    String PROMOTION_APPLYTYPE_MEMBER = "1";
+    String PROMOTION_APPLYTYPE_BANKCODE = "2";
 
     /**
      * 查询优惠信息时是否排除掉因额度和领取频率限制的
      */
-    String EXCLUSIONFLAG_ALL="0";
-    String EXCLUSIONFLAG_ACCURATE="1";
+    String EXCLUSIONFLAG_ALL = "0";
+    String EXCLUSIONFLAG_ACCURATE = "1";
 
 
     /**
      * 是否新用户
      */
-    String USENEWREGISTER_NO="0";
-    String USENEWREGISTER_YES="1";
+    String USENEWREGISTER_NO = "0";
+    String USENEWREGISTER_YES = "1";
 
     /**
      * 领取状态:0-可领取 1-已领取 2-已使用 3-过期未使用 4-未开始 5-可使用 6-该用户已领完 7-可继续领取
@@ -67,6 +67,7 @@ public interface CommonConstant {
     String VIEW_ACTIVITYSTATUS_NOT_QUOTA = "1";
     String VIEW_ACTIVITYSTATUS_OVERDUE = "2";
     String VIEW_ACTIVITYSTATUSE_UNSTART = "3";
+
 
 
 }

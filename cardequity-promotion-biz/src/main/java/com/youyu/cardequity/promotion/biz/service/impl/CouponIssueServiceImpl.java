@@ -12,13 +12,14 @@ import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
 import com.youyu.cardequity.promotion.biz.enums.dict.CouponHistoryQueryStatusMapping;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.service.CouponIssueService;
-import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.CouponIssueCompensateDto;
 import com.youyu.cardequity.promotion.dto.CouponIssueHistoryQueryDto;
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.*;
+import com.youyu.cardequity.promotion.enums.CouponGetRestrictEnum;
 import com.youyu.cardequity.promotion.enums.CouponIssueTargetTypeEnum;
 import com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum;
+import com.youyu.cardequity.promotion.enums.UserType;
 import com.youyu.common.api.PageData;
 import com.youyu.common.exception.BizException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.github.pagehelper.page.PageMethod.startPage;
@@ -41,6 +40,7 @@ import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDateTime;
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
+import static com.youyu.cardequity.promotion.constant.CommonConstant.USENEWREGISTER_YES;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_SUCCESSED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueStatusEnum.*;
@@ -84,6 +84,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * 破折号
      */
     private static final String DASH = "——";
+
+    private static final String COMMA = ",";
 
 
     @Autowired
@@ -341,29 +343,53 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     private List<UserInfo4CouponIssueDto> filterAndGetEligibleClientByClientType(List<UserInfo4CouponIssueDto> userInfoList, String clientTypeSet) {
         List<UserInfo4CouponIssueDto> eligibleUserList = new ArrayList<>();
 
+        if (StringUtils.isBlank(clientTypeSet)) {
+            //todo
+            throw new BizException("");
+        }
+
+        CouponGetRestrictEnum typeSet = CouponGetRestrictEnum.valuesOf(clientTypeSet);
         //发放类型检验
         userInfoList.forEach(userInfo -> {
-            if (checkClientType(clientTypeSet, userInfo.getUserType())) {
+            if (checkClientType(typeSet, userInfo)) {
                 eligibleUserList.add(userInfo);
             }
         });
         return eligibleUserList;
     }
 
+
     /**
      * 检查用户的类型是否符合领券
      *
-     * @param couponClientTypeSet
-     * @param clientTypeSet
+     * @param typeSet
+     * @param userInfo
      * @return
      */
-    private boolean checkClientType(String couponClientTypeSet, String clientTypeSet) {
-        if (couponClientTypeSet.equals(CommonConstant.WILDCARD)
-                || StringUtils.isBlank(couponClientTypeSet)
-                || StringUtils.isBlank(clientTypeSet)) {
-            return true;
+    private boolean checkClientType(CouponGetRestrictEnum typeSet, UserInfo4CouponIssueDto userInfo) {
+        String userTypeSet = integrateUserType(userInfo.getNewUserFlag(), userInfo.getUserType());
+        return typeSet.canGet(UserType.valuesOf(userTypeSet));
+    }
+
+    /**
+     * 整合用户的新注册信息与其他的用户类型信息
+     *
+     * @param newUserFlag
+     * @param userType
+     * @return
+     */
+    private String integrateUserType(String newUserFlag, String userType) {
+        String registerStatus = USENEWREGISTER_YES.equals(newUserFlag) ?
+                UserType.REGISTER : UserType.NON_REGISTER;
+
+        if (userType.contains(UserType.GIFT_MEMBER)) {
+            userType = userType.replace(UserType.GIFT_MEMBER, UserType.MEMBER);
         }
-        return couponClientTypeSet.contains(clientTypeSet);
+
+        String userTypeSet = userType + COMMA + registerStatus;
+        String[] userTypeArray = userTypeSet.split(COMMA);
+        Arrays.sort(userTypeArray, Comparator.comparing(Integer::valueOf));
+        return join(userTypeArray, COMMA);
     }
 
     private List<UserInfo4CouponIssueDto> confirmIssueClientAndGetIssueList(List<UserInfo4CouponIssueDto> eligibleUserList, String couponId) {
