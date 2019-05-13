@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.github.pagehelper.PageInfo;
+import com.youyu.cardequity.common.base.distributed.DistributedLockHandler;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.DateUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
@@ -40,6 +41,7 @@ import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDateTime;
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
+import static com.youyu.cardequity.promotion.biz.constant.RedissonKeyConstant.CARDEQUITY_COUPON_COUPON;
 import static com.youyu.cardequity.promotion.constant.CommonConstant.USENEWREGISTER_YES;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_FAILED;
 import static com.youyu.cardequity.promotion.enums.CouponIssueResultEnum.ISSUED_SUCCESSED;
@@ -49,6 +51,7 @@ import static com.youyu.cardequity.promotion.enums.CouponIssueTriggerTypeEnum.DE
 import static com.youyu.cardequity.promotion.enums.CouponIssueVisibleEnum.INVISIBLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static com.youyu.cardequity.promotion.enums.dict.CouponType.TRANSFERFARE;
+import static java.text.MessageFormat.format;
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
@@ -108,6 +111,9 @@ public class CouponIssueServiceImpl implements CouponIssueService {
     @Autowired
     private CouponIssueHistoryMapper couponIssueHistoryMapper;
 
+    @Autowired
+    private DistributedLockHandler distributedLockHandler;
+
     @Override
     @Transactional
     public CouponIssueRsp createIssue(CouponIssueReq couponIssueReq) {
@@ -128,29 +134,38 @@ public class CouponIssueServiceImpl implements CouponIssueService {
 
         ProductCouponEntity productCouponEntity = productCouponMapper.selectByPrimaryKey(couponIssueEntity.getCouponId());
 
-        checkCoupon(couponIssueEntity, productCouponEntity, couponIssueEntity.getIsVisible());
 
-        //更新发放状态为发放中
-        couponIssueEntity.setIssueStatus(ISSUING.getCode());
-        couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+        String lockKey = format(CARDEQUITY_COUPON_COUPON, couponIssueEntity.getCouponId());
+        distributedLockHandler.tryLock(lockKey, () -> {
 
+            checkCoupon(couponIssueEntity, productCouponEntity, couponIssueEntity.getIsVisible());
 
-        //确认最终发券的clientID
-        List<UserInfo4CouponIssueDto> resultIssueClientCouponList = confirmIssueClient(couponIssueMsgDetailsReq, productCouponEntity);
-
-
-        //写入发放流水
-        List<CouponIssueHistoryEntity> historyEntityList = insertIssueHistory(couponIssueMsgDetailsReq, resultIssueClientCouponList);
+            //更新发放状态为发放中
+            couponIssueEntity.setIssueStatus(ISSUING.getCode());
+            couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
 
 
-        //写入clientCoupon
-        clientCouponService.insertClientCoupon(historyEntityList, productCouponEntity,
-                couponIssueMsgDetailsReq.getCouponIssueId());
+            //确认最终发券的clientID
+            List<UserInfo4CouponIssueDto> resultIssueClientCouponList = confirmIssueClient(couponIssueMsgDetailsReq, productCouponEntity);
 
 
-        //更新状态为：已发券
-        couponIssueEntity.setIssueStatus(ISSUED.getCode());
-        couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+            //写入发放流水
+            List<CouponIssueHistoryEntity> historyEntityList = insertIssueHistory(couponIssueMsgDetailsReq, resultIssueClientCouponList);
+
+
+            //写入clientCoupon
+            clientCouponService.insertClientCoupon(historyEntityList, productCouponEntity,
+                    couponIssueMsgDetailsReq.getCouponIssueId());
+
+
+            //更新状态为：已发券
+            couponIssueEntity.setIssueStatus(ISSUED.getCode());
+            couponIssueMapper.updateByPrimaryKeySelective(couponIssueEntity);
+
+            return null;
+        });
+
+
     }
 
 

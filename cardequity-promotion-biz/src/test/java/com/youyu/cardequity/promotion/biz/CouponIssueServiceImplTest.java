@@ -41,35 +41,35 @@ public class CouponIssueServiceImplTest {
 
 
     @Test
-    public void processIssue_test() {
+    public void processIssueTest_userType() {
 
         CouponIssueMsgDetailsReq couponIssueMsgDetailsReq = new CouponIssueMsgDetailsReq();
-        couponIssueMsgDetailsReq.setCouponIssueId("3217151953229676554");
+        couponIssueMsgDetailsReq.setCouponIssueId("3231272671829377044");
 
         UserInfo4CouponIssueDto userInfo4CouponIssueDto = new UserInfo4CouponIssueDto();
-        userInfo4CouponIssueDto.setClientId("3cee34fcab0f40a584c4006bd225ed09");
-        userInfo4CouponIssueDto.setUserType("10");
-        userInfo4CouponIssueDto.setNewUserFlag(USENEWREGISTER_YES);
+        userInfo4CouponIssueDto.setClientId("b48d6d4e23f840a899d7f7a53a84804a");
+        userInfo4CouponIssueDto.setUserType("12");
+        userInfo4CouponIssueDto.setNewUserFlag(USENEWREGISTER_NO);
 
         UserInfo4CouponIssueDto userInfo4CouponIssueDto2 = new UserInfo4CouponIssueDto();
-        userInfo4CouponIssueDto2.setClientId("4b472051538a485c86619e809b4e70a9");
+        userInfo4CouponIssueDto2.setClientId("881742cd0631491dbe5d98849a78bfc5");
         userInfo4CouponIssueDto2.setUserType("11");
-        userInfo4CouponIssueDto2.setNewUserFlag(USENEWREGISTER_YES);
+        userInfo4CouponIssueDto2.setNewUserFlag(USENEWREGISTER_NO);
 
 
         UserInfo4CouponIssueDto userInfo4CouponIssueDto3 = new UserInfo4CouponIssueDto();
-        userInfo4CouponIssueDto3.setClientId("b48d6d4e23f840a899d7f7a53a84804a");
-        userInfo4CouponIssueDto3.setUserType("12");
+        userInfo4CouponIssueDto3.setClientId("3cee34fcab0f40a584c4006bd225ed09");
+        userInfo4CouponIssueDto3.setUserType("10");
         userInfo4CouponIssueDto3.setNewUserFlag(USENEWREGISTER_NO);
 
 
         UserInfo4CouponIssueDto userInfo4CouponIssueDto4 = new UserInfo4CouponIssueDto();
-        userInfo4CouponIssueDto4.setClientId("b48d6d4e23f840a899d7f7a53a84804a");
+        userInfo4CouponIssueDto4.setClientId("6bdcb7556df4402f972978f8365c296f");
         userInfo4CouponIssueDto4.setUserType("10");
         userInfo4CouponIssueDto4.setNewUserFlag(USENEWREGISTER_NO);
 
 
-        couponIssueMsgDetailsReq.setUserInfo4CouponIssueDtoList(Arrays.asList(userInfo4CouponIssueDto, userInfo4CouponIssueDto2, userInfo4CouponIssueDto3,userInfo4CouponIssueDto4));
+        couponIssueMsgDetailsReq.setUserInfo4CouponIssueDtoList(Arrays.asList(userInfo4CouponIssueDto, userInfo4CouponIssueDto2, userInfo4CouponIssueDto3, userInfo4CouponIssueDto4));
 
         couponIssueService.processIssue(couponIssueMsgDetailsReq);
     }

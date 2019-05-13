@@ -17,4 +17,7 @@ public final class RedissonKeyConstant {
      */
     public static final String CARDEQUITY_ACTIVITY_COUPON_ACTIVITY_CLIENT_COUPON = CARDEQUITY_ACTIVITY_COUPON + "activityId:{0}" + "clientId:{1}" + "couponId:{2}";
 
+
+    public static final String CARDEQUITY_COUPON = "cardequity:coupon:";
+    public static final String CARDEQUITY_COUPON_COUPON = CARDEQUITY_COUPON + "couponId:{0}";
 }
