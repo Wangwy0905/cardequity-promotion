@@ -65,7 +65,7 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
 
         @Override
         public void calcClientCouponValidTime(ClientCouponEntity clientCouponEntity, ProductCouponEntity couponEntity) {
-            clientCouponEntity.setValidEndDate(couponEntity.getAllowUseBeginDate());
+            clientCouponEntity.setValidStartDate(couponEntity.getAllowUseBeginDate());
             clientCouponEntity.setValidEndDate(couponEntity.getAllowUseEndDate());
         }
     },
