@@ -7,7 +7,6 @@ import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.converter.OrikaBeanPropertiesConverter;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
-import com.youyu.cardequity.common.base.util.EnumUtil;
 import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
@@ -27,6 +26,7 @@ import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
@@ -50,6 +50,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.youyu.cardequity.common.base.util.CollectionUtils.isEmpty;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDateTime;
 import static com.youyu.cardequity.common.base.util.LocalDateUtils.localDateTime2Date;
@@ -991,6 +992,57 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         return result;
     }
 
+    @Override
+    @Transactional
+    public void editCoupon2(EditCouponReq2 editCouponReq2) {
+        String uuid = editCouponReq2.getUuid();
+        ProductCouponEntity existProductCouponEntity = productCouponMapper.selectByPrimaryKey(uuid);
+        ProductCouponEntity productCouponEntity = createEditProductCouponEntity(editCouponReq2, existProductCouponEntity);
+        productCouponMapper.updateByPrimaryKeySelective(productCouponEntity);
+
+        editCouponGetOrUseFreqRuleEntity(editCouponReq2, productCouponEntity);
+    }
+
+    /**
+     * 优惠券领取使用频率规则
+     *
+     * @param editCouponReq2
+     * @param productCouponEntity
+     */
+    private void editCouponGetOrUseFreqRuleEntity(EditCouponReq2 editCouponReq2, ProductCouponEntity productCouponEntity) {
+        List<CouponGetOrUseFreqRuleEntity> couponGetOrUseFreqRuleEntities = couponGetOrUseFreqRuleMapper.findByCouponId(productCouponEntity.getUuid());
+        if (isEmpty(couponGetOrUseFreqRuleEntities)) {
+            return;
+        }
+        CouponGetOrUseFreqRuleEntity existCouponGetOrUseFreqRuleEntity = couponGetOrUseFreqRuleEntities.get(0);
+        CouponGetOrUseFreqRuleEntity couponGetOrUseFreqRuleEntity = new CouponGetOrUseFreqRuleEntity();
+        couponGetOrUseFreqRuleEntity.setUuid(existCouponGetOrUseFreqRuleEntity.getUuid());
+        couponGetOrUseFreqRuleEntity.setUnit(editCouponReq2.getUnit());
+        couponGetOrUseFreqRuleEntity.setAllowCount(editCouponReq2.getAllowCount());
+        CouponUnitEnum couponUnitEnum = getCardequityEnum(CouponUnitEnum.class, editCouponReq2.getUnit());
+        couponUnitEnum.setPersonTotalNum(couponGetOrUseFreqRuleEntity, editCouponReq2);
+        couponGetOrUseFreqRuleMapper.updateByPrimaryKeySelective(couponGetOrUseFreqRuleEntity);
+    }
+
+    /**
+     * 创建编辑优惠券发放对象
+     *
+     * @param editCouponReq2
+     * @param existProductCouponEntity
+     * @return
+     */
+    private ProductCouponEntity createEditProductCouponEntity(EditCouponReq2 editCouponReq2, ProductCouponEntity existProductCouponEntity) {
+        ProductCouponEntity productCouponEntity = new ProductCouponEntity();
+        productCouponEntity.setUuid(existProductCouponEntity.getUuid());
+        productCouponEntity.setCouponName(editCouponReq2.getCouponName());
+        productCouponEntity.setCouponShortDesc(editCouponReq2.getCouponShortDesc());
+        productCouponEntity.setCouponDesc(editCouponReq2.getCouponDesc());
+
+        CouponValidTimeTypeEnum couponValidTimeTypeEnum = getCardequityEnum(CouponValidTimeTypeEnum.class, existProductCouponEntity.getValidTimeType());
+        couponValidTimeTypeEnum.calcValidDate(editCouponReq2, existProductCouponEntity, productCouponEntity);
+        return productCouponEntity;
+    }
+
     /**
      * 批量删除优惠券
      *
@@ -1724,7 +1776,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         couponGetOrUseFreqRuleEntity.setAllowCount(addCouponReq2.getAllowCount());
         couponGetOrUseFreqRuleEntity.setIsEnable(CommonDict.IF_YES.getCode());
         couponGetOrUseFreqRuleEntity.setStageId(stageId);
-        CouponUnitEnum couponUnitEnum = EnumUtil.getCardequityEnum(CouponUnitEnum.class, addCouponReq2.getUnit());
+        CouponUnitEnum couponUnitEnum = getCardequityEnum(CouponUnitEnum.class, addCouponReq2.getUnit());
         couponUnitEnum.setPersonTotalNum(couponGetOrUseFreqRuleEntity, addCouponReq2);
         couponGetOrUseFreqRuleMapper.insertSelective(couponGetOrUseFreqRuleEntity);
     }

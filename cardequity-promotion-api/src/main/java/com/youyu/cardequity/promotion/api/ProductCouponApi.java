@@ -5,6 +5,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
@@ -125,6 +126,16 @@ public interface ProductCouponApi {
     @ApiOperation(value = "【后台】编辑优惠券：编辑基本信息、领取频率、使用门槛、关联商品等")
     @PostMapping(path = "/editCoupon")
     Result<CommonBoolDto<CouponDetailDto>> editCoupon(@RequestBody CouponDetailDto req);
+
+    /**
+     * 后台编辑优惠券
+     *
+     * @param editCouponReq2
+     * @return
+     */
+    @ApiOperation(value = "【后台】编辑优惠券：编辑基本信息、领取频率、使用门槛、关联商品等")
+    @PostMapping(path = "/editCoupon2")
+    Result editCoupon2(@RequestBody EditCouponReq2 editCouponReq2);
 
     /**
      * 批量删除优惠券

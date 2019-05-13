@@ -35,9 +35,6 @@ public class AddCouponReq2 implements Serializable {
     @ApiModelProperty(value = "级别：0:小鱼券 1:大鱼券")
     private String couponLevel;
 
-    /**
-     * 需修改
-     */
     @ApiModelProperty(value = "优惠标签id:标签：满返券、促销等")
     private String couponLabel;
 
@@ -65,9 +62,6 @@ public class AddCouponReq2 implements Serializable {
     @ApiModelProperty(value = "每张券最大优惠金额")
     private BigDecimal perProfitTopValue;
 
-    /**
-     * 需对接
-     */
     @ApiModelProperty(value = "有效时间类型 0:按日期 1:按天数 2:当月有效")
     private String validTimeType;
 
@@ -79,9 +73,6 @@ public class AddCouponReq2 implements Serializable {
     @JsonFormat(pattern = DATETIME_FORMAT)
     private LocalDateTime allowUseEndDate;
 
-    /**
-     * 需对接
-     */
     @ApiModelProperty(value = "有效期限:以天为单位")
     private Integer validTerm;
 

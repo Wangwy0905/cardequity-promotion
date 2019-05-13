@@ -6,6 +6,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
@@ -175,6 +176,13 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param addCouponReq2
      */
     void addCoupon2(AddCouponReq2 addCouponReq2);
+
+    /**
+     * 后台编辑优惠券
+     *
+     * @param editCouponReq2
+     */
+    void editCoupon2(EditCouponReq2 editCouponReq2);
 }
 
 

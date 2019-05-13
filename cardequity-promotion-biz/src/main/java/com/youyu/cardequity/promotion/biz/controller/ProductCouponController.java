@@ -7,6 +7,7 @@ import com.youyu.cardequity.promotion.dto.other.CommonBoolDto;
 import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
@@ -137,7 +138,6 @@ public class ProductCouponController implements ProductCouponApi {
         return Result.ok();
     }
 
-
     /**
      * 【后台】编辑优惠券
      *
@@ -149,6 +149,12 @@ public class ProductCouponController implements ProductCouponApi {
     @PostMapping(path = "/editCoupon")
     public Result<CommonBoolDto<CouponDetailDto>> editCoupon(@RequestBody CouponDetailDto req) {
         return Result.ok(productCouponService.editCoupon(req));
+    }
+
+    @Override
+    public Result editCoupon2(@RequestBody EditCouponReq2 editCouponReq2) {
+        productCouponService.editCoupon2(editCouponReq2);
+        return Result.ok();
     }
 
     /**

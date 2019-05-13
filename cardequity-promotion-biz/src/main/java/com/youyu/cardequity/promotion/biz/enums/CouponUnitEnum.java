@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz.enums;
 import com.youyu.cardequity.common.base.enums.CardequityEnum;
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponGetOrUseFreqRuleEntity;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
 import lombok.Getter;
 
 /**
@@ -14,10 +15,15 @@ import lombok.Getter;
 @Getter
 public enum CouponUnitEnum implements CardequityEnum {
 
-    COLLECTION_TIME("a", "领取时间内"){
+    COLLECTION_TIME("a", "领取时间内") {
         @Override
         public void setPersonTotalNum(CouponGetOrUseFreqRuleEntity couponGetOrUseFreqRuleEntity, AddCouponReq2 addCouponReq2) {
             couponGetOrUseFreqRuleEntity.setPersonTotalNum(addCouponReq2.getAllowCount());
+        }
+
+        @Override
+        public void setPersonTotalNum(CouponGetOrUseFreqRuleEntity couponGetOrUseFreqRuleEntity, EditCouponReq2 editCouponReq2) {
+            couponGetOrUseFreqRuleEntity.setPersonTotalNum(editCouponReq2.getAllowCount());
         }
     },
     EVERY_DAY("0", "每天"),
@@ -32,6 +38,16 @@ public enum CouponUnitEnum implements CardequityEnum {
     CouponUnitEnum(String code, String msg) {
         this.code = code;
         this.msg = msg;
+    }
+
+    /**
+     * 设置客户获取总数/客户每次使用数
+     *
+     * @param couponGetOrUseFreqRuleEntity
+     * @param addCouponReq2
+     */
+    public void setPersonTotalNum(CouponGetOrUseFreqRuleEntity couponGetOrUseFreqRuleEntity, EditCouponReq2 addCouponReq2) {
+        couponGetOrUseFreqRuleEntity.setPersonTotalNum(addCouponReq2.getPersonTotalNum());
     }
 
     /**
