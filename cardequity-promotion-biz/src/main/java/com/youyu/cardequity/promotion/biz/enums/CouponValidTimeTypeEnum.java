@@ -4,12 +4,14 @@ import com.youyu.cardequity.common.base.enums.CardequityEnum;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
 import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
+import com.youyu.cardequity.promotion.enums.dict.CouponGetType;
 import com.youyu.common.exception.BizException;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.enums.ResultCode.COLLECTION_TIME_SETTING_NOT_REASONABLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.COUPON_START_TIME_GREATER_EQ_CURRENT_TIME;
 
@@ -28,6 +30,10 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
             productCouponEntity.setAllowUseBeginDate(addCouponReq2.getAllowUseBeginDate());
             productCouponEntity.setAllowUseEndDate(addCouponReq2.getAllowUseEndDate());
 
+            if (eq(CouponGetType.AUTO.getDictValue(), addCouponReq2.getGetType())) {
+                return;
+            }
+
             boolean validFlag = !addCouponReq2.getAllowGetBeginDate().isAfter(addCouponReq2.getAllowUseBeginDate())
                     && !addCouponReq2.getAllowGetEndDate().isAfter(addCouponReq2.getAllowUseEndDate());
             if (!validFlag) {
@@ -42,6 +48,10 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
         public void calcValidDate(EditCouponReq2 editCouponReq2, ProductCouponEntity existProductCouponEntity, ProductCouponEntity productCouponEntity) {
             LocalDateTime allowUseBeginDate = existProductCouponEntity.getAllowUseBeginDate();
             LocalDateTime allowUseEndDate = existProductCouponEntity.getAllowUseEndDate();
+
+            if (eq(CouponGetType.AUTO.getDictValue(), existProductCouponEntity.getGetType())) {
+                return;
+            }
 
             boolean validFlag = !editCouponReq2.getAllowGetBeginDate().isAfter(allowUseBeginDate)
                     && !allowUseEndDate.isAfter(allowUseEndDate);
@@ -89,6 +99,9 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
      * @param addCouponReq2
      */
     protected void doCalcValidDate(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
+        if (eq(CouponGetType.AUTO.getDictValue(), addCouponReq2.getGetType())) {
+            return;
+        }
         checkValidDate(addCouponReq2.getAllowGetBeginDate().toLocalDate());
 
         productCouponEntity.setAllowGetBeginDate(addCouponReq2.getAllowGetBeginDate());
