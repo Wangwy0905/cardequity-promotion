@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.alibaba.fastjson.JSON.parseObject;
+import static com.alibaba.fastjson.JSON.toJSONString;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
@@ -129,6 +130,7 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
         createCouponIssueHistoryEntity(activityCouponAcquire, couponIssueEntity, ISSUED_SUCCESSED, couponIssueHistoryId);
 
         List<CouponIssueHistoryEntity> issueSuccessedHistoryList = getIssueSuccessedHistoryList(activityCouponAcquire, couponIssueHistoryId);
+        log.info("插入活动发放客户优惠券数据:[{}]", toJSONString(issueSuccessedHistoryList));
         clientCouponService.insertClientCoupon(issueSuccessedHistoryList, productCouponEntity, couponIssueEntity.getCouponIssueId());
     }
 
@@ -144,6 +146,7 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
         CouponIssueHistoryEntity couponIssueHistoryEntity = new CouponIssueHistoryEntity();
         couponIssueHistoryEntity.setClientId(activityCouponAcquire.getClientId());
         couponIssueHistoryEntity.setCouponIssueHistoryId(couponIssueHistoryId);
+        couponIssueHistoryEntity.setIssueResult(ISSUED_SUCCESSED.getCode());
         couponIssueHistoryEntities.add(couponIssueHistoryEntity);
         return couponIssueHistoryEntities;
     }
