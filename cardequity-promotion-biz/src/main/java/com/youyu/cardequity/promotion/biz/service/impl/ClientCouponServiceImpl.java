@@ -8,6 +8,7 @@ import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.constant.BusinessCode;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
+import com.youyu.cardequity.promotion.biz.enums.CouponValidTimeTypeEnum;
 import com.youyu.cardequity.promotion.biz.service.ClientCouponService;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService;
 import com.youyu.cardequity.promotion.biz.strategy.coupon.CouponStrategy;
@@ -15,7 +16,6 @@ import com.youyu.cardequity.promotion.biz.utils.CommonUtils;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.ClientCouponDto;
 import com.youyu.cardequity.promotion.dto.other.*;
-import com.youyu.cardequity.promotion.dto.req.UserInfo4CouponIssueDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.CouponIssueResultEnum;
 import com.youyu.cardequity.promotion.enums.dict.*;
@@ -39,6 +39,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 import static com.youyu.cardequity.promotion.enums.ResultCode.*;
 import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.GRANT;
 
@@ -1416,12 +1417,16 @@ public class ClientCouponServiceImpl extends AbstractService<String, ClientCoupo
 
 
             //有效时间边界set
-            LocalDateTime validStartDateTime = computeValidStartTime(couponEntity.getAllowUseBeginDate());
+            /*LocalDateTime validStartDateTime = computeValidStartTime(couponEntity.getAllowUseBeginDate());
             clientCouponEntity.setValidStartDate(validStartDateTime);
 
             clientCouponEntity.setValidEndDate(
                     computeValidEndDate(validStartDateTime, couponEntity.getAllowUseEndDate(),
                             couponEntity.getValIdTerm(), couponEntity.getUseGeEndDateFlag()));
+*/
+
+            CouponValidTimeTypeEnum couponValidTimeTypeEnum = getCardequityEnum(CouponValidTimeTypeEnum.class, couponEntity.getValidTimeType());
+            couponValidTimeTypeEnum.calcClientCouponValidTime(clientCouponEntity, couponEntity);
 
             clientCouponEntity.setGetType(couponEntity.getGetType());
             clientCouponEntity.setApplyProductFlag(couponEntity.getApplyProductFlag());

@@ -1039,7 +1039,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         productCouponEntity.setCouponDesc(editCouponReq2.getCouponDesc());
 
         CouponValidTimeTypeEnum couponValidTimeTypeEnum = getCardequityEnum(CouponValidTimeTypeEnum.class, existProductCouponEntity.getValidTimeType());
-        couponValidTimeTypeEnum.calcValidDate(editCouponReq2, existProductCouponEntity, productCouponEntity);
+        couponValidTimeTypeEnum.calcValidDate4Edit(editCouponReq2, existProductCouponEntity, productCouponEntity);
         return productCouponEntity;
     }
 
@@ -1857,9 +1857,9 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
 
         CouponTargetFlagEnum couponTargetFlagEnum = getCardequityEnum(CouponTargetFlagEnum.class, addCouponReq2.getTargetFlag());
         couponTargetFlagEnum.setClientTypeSet(productCouponEntity, addCouponReq2);
-
         CouponValidTimeTypeEnum couponValidTimeTypeEnum = getCardequityEnum(CouponValidTimeTypeEnum.class, addCouponReq2.getValidTimeType());
-        couponValidTimeTypeEnum.calcValidDate(productCouponEntity, addCouponReq2);
+        couponValidTimeTypeEnum.calcValidDate4Create(productCouponEntity, addCouponReq2);
+
         productCouponEntity.setUuid(uidGenerator.getUID2());
         productCouponEntity.setCouponStrategyType(CouponStrategyType.stage.getDictValue());
         productCouponEntity.setCouponType(addCouponReq2.getCouponViewType());

@@ -1,19 +1,23 @@
 package com.youyu.cardequity.promotion.biz.enums;
 
 import com.youyu.cardequity.common.base.enums.CardequityEnum;
+import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
 import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
-import com.youyu.cardequity.promotion.enums.dict.CouponGetType;
 import com.youyu.common.exception.BizException;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static com.youyu.cardequity.common.base.util.DateUtil.*;
+import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDateTime;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.enums.ResultCode.COLLECTION_TIME_SETTING_NOT_REASONABLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.COUPON_START_TIME_GREATER_EQ_CURRENT_TIME;
+import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.AUTO;
+import static org.apache.commons.lang3.time.DateUtils.addMonths;
 
 /**
  * @author panqingqing
@@ -26,16 +30,14 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
 
     BY_DATE("0", "按日期") {
         @Override
-        public void doCalcValidDate(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
+        public void doCalcValidDate4Create(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
             productCouponEntity.setAllowUseBeginDate(addCouponReq2.getAllowUseBeginDate());
             productCouponEntity.setAllowUseEndDate(addCouponReq2.getAllowUseEndDate());
-
-            if (eq(CouponGetType.AUTO.getDictValue(), addCouponReq2.getGetType())) {
+            if (eq(AUTO.getDictValue(), addCouponReq2.getGetType())) {
                 return;
             }
 
-            boolean validFlag = !addCouponReq2.getAllowGetBeginDate().isAfter(addCouponReq2.getAllowUseBeginDate())
-                    && !addCouponReq2.getAllowGetEndDate().isAfter(addCouponReq2.getAllowUseEndDate());
+            boolean validFlag = !addCouponReq2.getAllowGetBeginDate().isAfter(addCouponReq2.getAllowUseBeginDate()) && !addCouponReq2.getAllowGetEndDate().isAfter(addCouponReq2.getAllowUseEndDate());
             if (!validFlag) {
                 throw new BizException(COLLECTION_TIME_SETTING_NOT_REASONABLE);
             }
@@ -45,16 +47,14 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
         }
 
         @Override
-        public void calcValidDate(EditCouponReq2 editCouponReq2, ProductCouponEntity existProductCouponEntity, ProductCouponEntity productCouponEntity) {
+        public void calcValidDate4Edit(EditCouponReq2 editCouponReq2, ProductCouponEntity existProductCouponEntity, ProductCouponEntity productCouponEntity) {
             LocalDateTime allowUseBeginDate = existProductCouponEntity.getAllowUseBeginDate();
             LocalDateTime allowUseEndDate = existProductCouponEntity.getAllowUseEndDate();
-
-            if (eq(CouponGetType.AUTO.getDictValue(), existProductCouponEntity.getGetType())) {
+            if (eq(AUTO.getDictValue(), existProductCouponEntity.getGetType())) {
                 return;
             }
 
-            boolean validFlag = !editCouponReq2.getAllowGetBeginDate().isAfter(allowUseBeginDate)
-                    && !allowUseEndDate.isAfter(allowUseEndDate);
+            boolean validFlag = !editCouponReq2.getAllowGetBeginDate().isAfter(allowUseBeginDate) && !allowUseEndDate.isAfter(allowUseEndDate);
             if (!validFlag) {
                 throw new BizException(COLLECTION_TIME_SETTING_NOT_REASONABLE);
             }
@@ -62,15 +62,38 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
             productCouponEntity.setAllowGetBeginDate(editCouponReq2.getAllowGetBeginDate());
             productCouponEntity.setAllowGetEndDate(editCouponReq2.getAllowGetEndDate());
         }
+
+        @Override
+        public void calcClientCouponValidTime(ClientCouponEntity clientCouponEntity, ProductCouponEntity couponEntity) {
+            clientCouponEntity.setValidEndDate(couponEntity.getAllowUseBeginDate());
+            clientCouponEntity.setValidEndDate(couponEntity.getAllowUseEndDate());
+        }
     },
     BY_DAY("1", "按天数") {
         @Override
-        public void doCalcValidDate(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
+        public void doCalcValidDate4Create(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
             productCouponEntity.setValIdTerm(addCouponReq2.getValidTerm());
-            super.doCalcValidDate(productCouponEntity, addCouponReq2);
+            super.doCalcValidDate4Create(productCouponEntity, addCouponReq2);
+        }
+
+        @Override
+        public void calcClientCouponValidTime(ClientCouponEntity clientCouponEntity, ProductCouponEntity couponEntity) {
+            LocalDateTime now = LocalDateTime.now();
+            Integer valIdTerm = couponEntity.getValIdTerm();
+            clientCouponEntity.setValidStartDate(now);
+            clientCouponEntity.setValidEndDate(now.plusDays(valIdTerm));
         }
     },
-    CURRENT_MONTH_VALID("2", "当月有效");
+    CURRENT_MONTH_VALID("2", "当月有效") {
+        @Override
+        public void calcClientCouponValidTime(ClientCouponEntity clientCouponEntity, ProductCouponEntity couponEntity) {
+            LocalDateTime now = LocalDateTime.now();
+            clientCouponEntity.setValidStartDate(now);
+
+            LocalDateTime endDateTime = date2LocalDateTime(string2Date(date2String(addMonths(now(), 1), "yyyy-MM") + "-01 00:00:00"));
+            clientCouponEntity.setValidEndDate(endDateTime);
+        }
+    };
 
     private String code;
 
@@ -87,9 +110,9 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
      * @param productCouponEntity
      * @param addCouponReq2
      */
-    public void calcValidDate(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
+    public void calcValidDate4Create(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
         productCouponEntity.setValidTimeType(addCouponReq2.getValidTimeType());
-        doCalcValidDate(productCouponEntity, addCouponReq2);
+        doCalcValidDate4Create(productCouponEntity, addCouponReq2);
     }
 
     /**
@@ -98,12 +121,11 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
      * @param productCouponEntity
      * @param addCouponReq2
      */
-    protected void doCalcValidDate(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
-        if (eq(CouponGetType.AUTO.getDictValue(), addCouponReq2.getGetType())) {
+    protected void doCalcValidDate4Create(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
+        if (eq(AUTO.getDictValue(), addCouponReq2.getGetType())) {
             return;
         }
         checkValidDate(addCouponReq2.getAllowGetBeginDate().toLocalDate());
-
         productCouponEntity.setAllowGetBeginDate(addCouponReq2.getAllowGetBeginDate());
         productCouponEntity.setAllowGetEndDate(addCouponReq2.getAllowGetEndDate());
     }
@@ -115,7 +137,10 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
      * @param existProductCouponEntity
      * @param productCouponEntity
      */
-    public void calcValidDate(EditCouponReq2 editCouponReq2, ProductCouponEntity existProductCouponEntity, ProductCouponEntity productCouponEntity) {
+    public void calcValidDate4Edit(EditCouponReq2 editCouponReq2, ProductCouponEntity existProductCouponEntity, ProductCouponEntity productCouponEntity) {
+        if (eq(AUTO.getDictValue(), existProductCouponEntity.getGetType())) {
+            return;
+        }
         checkValidDate(editCouponReq2.getAllowGetBeginDate().toLocalDate());
 
         productCouponEntity.setAllowGetBeginDate(editCouponReq2.getAllowGetBeginDate());
@@ -133,4 +158,13 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
             throw new BizException(COUPON_START_TIME_GREATER_EQ_CURRENT_TIME);
         }
     }
+
+    /**
+     * 计算客户优惠券有效时间区间
+     *
+     * @param clientCouponEntity
+     * @param couponEntity
+     */
+    public abstract void calcClientCouponValidTime(ClientCouponEntity clientCouponEntity, ProductCouponEntity couponEntity);
+
 }
