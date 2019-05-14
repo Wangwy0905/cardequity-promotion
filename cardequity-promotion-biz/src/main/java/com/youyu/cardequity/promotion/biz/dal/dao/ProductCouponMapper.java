@@ -1,7 +1,8 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
-import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
+import com.youyu.cardequity.promotion.dto.req.MemberProductMaxCouponReq;
+import com.youyu.cardequity.promotion.dto.rsp.MemberProductMaxCouponRsp;
 import com.youyu.cardequity.promotion.vo.req.BaseCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BaseQryCouponReq;
 import com.youyu.cardequity.promotion.vo.req.BatchBaseCouponReq;
@@ -157,6 +158,14 @@ public interface ProductCouponMapper extends YyMapper<ProductCouponEntity> {
                                                                        @Param("clientType") String clientType,
                                                                        @Param("monthNum") int monthNum,
                                                                        @Param("lastMonthDay") String lastMonthDay);
+
+    /**
+     * 根据请求参数获取最大优惠券金额
+     *
+     * @param productMaxCouponReq
+     * @return
+     */
+    MemberProductMaxCouponRsp getMemberProductMaxCoupon(@Param("productMaxCouponReq") MemberProductMaxCouponReq productMaxCouponReq);
 }
 
 

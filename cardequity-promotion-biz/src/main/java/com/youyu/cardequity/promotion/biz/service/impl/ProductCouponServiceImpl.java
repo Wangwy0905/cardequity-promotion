@@ -7,7 +7,6 @@ import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.converter.OrikaBeanPropertiesConverter;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
-import com.youyu.cardequity.common.base.util.EnumUtil;
 import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
@@ -28,6 +27,8 @@ import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.dto.other.ShortCouponDetailDto;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
 import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.MemberProductMaxCouponReq;
+import com.youyu.cardequity.promotion.dto.rsp.MemberProductMaxCouponRsp;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.*;
@@ -1002,6 +1003,12 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         productCouponMapper.updateByPrimaryKeySelective(productCouponEntity);
 
         editCouponGetOrUseFreqRuleEntity(editCouponReq2, productCouponEntity);
+    }
+
+    @Override
+    public MemberProductMaxCouponRsp getMemberProductMaxCoupon(MemberProductMaxCouponReq productMaxCouponReq) {
+        MemberProductMaxCouponRsp productMaxCouponRsp = productCouponMapper.getMemberProductMaxCoupon(productMaxCouponReq);
+        return isNull(productMaxCouponRsp) ? new MemberProductMaxCouponRsp() : productMaxCouponRsp;
     }
 
     /**

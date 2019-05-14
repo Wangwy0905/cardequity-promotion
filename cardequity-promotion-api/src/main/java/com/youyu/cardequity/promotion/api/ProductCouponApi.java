@@ -6,6 +6,8 @@ import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
 import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.MemberProductMaxCouponReq;
+import com.youyu.cardequity.promotion.dto.rsp.MemberProductMaxCouponRsp;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
@@ -199,4 +201,13 @@ public interface ProductCouponApi {
     @PostMapping(path = "/downCoupon")
     Result<CommonBoolDto<Integer>> downCoupon(@RequestBody BatchBaseCouponReq req);
 
+    /**
+     * 根据请求参数获取最大的优惠券信息
+     *
+     * @param productMaxCouponReq
+     * @return
+     */
+    @ApiOperation(value = "获取最大的优惠券信息")
+    @PostMapping(path = "/getMemberProductMaxCoupon")
+    Result<MemberProductMaxCouponRsp> getMemberProductMaxCoupon(@RequestBody MemberProductMaxCouponReq productMaxCouponReq);
 }
