@@ -337,7 +337,7 @@
                     a.ALLOW_USE_END_DATE &lt;curdate()
                 </if>
                 <if test='couponStatus == "3"'>
-                    (a.VAL_ID_TERM != '0' or a.MONTH_VALID = '1')
+                    (a.VALID_TIME_TYPE = '1' or a.VALID_TIME_TYPE = '2')
                 </if>
             </foreach>
         </if>
