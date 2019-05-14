@@ -1008,7 +1008,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
     @Override
     public MemberProductMaxCouponRsp getMemberProductMaxCoupon(MemberProductMaxCouponReq productMaxCouponReq) {
         MemberProductMaxCouponRsp productMaxCouponRsp = productCouponMapper.getMemberProductMaxCoupon(productMaxCouponReq);
-        return isNull(productMaxCouponRsp) ? new MemberProductMaxCouponRsp() : productMaxCouponRsp;
+        return productMaxCouponRsp;
     }
 
     /**
