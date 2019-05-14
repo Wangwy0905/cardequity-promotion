@@ -119,7 +119,7 @@ public class ProductCouponDto implements IBaseDto<String>{
     @ApiModelProperty("有效时间类型 0:按日期 1:按天数 2:当月有效")
     private String validTimeType;
 
-    @ApiModelProperty("优惠券状态:")
+    @ApiModelProperty("优惠券状态")
     private String couponStatus;
 
     @Override
