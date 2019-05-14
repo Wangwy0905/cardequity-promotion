@@ -632,4 +632,18 @@
         Order by a.CREATE_TIME desc
     </select>
 
+    <select id="getMemberProductMaxCoupon" parameterType="com.youyu.cardequity.promotion.dto.req.MemberProductMaxCouponReq" resultType="com.youyu.cardequity.promotion.dto.rsp.MemberProductMaxCouponRsp">
+        select max(t1.PROFIT_VALUE) as profitValue
+        from TB_PRODUCT_COUPON t1 left join TB_COUPON_REF_PRODUCT t2 on t1.UUID = t2.COUPON_ID
+        where t2.PRODUCT_ID = #{productMaxCouponReq.productId,jdbcType=VARCHAR}
+        and t1.CLIENT_TYPE_SET in ('*', '11')
+        and t1.IS_ENABLE = '1'
+        and t2.IS_ENABLE = '1'
+        and t1.STATUS = '1'
+        and (
+            (t1.VALID_TIME_TYPE = '0' and t1.ALLOW_USE_BEGIN_DATE &lt;= curdate() and t1.ALLOW_USE_END_DATE &gt;= curdate())
+            or t1.VALID_TIME_TYPE in ('1', '2')
+        )
+    </select>
+
 </mapper>

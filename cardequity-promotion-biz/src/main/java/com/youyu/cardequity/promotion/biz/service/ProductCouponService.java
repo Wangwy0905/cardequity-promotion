@@ -7,6 +7,8 @@ import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
 import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.MemberProductMaxCouponReq;
+import com.youyu.cardequity.promotion.dto.rsp.MemberProductMaxCouponRsp;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
@@ -183,6 +185,14 @@ public interface ProductCouponService extends IService<ProductCouponDto, Product
      * @param editCouponReq2
      */
     void editCoupon2(EditCouponReq2 editCouponReq2);
+
+    /**
+     * 根据请求参数获取商品最大优惠券信息
+     *
+     * @param productMaxCouponReq
+     * @return
+     */
+    MemberProductMaxCouponRsp getMemberProductMaxCoupon(MemberProductMaxCouponReq productMaxCouponReq);
 }
 
 

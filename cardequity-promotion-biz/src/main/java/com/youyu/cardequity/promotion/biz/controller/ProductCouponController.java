@@ -8,6 +8,8 @@ import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.dto.other.ObtainCouponViewDto;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
 import com.youyu.cardequity.promotion.dto.req.EditCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.MemberProductMaxCouponReq;
+import com.youyu.cardequity.promotion.dto.rsp.MemberProductMaxCouponRsp;
 import com.youyu.cardequity.promotion.vo.req.*;
 import com.youyu.cardequity.promotion.vo.rsp.CouponPageQryRsp;
 import com.youyu.cardequity.promotion.vo.rsp.GatherInfoRsp;
@@ -239,5 +241,11 @@ public class ProductCouponController implements ProductCouponApi {
         return Result.ok(productCouponService.downCoupon(req));
     }
 
+    @Override
+    @ApiOperation(value = "获取会员对应的商品最大的优惠券信息")
+    @PostMapping(path = "/getMemberProductMaxCoupon")
+    public Result<MemberProductMaxCouponRsp> getMemberProductMaxCoupon(@RequestBody MemberProductMaxCouponReq productMaxCouponReq) {
+        return Result.ok(productCouponService.getMemberProductMaxCoupon(productMaxCouponReq));
+    }
 
 }
