@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -39,6 +40,7 @@ import static com.github.pagehelper.page.PageMethod.startPage;
 import static com.youyu.cardequity.common.base.util.CollectionUtils.isEmpty;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
+import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDate;
 import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDateTime;
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
@@ -601,9 +603,8 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         //只有有效期为按日期类型的券才判断当前时间与券的有效时间的endDate(按天数和当月有效不做判断)
         if (CouponValidTimeTypeEnum.BY_DATE.getCode().equals(productCouponEntity.getValidTimeType())) {
             Date issueTime = string2Date(couponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
-            LocalDateTime nowLocalDateTime = date2LocalDateTime(issueTime);
-
-            if (nowLocalDateTime.isAfter(productCouponEntity.getAllowUseEndDate())) {
+            LocalDate issueLocalDate = date2LocalDate(issueTime);
+            if (issueLocalDate.isAfter(productCouponEntity.getAllowUseEndDate().toLocalDate())) {
                 throw new BizException(COUPON_END_DATE_MUST_GREATER_CURRENT_DATE);
             }
         }
