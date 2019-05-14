@@ -256,20 +256,19 @@
           </if>-->
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="0"'>
             and a.ALLOW_USE_BEGIN_DATE &gt;curdate()
-            and a.VAL_ID_TERM ='0' and a.MONTH_VALID = '0'
+            and a.VALID_TIME_TYPE = '0'
         </if>
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="1"'>
             and a.ALLOW_USE_BEGIN_DATE &lt;=curdate()
             and a.ALLOW_USE_END_DATE &gt;=curdate()
-            and a.VAL_ID_TERM ='0' and a.MONTH_VALID ='0'
+            and a.VALID_TIME_TYPE = '0'
         </if>
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="2"'>
             and a.ALLOW_USE_END_DATE &lt;curdate()
-            and a.VAL_ID_TERM ='0'
-            and a.MONTH_VALID = '0'
+            and a.VALID_TIME_TYPE = '0'
         </if>
         <if test='commonQry.couponStatus!=null and commonQry.couponStatus=="3"'>
-            and (a.VAL_ID_TERM !='0'or a.MONTH_VALID = '1')
+            and (a.VALID_TIME_TYPE = '1' or a.VALID_TIME_TYPE = '2')
         </if>
 
         <if test="!@com.youyu.cardequity.promotion.biz.utils.CommonUtils@isEmptyorNull(commonQry.couponId)">
@@ -328,16 +327,16 @@
         <if test="commonQry.couponStatusList != null and commonQry.couponStatusList.size() > 0">
             <foreach collection="commonQry.couponStatusList" item="couponStatus" open="AND (" close=")" separator="or">
                 <if test='couponStatus == "0"'>
-                    a.ALLOW_USE_BEGIN_DATE &gt;curdate()
+                    ( a.ALLOW_USE_BEGIN_DATE &gt;curdate() and a.VALID_TIME_TYPE = '0' )
                 </if>
                 <if test='couponStatus == "1"'>
-                    ( a.ALLOW_USE_BEGIN_DATE &lt;=curdate() and a.ALLOW_USE_END_DATE &gt;=curdate() )
+                    ( a.ALLOW_USE_BEGIN_DATE &lt;=curdate() and a.ALLOW_USE_END_DATE &gt;=curdate() and a.VALID_TIME_TYPE = '0' )
                 </if>
                 <if test='couponStatus == "2"'>
-                    a.ALLOW_USE_END_DATE &lt;curdate()
+                    ( a.ALLOW_USE_END_DATE &lt;curdate() and a.VALID_TIME_TYPE = '0' )
                 </if>
                 <if test='couponStatus == "3"'>
-                    (a.VALID_TIME_TYPE = '1' or a.VALID_TIME_TYPE = '2')
+                    ( a.VALID_TIME_TYPE = '1' or a.VALID_TIME_TYPE = '2' )
                 </if>
             </foreach>
         </if>
@@ -636,7 +635,7 @@
         select max(t1.PROFIT_VALUE) as profitValue
         from TB_PRODUCT_COUPON t1 left join TB_COUPON_REF_PRODUCT t2 on t1.UUID = t2.COUPON_ID
         where t2.PRODUCT_ID = #{productMaxCouponReq.productId,jdbcType=VARCHAR}
-        and t1.CLIENT_TYPE_SET in ('*', '11')
+        and t1.CLIENT_TYPE_SET in ('11')
         and t1.IS_ENABLE = '1'
         and t2.IS_ENABLE = '1'
         and t1.STATUS = '1'
