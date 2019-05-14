@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 @Getter
 public class UserType {
-    public static final String REGISTER = "-1";
+    public static final String REGISTER = "1";
     public static final String NON_REGISTER = "0";
 
     public static final String GIFT_MEMBER = "12";
@@ -20,14 +20,14 @@ public class UserType {
     @Getter
     public enum UserTypeEnum {
 
-        REGISTER_NORMAL("-1,10", "注册 普通（非会员）") {
+        REGISTER_NORMAL("1,10", "注册 普通（非会员）") {
             @Override
             public boolean isRegister() {
                 return true;
             }
         },
 
-        REGISTER_MEMBER("-1,11", "注册 会员") {
+        REGISTER_MEMBER("1,11", "注册 会员") {
             @Override
             public boolean isRegister() {
                 return true;

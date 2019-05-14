@@ -8,6 +8,7 @@ import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.constant.ClientCouponStatusConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
 import com.youyu.cardequity.promotion.biz.dal.entity.*;
+import com.youyu.cardequity.promotion.biz.enums.CouponValidTimeTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponGetTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponStatusEnum;
 import com.youyu.cardequity.promotion.biz.enums.dict.CouponHistoryQueryStatusMapping;
@@ -597,10 +598,14 @@ public class CouponIssueServiceImpl implements CouponIssueService {
             throw new BizException(MANUAL_COUPON_CANNOT_BE_ISSUED);
         }
 
-        Date issueTime = string2Date(couponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
-        LocalDateTime nowLocalDateTime = date2LocalDateTime(issueTime);
-        if (nowLocalDateTime.isAfter(productCouponEntity.getAllowUseEndDate())) {
-            throw new BizException(COUPON_END_DATE_MUST_GREATER_CURRENT_DATE);
+        //只有有效期为按日期类型的券才判断当前时间与券的有效时间的endDate(按天数和当月有效不做判断)
+        if (CouponValidTimeTypeEnum.BY_DATE.getCode().equals(productCouponEntity.getValidTimeType())) {
+            Date issueTime = string2Date(couponIssueEntity.getIssueTime(), YYYY_MM_DD_HH_MM);
+            LocalDateTime nowLocalDateTime = date2LocalDateTime(issueTime);
+
+            if (nowLocalDateTime.isAfter(productCouponEntity.getAllowUseEndDate())) {
+                throw new BizException(COUPON_END_DATE_MUST_GREATER_CURRENT_DATE);
+            }
         }
 
         CouponQuotaRuleEntity couponQuotaRule = couponQuotaRuleMapper.selectByPrimaryKey(couponIssueEntity.getCouponId());
