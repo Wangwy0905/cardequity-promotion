@@ -207,7 +207,7 @@ public interface ProductCouponApi {
      * @param productMaxCouponReq
      * @return
      */
-    @ApiOperation(value = "获取最大的优惠券信息")
+    @ApiOperation(value = "获取会员对应的商品最大的优惠券信息")
     @PostMapping(path = "/getMemberProductMaxCoupon")
     Result<MemberProductMaxCouponRsp> getMemberProductMaxCoupon(@RequestBody MemberProductMaxCouponReq productMaxCouponReq);
 }
