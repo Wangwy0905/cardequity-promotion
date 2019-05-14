@@ -7,6 +7,7 @@ import com.youyu.cardequity.common.base.converter.BeanPropertiesConverter;
 import com.youyu.cardequity.common.base.converter.OrikaBeanPropertiesConverter;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.base.util.BeanPropertiesUtils;
+import com.youyu.cardequity.common.base.util.EnumUtil;
 import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
@@ -1323,6 +1324,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
             CouponDetailDto detailDto = new CouponDetailDto();
 
             ProductCouponDto productCouponDto = BeanPropertiesUtils.copyProperties(item, ProductCouponDto.class);
+            productCouponDto.setCouponStatus(getCouponStatus(item));
             detailDto.setProductCouponDto(productCouponDto);
 
             if (!CommonUtils.isEmptyorNull(item.getCouponLable())) {
@@ -1384,6 +1386,18 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         System.out.println(resultList + "=====");
         return resultList;
 
+    }
+
+    /**
+     * 获取优惠券状态
+     *
+     * @param productCouponEntity
+     * @return
+     */
+    private String getCouponStatus(ProductCouponEntity productCouponEntity) {
+        CouponValidTimeTypeEnum couponValidTimeTypeEnum = getCardequityEnum(CouponValidTimeTypeEnum.class, productCouponEntity.getValidTimeType());
+        String couponStatus = couponValidTimeTypeEnum.getCouponStatus(productCouponEntity);
+        return couponStatus;
     }
 
     /**

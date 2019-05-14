@@ -68,6 +68,23 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
             clientCouponEntity.setValidStartDate(couponEntity.getAllowUseBeginDate());
             clientCouponEntity.setValidEndDate(couponEntity.getAllowUseEndDate());
         }
+
+        @Override
+        public String getCouponStatus(ProductCouponEntity productCouponEntity) {
+            LocalDate nowLocalDate = LocalDate.now();
+
+            LocalDate allowUseBeginDate = productCouponEntity.getAllowUseBeginDate().toLocalDate();
+            if (nowLocalDate.isBefore(allowUseBeginDate)) {
+                return "未开始";
+            }
+
+            LocalDate allowUseEndDate = productCouponEntity.getAllowUseEndDate().toLocalDate();
+            if (nowLocalDate.isAfter(allowUseEndDate)) {
+                return "已过期";
+            }
+
+            return "有效中";
+        }
     },
     BY_DAY("1", "按天数") {
         @Override
@@ -167,4 +184,13 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
      */
     public abstract void calcClientCouponValidTime(ClientCouponEntity clientCouponEntity, ProductCouponEntity couponEntity);
 
+    /**
+     * 获取优惠券状态
+     *
+     * @param productCouponEntity
+     * @return
+     */
+    public String getCouponStatus(ProductCouponEntity productCouponEntity) {
+        return "——";
+    }
 }

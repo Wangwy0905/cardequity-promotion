@@ -79,6 +79,7 @@ public class ProductCouponDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "有效期限:以天为单位")
     private Integer valIdTerm;
+
     @ApiModelProperty(value="有效期限：当月有效")
     private Boolean monthValid;
 
@@ -90,7 +91,6 @@ public class ProductCouponDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "状态:0-下架 1-上架")
     private String status;
-
 
     @ApiModelProperty(value = "积分兑换额度:允许兑换该券的积分额度；积分不能兑换填99999999")
     private BigDecimal exchangeByPointVol;
@@ -115,6 +115,12 @@ public class ProductCouponDto implements IBaseDto<String>{
 
     @ApiModelProperty(value = "适用商品类型:0-自动义商品范围 1-全部")
     private String applyProductFlag;
+
+    @ApiModelProperty("有效时间类型 0:按日期 1:按天数 2:当月有效")
+    private String validTimeType;
+
+    @ApiModelProperty("优惠券状态:")
+    private String couponStatus;
 
     @Override
     public String getId() {
