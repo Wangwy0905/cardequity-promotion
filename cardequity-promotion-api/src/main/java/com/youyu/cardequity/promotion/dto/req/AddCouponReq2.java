@@ -26,7 +26,7 @@ public class AddCouponReq2 implements Serializable {
 
     private static final long serialVersionUID = -7723550683567714798L;
 
-    @ApiModelProperty(value = "类型: 1:优惠券 2:运费券")
+    @ApiModelProperty(value = "类型 1:消费券 2:运费券")
     private String couponViewType;
 
     @ApiModelProperty(value = "领取对象：0:全部用户 1:注册用户 2:会员")

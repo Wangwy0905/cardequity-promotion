@@ -113,6 +113,9 @@ public class CouponViewDto {
     @ApiModelProperty("优惠券状态")
     private String couponStatus;
 
+    @ApiModelProperty(value = "类型 1:消费券 2:运费券")
+    private String couponType;
+
     public CouponDetailDto switchToModel() {
         CouponDetailDto dto = new CouponDetailDto();
 
