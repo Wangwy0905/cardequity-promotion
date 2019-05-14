@@ -1,9 +1,7 @@
 package com.youyu.cardequity.promotion.dto.other;
 
-import com.youyu.cardequity.common.base.util.StringUtil;
 import com.youyu.cardequity.promotion.constant.CommonConstant;
 import com.youyu.cardequity.promotion.dto.*;
-import com.youyu.cardequity.promotion.dto.other.CouponDetailDto;
 import com.youyu.cardequity.promotion.enums.CommonDict;
 import com.youyu.cardequity.promotion.enums.dict.*;
 import com.youyu.cardequity.promotion.vo.req.BaseProductReq;
@@ -12,7 +10,6 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,12 +58,16 @@ public class CouponViewDto {
 
     @ApiModelProperty(value = "优惠开始日:")
     private LocalDateTime allowUseBeginDate;
+
     @ApiModelProperty(value = "优惠结束日:")
     private LocalDateTime allowUseEndDate;
+
     @ApiModelProperty(value = "有效期限:以天为单位")
     private Integer valIdTerm;
+
     @ApiModelProperty(value="当月有效")
     private  Boolean monthValid;
+
     @ApiModelProperty(value = "领取开始日:到分秒级别")
     private LocalDateTime allowGetBeginDate;
 
@@ -104,7 +105,13 @@ public class CouponViewDto {
     private List<BaseProductReq> productList;
 
     @ApiModelProperty(value = "优惠标签:标签：满返券、促销等")
-    private CouponAndActivityLabelDto labelDto ;
+    private CouponAndActivityLabelDto labelDto;
+
+    @ApiModelProperty("有效时间类型 0:按日期 1:按天数 2:当月有效")
+    private String validTimeType;
+
+    @ApiModelProperty("优惠券状态")
+    private String couponStatus;
 
     public CouponDetailDto switchToModel() {
         CouponDetailDto dto = new CouponDetailDto();
