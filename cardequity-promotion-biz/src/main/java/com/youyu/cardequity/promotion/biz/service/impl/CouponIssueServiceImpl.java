@@ -3,7 +3,6 @@ package com.youyu.cardequity.promotion.biz.service.impl;
 import com.github.pagehelper.PageInfo;
 import com.youyu.cardequity.common.base.distributed.DistributedLockHandler;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
-import com.youyu.cardequity.common.base.util.DateUtil;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.constant.ClientCouponStatusConstant;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
@@ -41,7 +40,6 @@ import static com.youyu.cardequity.common.base.util.CollectionUtils.isEmpty;
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
 import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDate;
-import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDateTime;
 import static com.youyu.cardequity.common.base.util.PaginationUtils.convert;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.biz.constant.RedissonKeyConstant.CARDEQUITY_COUPON_COUPON;
@@ -771,25 +769,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
      * @return
      */
     private String getCouponStatusValue(ProductCouponEntity productCoupon) {
-        Integer valIdTerm = productCoupon.getValIdTerm();
-        if (nonNull(valIdTerm) && valIdTerm > 0) {
-            return DASH;
-        }
-
-        Boolean monthValid = productCoupon.getMonthValid();
-        if (nonNull(monthValid) && monthValid) {
-            return DASH;
-        }
-
-        LocalDateTime nowDateTime = date2LocalDateTime(DateUtil.now());
-        if (nowDateTime.isBefore(productCoupon.getAllowUseBeginDate())) {
-            return "未开始";
-        }
-
-        if (nowDateTime.isAfter(productCoupon.getAllowUseEndDate())) {
-            return "已过期";
-        }
-
-        return "有效中";
+        CouponValidTimeTypeEnum couponValidTimeTypeEnum = getCardequityEnum(CouponValidTimeTypeEnum.class, productCoupon.getValidTimeType());
+        return couponValidTimeTypeEnum.getCouponStatus(productCoupon);
     }
 }
