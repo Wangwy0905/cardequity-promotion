@@ -43,6 +43,7 @@ import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -64,6 +65,7 @@ import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.HANLD;
 import static com.youyu.cardequity.promotion.enums.dict.CouponStrategyType.equalstage;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 
 
@@ -1551,6 +1553,10 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         innerReq.setClientId(req.getClientId());
         //0-可领取 1-已领取 2-已使用 3-过期未使用 4-未开始 5-可使用
         List<ObtainCouponViewDto> clientCoupon = clientCouponService.findClientCoupon(innerReq);
+        if (!CollectionUtils.isEmpty(clientCoupon)) {
+            clientCoupon = clientCoupon.stream().filter(obtainCouponViewDto -> !eq(obtainCouponViewDto.getGetType(), HANLD.getDictValue())).collect(toList());
+        }
+
         List<ObtainCouponViewDto> resultDto = new ArrayList<>();
         for (ObtainCouponViewDto item : clientCoupon) {
             if (!CommonDict.FRONDEND_MEMBER.getCode().equals(item.getTargetFlag()))
