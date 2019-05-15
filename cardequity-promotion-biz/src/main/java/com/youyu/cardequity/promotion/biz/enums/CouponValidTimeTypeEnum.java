@@ -17,6 +17,7 @@ import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.enums.ResultCode.COLLECTION_TIME_SETTING_NOT_REASONABLE;
 import static com.youyu.cardequity.promotion.enums.ResultCode.COUPON_START_TIME_GREATER_EQ_CURRENT_TIME;
 import static com.youyu.cardequity.promotion.enums.dict.CouponGetType.AUTO;
+import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.addMonths;
 
 /**
@@ -107,7 +108,7 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
             LocalDateTime now = LocalDateTime.now();
             clientCouponEntity.setValidStartDate(now);
 
-            LocalDateTime endDateTime = date2LocalDateTime(string2Date(date2String(addMonths(now(), 1), "yyyy-MM") + "-01 00:00:00"));
+            LocalDateTime endDateTime = date2LocalDateTime(addDays(string2Date(date2String(addMonths(now(), 1), "yyyy-MM") + "-01 00:00:00"), -1));
             clientCouponEntity.setValidEndDate(endDateTime);
         }
     };
