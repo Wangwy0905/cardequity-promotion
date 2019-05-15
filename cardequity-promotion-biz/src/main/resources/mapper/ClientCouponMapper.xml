@@ -8,7 +8,7 @@
         SELECT * FROM
         TB_CLIENT_COUPON a
         WHERE if(length(a.IS_ENABLE),a.IS_ENABLE,'1') = '1'
-        and a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
+        and ( a.CLIENT_ID=#{clientId,jdbcType=VARCHAR}
         <if test='"1"==obtainState'>
             and a.status='0'
             and a.VALID_START_DATE &lt;=curdate()
@@ -29,6 +29,7 @@
             and a.status='0'
             and a.VALID_END_DATE &gt; curdate()
         </if>
+        ) or ( a.CLIENT_ID=#{clientId,jdbcType=VARCHAR} and a.GET_TYPE = '0' )
     </select>
     <select id="findClientCouponByCouponId" resultType="com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity">
         SELECT * FROM
