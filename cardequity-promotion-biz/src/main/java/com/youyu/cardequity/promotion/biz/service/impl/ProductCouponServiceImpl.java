@@ -1554,7 +1554,7 @@ public class ProductCouponServiceImpl extends AbstractService<String, ProductCou
         //0-可领取 1-已领取 2-已使用 3-过期未使用 4-未开始 5-可使用
         List<ObtainCouponViewDto> clientCoupon = clientCouponService.findClientCoupon(innerReq);
         if (!CollectionUtils.isEmpty(clientCoupon)) {
-            clientCoupon = clientCoupon.stream().filter(obtainCouponViewDto -> !eq(obtainCouponViewDto.getGetType(), HANLD.getDictValue())).collect(toList());
+            clientCoupon = clientCoupon.stream().filter(obtainCouponViewDto -> eq(obtainCouponViewDto.getGetType(), HANLD.getDictValue())).collect(toList());
         }
 
         List<ObtainCouponViewDto> resultDto = new ArrayList<>();
