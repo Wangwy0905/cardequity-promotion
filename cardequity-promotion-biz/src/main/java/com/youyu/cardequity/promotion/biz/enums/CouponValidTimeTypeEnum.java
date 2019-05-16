@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.enums;
 
 import com.youyu.cardequity.common.base.enums.CardequityEnum;
+import com.youyu.cardequity.common.base.util.LocalDateUtils;
 import com.youyu.cardequity.promotion.biz.dal.entity.ClientCouponEntity;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static com.youyu.cardequity.common.base.util.DateUtil.*;
+import static com.youyu.cardequity.common.base.util.LocalDateUtils.DATETIME_FORMAT;
 import static com.youyu.cardequity.common.base.util.LocalDateUtils.date2LocalDateTime;
 import static com.youyu.cardequity.common.base.util.StringUtil.eq;
 import static com.youyu.cardequity.promotion.enums.ResultCode.COLLECTION_TIME_SETTING_NOT_REASONABLE;
@@ -146,6 +148,8 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
         checkValidDate(addCouponReq2.getAllowGetBeginDate().toLocalDate());
         productCouponEntity.setAllowGetBeginDate(addCouponReq2.getAllowGetBeginDate());
         productCouponEntity.setAllowGetEndDate(addCouponReq2.getAllowGetEndDate());
+        productCouponEntity.setAllowUseBeginDate(LocalDateUtils.string2LocalDateTime("2019-01-01 00:00:00", DATETIME_FORMAT));
+        productCouponEntity.setAllowGetEndDate(LocalDateUtils.string2LocalDateTime("2099-01-01 00:00:00", DATETIME_FORMAT));
     }
 
     /**
@@ -192,6 +196,6 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
      * @return
      */
     public String getCouponStatus(ProductCouponEntity productCouponEntity) {
-        return "——";
+        return "-";
     }
 }
