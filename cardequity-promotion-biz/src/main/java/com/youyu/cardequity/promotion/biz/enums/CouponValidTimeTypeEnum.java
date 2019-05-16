@@ -149,7 +149,7 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
         productCouponEntity.setAllowGetBeginDate(addCouponReq2.getAllowGetBeginDate());
         productCouponEntity.setAllowGetEndDate(addCouponReq2.getAllowGetEndDate());
         productCouponEntity.setAllowUseBeginDate(LocalDateUtils.string2LocalDateTime("2019-01-01 00:00:00", DATETIME_FORMAT));
-        productCouponEntity.setAllowGetEndDate(LocalDateUtils.string2LocalDateTime("2099-01-01 00:00:00", DATETIME_FORMAT));
+        productCouponEntity.setAllowUseEndDate(LocalDateUtils.string2LocalDateTime("2099-01-01 00:00:00", DATETIME_FORMAT));
     }
 
     /**
@@ -196,6 +196,6 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
      * @return
      */
     public String getCouponStatus(ProductCouponEntity productCouponEntity) {
-        return "-";
+        return "—";
     }
 }
