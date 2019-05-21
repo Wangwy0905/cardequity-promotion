@@ -55,8 +55,8 @@ public interface ProductCouponApi2 {
      * @return
      */
     @ApiOperation(value = "优惠券查看")
-    @PostMapping(path = "/view")
-    Result<ProductCouponViewRsp> view(@Valid @RequestBody ProductCouponViewReq productCouponViewReq);
+    @PostMapping(path = "/getDetail")
+    Result<ProductCouponViewRsp> getDetail(@Valid @RequestBody ProductCouponViewReq productCouponViewReq);
 
     /**
      * 优惠券上下架接口

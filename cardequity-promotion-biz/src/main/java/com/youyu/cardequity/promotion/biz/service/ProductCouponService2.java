@@ -60,7 +60,7 @@ public interface ProductCouponService2 {
      * @param productCouponViewReq
      * @return
      */
-    ProductCouponViewRsp view(ProductCouponViewReq productCouponViewReq);
+    ProductCouponViewRsp getDetail(ProductCouponViewReq productCouponViewReq);
 
     /**
      * 添加优惠券关联商品

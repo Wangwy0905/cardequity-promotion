@@ -46,8 +46,8 @@ public class ProductCouponController2 implements ProductCouponApi2 {
     }
 
     @Override
-    public Result<ProductCouponViewRsp> view(@Valid @RequestBody  ProductCouponViewReq productCouponViewReq) {
-        return ok(productCouponService2.view(productCouponViewReq));
+    public Result<ProductCouponViewRsp> getDetail(@Valid @RequestBody  ProductCouponViewReq productCouponViewReq) {
+        return ok(productCouponService2.getDetail(productCouponViewReq));
     }
 
     @Override

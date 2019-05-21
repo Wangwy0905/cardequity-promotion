@@ -154,7 +154,7 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
     }
 
     @Override
-    public ProductCouponViewRsp view(ProductCouponViewReq productCouponViewReq) {
+    public ProductCouponViewRsp getDetail(ProductCouponViewReq productCouponViewReq) {
         ProductCouponViewRsp productCouponViewRsp = productCouponMapper.getByProductCouponId(productCouponViewReq.getProductCouponId());
 
         BigDecimal conditionValue = productCouponViewRsp.getConditionValue();
