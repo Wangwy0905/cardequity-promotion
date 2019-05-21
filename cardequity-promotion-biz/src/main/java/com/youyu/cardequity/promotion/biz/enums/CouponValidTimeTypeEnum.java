@@ -88,6 +88,14 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
 
             return "有效中";
         }
+
+        @Override
+        public void checkAllowGetDate(ProductCouponEntity productCouponEntity) {
+            boolean validFlag = !productCouponEntity.getAllowGetBeginDate().isAfter(productCouponEntity.getAllowUseBeginDate()) && !productCouponEntity.getAllowGetEndDate().isAfter(productCouponEntity.getAllowUseEndDate());
+            if (!validFlag) {
+                throw new BizException(COLLECTION_TIME_SETTING_NOT_REASONABLE);
+            }
+        }
     },
     BY_DAY("1", "按天数") {
         @Override
@@ -142,14 +150,15 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
      * @param addCouponReq2
      */
     protected void doCalcValidDate4Create(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
+        productCouponEntity.setAllowUseBeginDate(LocalDateUtils.string2LocalDateTime("2019-01-01 00:00:00", DATETIME_FORMAT));
+        productCouponEntity.setAllowUseEndDate(LocalDateUtils.string2LocalDateTime("2099-01-01 00:00:00", DATETIME_FORMAT));
+
         if (eq(AUTO.getDictValue(), addCouponReq2.getGetType())) {
             return;
         }
         checkValidDate(addCouponReq2.getAllowGetBeginDate().toLocalDate());
         productCouponEntity.setAllowGetBeginDate(addCouponReq2.getAllowGetBeginDate());
         productCouponEntity.setAllowGetEndDate(addCouponReq2.getAllowGetEndDate());
-        productCouponEntity.setAllowUseBeginDate(LocalDateUtils.string2LocalDateTime("2019-01-01 00:00:00", DATETIME_FORMAT));
-        productCouponEntity.setAllowUseEndDate(LocalDateUtils.string2LocalDateTime("2099-01-01 00:00:00", DATETIME_FORMAT));
     }
 
     /**
@@ -197,5 +206,19 @@ public enum CouponValidTimeTypeEnum implements CardequityEnum {
      */
     public String getCouponStatus(ProductCouponEntity productCouponEntity) {
         return "—";
+    }
+
+    /**
+     * 检验商品优惠券参数
+     *
+     * @param productCouponEntity
+     */
+    public void checkAllowGetDate(ProductCouponEntity productCouponEntity) {
+        LocalDate nowLocalDate = LocalDate.now();
+        LocalDate allowGetBeginDate = productCouponEntity.getAllowGetBeginDate().toLocalDate();
+
+        if (allowGetBeginDate.isBefore(nowLocalDate)) {
+            throw new BizException(COUPON_START_TIME_GREATER_EQ_CURRENT_TIME);
+        }
     }
 }

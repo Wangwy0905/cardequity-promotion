@@ -1,6 +1,8 @@
 package com.youyu.cardequity.promotion.biz.dal.dao;
 
 import com.youyu.cardequity.promotion.biz.dal.entity.CouponRefProductEntity;
+import com.youyu.cardequity.promotion.dto.req.CouponRefProductQueryReq;
+import com.youyu.cardequity.promotion.dto.rsp.CouponRefProductQueryRsp;
 import com.youyu.common.mapper.YyMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -45,6 +47,13 @@ public interface CouponRefProductMapper extends YyMapper<CouponRefProductEntity>
      */
     List<CouponRefProductEntity> findByCouponIds(@Param("list") List<String> list);
 
+    /**
+     * 查询优惠券关联商品
+     *
+     * @param couponRefProductQueryReq
+     * @return
+     */
+    List<CouponRefProductQueryRsp> getCouponRefProductQuery(@Param("couponRefProductQueryReq") CouponRefProductQueryReq couponRefProductQueryReq);
 }
 
 

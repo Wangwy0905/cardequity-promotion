@@ -37,4 +37,30 @@
         </foreach>
         order by a.COUPON_ID
     </select>
+
+    <select id="getCouponRefProductQuery" parameterType="com.youyu.cardequity.promotion.dto.req.CouponRefProductQueryReq" resultType="com.youyu.cardequity.promotion.dto.rsp.CouponRefProductQueryRsp">
+        select
+        PRODUCT_ID productId,
+        PRODUCT_NAME productName,
+        SUPPLIER_NAME supplierName,
+        THIRD_CATEGORY_NAME thirdCategoryName,
+        (select count(1) from TB_COUPON_REF_PRODUCT t2 where t1.PRODUCT_ID = t2.PRODUCT_ID) refCouponQuantity
+        from
+        TB_COUPON_REF_PRODUCT t1
+        <where>
+            <if test="couponRefProductQueryReq.searchCondition != null">
+                <bind name="condition" value="'%' + _parameter.productCouponQueryReq.getSearchCondition() + '%'" />
+                ( PRODUCT_ID like #{condition,jdbcType=VARCHAR} or PRODUCT_NAME like #{condition,jdbcType=VARCHAR} )
+            </if>
+            <if test="couponRefProductQueryReq.thirdCategoryName != null">
+                and THIRD_CATEGORY_NAME = #{couponRefProductQueryReq.thirdCategoryName,jdbcType=VARCHAR}
+            </if>
+            <if test="couponRefProductQueryReq.supplierName != null">
+                and SUPPLIER_NAME = #{couponRefProductQueryReq.supplierName,jdbcType=VARCHAR}
+            </if>
+            <if test="couponRefProductQueryReq.productCouponId != null">
+                and COUPON_ID = #{couponRefProductQueryReq.productCouponId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -645,4 +645,141 @@
         )
     </select>
 
+    <select id="getProductCouponQuery" parameterType="com.youyu.cardequity.promotion.dto.req.ProductCouponQueryReq" resultType="com.youyu.cardequity.promotion.dto.rsp.ProductCouponQueryRsp">
+        select
+        t1.UUID productCouponId,
+        (
+        CASE
+        WHEN t1.COUPON_TYPE = '1' and t1.COUPON_LEVEL = '0' THEN '小鱼券'
+        WHEN t1.COUPON_TYPE = '1' and t1.COUPON_LEVEL = '1' THEN '大鱼券'
+        ELSE '运费券' END
+        ) couponTypeValue,
+        t1.COUPON_NAME couponName,
+        t1.PROFIT_VALUE couponAmount,
+        t2.BEGIN_VALUE couponCondition,
+        t2.END_VALUE profitTopAmount,
+        (
+        CASE
+        WHEN t1.GET_TYPE = '1' THEN '用户领取'
+        ELSE '后台发放' END
+        ) getTypeValue,
+        t1.STATUS status,
+        (
+        CASE
+            WHEN t1.ALLOW_GET_BEGIN_DATE &gt; curdate() and t1.GET_TYPE = '1' THEN '待领取'
+            WHEN t1.ALLOW_GET_BEGIN_DATE &lt;= curdate() and t1.ALLOW_GET_END_DATE &gt;= curdate() and t1.GET_TYPE = '1'
+            THEN '领取中'
+            WHEN t1.ALLOW_GET_END_DATE &lt; curdate() and t1.GET_TYPE = '1' THEN '已结束'
+        ELSE '-' END
+        ) getStatusValue,
+        (
+        CASE
+            WHEN t1.ALLOW_USE_BEGIN_DATE &gt; curdate() and t1.VALID_TIME_TYPE = '0' THEN '未开始'
+            WHEN t1.ALLOW_USE_BEGIN_DATE &lt;= curdate() and t1.ALLOW_USE_END_DATE &gt;= curdate() and t1.VALID_TIME_TYPE = '0' THEN '有效中'
+            WHEN t1.ALLOW_GET_END_DATE &lt; curdate() and t1.VALID_TIME_TYPE = '0' THEN '已过期'
+        ELSE '-' END
+        ) couponStatusValue
+        from TB_PRODUCT_COUPON t1
+        left join TB_COUPON_STAGE_RULE t2 on t1.UUID = t2.COUPON_ID
+        <where>
+            <if test="productCouponQueryReq.clientTypeSet != null">
+                t1.CLIENT_TYPE_SET = #{productCouponQueryReq.clientTypeSet,jdbcType=VARCHAR}
+            </if>
+            <if test="productCouponQueryReq.searchCondition != null ">
+                <bind name="condition" value="'%' + _parameter.productCouponQueryReq.getSearchCondition() + '%'" />
+                and ( t1.UUID like #{condition,jdbcType=VARCHAR} or t1.COUPON_NAME like #{condition,jdbcType=VARCHAR} )
+            </if>
+            <if test="productCouponQueryReq.couponType != null">
+                and t1.COUPON_TYPE = #{productCouponQueryReq.couponType,jdbcType=VARCHAR}
+            </if>
+            <if test="productCouponQueryReq.couponLevel != null">
+                and t1.COUPON_LEVEL = #{productCouponQueryReq.couponLevel,jdbcType=VARCHAR}
+            </if>
+            <if test="productCouponQueryReq.status != null">
+                and t1.STATUS = #{productCouponQueryReq.status,jdbcType=VARCHAR}
+            </if>
+            <if test="productCouponQueryReq.getType != null">
+                and t1.GET_TYPE = #{productCouponQueryReq.getType,jdbcType=VARCHAR}
+            </if>
+            <if test="productCouponQueryReq.getStatus != null">
+                and
+                <choose>
+                    <when test="productCouponQueryReq.getStatus == '0'">
+                        ( t1.ALLOW_GET_BEGIN_DATE &gt; curdate() and t1.GET_TYPE = '1' )
+                    </when>
+                    <when test="productCouponQueryReq.getStatus == '1'">
+                        ( t1.ALLOW_GET_BEGIN_DATE &lt;= curdate() and t1.ALLOW_GET_END_DATE &gt;= curdate() and t1.GET_TYPE = '1' )
+                    </when>
+                    <when test="productCouponQueryReq.getStatus == '2'">
+                        ( t1.ALLOW_GET_END_DATE &lt; curdate() and t1.GET_TYPE = '1' )
+                    </when>
+                    <otherwise>
+                        t1.GET_TYPE = '0'
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="productCouponQueryReq.couponStatus != null">
+                and
+                <choose>
+                    <when test="productCouponQueryReq.couponStatus == '0'">
+                        ( t1.ALLOW_USE_BEGIN_DATE &gt; curdate() and t1.VALID_TIME_TYPE = '0' )
+                    </when>
+                    <when test="productCouponQueryReq.couponStatus == '1'">
+                        ( t1.ALLOW_USE_BEGIN_DATE &lt;= curdate() and t1.ALLOW_USE_END_DATE &gt;= curdate() and t1.VALID_TIME_TYPE = '0' )
+                    </when>
+                    <when test="productCouponQueryReq.couponStatus == '2'">
+                        ( t1.ALLOW_GET_END_DATE &lt; curdate() and t1.VALID_TIME_TYPE = '0' )
+                    </when>
+                    <otherwise>
+                        t1.VALID_TIME_TYPE != '0'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+    <select id="getStatisticsByClientType" resultType="com.youyu.cardequity.promotion.dto.rsp.ProductCouponGetStatisticsRsp">
+        select
+          (
+          CASE
+              when CLIENT_TYPE_SET = '10' THEN '注册用户'
+              when CLIENT_TYPE_SET = '11' THEN '会员'
+          ELSE '全部用户' END
+          ) getObject,
+          count(1) quantity
+        from TB_PRODUCT_COUPON
+        group by CLIENT_TYPE_SET
+    </select>
+
+    <select id="getByProductCouponId" parameterType="java.lang.String" resultType="com.youyu.cardequity.promotion.dto.rsp.ProductCouponViewRsp">
+        select
+          t1.UUID productCouponId,
+          t1.COUPON_TYPE couponType,
+          t1.CLIENT_TYPE_SET clientTypeSet,
+          t1.COUPON_LEVEL couponLevel,
+          t1.COUPON_LABLE couponLabel,
+          t1.STATUS status,
+          t1.COUPON_NAME couponName,
+          t1.COUPON_SHORT_DESC couponShortDesc,
+          t1.Coupon_Desc couponDesc,
+          t2.MAX_COUNT maxCount,
+          t1.PROFIT_VALUE profitValue,
+          t3.BEGIN_VALUE conditionValue,
+          t3.END_VALUE perProfitTopValue,
+          t1.VALID_TIME_TYPE validTimeType,
+          t1.ALLOW_USE_BEGIN_DATE allowUseBeginDate,
+          t1.ALLOW_USE_END_DATE allowUseEndDate,
+          t1.VAL_ID_TERM validTerm,
+          t1.GET_TYPE getType,
+          t1.ALLOW_GET_BEGIN_DATE allowGetBeginDate,
+          t1.ALLOW_GET_END_DATE allowGetEndDate,
+          t4.UNIT unit,
+          t4.PERSON_TOTAL_NUM personTotalNum,
+          t4.ALLOW_COUNT allowCount
+        from TB_PRODUCT_COUPON t1 left join TB_COUPON_QUOTA_RULE t2 on t1.UUID = t2.COUPON_ID
+          left join TB_COUPON_STAGE_RULE t3 on t1.UUID = t3.COUPON_ID
+          left join TB_COUPON_GET_OR_USE_FREQ_RULE t4 on t1.UUID = t4.COUPON_ID
+        where t1.UUID = #{productCouponId,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

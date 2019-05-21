@@ -3,6 +3,7 @@ package com.youyu.cardequity.promotion.biz.enums;
 import com.youyu.cardequity.common.base.enums.CardequityEnum;
 import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import com.youyu.cardequity.promotion.dto.req.AddCouponReq2;
+import com.youyu.cardequity.promotion.dto.req.ProductCouponAddReq;
 import com.youyu.cardequity.promotion.enums.CouponGetRestrictEnum;
 import com.youyu.cardequity.promotion.enums.dict.UsedStage;
 import lombok.Getter;
@@ -22,6 +23,12 @@ public enum CouponTargetFlagEnum implements CardequityEnum {
             productCouponEntity.setClientTypeSet(CouponGetRestrictEnum.ALL.getCode());
             productCouponEntity.setGetStage(UsedStage.Other.getDictValue());
         }
+
+        @Override
+        public void setClientTypeSet(ProductCouponEntity productCouponEntity, ProductCouponAddReq productCouponAddReq) {
+            productCouponEntity.setClientTypeSet(CouponGetRestrictEnum.ALL.getCode());
+            productCouponEntity.setGetStage(UsedStage.Other.getDictValue());
+        }
     },
     REGISTRY_USER("1", "注册用户") {
         @Override
@@ -29,10 +36,22 @@ public enum CouponTargetFlagEnum implements CardequityEnum {
             productCouponEntity.setClientTypeSet(CouponGetRestrictEnum.REGISTER_NORMAL.getCode());
             productCouponEntity.setGetStage(UsedStage.Register.getDictValue());
         }
+
+        @Override
+        public void setClientTypeSet(ProductCouponEntity productCouponEntity, ProductCouponAddReq productCouponAddReq) {
+            productCouponEntity.setClientTypeSet(CouponGetRestrictEnum.REGISTER_NORMAL.getCode());
+            productCouponEntity.setGetStage(UsedStage.Register.getDictValue());
+        }
     },
     MEMBER_USER("2", "会员") {
         @Override
         public void setClientTypeSet(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2) {
+            productCouponEntity.setClientTypeSet(CouponGetRestrictEnum.MEMBER.getCode());
+            productCouponEntity.setGetStage(UsedStage.Other.getDictValue());
+        }
+
+        @Override
+        public void setClientTypeSet(ProductCouponEntity productCouponEntity, ProductCouponAddReq productCouponAddReq) {
             productCouponEntity.setClientTypeSet(CouponGetRestrictEnum.MEMBER.getCode());
             productCouponEntity.setGetStage(UsedStage.Other.getDictValue());
         }
@@ -54,4 +73,12 @@ public enum CouponTargetFlagEnum implements CardequityEnum {
      * @param addCouponReq2
      */
     public abstract void setClientTypeSet(ProductCouponEntity productCouponEntity, AddCouponReq2 addCouponReq2);
+
+    /**
+     * 设置优惠券用户类型
+     *
+     * @param productCouponEntity
+     * @param productCouponAddReq
+     */
+    public abstract void setClientTypeSet(ProductCouponEntity productCouponEntity, ProductCouponAddReq productCouponAddReq);
 }

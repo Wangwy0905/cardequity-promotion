@@ -72,7 +72,8 @@ public enum ResultCode implements CardequityIBaseResultCode {
     TRIGGER_ISSUE_TARGET_NOT_CLIENT("0041", "优惠券发放记录的发放目标类型不是用户类型,此次发放不能进行进行，应丢弃"),
     COUPON_ISSUE_CLIENT_TYPE_SET_NULL("0042", "在后台发券时，券的clientType为空，无法发券"),
     COLLECTION_TIME_SETTING_NOT_REASONABLE("0043", "领取时间设置不合理"),
-    COUPON_START_TIME_GREATER_EQ_CURRENT_TIME("0044", "优惠券领取开始时间必须大于等于当前时间");
+    COUPON_START_TIME_GREATER_EQ_CURRENT_TIME("0044", "优惠券领取开始时间必须大于等于当前时间"),
+    CACHE_PRODUCT_QUANTITY_CANNOT_ATTAIN_PRODUCT_SUM("0045","缓存里商品数量为达到商品总数");
 
     /**
      * 返回错误码

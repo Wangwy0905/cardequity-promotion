@@ -1,8 +1,11 @@
 package com.youyu.cardequity.promotion.biz.dal.entity;
 
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -27,6 +30,24 @@ public class CouponRefProductEntity extends com.youyu.common.entity.BaseEntity<S
      */
     @Column(name = "PRODUCT_ID")
     private String productId;
+
+    /**
+     * 商品名称
+     */
+    @Column(name = "PRODUCT_NAME")
+    private String productName;
+
+    /**
+     * 供应商
+     */
+    @Column(name = "SUPPLIER_NAME")
+    private String supplierName;
+
+    /**
+     * 三级分类
+     */
+    @Column(name = "THIRD_CATEGORY_NAME")
+    private String thirdCategoryName;
 
     /**
      * 子商品id:

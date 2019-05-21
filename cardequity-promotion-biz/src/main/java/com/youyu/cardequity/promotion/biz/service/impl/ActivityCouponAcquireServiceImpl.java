@@ -204,7 +204,7 @@ public class ActivityCouponAcquireServiceImpl implements RabbitConsumerService {
         }
 
         ProductCouponGetTypeEnum productCouponGetTypeEnum = getCardequityEnum(ProductCouponGetTypeEnum.class, productCouponEntity.getGetType());
-        if (productCouponGetTypeEnum.isHanld()) {
+        if (productCouponGetTypeEnum.isUserGet()) {
             return false;
         }
 

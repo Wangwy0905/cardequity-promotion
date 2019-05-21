@@ -594,7 +594,7 @@ public class CouponIssueServiceImpl implements CouponIssueService {
         }
 
         ProductCouponGetTypeEnum productCouponGetTypeEnum = getCardequityEnum(ProductCouponGetTypeEnum.class, productCouponEntity.getGetType());
-        if (productCouponGetTypeEnum.isHanld()) {
+        if (productCouponGetTypeEnum.isUserGet()) {
             throw new BizException(MANUAL_COUPON_CANNOT_BE_ISSUED);
         }
 

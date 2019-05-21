@@ -25,6 +25,11 @@ public enum CouponUnitEnum implements CardequityEnum {
         public void setPersonTotalNum(CouponGetOrUseFreqRuleEntity couponGetOrUseFreqRuleEntity, EditCouponReq2 editCouponReq2) {
             couponGetOrUseFreqRuleEntity.setPersonTotalNum(editCouponReq2.getAllowCount());
         }
+
+        @Override
+        public void setAllowCount(CouponGetOrUseFreqRuleEntity couponGetOrUseFreqRule, Integer personTotalNum, Integer allowCount) {
+            couponGetOrUseFreqRule.setAllowCount(personTotalNum);
+        }
     },
     EVERY_DAY("0", "每天"),
     EVERY_WEEK("1", "每周"),
@@ -58,5 +63,16 @@ public enum CouponUnitEnum implements CardequityEnum {
      */
     public void setPersonTotalNum(CouponGetOrUseFreqRuleEntity couponGetOrUseFreqRuleEntity, AddCouponReq2 addCouponReq2) {
         couponGetOrUseFreqRuleEntity.setPersonTotalNum(addCouponReq2.getPersonTotalNum());
+    }
+
+    /**
+     * 设置总限领
+     *
+     * @param couponGetOrUseFreqRule
+     * @param personTotalNum
+     * @param allowCount
+     */
+    public void setAllowCount(CouponGetOrUseFreqRuleEntity couponGetOrUseFreqRule, Integer personTotalNum, Integer allowCount) {
+        couponGetOrUseFreqRule.setAllowCount(allowCount);
     }
 }

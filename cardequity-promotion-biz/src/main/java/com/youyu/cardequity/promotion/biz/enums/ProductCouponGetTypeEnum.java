@@ -1,21 +1,30 @@
 package com.youyu.cardequity.promotion.biz.enums;
 
 import com.youyu.cardequity.common.base.enums.CardequityEnum;
+import com.youyu.cardequity.promotion.biz.dal.entity.ProductCouponEntity;
 import lombok.Getter;
+
+import static com.youyu.cardequity.common.base.util.EnumUtil.getCardequityEnum;
 
 @Getter
 public enum ProductCouponGetTypeEnum implements CardequityEnum {
 
-    AUTO("0", "自动") {
+    BACKEND_ISSUE("0", "后台发放") {
         @Override
-        public boolean isHanld() {
+        public boolean isUserGet() {
             return false;
         }
     },
-    HANLD("1", "手动"),
+    USER_GET("1", "用户领取") {
+        @Override
+        public void checkAllowGetDate(ProductCouponEntity productCouponEntity) {
+            CouponValidTimeTypeEnum couponValidTimeTypeEnum = getCardequityEnum(CouponValidTimeTypeEnum.class, productCouponEntity.getValidTimeType());
+            couponValidTimeTypeEnum.checkAllowGetDate(productCouponEntity);
+        }
+    },
     GRANT("2", "平台发放") {
         @Override
-        public boolean isHanld() {
+        public boolean isUserGet() {
             return false;
         }
     };
@@ -29,7 +38,16 @@ public enum ProductCouponGetTypeEnum implements CardequityEnum {
         this.msg = msg;
     }
 
-    public boolean isHanld() {
+    public boolean isUserGet() {
         return true;
+    }
+
+    /**
+     * 检验商品优惠券领取时间
+     *
+     * @param productCouponEntity
+     */
+    public void checkAllowGetDate(ProductCouponEntity productCouponEntity) {
+
     }
 }
