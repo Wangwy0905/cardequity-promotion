@@ -75,8 +75,8 @@ public interface ProductCouponApi2 {
      * @return
      */
     @ApiOperation(value = "优惠券查询")
-    @PostMapping(path = "/get")
-    Result<PageData<ProductCouponQueryRsp>> get(@RequestBody ProductCouponQueryReq productCouponQueryReq);
+    @PostMapping(path = "/getPage")
+    Result<PageData<ProductCouponQueryRsp>> getPage(@RequestBody ProductCouponQueryReq productCouponQueryReq);
 
     /**
      * 优惠券查询可领取对象统计
@@ -115,6 +115,6 @@ public interface ProductCouponApi2 {
      * @return
      */
     @ApiOperation(value = "查询优惠券关联商品")
-    @PostMapping(path = "/getCouponRefProductQuery")
-    Result<PageData<CouponRefProductQueryRsp>> getCouponRefProductQuery(@RequestBody CouponRefProductQueryReq couponRefProductQueryReq);
+    @PostMapping(path = "/getCouponRefProductPage")
+    Result<PageData<CouponRefProductQueryRsp>> getCouponRefProductPage(@RequestBody CouponRefProductQueryReq couponRefProductQueryReq);
 }

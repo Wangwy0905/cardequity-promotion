@@ -135,7 +135,7 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
     }
 
     @Override
-    public PageData<ProductCouponQueryRsp> get(ProductCouponQueryReq productCouponQueryReq) {
+    public PageData<ProductCouponQueryRsp> getPage(ProductCouponQueryReq productCouponQueryReq) {
         startPage(productCouponQueryReq.getPageNo(), productCouponQueryReq.getPageSize());
         List<ProductCouponQueryRsp> productCoupons = productCouponMapper.getProductCouponQuery(productCouponQueryReq);
         PageInfo<ProductCouponQueryRsp> productCouponPageInfo = new PageInfo<>(productCoupons);
@@ -192,7 +192,7 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
     }
 
     @Override
-    public PageData<CouponRefProductQueryRsp> getCouponRefProductQuery(CouponRefProductQueryReq couponRefProductQueryReq) {
+    public PageData<CouponRefProductQueryRsp> getCouponRefProductPage(CouponRefProductQueryReq couponRefProductQueryReq) {
         startPage(couponRefProductQueryReq.getPageNo(), couponRefProductQueryReq.getPageSize());
         List<CouponRefProductQueryRsp> couponRefProductQueryRsps = couponRefProductMapper.getCouponRefProductQuery(couponRefProductQueryReq);
         PageInfo<CouponRefProductQueryRsp> productQueryRspPage = new PageInfo<>(couponRefProductQueryRsps);

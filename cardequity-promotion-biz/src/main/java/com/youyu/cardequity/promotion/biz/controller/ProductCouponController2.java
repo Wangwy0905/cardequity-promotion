@@ -57,8 +57,8 @@ public class ProductCouponController2 implements ProductCouponApi2 {
     }
 
     @Override
-    public Result<PageData<ProductCouponQueryRsp>> get(@RequestBody ProductCouponQueryReq productCouponQueryReq) {
-        return ok(productCouponService2.get(productCouponQueryReq));
+    public Result<PageData<ProductCouponQueryRsp>> getPage(@RequestBody ProductCouponQueryReq productCouponQueryReq) {
+        return ok(productCouponService2.getPage(productCouponQueryReq));
     }
 
     @Override
@@ -79,8 +79,8 @@ public class ProductCouponController2 implements ProductCouponApi2 {
     }
 
     @Override
-    public Result<PageData<CouponRefProductQueryRsp>> getCouponRefProductQuery(@RequestBody CouponRefProductQueryReq couponRefProductQueryReq) {
-        return ok(productCouponService2.getCouponRefProductQuery(couponRefProductQueryReq));
+    public Result<PageData<CouponRefProductQueryRsp>> getCouponRefProductPage(@RequestBody CouponRefProductQueryReq couponRefProductQueryReq) {
+        return ok(productCouponService2.getCouponRefProductPage(couponRefProductQueryReq));
     }
 
 }

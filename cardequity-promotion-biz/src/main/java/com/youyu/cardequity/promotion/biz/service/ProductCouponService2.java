@@ -44,7 +44,7 @@ public interface ProductCouponService2 {
      * @param productCouponQueryReq
      * @return
      */
-    PageData<ProductCouponQueryRsp> get(ProductCouponQueryReq productCouponQueryReq);
+    PageData<ProductCouponQueryRsp> getPage(ProductCouponQueryReq productCouponQueryReq);
 
     /**
      * 优惠券查询可领取对象统计
@@ -82,5 +82,5 @@ public interface ProductCouponService2 {
      * @param couponRefProductQueryReq
      * @return
      */
-    PageData<CouponRefProductQueryRsp> getCouponRefProductQuery(CouponRefProductQueryReq couponRefProductQueryReq);
+    PageData<CouponRefProductQueryRsp> getCouponRefProductPage(CouponRefProductQueryReq couponRefProductQueryReq);
 }
