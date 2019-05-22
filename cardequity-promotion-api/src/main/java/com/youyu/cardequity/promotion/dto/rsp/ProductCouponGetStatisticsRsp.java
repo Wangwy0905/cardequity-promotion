@@ -25,4 +25,7 @@ public class ProductCouponGetStatisticsRsp implements Serializable {
 
     @ApiModelProperty("数量")
     private Integer quantity;
+
+    @ApiModelProperty(value = "领取对象 *:全部用户 10:注册 11:会员")
+    private String clientTypeSet;
 }

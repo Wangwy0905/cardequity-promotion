@@ -50,4 +50,7 @@ public class ProductCouponQueryRsp implements Serializable {
 
     @ApiModelProperty(value = "状态 0:下架 1:上架")
     private String status;
+
+    @ApiModelProperty("商品标志 true:显示 false:不显示")
+    private Boolean productShowFlag;
 }

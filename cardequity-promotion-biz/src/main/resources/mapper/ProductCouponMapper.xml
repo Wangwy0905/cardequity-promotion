@@ -654,9 +654,18 @@
         WHEN t1.COUPON_TYPE = '1' and t1.COUPON_LEVEL = '1' THEN '大鱼券'
         ELSE '运费券' END
         ) couponTypeValue,
+        (
+        CASE
+        WHEN t1.COUPON_TYPE = '1' THEN '1'
+        ELSE '0' END
+        ) productShowFlag,
         t1.COUPON_NAME couponName,
         t1.PROFIT_VALUE couponAmount,
-        t2.BEGIN_VALUE couponCondition,
+        (
+        CASE
+        WHEN IFNULL(t2.BEGIN_VALUE, 0) = 0 THEN '无门槛'
+        ELSE t2.BEGIN_VALUE END
+        ) couponCondition,
         t2.END_VALUE profitTopAmount,
         (
         CASE
@@ -704,13 +713,13 @@
             <if test="productCouponQueryReq.getStatus != null">
                 and
                 <choose>
-                    <when test="productCouponQueryReq.getStatus == '0'">
+                    <when test="productCouponQueryReq.getStatus == '0'.toString()">
                         ( t1.ALLOW_GET_BEGIN_DATE &gt; curdate() and t1.GET_TYPE = '1' )
                     </when>
-                    <when test="productCouponQueryReq.getStatus == '1'">
+                    <when test="productCouponQueryReq.getStatus == '1'.toString()">
                         ( t1.ALLOW_GET_BEGIN_DATE &lt;= curdate() and t1.ALLOW_GET_END_DATE &gt;= curdate() and t1.GET_TYPE = '1' )
                     </when>
-                    <when test="productCouponQueryReq.getStatus == '2'">
+                    <when test="productCouponQueryReq.getStatus == '2'.toString()">
                         ( t1.ALLOW_GET_END_DATE &lt; curdate() and t1.GET_TYPE = '1' )
                     </when>
                     <otherwise>
@@ -721,13 +730,13 @@
             <if test="productCouponQueryReq.couponStatus != null">
                 and
                 <choose>
-                    <when test="productCouponQueryReq.couponStatus == '0'">
+                    <when test="productCouponQueryReq.couponStatus == '0'.toString()">
                         ( t1.ALLOW_USE_BEGIN_DATE &gt; curdate() and t1.VALID_TIME_TYPE = '0' )
                     </when>
-                    <when test="productCouponQueryReq.couponStatus == '1'">
+                    <when test="productCouponQueryReq.couponStatus == '1'.toString()">
                         ( t1.ALLOW_USE_BEGIN_DATE &lt;= curdate() and t1.ALLOW_USE_END_DATE &gt;= curdate() and t1.VALID_TIME_TYPE = '0' )
                     </when>
-                    <when test="productCouponQueryReq.couponStatus == '2'">
+                    <when test="productCouponQueryReq.couponStatus == '2'.toString()">
                         ( t1.ALLOW_GET_END_DATE &lt; curdate() and t1.VALID_TIME_TYPE = '0' )
                     </when>
                     <otherwise>
@@ -746,9 +755,11 @@
               when CLIENT_TYPE_SET = '11' THEN '会员'
           ELSE '全部用户' END
           ) getObject,
-          count(1) quantity
+          count(1) quantity,
+          CLIENT_TYPE_SET clientTypeSet
         from TB_PRODUCT_COUPON
         group by CLIENT_TYPE_SET
+        order by CLIENT_TYPE_SET desc
     </select>
 
     <select id="getByProductCouponId" parameterType="java.lang.String" resultType="com.youyu.cardequity.promotion.dto.rsp.ProductCouponViewRsp">

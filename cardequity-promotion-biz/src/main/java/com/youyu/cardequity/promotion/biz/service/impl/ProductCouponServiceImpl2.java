@@ -50,6 +50,7 @@ import static com.youyu.cardequity.promotion.enums.dict.OpCouponType.GETRULE;
 import static com.youyu.cardequity.promotion.enums.dict.TriggerByType.CAPITAL;
 import static com.youyu.cardequity.promotion.enums.dict.UseGeEndDateFlag.NO;
 import static com.youyu.cardequity.promotion.enums.dict.UsedStage.*;
+import static java.util.Objects.isNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.lang.exception.ExceptionUtils.getFullStackTrace;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -147,9 +148,10 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
         if (isEmpty(productCouponGetStatistics)) {
             return null;
         }
-
-        productCouponGetStatistics.add(getAllProductCouponGetStatistics(productCouponGetStatistics));
-        return productCouponGetStatistics;
+        List<ProductCouponGetStatisticsRsp> resultProductCouponGetStatistics = new ArrayList<>();
+        resultProductCouponGetStatistics.add(getAllProductCouponGetStatistics(productCouponGetStatistics));
+        resultProductCouponGetStatistics.addAll(productCouponGetStatistics);
+        return resultProductCouponGetStatistics;
     }
 
     @Override
@@ -157,7 +159,7 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
         ProductCouponViewRsp productCouponViewRsp = productCouponMapper.getByProductCouponId(productCouponViewReq.getProductCouponId());
 
         BigDecimal conditionValue = productCouponViewRsp.getConditionValue();
-        if (eqZero(conditionValue)) {
+        if (isNull(conditionValue) || eqZero(conditionValue)) {
             return productCouponViewRsp;
         }
         productCouponViewRsp.setPerProfitTopValue(productCouponViewRsp.getPerProfitTopValue().divide(conditionValue).multiply(productCouponViewRsp.getProfitValue()));
@@ -396,6 +398,10 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
      */
     private BigDecimal getStageRuleEndValue(ProductCouponAddReq productCouponAddReq) {
         BigDecimal perProfitTopValue = productCouponAddReq.getPerProfitTopValue();
+        if (isNull(perProfitTopValue)) {
+            return null;
+        }
+
         return perProfitTopValue.divide(productCouponAddReq.getProfitValue(), 0, RoundingMode.DOWN).multiply(productCouponAddReq.getConditionValue());
     }
 
