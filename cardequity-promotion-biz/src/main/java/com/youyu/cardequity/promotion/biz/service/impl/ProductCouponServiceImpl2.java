@@ -63,7 +63,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Slf4j
 @Service
 public class ProductCouponServiceImpl2 implements ProductCouponService2 {
-
     /**
      * 允许使用开始时间
      */
@@ -220,7 +219,7 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
             log.error("优惠券添加所有商品异常信息:[{}]", getFullStackTrace(ex));
         }
 
-        if (size > productSum) {
+        if (size < productSum) {
             throw new BizException(CACHE_PRODUCT_QUANTITY_CANNOT_ATTAIN_PRODUCT_SUM);
         }
         return productInfoMap;
@@ -241,7 +240,8 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
             couponRefProduct = getCouponRefProduct(couponRefAllProductReq, couponRefAllProductDto);
             couponRefProductEntities.add(couponRefProduct);
         }
-        batchService.batchDispose(couponRefProductEntities, CouponRefProductMapper.class, "insertSelective");
+        batchService.batchDispose(couponRefProductEntities, CouponRefProductMapper.class, "insertSelective", 10000);
+//        productInfoMap.clear();
     }
 
     /**

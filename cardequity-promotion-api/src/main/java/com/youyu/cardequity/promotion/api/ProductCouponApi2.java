@@ -1,5 +1,6 @@
 package com.youyu.cardequity.promotion.api;
 
+import com.youyu.cardequity.common.base.annotation.ApiIdentify;
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponRefProductQueryRsp;
 import com.youyu.cardequity.promotion.dto.rsp.ProductCouponGetStatisticsRsp;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import static com.youyu.cardequity.common.base.constant.ApiIdentifyConstant.BACKEND_IDENTIFY;
 
 /**
  * @author panqingqing
@@ -34,6 +37,7 @@ public interface ProductCouponApi2 {
      * @param productCouponAddReq
      * @return
      */
+    @ApiIdentify(value = BACKEND_IDENTIFY)
     @ApiOperation(value = "优惠券添加")
     @PostMapping(path = "/add")
     Result add(@Valid @RequestBody ProductCouponAddReq productCouponAddReq);
@@ -44,6 +48,7 @@ public interface ProductCouponApi2 {
      * @param productCouponEditReq
      * @return
      */
+    @ApiIdentify(value = BACKEND_IDENTIFY)
     @ApiOperation(value = "优惠券编辑")
     @PostMapping(path = "/edit")
     Result edit(@Valid @RequestBody ProductCouponEditReq productCouponEditReq);
@@ -54,6 +59,7 @@ public interface ProductCouponApi2 {
      * @param productCouponViewReq
      * @return
      */
+    @ApiIdentify(value = BACKEND_IDENTIFY)
     @ApiOperation(value = "优惠券查看")
     @PostMapping(path = "/getDetail")
     Result<ProductCouponViewRsp> getDetail(@Valid @RequestBody ProductCouponViewReq productCouponViewReq);
@@ -64,6 +70,7 @@ public interface ProductCouponApi2 {
      * @param productCouponStatusReq
      * @return
      */
+    @ApiIdentify(value = BACKEND_IDENTIFY)
     @ApiOperation(value = "优惠券上下架")
     @PostMapping(path = "/setStatus")
     Result setStatus(@RequestBody ProductCouponStatusReq productCouponStatusReq);
@@ -74,6 +81,7 @@ public interface ProductCouponApi2 {
      * @param productCouponQueryReq
      * @return
      */
+    @ApiIdentify(value = BACKEND_IDENTIFY)
     @ApiOperation(value = "优惠券查询")
     @PostMapping(path = "/getPage")
     Result<PageData<ProductCouponQueryRsp>> getPage(@RequestBody ProductCouponQueryReq productCouponQueryReq);
@@ -84,6 +92,7 @@ public interface ProductCouponApi2 {
      * @param productCouponGetStatisticsReq
      * @return
      */
+    @ApiIdentify(value = BACKEND_IDENTIFY)
     @ApiOperation(value = "优惠券查询可领取对象统计")
     @PostMapping(path = "/getStatisticsByClientType")
     Result<List<ProductCouponGetStatisticsRsp>> getStatisticsByClientType(@RequestBody ProductCouponGetStatisticsReq productCouponGetStatisticsReq);
@@ -94,6 +103,7 @@ public interface ProductCouponApi2 {
      * @param couponRefProductReq
      * @return
      */
+    @ApiIdentify(value = BACKEND_IDENTIFY)
     @ApiOperation(value = "添加优惠券关联的商品")
     @PostMapping(path = "/addProduct")
     Result addProduct(@RequestBody CouponRefProductReq couponRefProductReq);
@@ -104,6 +114,7 @@ public interface ProductCouponApi2 {
      * @param couponRefAllProductReq
      * @return
      */
+    @ApiIdentify(value = BACKEND_IDENTIFY)
     @ApiOperation(value = "添加优惠券关联的所有商品")
     @PostMapping(path = "/addAllProduct")
     Result addAllProduct(@RequestBody CouponRefAllProductReq couponRefAllProductReq);
@@ -114,6 +125,7 @@ public interface ProductCouponApi2 {
      * @param couponRefProductQueryReq
      * @return
      */
+    @ApiIdentify(value = BACKEND_IDENTIFY)
     @ApiOperation(value = "查询优惠券关联商品")
     @PostMapping(path = "/getCouponRefProductPage")
     Result<PageData<CouponRefProductQueryRsp>> getCouponRefProductPage(@RequestBody CouponRefProductQueryReq couponRefProductQueryReq);
