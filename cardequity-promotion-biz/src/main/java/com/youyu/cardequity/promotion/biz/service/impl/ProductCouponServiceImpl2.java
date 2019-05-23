@@ -1,6 +1,7 @@
 package com.youyu.cardequity.promotion.biz.service.impl;
 
 import com.github.pagehelper.PageInfo;
+import com.youyu.cardequity.common.base.dto.product.ProductInfo4CouponRefDto;
 import com.youyu.cardequity.common.base.uidgenerator.UidGenerator;
 import com.youyu.cardequity.common.spring.service.BatchService;
 import com.youyu.cardequity.promotion.biz.dal.dao.*;
@@ -9,7 +10,6 @@ import com.youyu.cardequity.promotion.biz.enums.CouponTypeEnum;
 import com.youyu.cardequity.promotion.biz.enums.CouponUnitEnum;
 import com.youyu.cardequity.promotion.biz.enums.ProductCouponGetTypeEnum;
 import com.youyu.cardequity.promotion.biz.service.ProductCouponService2;
-import com.youyu.cardequity.promotion.dto.CouponRefAllProductDto;
 import com.youyu.cardequity.promotion.dto.req.*;
 import com.youyu.cardequity.promotion.dto.rsp.CouponRefProductQueryRsp;
 import com.youyu.cardequity.promotion.dto.rsp.ProductCouponGetStatisticsRsp;
@@ -183,7 +183,7 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
             return;
         }
 
-        RMap<String, CouponRefAllProductDto> productInfoMap = redissonClient.getMap(CARDEQUITY_PRODUCT_COUPON_ALL_PRODUCT_CACHE_MAP);
+        RMap<String, ProductInfo4CouponRefDto> productInfoMap = redissonClient.getMap(CARDEQUITY_PRODUCT_COUPON_ALL_PRODUCT_CACHE_MAP);
         if (isEmpty(productInfoMap)) {
             return;
         }
@@ -207,7 +207,7 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
      * @param productInfoMap
      * @return
      */
-    private RMap<String, CouponRefAllProductDto> checkProductCacheSize(Integer productSum, RMap<String, CouponRefAllProductDto> productInfoMap) {
+    private RMap<String, ProductInfo4CouponRefDto> checkProductCacheSize(Integer productSum, RMap<String, ProductInfo4CouponRefDto> productInfoMap) {
         int size = productInfoMap.size();
         int retryTime = RETRY_TIME;
         try {
@@ -233,35 +233,35 @@ public class ProductCouponServiceImpl2 implements ProductCouponService2 {
      * @param couponRefAllProductReq
      * @param productInfoMap
      */
-    private void doAddAllProduct(CouponRefAllProductReq couponRefAllProductReq, RMap<String, CouponRefAllProductDto> productInfoMap) {
+    private void doAddAllProduct(CouponRefAllProductReq couponRefAllProductReq, RMap<String, ProductInfo4CouponRefDto> productInfoMap) {
         couponRefProductMapper.deleteByCouponId(couponRefAllProductReq.getProductCouponId());
 
         List<CouponRefProductEntity> couponRefProductEntities = new ArrayList<>();
         CouponRefProductEntity couponRefProduct = null;
-        for (CouponRefAllProductDto couponRefAllProductDto : productInfoMap.values()) {
-            couponRefProduct = getCouponRefProduct(couponRefAllProductReq, couponRefAllProductDto);
+        for (ProductInfo4CouponRefDto productInfo4CouponRefDto : productInfoMap.values()) {
+            couponRefProduct = getCouponRefProduct(couponRefAllProductReq, productInfo4CouponRefDto);
             couponRefProductEntities.add(couponRefProduct);
         }
         batchService.batchDispose(couponRefProductEntities, CouponRefProductMapper.class, "insertSelective", 10000);
-//        productInfoMap.clear();
+        productInfoMap.clear();
     }
 
     /**
      * 获取优惠券关联商品对象
      *
      * @param couponRefAllProductReq
-     * @param couponRefAllProductDto
+     * @param productInfo4CouponRefDto
      * @return
      */
-    private CouponRefProductEntity getCouponRefProduct(CouponRefAllProductReq couponRefAllProductReq, CouponRefAllProductDto couponRefAllProductDto) {
+    private CouponRefProductEntity getCouponRefProduct(CouponRefAllProductReq couponRefAllProductReq, ProductInfo4CouponRefDto productInfo4CouponRefDto) {
         CouponRefProductEntity couponRefProduct = new CouponRefProductEntity();
         couponRefProduct.setUuid(uidGenerator.getUID2());
         couponRefProduct.setCouponId(couponRefAllProductReq.getProductCouponId());
         couponRefProduct.setIsEnable(IF_YES.getCode());
-        couponRefProduct.setProductId(couponRefAllProductDto.getProductId());
-        couponRefProduct.setProductName(couponRefAllProductDto.getProductName());
-        couponRefProduct.setSupplierName(couponRefAllProductDto.getSupplierName());
-        couponRefProduct.setThirdCategoryName(couponRefAllProductDto.getThirdCategoryName());
+        couponRefProduct.setProductId(productInfo4CouponRefDto.getProductId());
+        couponRefProduct.setProductName(productInfo4CouponRefDto.getProductName());
+        couponRefProduct.setSupplierName(productInfo4CouponRefDto.getSupplierName());
+        couponRefProduct.setThirdCategoryName(productInfo4CouponRefDto.getThirdCategoryName());
         return couponRefProduct;
     }
 

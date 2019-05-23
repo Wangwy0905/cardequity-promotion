@@ -664,9 +664,9 @@
         (
         CASE
         WHEN IFNULL(t2.BEGIN_VALUE, 0) = 0 THEN '无门槛'
-        ELSE t2.BEGIN_VALUE END
+        ELSE CAST(t2.BEGIN_VALUE AS decimal(19)) END
         ) couponCondition,
-        t2.END_VALUE profitTopAmount,
+        CAST(IFNULL(t2.END_VALUE, 0) AS decimal(19)) profitTopAmount,
         (
         CASE
         WHEN t1.GET_TYPE = '1' THEN '用户领取'
@@ -745,6 +745,7 @@
                 </choose>
             </if>
         </where>
+        order by t1.CREATE_TIME desc
     </select>
 
     <select id="getStatisticsByClientType" resultType="com.youyu.cardequity.promotion.dto.rsp.ProductCouponGetStatisticsRsp">
